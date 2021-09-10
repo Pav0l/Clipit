@@ -1,0 +1,38 @@
+import { HttpClient } from "../http-client";
+import { twitchAppClientId } from "../constants";
+
+
+class TwitchOAuthApiClient {
+  private httpClient: HttpClient;
+
+  constructor() {
+    this.httpClient = new HttpClient("https://id.twitch.tv");
+  }
+
+  async validateAccessToken(token: string) {
+    if (!token) {
+      return false;
+    }
+    const resp = await this.httpClient.requestRaw({
+      method: 'get',
+      url: '/oauth2/validate',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    // TODO handle 401
+    console.log(resp);
+  }
+
+  async revokeAccessToken(token: string) {
+    const resp = await this.httpClient.requestRaw({
+      method: 'post',
+      url: '/oauth2/revoke',
+      body: `client_id=${twitchAppClientId}&token=${token}`
+    });
+
+    console.log(resp);
+  }
+}
+
+export const twitchOauthClient = new TwitchOAuthApiClient();

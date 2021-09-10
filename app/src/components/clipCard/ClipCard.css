@@ -1,0 +1,19 @@
+.clip-card {
+  margin: 1rem;
+  width: 24rem;
+  max-width: 50%;
+
+  border-radius: 0px !important;
+}
+.clip-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.clip-title {
+  color: #9146ff;
+  font-weight: 600 !important;
+}
