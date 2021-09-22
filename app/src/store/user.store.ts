@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx"
 import { MetaStore } from "./meta.store";
 
 
-export interface TwitchUser {
+export interface User {
   id: string;
   display_name: string;
   login: string; // login name
@@ -10,7 +10,7 @@ export interface TwitchUser {
   email: string;
 }
 
-export class TwitchUserStore {
+export class UserStore {
   id: string = "";
   display_name: string = "";
   login: string = "";
@@ -24,7 +24,7 @@ export class TwitchUserStore {
     this.meta = metaStore;
   }
 
-  setUser(user: TwitchUser) {
+  setUser(user: User) {
     this.id = user.id;
     this.display_name = user.display_name;
     this.login = user.login;

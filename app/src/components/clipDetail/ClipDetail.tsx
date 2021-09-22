@@ -17,10 +17,10 @@ import { NftService } from "../../domains/nfts/nft.service";
 
 function ClipDetail() {
   const { clipId } = useParams<{ clipId: string }>();
-  const { clipsStore, twitchUserStore, gameStore, nftStore } = useStore();
+  const { clipsStore, userStore, gameStore, nftStore } = useStore();
   const [isDisabled, setDisabled] = useState(false);
 
-  const userService = new TwitchUserService(twitchUserStore);
+  const userService = new TwitchUserService(userStore);
   const clipsService = new TwitchClipsService(clipsStore);
   const gamesService = new TwitchGameService(gameStore);
   const nftService = new NftService(nftStore);
@@ -28,7 +28,7 @@ function ClipDetail() {
   const clip = clipsStore.getClip(clipId);
 
   useEffect(() => {
-    if (!twitchUserStore.id) {
+    if (!userStore.id) {
       userService.getUser();
     }
 
@@ -47,7 +47,7 @@ function ClipDetail() {
     setDisabled(true);
     // we need to verify that current user is owner of broadcaster of clip,
     // so we do not allow other people minting streamers clips
-    if (clip != null && clip.broadcasterId === twitchUserStore.id) {
+    if (clip != null && clip.broadcasterId === userStore.id) {
       await nftService.prepareMetadataAndMintClip(clip.id);
     } else {
       // SENTRY MONITOR
@@ -59,8 +59,8 @@ function ClipDetail() {
     setDisabled(false);
   };
 
-  if (twitchUserStore.meta.hasError) {
-    return <div>{twitchUserStore.meta.error}</div>;
+  if (userStore.meta.hasError) {
+    return <div>{userStore.meta.error}</div>;
   }
 
   if (clipsStore.meta.hasError) {
@@ -82,7 +82,7 @@ function ClipDetail() {
 
   if (
     clipsStore.meta.isLoading ||
-    twitchUserStore.meta.isLoading ||
+    userStore.meta.isLoading ||
     nftStore.meta.isLoading
   ) {
     return <div>Loading...</div>;
@@ -97,7 +97,7 @@ function ClipDetail() {
     );
   }
 
-  if (clip.broadcasterId !== twitchUserStore.id) {
+  if (clip.broadcasterId !== userStore.id) {
     return <div>You can only create clip NFTs of your own clips</div>;
   }
 

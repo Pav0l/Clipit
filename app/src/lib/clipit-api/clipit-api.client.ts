@@ -3,11 +3,8 @@ import { clipItUri } from "../constants";
 import { getAccessToken, getTwitchOAuth2AuthorizeUrl } from "../twitch-oauth/twitch-oauth.utils";
 
 class ClipItApiClient {
-  private httpClient: HttpClient;
 
-  constructor() {
-    this.httpClient = new HttpClient(clipItUri);
-  }
+  constructor(private httpClient: HttpClient) { }
 
   storeClip = async (clipId: string, streamerAddress: string) => {
     const token = getAccessToken();
@@ -15,17 +12,17 @@ class ClipItApiClient {
       location.href = getTwitchOAuth2AuthorizeUrl();
     }
 
-    return responsePromise();
+    // return responsePromise();
 
     // TODO!
     const resp = await this.httpClient.requestRaw<StoreClipResp>({
       method: 'post',
-      url: '/clip/store',
+      url: `/clips/${clipId}`,
       headers: {
         Authorization: `Bearer ${token}`
       },
       body: {
-        clipId, address: streamerAddress
+        address: streamerAddress
       }
     });
 
@@ -33,48 +30,46 @@ class ClipItApiClient {
 
     return resp;
   }
-
-
-
 }
 
 
-export const clipItApiClient = new ClipItApiClient();
+export const clipItApiClient = new ClipItApiClient(new HttpClient(clipItUri));
 
 
 export interface StoreClipResp {
   metadataCid?: string;
+  id?: string; // clip id
   address?: string; //compare with current user address to double check if it didn't change in the meantime
   transactionHash?: string; // -> so that we can track num of generated blocks after our tx was included?
-  metadata?: MetadataResp;
+  metadata?: Metadata;
 }
 
-interface MetadataResp {
+interface Metadata {
   description?: string;
   external_url?: string;
   image?: string;
   name?: string;
   cid?: string;
-  attributes?: MetadataResponseAttrs[];
+  attributes?: MetadataAttrs[];
 }
 
-export interface MetadataResponseAttrs {
+export interface MetadataAttrs {
   trait_type?: "Game" | "Streamer";
   value?: string;
 }
 
 // mock data
-const gameAttr: MetadataResponseAttrs = {
+const gameAttr: MetadataAttrs = {
   trait_type: "Game",
   value: "World of Warcraft"
 }
-const streamerAttr: MetadataResponseAttrs = {
+const streamerAttr: MetadataAttrs = {
   trait_type: "Streamer",
   value: "HappySumber"
 }
 const attrs = [gameAttr, streamerAttr];
 
-const mtdt: MetadataResp = {
+const mtdt: Metadata = {
   attributes: attrs,
   cid: `fang-bank-clip-cid-${Math.random()}`,
   description: 'Not sure what to put into this description',

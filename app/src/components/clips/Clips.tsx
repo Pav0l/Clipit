@@ -11,22 +11,22 @@ import { TwitchGameService } from "../../domains/twitch-games/twitch-games.servi
 import { ClipCard } from "../clipCard/ClipCard";
 
 function Clips() {
-  const { clipsStore, twitchUserStore, gameStore } = useStore();
-  const userService = new TwitchUserService(twitchUserStore);
+  const { clipsStore, userStore, gameStore } = useStore();
+  const userService = new TwitchUserService(userStore);
   const clipsService = new TwitchClipsService(clipsStore);
   const gamesService = new TwitchGameService(gameStore);
 
   useEffect(() => {
-    if (!twitchUserStore.id) {
+    if (!userStore.id) {
       userService.getUser();
     }
   }, []);
 
   useEffect(() => {
-    if (twitchUserStore.id) {
-      clipsService.getClips(twitchUserStore.id);
+    if (userStore.id) {
+      clipsService.getClips(userStore.id);
     }
-  }, [twitchUserStore.id]);
+  }, [userStore.id]);
 
   useEffect(() => {
     if (clipsStore.clips.length > 0) {
@@ -34,7 +34,7 @@ function Clips() {
     }
   }, [clipsStore.clips.length]);
 
-  if (twitchUserStore.meta.isLoading || clipsStore.meta.isLoading) {
+  if (userStore.meta.isLoading || clipsStore.meta.isLoading) {
     return (
       <Box className="clips-container with-center-content">
         <CircularProgress />
@@ -42,7 +42,7 @@ function Clips() {
     );
   }
 
-  if (clipsStore.getUsersClips(twitchUserStore.id).length === 0) {
+  if (clipsStore.getUsersClips(userStore.id).length === 0) {
     return (
       <Box className="clips-container with-center-content">
         <Typography variant="h6" component="h6">
@@ -59,7 +59,7 @@ function Clips() {
       </Typography>
 
       <Box className="clips-container">
-        {clipsStore.getUsersClips(twitchUserStore.id).map((clip, idx) => {
+        {clipsStore.getUsersClips(userStore.id).map((clip, idx) => {
           const { title, gameId, broadcasterName, thumbnailUrl, viewCount } =
             clip;
           return (
@@ -79,7 +79,7 @@ function Clips() {
 
       <Button
         color="primary"
-        onClick={() => clipsService.getClips(twitchUserStore.id)}
+        onClick={() => clipsService.getClips(userStore.id)}
       >
         Load more...
       </Button>

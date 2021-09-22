@@ -2,20 +2,8 @@ import { HttpClient } from "../http-client";
 import { requestFulfilledInterceptor, responseFulfilledInterceptor } from "./twitch-api.utils";
 
 class TwitchApiClient {
-  private httpClient: HttpClient;
 
-  constructor() {
-    this.httpClient = new HttpClient("https://api.twitch.tv/helix", {
-      request: {
-        onFulfilled: requestFulfilledInterceptor
-      },
-      response: {
-        onFulfilled: responseFulfilledInterceptor
-      }
-    });
-    // TODO:
-    // - token shoud be passed to constructor at initialization, so we remove dep on LS and also it forces us to init the app/user properly
-  }
+  constructor(private httpClient: HttpClient) { }
 
   getUsers = async () => {
     return this.httpClient.requestRaw<{ data: TwitchUserResp[] }>({
@@ -29,7 +17,7 @@ class TwitchApiClient {
       queryParams.after = cursor
     }
 
-    return res;
+    // return res;
     // TODO!
     return this.httpClient.requestRaw<{ data: TwitchClipResp[]; pagination?: TwitchPaginationResp }>({
       method: 'get',
@@ -54,7 +42,10 @@ class TwitchApiClient {
 }
 
 
-export const twitchApiClient = new TwitchApiClient();
+export const twitchApiClient = new TwitchApiClient(new HttpClient("https://api.twitch.tv/helix", {
+  request: { onFulfilled: requestFulfilledInterceptor },
+  response: { onFulfilled: responseFulfilledInterceptor }
+}));
 
 
 // https://dev.twitch.tv/docs/api/reference#get-clips

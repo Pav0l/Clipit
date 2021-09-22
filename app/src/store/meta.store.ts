@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx"
 
 /**
- * MetaStore keeps metadata about each store (loading, error, ...)
+ * MetaStore keeps metadata about stores (loading, error, ...)
  */
 export class MetaStore {
   isLoading: boolean = false;

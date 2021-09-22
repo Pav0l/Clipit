@@ -3,12 +3,12 @@ import { GamesStore } from "./games.store";
 import { MetaStore } from "./meta.store";
 import { NftStore } from "./nft.store";
 import { TestStore } from "./test.store";
-import { TwitchUserStore } from "./twitch-user.store";
+import { UserStore } from "./user.store";
 
 
 export interface IStore {
   clipsStore: ClipsStore;
-  twitchUserStore: TwitchUserStore;
+  userStore: UserStore;
   gameStore: GamesStore;
   nftStore: NftStore;
 
@@ -18,7 +18,7 @@ export interface IStore {
 
 class Store implements IStore {
   clipsStore: ClipsStore;
-  twitchUserStore: TwitchUserStore;
+  userStore: UserStore;
   gameStore: GamesStore;
   nftStore: NftStore;
 
@@ -27,7 +27,7 @@ class Store implements IStore {
 
   constructor() {
     this.clipsStore = new ClipsStore(new MetaStore());
-    this.twitchUserStore = new TwitchUserStore(new MetaStore());
+    this.userStore = new UserStore(new MetaStore());
     this.gameStore = new GamesStore(new MetaStore());
     this.nftStore = new NftStore(new MetaStore());
 

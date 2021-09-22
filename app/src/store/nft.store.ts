@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
 import { makeAutoObservable } from "mobx"
-import { MetadataResponseAttrs, StoreClipResp } from "../lib/clipit-api/clipit-api.client";
+import { MetadataAttrs, StoreClipResp } from "../lib/clipit-api/clipit-api.client";
 import { MetaStore } from "./meta.store";
 
 enum MintingProgress {
@@ -104,7 +104,7 @@ class Metadata {
     this.attributes = this.transformAttrs(data.metadata?.attributes);
   }
 
-  private transformAttrs(attrs: MetadataResponseAttrs[] = []): Array<IMetadataAttrs> {
+  private transformAttrs(attrs: MetadataAttrs[] = []): Array<IMetadataAttrs> {
     return attrs.map(attribute => {
       return {
         traitType: attribute.trait_type,

@@ -8,6 +8,7 @@ import { useStore } from "../store/StoreProvider";
 import { NftService } from "../domains/nfts/nft.service";
 
 import { EthereumProvider } from "../lib/ethereum/ethereum.types";
+import ClipItError, { ErrorCodes } from "../lib/errors/errors";
 
 const embeds = [
   `https://clips.twitch.tv/embed?clip=VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW&parent=${encodeURIComponent(
@@ -47,6 +48,20 @@ const About = observer(function About() {
     return JSON.stringify(val);
   };
 
+  const tryAndCatch = () => {
+    try {
+      throw new ClipItError("clipiterror msg", ErrorCodes.INVALID_PROVIDER);
+    } catch (error) {
+      console.log(error);
+
+      console.log(typeof error);
+
+      console.log(error instanceof ClipItError);
+
+      // console.log(error.name);
+    }
+  };
+
   useEffect(() => {
     console.log("isArr.length hook triggered", testStore.isArr);
   }, [testStore.isArr.length]);
@@ -61,6 +76,7 @@ const About = observer(function About() {
 
   return (
     <div>
+      <button onClick={() => tryAndCatch()}>throw & catch</button>
       <div>ETHEREUM</div>
       <div>isBool: {str(testStore.isBool)}</div>
       <button onClick={() => testStore.setBool(!testStore.isBool)}>

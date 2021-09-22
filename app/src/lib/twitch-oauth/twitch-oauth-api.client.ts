@@ -3,11 +3,8 @@ import { twitchAppClientId } from "../constants";
 
 
 class TwitchOAuthApiClient {
-  private httpClient: HttpClient;
 
-  constructor() {
-    this.httpClient = new HttpClient("https://id.twitch.tv");
-  }
+  constructor(private httpClient: HttpClient) { }
 
   async validateAccessToken(token: string) {
     if (!token) {
@@ -35,4 +32,4 @@ class TwitchOAuthApiClient {
   }
 }
 
-export const twitchOauthClient = new TwitchOAuthApiClient();
+export const twitchOauthClient = new TwitchOAuthApiClient(new HttpClient("https://id.twitch.tv"));

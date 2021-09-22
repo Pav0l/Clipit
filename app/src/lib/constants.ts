@@ -1,15 +1,15 @@
 import { OpenSeaPort, Network } from "opensea-js";
 
-
+// TODO configurable variables into config file
 // CONTRACT -> into config
-export const contractAddress = "0x6eA040eE61c7afC835b860923F08827bC98114D7";
+export const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
 
 // IPFS -> into config
 export const ipfsBaseUri = `http://127.0.0.1:8080/ipfs`;
 
 // CLIPIT -> into config
-export const clipItUri = "http://127.0.0.1:8000"
+export const clipItUri = "http://localhost:8000/v1"
 
 
 // OPENSEA -> networkName into config

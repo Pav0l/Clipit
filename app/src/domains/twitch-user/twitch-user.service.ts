@@ -1,11 +1,11 @@
 import { twitchApiClient } from "../../lib/twitch-api/twitch-api.client"
-import { TwitchUserStore } from "../../store/twitch-user.store"
+import { UserStore } from "../../store/user.store"
 import { TwitchUserError } from "./twitch-user.errors";
 
 
 export class TwitchUserService {
 
-  constructor(private userStore: TwitchUserStore) { }
+  constructor(private userStore: UserStore) { }
 
   getUser = async () => {
     this.userStore.meta.setLoading(true);

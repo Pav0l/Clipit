@@ -21,8 +21,11 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ClipItInterface extends ethers.utils.Interface {
   functions: {
+    "allowMint(address,string)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "cancelMint(address,string)": FunctionFragment;
+    "getAllowedToMint(address,string)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "mint(address,string)": FunctionFragment;
@@ -39,10 +42,22 @@ interface ClipItInterface extends ethers.utils.Interface {
   };
 
   encodeFunctionData(
+    functionFragment: "allowMint",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "approve",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "cancelMint",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAllowedToMint",
+    values: [string, string]
+  ): string;
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [BigNumberish]
@@ -84,8 +99,14 @@ interface ClipItInterface extends ethers.utils.Interface {
     values: [string, string, BigNumberish]
   ): string;
 
+  decodeFunctionResult(functionFragment: "allowMint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "cancelMint", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getAllowedToMint",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
     data: BytesLike
@@ -173,6 +194,12 @@ export class ClipIt extends BaseContract {
   interface: ClipItInterface;
 
   functions: {
+    allowMint(
+      _to: string,
+      _cid: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -180,6 +207,18 @@ export class ClipIt extends BaseContract {
     ): Promise<ContractTransaction>;
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    cancelMint(
+      _to: string,
+      _cid: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    getAllowedToMint(
+      _to: string,
+      _cid: string,
+      overrides?: CallOverrides
+    ): Promise<[number]>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -253,6 +292,12 @@ export class ClipIt extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
+  allowMint(
+    _to: string,
+    _cid: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   approve(
     to: string,
     tokenId: BigNumberish,
@@ -260,6 +305,18 @@ export class ClipIt extends BaseContract {
   ): Promise<ContractTransaction>;
 
   balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  cancelMint(
+    _to: string,
+    _cid: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  getAllowedToMint(
+    _to: string,
+    _cid: string,
+    overrides?: CallOverrides
+  ): Promise<number>;
 
   getApproved(
     tokenId: BigNumberish,
@@ -327,6 +384,12 @@ export class ClipIt extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    allowMint(
+      _to: string,
+      _cid: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -334,6 +397,18 @@ export class ClipIt extends BaseContract {
     ): Promise<void>;
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    cancelMint(
+      _to: string,
+      _cid: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    getAllowedToMint(
+      _to: string,
+      _cid: string,
+      overrides?: CallOverrides
+    ): Promise<number>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -427,6 +502,12 @@ export class ClipIt extends BaseContract {
   };
 
   estimateGas: {
+    allowMint(
+      _to: string,
+      _cid: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -434,6 +515,18 @@ export class ClipIt extends BaseContract {
     ): Promise<BigNumber>;
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    cancelMint(
+      _to: string,
+      _cid: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    getAllowedToMint(
+      _to: string,
+      _cid: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -508,6 +601,12 @@ export class ClipIt extends BaseContract {
   };
 
   populateTransaction: {
+    allowMint(
+      _to: string,
+      _cid: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
@@ -516,6 +615,18 @@ export class ClipIt extends BaseContract {
 
     balanceOf(
       owner: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    cancelMint(
+      _to: string,
+      _cid: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    getAllowedToMint(
+      _to: string,
+      _cid: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

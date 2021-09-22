@@ -1,6 +1,5 @@
 import detectEthereumProvider from '@metamask/detect-provider'
 import { ethers, BigNumberish } from 'ethers';
-import { serializeError } from 'eth-rpc-errors';
 import MetaMaskOnboarding from '@metamask/onboarding';
 
 import { clipItApiClient, StoreClipResp } from "../../lib/clipit-api/clipit-api.client";
@@ -17,7 +16,7 @@ export class NftService {
   constructor(private nftStore: NftStore) { }
 
   /**
-   * This method is UX heavy. It handles the MetaMask / Ethereu stuff (install metamask / connect metamask / approve transaction)
+   * This method is UX heavy. It handles the MetaMask / Ethereum stuff (install metamask / connect metamask / approve transaction)
    * @param clipId 
    * @dev 
    */
@@ -29,7 +28,8 @@ export class NftService {
       return;
     }
 
-    // this.nftStore.meta.setLoading(true);
+    // TODO - this loader will take about 45-60 seconds, so there needs to be something better tha just loader
+    this.nftStore.meta.setLoading(true);
 
     const userWalletAddress = await ethereumClient.signer.getAddress();
 
@@ -44,7 +44,7 @@ export class NftService {
       await this.waitForBlockConfirmations(transaction.blockNumber!, clipId, resp.body, ethereumClient);
     }
 
-    // this.nftStore.meta.setLoading(false);
+    this.nftStore.meta.setLoading(false);
   }
 
   requestAccounts = async (ethereumClient: EthereumClient) => {
@@ -124,10 +124,8 @@ export class NftService {
         this.nftStore.setSuccessTx();
       } catch (error) {
         // SENTRY
+        // TODO handle specific errors (4001, ...)
         console.log("[LOG]:mint:error", error);
-        const serialized = serializeError(error);
-        console.log("[LOG]:mint:serialized", (serialized.data as any).originalError?.error?.message);
-
         this.nftStore.meta.setError("Failed to generate the NFT");
       }
 
