@@ -31,8 +31,6 @@ export const OnboardingButton = observer(() => {
 
   useEffect(() => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      setAccounts();
-
       (window.ethereum as EthereumProvider).on(
         "accountsChanged",
         (account: string[]) => {
