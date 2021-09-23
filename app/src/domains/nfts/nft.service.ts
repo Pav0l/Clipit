@@ -27,6 +27,7 @@ export class NftService {
       this.nftStore.meta.setError("Failed to initialize MetaMask.") //TODO better error msg (link to extension)
       return;
     }
+    await this.requestAccounts(ethereumClient);
 
     // TODO - this loader will take about 45-60 seconds, so there needs to be something better tha just loader
     this.nftStore.meta.setLoading(true);
