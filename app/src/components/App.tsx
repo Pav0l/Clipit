@@ -8,6 +8,7 @@ import About from "./About";
 import { getTwitchOAuth2AuthorizeUrl } from "../lib/twitch-oauth/twitch-oauth.utils";
 import LoginWithTwitch from "./loginWithTwitch/LoginWithTwitch";
 import Marketplace from "./marketplace/Marketplace";
+import AlertSnackbar from "./snackbar/Snackbar";
 import { AppRoute } from "../lib/constants";
 import { OnboardingButton } from "./connectMetamask/ConnectMetamask";
 
@@ -34,6 +35,8 @@ export default function App() {
               <OnboardingButton />
             </ul>
           </nav>
+
+          <AlertSnackbar />
 
           <Switch>
             <Route exact path={AppRoute.MARKETPLACE}>

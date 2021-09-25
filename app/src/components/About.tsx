@@ -9,6 +9,7 @@ import { NftService } from "../domains/nfts/nft.service";
 
 import { EthereumProvider } from "../lib/ethereum/ethereum.types";
 import ClipItError, { ErrorCodes } from "../lib/errors/errors";
+import { SnackbarController } from "../lib/snackbar/snackbar.controller";
 
 const embeds = [
   `https://clips.twitch.tv/embed?clip=VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW&parent=${encodeURIComponent(
@@ -38,7 +39,8 @@ const embeds = [
 ];
 
 const About = observer(function About() {
-  const { testStore, nftStore } = useStore();
+  const { testStore, snackbarStore } = useStore();
+  const snackCtrl = new SnackbarController(snackbarStore);
 
   const validateToken = () => {
     twitchOauthClient.validateAccessToken(getAccessToken() ?? "");
@@ -83,7 +85,17 @@ const About = observer(function About() {
         change isBool
       </button>
 
-      <div>isNum: {str(testStore.isNum)}</div>
+      <div>Snackbar</div>
+      <button
+        onClick={() => snackCtrl.displaySuccess(`happy: ${Math.random()}`)}
+      >
+        SUCCESS
+      </button>
+      <button onClick={() => snackCtrl.displayError(`sad: ${Math.random()}`)}>
+        ERROR
+      </button>
+
+      {/* <div>isNum: {str(testStore.isNum)}</div>
       <button onClick={() => testStore.setNum(testStore.isNum + 1)}>
         change isNum
       </button>
@@ -126,7 +138,7 @@ const About = observer(function About() {
       </button>
 
       <div>VALIDATE TOKEN</div>
-      <button onClick={validateToken}>validate</button>
+      <button onClick={validateToken}>validate</button> */}
       {/* <div>EMBEDS:</div>
       <div>
         {embeds.map((url, idx) => {
