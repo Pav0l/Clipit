@@ -9,6 +9,7 @@ import EthereumClient from '../../lib/ethereum/ethereum.client';
 import { ConnectInfo, EthereumProvider, ProviderMessage, ProviderRpcError } from '../../lib/ethereum/ethereum.types';
 import { NftStore } from "../../store/nft.store";
 import { clearClipToMetadataPair, storeClipToMetadataPair } from "./nft.utils";
+import { snackbarClient } from '../../modules/snackbar/snackbar.client';
 
 
 export class NftService {
@@ -61,7 +62,7 @@ export class NftService {
       // handle 4001 user rejected request to connect and others (general error)
       // maybe utilize the metamask library https://github.com/MetaMask/eth-rpc-errors
       console.log("eth_requestAccounts err", error);
-      this.nftStore.meta.setError("You need to connect your MetaMask Wallet to be able to mint the clip into NFT");
+      snackbarClient.sendError("Connect your MetaMask wallet to create clip NFT");
     }
   }
 
@@ -70,7 +71,8 @@ export class NftService {
     const onboarding = new MetaMaskOnboarding();
     console.log('init client')
     if (metamaskProvider === null) {
-      this.nftStore.meta.setError("Please install Metamask extension and generate your Ethereum Wallet in it");
+      // TODO consider importing this via constructor with other clients
+      snackbarClient.sendError("Please install Metamask extension and create or connect your Ethereum Wallet");
       onboarding.startOnboarding();
       return null;
     }

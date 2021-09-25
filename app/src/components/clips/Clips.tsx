@@ -79,6 +79,7 @@ function Clips() {
 
       <Button
         color="primary"
+        // TODO add pagination to request
         onClick={() => clipsService.getClips(userStore.id)}
       >
         Load more...

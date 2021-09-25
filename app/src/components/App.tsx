@@ -4,11 +4,11 @@ import Home from "./home/Home";
 import Clips from "./clips/Clips";
 import OAuth2Redirect from "./oauth2-redirect/OAuth2Redirect";
 import ClipDetail from "./clipDetail/ClipDetail";
-import About from "./About";
+import Playground from "../modules/playground/Playground";
 import { getTwitchOAuth2AuthorizeUrl } from "../lib/twitch-oauth/twitch-oauth.utils";
 import LoginWithTwitch from "./loginWithTwitch/LoginWithTwitch";
 import Marketplace from "./marketplace/Marketplace";
-import AlertSnackbar from "./snackbar/Snackbar";
+import AlertSnackbar from "../modules/snackbar/Snackbar";
 import { AppRoute } from "../lib/constants";
 import { OnboardingButton } from "./connectMetamask/ConnectMetamask";
 
@@ -43,7 +43,7 @@ export default function App() {
               <Marketplace />
             </Route>
             <Route exact path={AppRoute.ABOUT}>
-              <About />
+              <Playground />
             </Route>
             <Route exact path={AppRoute.CLIPS}>
               <Clips />

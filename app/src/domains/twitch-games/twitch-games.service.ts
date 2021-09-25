@@ -24,7 +24,7 @@ export class TwitchGameService {
     for (const gameId of gameIds) {
       // do not fetch gameIds for games we already know
       if (!this.gamesStore.games[gameId]) {
-        this.getGames(gameId);
+        await this.getGames(gameId);
       }
     }
   }

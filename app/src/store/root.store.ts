@@ -2,8 +2,8 @@ import { ClipsStore } from "./clips.store";
 import { GamesStore } from "./games.store";
 import { MetaStore } from "./meta.store";
 import { NftStore } from "./nft.store";
-import { SnackbarStore } from "./snackbar.store";
-import { TestStore } from "./test.store";
+import { SnackbarStore } from "../modules/snackbar/snackbar.store";
+import { TestStore } from "../modules/playground/playground.store";
 import { UserStore } from "./user.store";
 
 

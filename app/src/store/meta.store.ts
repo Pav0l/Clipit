@@ -6,7 +6,7 @@ import { makeAutoObservable } from "mobx"
 export class MetaStore {
   isLoading: boolean = false;
   hasError: boolean = false;
-  error: string = ""
+  error: string = "";
 
   constructor() {
     makeAutoObservable(this);

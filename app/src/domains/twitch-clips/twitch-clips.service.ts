@@ -2,6 +2,7 @@ import { getSlugFromUrl } from "./twitch-clips.utils";
 import { twitchApiClient } from "../../lib/twitch-api/twitch-api.client"
 import { ClipsStore } from "../../store/clips.store";
 import { TwitchClipsErrors } from "./twitch-clips.errors";
+import { snackbarClient } from "../../modules/snackbar/snackbar.client";
 
 
 export class TwitchClipsService {
@@ -37,7 +38,8 @@ export class TwitchClipsService {
     const clipId = getSlugFromUrl(url);
 
     if (!clipId) {
-      this.clipsStore.meta.setError(TwitchClipsErrors.INVALID_CLIP_URL);
+      // TODO import via constructor together with twitchApiClient?
+      snackbarClient.sendError(TwitchClipsErrors.INVALID_CLIP_URL);
       return "";
     }
     return clipId;

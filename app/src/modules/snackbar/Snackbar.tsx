@@ -6,7 +6,7 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 
 import { useStore } from "../../store/StoreProvider";
-import { SnackbarController } from "../../lib/snackbar/snackbar.controller";
+import { ISnack } from "./snackbar.model";
 
 function GrowTransition(props: TransitionProps) {
   return <Grow {...props} />;
@@ -16,31 +16,48 @@ function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-interface Props {
-  setOpen: (val: boolean) => void;
-}
-
 function TransitionSnackbar() {
   const { snackbarStore } = useStore();
   const { message, messageList, open } = snackbarStore;
-  const controller = new SnackbarController(snackbarStore);
 
   const handleClose = (_: SyntheticEvent | MouseEvent, reason?: string) => {
     if (reason === "clickaway") {
       return;
     }
 
-    controller.close();
+    snackbarStore.close();
   };
+
+  const handleMessage = (ev: MessageEvent<ISnack>) => {
+    console.log("[snackbar]:event", ev);
+    if (ev.data && ev.data.text && ev.data.severity) {
+      switch (ev.data.severity) {
+        case "error":
+          snackbarStore.addErrorToSnackbarQue(ev.data.text, ev.data.duration);
+          break;
+        case "success":
+          snackbarStore.addSuccessToSnackbarQue(ev.data.text, ev.data.duration);
+          break;
+      }
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []);
 
   useEffect(() => {
     if (messageList.length && !message) {
       // show new message
-      controller.renderMessage();
+      snackbarStore.displayMessageFromQue();
     } else if (messageList.length && message && open) {
       // new snack addedd to msgList
-      // close current snack -> will cause re-render and call onExited
-      controller.close();
+      // close current snack
+      snackbarStore.close();
     }
   }, [message, messageList, open]);
 

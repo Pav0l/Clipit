@@ -1,15 +1,15 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { clipItApiClient } from "../lib/clipit-api/clipit-api.client";
-import { twitchOauthClient } from "../lib/twitch-oauth/twitch-oauth-api.client";
-import { getAccessToken } from "../lib/twitch-oauth/twitch-oauth.utils";
-import { useStore } from "../store/StoreProvider";
+import { clipItApiClient } from "../../lib/clipit-api/clipit-api.client";
+import { twitchOauthClient } from "../../lib/twitch-oauth/twitch-oauth-api.client";
+import { getAccessToken } from "../../lib/twitch-oauth/twitch-oauth.utils";
+import { useStore } from "../../store/StoreProvider";
 
-import { NftService } from "../domains/nfts/nft.service";
+import { NftService } from "../../domains/nfts/nft.service";
 
-import { EthereumProvider } from "../lib/ethereum/ethereum.types";
-import ClipItError, { ErrorCodes } from "../lib/errors/errors";
-import { SnackbarController } from "../lib/snackbar/snackbar.controller";
+import { EthereumProvider } from "../../lib/ethereum/ethereum.types";
+import ClipItError, { ErrorCodes } from "../../lib/errors/errors";
+import { snackbarClient } from "../snackbar/snackbar.client";
 
 const embeds = [
   `https://clips.twitch.tv/embed?clip=VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW&parent=${encodeURIComponent(
@@ -38,9 +38,8 @@ const embeds = [
   )}`
 ];
 
-const About = observer(function About() {
-  const { testStore, snackbarStore } = useStore();
-  const snackCtrl = new SnackbarController(snackbarStore);
+const Playground = observer(function Playground() {
+  const { testStore } = useStore();
 
   const validateToken = () => {
     twitchOauthClient.validateAccessToken(getAccessToken() ?? "");
@@ -87,11 +86,11 @@ const About = observer(function About() {
 
       <div>Snackbar</div>
       <button
-        onClick={() => snackCtrl.displaySuccess(`happy: ${Math.random()}`)}
+        onClick={() => snackbarClient.sendSuccess(`happy: ${Math.random()}`)}
       >
         SUCCESS
       </button>
-      <button onClick={() => snackCtrl.displayError(`sad: ${Math.random()}`)}>
+      <button onClick={() => snackbarClient.sendError(`sad: ${Math.random()}`)}>
         ERROR
       </button>
 
@@ -159,4 +158,4 @@ const About = observer(function About() {
   // return <div>What is this about?</div>;
 });
 
-export default About;
+export default Playground;
