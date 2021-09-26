@@ -6,6 +6,7 @@ export enum NftErrors {
   CONFITM_MINT = "Please confirm the mint transaction in MetaMask",
   MINT_REJECTED = "Mint transaction rejected",
   SOMETHING_WENT_WRONG = "Something went wrong",
+  REQUEST_ALREADY_PENDING = "Request already pending. Please open your MetaMask wallet and confirm it",
 }
 
 export interface ProviderRpcError extends Error {
@@ -20,6 +21,7 @@ export enum RpcErrors {
   UNSUPPORTED_METHOD = 4200, // The Provider does not support the requested method.
   DISCONNECTED = 4900, // The Provider is disconnected from all chains.
   CHAIN_DISCONNECTED = 4901, // The Provider is not connected to the requested chain.
+  REQUEST_ALREADY_PENDING = -32002, // The request is already pending confirmation (connect wallet, confirm tx, ...)
 }
 
 export function isRpcError(error: ProviderRpcError | unknown): error is ProviderRpcError {

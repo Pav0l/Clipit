@@ -22,7 +22,12 @@ export class NftService {
    * @dev 
    */
   prepareMetadataAndMintClip = async (clipId: string) => {
-    const ethereumClient = await this.initializeEthereumClient();
+    const provider = await this.getProvider();
+    if (!provider) {
+      // Just return, user was notified & started onboarding flow
+      return;
+    }
+    const ethereumClient = this.initializeEthereumClient(provider);
 
     if (!ethereumClient) {
       // Just return, user was notified in initializeEthereumClient via snackbar message
@@ -61,27 +66,27 @@ export class NftService {
       this.nftStore.setAccounts(requestAccounts);
     } catch (error) {
       console.log("[LOG]:requestAccounts:error", error);
-      snackbarClient.sendError(NftErrors.CONNECT_METAMASK);
+
+      if (isRpcError(error)) {
+        switch (error.code) {
+          case RpcErrors.REQUEST_ALREADY_PENDING:
+            snackbarClient.sendError(NftErrors.REQUEST_ALREADY_PENDING)
+            return;
+
+          default:
+            snackbarClient.sendError(NftErrors.CONNECT_METAMASK);
+            return;
+        }
+      }
+      snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
     }
   }
 
-  private initializeEthereumClient = async (): Promise<EthereumClient | null> => {
-    const metamaskProvider = await this.getMetamaskProviderIfInstalled();
-    const onboarding = new MetaMaskOnboarding();
-
-    console.log('[LOG]:initialize ethereum client');
-
-    if (metamaskProvider === null) {
-      // TODO consider importing this via constructor with other clients
-      snackbarClient.sendError(NftErrors.INSTALL_METAMASK);
-      onboarding.startOnboarding();
-      return null;
-    }
-
+  initializeEthereumClient = (provider: EthereumProvider): EthereumClient | null => {
     let ethereumClient: EthereumClient;
     try {
       console.log('[LOG]:registering handlers')
-      ethereumClient = new EthereumClient(metamaskProvider, {
+      ethereumClient = new EthereumClient(provider, {
         handleConnect: this.handleConnect,
         handleDisconnect: this.handleDisconnect,
         handleAccountsChange: this.handleAccountsChange,
@@ -96,8 +101,17 @@ export class NftService {
     return ethereumClient;
   }
 
-  private getMetamaskProviderIfInstalled = async (): Promise<EthereumProvider | null> => {
-    return detectEthereumProvider() as Promise<EthereumProvider | null>;
+  private async getProvider(): Promise<EthereumProvider | null> {
+    const metamaskProvider = await detectEthereumProvider() as Promise<EthereumProvider | null>;
+    const onboarding = new MetaMaskOnboarding();
+
+    if (metamaskProvider === null) {
+      // TODO consider importing this via constructor with other clients
+      snackbarClient.sendError(NftErrors.INSTALL_METAMASK);
+      onboarding.startOnboarding();
+      return null;
+    }
+    return metamaskProvider;
   }
 
   private mintNFT = async (signer: ethers.providers.JsonRpcSigner, data: { metadataCid: string, clipId: string, walletAddress: string }) => {

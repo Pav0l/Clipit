@@ -4,6 +4,8 @@ import { observer } from "mobx-react-lite";
 import { useState, useRef, useEffect } from "react";
 import { EthereumProvider } from "../../lib/ethereum/ethereum.types";
 import { useStore } from "../../store/StoreProvider";
+import { NftService } from "../../domains/nfts/nft.service";
+import EthereumClient from "../../lib/ethereum/ethereum.client";
 
 const ONBOARD_TEXT = "Install MetaMask";
 const CONNECT_TEXT = "Connect";
@@ -12,15 +14,17 @@ const CONNECTED_TEXT = "Connected";
 export const OnboardingButton = observer(() => {
   const [buttonText, setButtonText] = useState(ONBOARD_TEXT);
   const [isDisabled, setDisabled] = useState(false);
+  const [ethereumClient, setEthClient] = useState<EthereumClient | null>(null);
 
   const onboarding = useRef<MetaMaskOnboarding>();
 
   const { nftStore } = useStore();
+  const nftService = new NftService(nftStore);
 
-  const setAccounts = () => {
-    (window.ethereum as EthereumProvider)
-      .request<string[]>({ method: "eth_requestAccounts" })
-      .then((newAccounts) => nftStore.setAccounts(newAccounts));
+  const setAccounts = async () => {
+    if (ethereumClient !== null) {
+      nftService.requestAccounts(ethereumClient);
+    }
   };
 
   useEffect(() => {
@@ -31,22 +35,23 @@ export const OnboardingButton = observer(() => {
 
   useEffect(() => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      (window.ethereum as EthereumProvider).on(
-        "accountsChanged",
-        (account: string[]) => {
-          nftStore.setAccounts(account);
-        }
+      const ethereumClient = nftService.initializeEthereumClient(
+        window.ethereum as EthereumProvider
       );
-      return () => {
-        (window.ethereum as EthereumProvider).off(
-          "accountsChanged",
-          (account: string[]) => {
-            nftStore.setAccounts(account);
-          }
-        );
-      };
+      setEthClient(ethereumClient);
     }
   }, []);
+
+  useEffect(() => {
+    if (MetaMaskOnboarding.isMetaMaskInstalled()) {
+      if (ethereumClient && nftStore.accounts.length === 0) {
+        // TODO - without calling this, we don't know if user already connected wallet or not
+        // so the button can say "CONNECT" even if it is already connected
+        // but with this, we always popup metamask when wallet is not yet connected
+        // nftService.requestAccounts(ethereumClient);
+      }
+    }
+  }, [ethereumClient]);
 
   useEffect(() => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
