@@ -4,12 +4,12 @@ import MetaMaskOnboarding from '@metamask/onboarding';
 
 import { clipItApiClient, StoreClipResp } from "../../lib/clipit-api/clipit-api.client";
 import ContractClient from '../../lib/contract/contract.client';
-import ClipItError, { ErrorCodes } from '../../modules/error/errors';
 import EthereumClient from '../../lib/ethereum/ethereum.client';
 import { ConnectInfo, EthereumProvider, ProviderMessage, ProviderRpcError } from '../../lib/ethereum/ethereum.types';
 import { NftStore } from "../../store/nft.store";
 import { clearClipToMetadataPair, storeClipToMetadataPair } from "./nft.utils";
 import { snackbarClient } from '../../modules/snackbar/snackbar.client';
+import { isRpcError, NftErrors, RpcErrors } from './nft.errors';
 
 
 export class NftService {
@@ -25,7 +25,7 @@ export class NftService {
     const ethereumClient = await this.initializeEthereumClient();
 
     if (!ethereumClient) {
-      this.nftStore.meta.setError("Failed to initialize MetaMask.") //TODO better error msg (link to extension)
+      // Just return, user was notified in initializeEthereumClient via snackbar message
       return;
     }
     await this.requestAccounts(ethereumClient);
@@ -44,42 +44,43 @@ export class NftService {
       const transaction = await ethereumClient.ethersProvider.getTransaction(txHash);
 
       await this.waitForBlockConfirmations(transaction.blockNumber!, clipId, resp.body, ethereumClient);
+    } else {
+      // TODO - handle failed storage / approval of clip
     }
 
     this.nftStore.meta.setLoading(false);
   }
 
   requestAccounts = async (ethereumClient: EthereumClient) => {
-    console.log('fetching accounts', ethereumClient)
+    console.log("[LOG]:requestAccounts", ethereumClient)
     // ask user to connect wallet to app
     try {
       // this should be called everytime we need to have users account setup properly
       const requestAccounts = await ethereumClient.requestAccounts();
-      console.log('eth_requestAccounts', requestAccounts);
+      console.log("[LOG]:requestAccounts:success", requestAccounts);
       this.nftStore.setAccounts(requestAccounts);
     } catch (error) {
-      // TODO: this can throw https://eips.ethereum.org/EIPS/eip-1193#provider-errors
-      // handle 4001 user rejected request to connect and others (general error)
-      // maybe utilize the metamask library https://github.com/MetaMask/eth-rpc-errors
-      console.log("eth_requestAccounts err", error);
-      snackbarClient.sendError("Connect your MetaMask wallet to create clip NFT");
+      console.log("[LOG]:requestAccounts:error", error);
+      snackbarClient.sendError(NftErrors.CONNECT_METAMASK);
     }
   }
 
-  initializeEthereumClient = async (): Promise<EthereumClient | null> => {
+  private initializeEthereumClient = async (): Promise<EthereumClient | null> => {
     const metamaskProvider = await this.getMetamaskProviderIfInstalled();
     const onboarding = new MetaMaskOnboarding();
-    console.log('init client')
+
+    console.log('[LOG]:initialize ethereum client');
+
     if (metamaskProvider === null) {
       // TODO consider importing this via constructor with other clients
-      snackbarClient.sendError("Please install Metamask extension and create or connect your Ethereum Wallet");
+      snackbarClient.sendError(NftErrors.INSTALL_METAMASK);
       onboarding.startOnboarding();
       return null;
     }
 
     let ethereumClient: EthereumClient;
     try {
-      console.log('registering handlers')
+      console.log('[LOG]:registering handlers')
       ethereumClient = new EthereumClient(metamaskProvider, {
         handleConnect: this.handleConnect,
         handleDisconnect: this.handleDisconnect,
@@ -87,16 +88,15 @@ export class NftService {
         handleMessage: this.handleMessage
       });
     } catch (error) {
-      console.log('ethereumClient construc err', error);
-
-      // TODO handle EthereumClient constructor error
+      console.log('[LOG]:EthereumClient constructor error', error);
+      snackbarClient.sendError(NftErrors.INSTALL_METAMASK);
       return null;
     }
 
     return ethereumClient;
   }
 
-  getMetamaskProviderIfInstalled = async (): Promise<EthereumProvider | null> => {
+  private getMetamaskProviderIfInstalled = async (): Promise<EthereumProvider | null> => {
     return detectEthereumProvider() as Promise<EthereumProvider | null>;
   }
 
@@ -114,31 +114,41 @@ export class NftService {
 
       try {
         const tx = await contractClient.mint(walletAddress, metadataCid);
-        console.log("minting NFT in tx", tx.hash);
+        console.log("[LOG]:minting NFT in tx", tx.hash);
 
 
         // TODO - this does not display the state change properly
         this.nftStore.setPendingTx();
 
         const receipt = await tx.wait();
-        console.log("done! gas used to mint:", receipt.gasUsed.toString());
+        console.log("[LOG]:mint:done! gas used to mint:", receipt.gasUsed.toString());
         clearClipToMetadataPair(clipId);
 
         this.nftStore.setSuccessTx();
       } catch (error) {
-        // SENTRY
-        // TODO handle specific errors (4001, ...)
         console.log("[LOG]:mint:error", error);
-        this.nftStore.meta.setError("Failed to generate the NFT");
-      }
 
+        if (isRpcError(error)) {
+          if (error.code === RpcErrors.USER_REJECTED_REQUEST) {
+            snackbarClient.sendError(NftErrors.MINT_REJECTED);
+          } else {
+            // SENTRY
+          }
+          return;
+        } else {
+          // SENTRY
+          // unknown error
+          this.nftStore.meta.setError(NftErrors.FAILED_TO_MINT);
+        }
+      }
     } else {
-      console.log("Missing metadataCid when minting")
+      console.log("[LOG]:mint:missing metadataCid when minting", metadataCid, clipId);
+      this.nftStore.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     }
   }
 
   private waitForBlockConfirmations = async (txBlockNum: number, clipId: string, metadataData: StoreClipResp, eC: EthereumClient) => {
-    const REQUIRED_NUM_OF_CONFIRMATIONS = 3;
+    const REQUIRED_NUM_OF_CONFIRMATIONS = 0; // TODO back to 3
 
     let currentBlockNum = await eC.ethersProvider.getBlockNumber();
     const diff = currentBlockNum - txBlockNum;
@@ -176,9 +186,6 @@ export class NftService {
     console.log(`[TRANSFER] from ${from} to ${to} for ${tokenId}`)
   };
 
-
-
-
   private handleConnect = (data: ConnectInfo) => {
     console.log("[LOG]:connect:data", data);
   }
@@ -187,10 +194,10 @@ export class NftService {
     // TODO - how do we handle this error?
     console.log("[LOG]:disconnect:error", error);
 
-    throw new ClipItError('It seems we were disconnected. Please check your internet connection', ErrorCodes.RPC_DISCONNECT, { error })
+    snackbarClient.sendError(NftErrors.DISCONNECTED)
   }
 
-  handleAccountsChange = (accounts: string[]) => {
+  private handleAccountsChange = (accounts: string[]) => {
     console.log("[LOG]:accountsChange:data", accounts);
     this.nftStore.setAccounts(accounts);
   }

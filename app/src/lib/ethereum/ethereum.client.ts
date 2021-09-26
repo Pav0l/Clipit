@@ -1,5 +1,4 @@
 import { ethers } from "ethers"
-import ClipItError, { ErrorCodes } from "../errors/errors";
 import { EthereumProvider, ConnectInfo, ProviderRpcError, ChainId, ProviderMessage } from "./ethereum.types";
 
 
@@ -20,7 +19,7 @@ export default class EthereumClient {
       this.ethersProvider = new ethers.providers.Web3Provider(provider);
       this.signer = this.ethersProvider.getSigner();
     } catch (error) {
-      throw new ClipItError('Invalid provider', ErrorCodes.INVALID_PROVIDER, { provider, error })
+      throw new EthereumClientError('Invalid provider', { provider, error })
     }
 
     this.provider.on("connect", eventHandlers.handleConnect);
@@ -40,5 +39,14 @@ export default class EthereumClient {
       window.location.reload();
     }
   }
+}
 
+class EthereumClientError extends Error {
+  params: any;
+
+  constructor(message: string, params?: any) {
+    super(message);
+
+    this.params = params;
+  }
 }
