@@ -1,4 +1,4 @@
-import { SnackSeverity } from "./snackbar.model";
+import { SnackSeverity } from "./types";
 
 
 class SnackbarClient {
@@ -12,8 +12,7 @@ class SnackbarClient {
   }
 
   private send(text: string, severity: SnackSeverity) {
-    console.log('sending msg', text, severity, window.origin, window.opener);
-    window.postMessage({ text, severity }, "*");
+    window.postMessage({ text, severity }, window.origin);
   }
 }
 

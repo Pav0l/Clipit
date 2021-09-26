@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx"
-import { ISnack, SnackSeverity } from "./snackbar.model";
+import { ISnack, SnackSeverity } from "./types";
 
 /**
  * SnackbarStore handles messages that should be displayed to user via Snackbar

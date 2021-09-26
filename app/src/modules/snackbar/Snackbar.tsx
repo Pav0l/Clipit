@@ -6,7 +6,7 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 
 import { useStore } from "../../store/StoreProvider";
-import { ISnack } from "./snackbar.model";
+import { ISnack } from "./types";
 
 function GrowTransition(props: TransitionProps) {
   return <Grow {...props} />;
@@ -29,7 +29,10 @@ function TransitionSnackbar() {
   };
 
   const handleMessage = (ev: MessageEvent<ISnack>) => {
-    console.log("[snackbar]:event", ev);
+    if (ev.origin !== window.origin) {
+      return;
+    }
+
     if (ev.data && ev.data.text && ev.data.severity) {
       switch (ev.data.severity) {
         case "error":
