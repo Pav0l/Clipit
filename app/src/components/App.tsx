@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { StoreProvider } from "../store/StoreProvider";
 import Home from "./home/Home";
-import Clips from "./clips/Clips";
+import Clips from "../domains/twitch-clips/Clips";
 import OAuth2Redirect from "./oauth2-redirect/OAuth2Redirect";
-import ClipDetail from "./clipDetail/ClipDetail";
+import ClipDetail from "../domains/twitch-clips/ClipDetail";
 import Playground from "../modules/playground/Playground";
 import { getTwitchOAuth2AuthorizeUrl } from "../lib/twitch-oauth/twitch-oauth.utils";
 import LoginWithTwitch from "./loginWithTwitch/LoginWithTwitch";

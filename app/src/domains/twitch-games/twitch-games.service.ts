@@ -1,4 +1,4 @@
-import { twitchApiClient } from "../../lib/twitch-api/twitch-api.client"
+import { isTwitchError, twitchApiClient } from "../../lib/twitch-api/twitch-api.client"
 import { GamesStore } from "../../store/games.store";
 
 
@@ -10,7 +10,7 @@ export class TwitchGameService {
     this.gamesStore.meta.setLoading(true);
     const data = await twitchApiClient.getGames(gameId);
 
-    if (data.statusOk) {
+    if (data.statusOk && !isTwitchError(data.body)) {
       this.gamesStore.addGame(data.body.data[0]);
     } else {
       // Don't think it's necessary to display these errors

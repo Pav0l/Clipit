@@ -4,7 +4,7 @@ import MetaMaskOnboarding from '@metamask/onboarding';
 
 import { clipItApiClient, StoreClipResp } from "../../lib/clipit-api/clipit-api.client";
 import ContractClient from '../../lib/contract/contract.client';
-import ClipItError, { ErrorCodes } from '../../lib/errors/errors';
+import ClipItError, { ErrorCodes } from '../../modules/error/errors';
 import EthereumClient from '../../lib/ethereum/ethereum.client';
 import { ConnectInfo, EthereumProvider, ProviderMessage, ProviderRpcError } from '../../lib/ethereum/ethereum.types';
 import { NftStore } from "../../store/nft.store";

@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx"
-import { MetaStore } from "./meta.store";
+import { MetaStore } from "../../store/meta.store";
 
 
 export class ClipsStore {

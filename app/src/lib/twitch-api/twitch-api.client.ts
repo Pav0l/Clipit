@@ -6,7 +6,7 @@ class TwitchApiClient {
   constructor(private httpClient: HttpClient) { }
 
   getUsers = async () => {
-    return this.httpClient.requestRaw<{ data: TwitchUserResp[] }>({
+    return this.httpClient.requestRaw<{ data: TwitchUserResp[] } | TwitchError>({
       method: 'get',
       url: '/users',
     });
@@ -19,7 +19,7 @@ class TwitchApiClient {
 
     // return res;
     // TODO!
-    return this.httpClient.requestRaw<{ data: TwitchClipResp[]; pagination?: TwitchPaginationResp }>({
+    return this.httpClient.requestRaw<{ data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError>({
       method: 'get',
       url: '/clips',
       qs: queryParams
@@ -33,7 +33,7 @@ class TwitchApiClient {
       queryParams.after = cursor
     }
 
-    return this.httpClient.requestRaw<{ data: TwitchGameResp[]; pagination?: TwitchPaginationResp }>({
+    return this.httpClient.requestRaw<{ data: TwitchGameResp[]; pagination?: TwitchPaginationResp } | TwitchError>({
       method: 'get',
       url: '/games',
       qs: queryParams
@@ -46,6 +46,16 @@ export const twitchApiClient = new TwitchApiClient(new HttpClient("https://api.t
   request: { onFulfilled: requestFulfilledInterceptor },
   response: { onFulfilled: responseFulfilledInterceptor }
 }));
+
+export function isTwitchError<T>(body: T | TwitchError): body is TwitchError {
+  return (body as TwitchError).error !== undefined;
+}
+
+interface TwitchError {
+  error: string;
+  status: number;
+  message: string;
+}
 
 
 // https://dev.twitch.tv/docs/api/reference#get-clips

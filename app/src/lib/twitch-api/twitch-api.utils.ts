@@ -16,6 +16,7 @@ export function requestFulfilledInterceptor(config: AxiosRequestConfig) {
 }
 
 export function responseFulfilledInterceptor(response: AxiosResponse) {
+  // TODO prevent infinite loading loop!
   if (response.status === 401) {
     // token is missing or invalid, so just remove it
     localStorage.removeItem(twitchAccessToken);

@@ -1,4 +1,4 @@
 
 export enum TwitchUserError {
-  GENERIC = "There was an error when fetching data from Twitch. Please try again or contact us."
+  GENERIC = "There was an error fetching your data from Twitch."
 }

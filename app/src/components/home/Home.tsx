@@ -33,16 +33,6 @@ function Home() {
     clipsStore.meta.setLoading(false);
   };
 
-  if (clipsStore.meta.hasError) {
-    return (
-      <Box className="container">
-        <Typography variant="h6" align="center" className="typography">
-          {clipsStore.meta.error}
-        </Typography>
-      </Box>
-    );
-  }
-
   if (clipsStore.meta.isLoading) {
     return (
       <Box className="container">

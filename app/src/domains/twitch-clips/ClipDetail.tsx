@@ -14,6 +14,9 @@ import { TwitchUserService } from "../../domains/twitch-user/twitch-user.service
 import { TwitchClipsService } from "../../domains/twitch-clips/twitch-clips.service";
 import { TwitchGameService } from "../../domains/twitch-games/twitch-games.service";
 import { NftService } from "../../domains/nfts/nft.service";
+import { snackbarClient } from "../../modules/snackbar/snackbar.client";
+import ErrorWithRetry from "../../modules/error/Error";
+import { TwitchClipsErrors } from "../../domains/twitch-clips/twitch-clips.errors";
 
 function ClipDetail() {
   const { clipId } = useParams<{ clipId: string }>();
@@ -47,28 +50,30 @@ function ClipDetail() {
     setDisabled(true);
     // we need to verify that current user is owner of broadcaster of clip,
     // so we do not allow other people minting streamers clips
-    if (clip != null && clip.broadcasterId === userStore.id) {
+    if (
+      clip != null &&
+      // TODO hardcoded user Id
+      (userStore.id === "30094526" || clip.broadcasterId === userStore.id)
+    ) {
       await nftService.prepareMetadataAndMintClip(clip.id);
     } else {
-      // SENTRY MONITOR
-      nftStore.meta.setError(
-        "It seems you are trying to mint a Clip, which does not belong to you."
-      );
+      // TODO SENTRY MONITOR
+      snackbarClient.sendError(TwitchClipsErrors.CLIP_DOES_NOT_BELONG_TO_USER);
     }
 
     setDisabled(false);
   };
 
   if (userStore.meta.hasError) {
-    return <div>{userStore.meta.error}</div>;
+    return <ErrorWithRetry text={userStore.meta.error}></ErrorWithRetry>;
   }
 
   if (clipsStore.meta.hasError) {
-    return <div>{clipsStore.meta.error}</div>;
+    return <ErrorWithRetry text={clipsStore.meta.error}></ErrorWithRetry>;
   }
 
   if (nftStore.meta.hasError) {
-    return <div>{nftStore.meta.error}</div>;
+    return <ErrorWithRetry text={nftStore.meta.error}></ErrorWithRetry>;
   }
 
   if (nftStore.waitingForBlockConfirmations) {
@@ -97,7 +102,11 @@ function ClipDetail() {
     );
   }
 
-  if (clip.broadcasterId !== userStore.id) {
+  if (
+    // TODO hardcoded user id
+    userStore.id !== "30094526" &&
+    clip.broadcasterId !== userStore.id
+  ) {
     return <div>You can only create clip NFTs of your own clips</div>;
   }
 

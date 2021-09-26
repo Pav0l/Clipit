@@ -1,4 +1,4 @@
-import { ClipsStore } from "./clips.store";
+import { ClipsStore } from "../domains/twitch-clips/clips.store";
 import { GamesStore } from "./games.store";
 import { MetaStore } from "./meta.store";
 import { NftStore } from "./nft.store";
