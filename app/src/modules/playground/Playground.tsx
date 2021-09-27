@@ -8,8 +8,9 @@ import { useStore } from "../../store/StoreProvider";
 import { NftService } from "../../domains/nfts/nft.service";
 
 import { EthereumProvider } from "../../lib/ethereum/ethereum.types";
-import ClipItError, { ErrorCodes } from "../../lib/errors/errors";
 import { snackbarClient } from "../snackbar/snackbar.client";
+import ErrorWithRetry from "../error/Error";
+import FullPageLoader from "../../components/loader/FullPageLoader";
 
 const embeds = [
   `https://clips.twitch.tv/embed?clip=VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW&parent=${encodeURIComponent(
@@ -39,7 +40,8 @@ const embeds = [
 ];
 
 const Playground = observer(function Playground() {
-  const { testStore } = useStore();
+  const { testStore, nftStore } = useStore();
+  const nftService = new NftService(nftStore);
 
   const validateToken = () => {
     twitchOauthClient.validateAccessToken(getAccessToken() ?? "");
@@ -49,18 +51,22 @@ const Playground = observer(function Playground() {
     return JSON.stringify(val);
   };
 
-  const tryAndCatch = () => {
-    try {
-      throw new ClipItError("clipiterror msg", ErrorCodes.INVALID_PROVIDER);
-    } catch (error) {
-      console.log(error);
+  const mint = async () => {
+    const ethClient = nftService.initializeEthereumClient(
+      window.ethereum as EthereumProvider
+    );
 
-      console.log(typeof error);
-
-      console.log(error instanceof ClipItError);
-
-      // console.log(error.name);
+    if (!ethClient) {
+      console.log("PLAYGROUND MINT NO ETH CLIENT");
+      return;
     }
+
+    await nftService.mintNFT(ethClient.signer, {
+      metadataCid:
+        "bafybeige7pfjo5v5cvgaydaqraej3375ef2h4x5vyjieckq464sxyz34nm",
+      clipId: "StylishRudeMetalJonCarnage-bdc8E8x73fMBrT6o",
+      walletAddress: "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"
+    });
   };
 
   useEffect(() => {
@@ -75,14 +81,22 @@ const Playground = observer(function Playground() {
     console.log("obj count triggered", testStore.isObj.count);
   }, [testStore.isObj.count]);
 
+  // return <FullPageLoader />;
+
+  // return (
+  //   <ErrorWithRetry
+  //     text={"This is some pretty ok error message, what you do?"}
+  //   ></ErrorWithRetry>
+  // );
+
   return (
     <div>
-      <button onClick={() => tryAndCatch()}>throw & catch</button>
       <div>ETHEREUM</div>
       <div>isBool: {str(testStore.isBool)}</div>
       <button onClick={() => testStore.setBool(!testStore.isBool)}>
         change isBool
       </button>
+      <button onClick={() => mint()}>mint</button>
 
       <div>Snackbar</div>
       <button

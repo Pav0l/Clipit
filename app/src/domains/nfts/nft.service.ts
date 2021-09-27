@@ -2,14 +2,14 @@ import detectEthereumProvider from '@metamask/detect-provider'
 import { ethers, BigNumberish } from 'ethers';
 import MetaMaskOnboarding from '@metamask/onboarding';
 
-import { clipItApiClient, StoreClipResp } from "../../lib/clipit-api/clipit-api.client";
+import { clipItApiClient, isStoreClipError, StoreClipResp } from "../../lib/clipit-api/clipit-api.client";
 import ContractClient from '../../lib/contract/contract.client';
 import EthereumClient from '../../lib/ethereum/ethereum.client';
 import { ConnectInfo, EthereumProvider, ProviderMessage, ProviderRpcError } from '../../lib/ethereum/ethereum.types';
 import { NftStore } from "../../store/nft.store";
 import { clearClipToMetadataPair, storeClipToMetadataPair } from "./nft.utils";
 import { snackbarClient } from '../../modules/snackbar/snackbar.client';
-import { isRpcError, NftErrors, RpcErrors } from './nft.errors';
+import { ContractErrors, isRpcError, NftErrors, RpcErrors } from './nft.errors';
 
 
 export class NftService {
@@ -42,15 +42,17 @@ export class NftService {
 
     const resp = await clipItApiClient.storeClip(clipId, userWalletAddress);
 
-    if (resp.statusOk) {
+    if (resp.statusOk && !isStoreClipError(resp.body)) {
       storeClipToMetadataPair(clipId, resp.body.metadataCid!); // TODO fix !
       const txHash = resp.body.transactionHash!; // TODO fix !
 
       const transaction = await ethereumClient.ethersProvider.getTransaction(txHash);
 
       await this.waitForBlockConfirmations(transaction.blockNumber!, clipId, resp.body, ethereumClient);
+    } else if (isStoreClipError(resp.body) && resp.body.error === "wallet does not have enough funds to mint clip") {
+      snackbarClient.sendError(resp.body.error)
     } else {
-      // TODO - handle failed storage / approval of clip
+      this.nftStore.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     }
 
     this.nftStore.meta.setLoading(false);
@@ -103,18 +105,19 @@ export class NftService {
 
   private async getProvider(): Promise<EthereumProvider | null> {
     const metamaskProvider = await detectEthereumProvider() as Promise<EthereumProvider | null>;
-    const onboarding = new MetaMaskOnboarding();
 
     if (metamaskProvider === null) {
       // TODO consider importing this via constructor with other clients
       snackbarClient.sendError(NftErrors.INSTALL_METAMASK);
+      const onboarding = new MetaMaskOnboarding();
       onboarding.startOnboarding();
       return null;
     }
     return metamaskProvider;
   }
 
-  private mintNFT = async (signer: ethers.providers.JsonRpcSigner, data: { metadataCid: string, clipId: string, walletAddress: string }) => {
+  // TODO make private again
+  mintNFT = async (signer: ethers.providers.JsonRpcSigner, data: { metadataCid: string, clipId: string, walletAddress: string }) => {
     const { metadataCid, clipId, walletAddress } = data;
     if (metadataCid && clipId) {
       // TODO handle the wait time in UI
@@ -130,7 +133,6 @@ export class NftService {
         const tx = await contractClient.mint(walletAddress, metadataCid);
         console.log("[LOG]:minting NFT in tx", tx.hash);
 
-
         // TODO - this does not display the state change properly
         this.nftStore.setPendingTx();
 
@@ -143,10 +145,21 @@ export class NftService {
         console.log("[LOG]:mint:error", error);
 
         if (isRpcError(error)) {
-          if (error.code === RpcErrors.USER_REJECTED_REQUEST) {
-            snackbarClient.sendError(NftErrors.MINT_REJECTED);
-          } else {
-            // SENTRY
+          switch (error.code) {
+            case RpcErrors.USER_REJECTED_REQUEST:
+              snackbarClient.sendError(NftErrors.MINT_REJECTED);
+              break;
+            case RpcErrors.INTERNAL_ERROR:
+              if ((error.data?.message as string).includes("token already minted")) {
+                snackbarClient.sendError(ContractErrors.TOKEN_ALREADY_MINTED);
+              } else if ((error.data?.message as string).includes("not allowed to mint this token")) {
+                snackbarClient.sendError(ContractErrors.ADDRESS_NOT_ALLOWED);
+              }
+              break;
+            default:
+              // SENTRY
+              snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
+              break;
           }
           return;
         } else {

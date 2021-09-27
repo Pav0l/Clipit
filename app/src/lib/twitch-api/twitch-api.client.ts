@@ -17,8 +17,6 @@ class TwitchApiClient {
       queryParams.after = cursor
     }
 
-    // return res;
-    // TODO!
     return this.httpClient.requestRaw<{ data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError>({
       method: 'get',
       url: '/clips',

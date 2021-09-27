@@ -12,10 +12,7 @@ class ClipItApiClient {
       location.href = getTwitchOAuth2AuthorizeUrl();
     }
 
-    // return responsePromise();
-
-    // TODO!
-    const resp = await this.httpClient.requestRaw<StoreClipResp>({
+    const resp = await this.httpClient.requestRaw<StoreClipResp | StoreClipError>({
       method: 'post',
       url: `/clips/${clipId}`,
       headers: {
@@ -26,7 +23,7 @@ class ClipItApiClient {
       }
     });
 
-    console.log(resp);
+    console.log("[LOG]:store-clip:", resp);
 
     return resp;
   }
@@ -34,6 +31,14 @@ class ClipItApiClient {
 
 
 export const clipItApiClient = new ClipItApiClient(new HttpClient(clipItUri));
+
+interface StoreClipError {
+  error: string;
+}
+
+export function isStoreClipError(body: StoreClipError | unknown): body is StoreClipError {
+  return (body as StoreClipError).error !== undefined;
+}
 
 
 export interface StoreClipResp {
