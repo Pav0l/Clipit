@@ -17,6 +17,7 @@ import { NftService } from "../../domains/nfts/nft.service";
 import { snackbarClient } from "../../modules/snackbar/snackbar.client";
 import ErrorWithRetry from "../../modules/error/Error";
 import { TwitchClipsErrors } from "../../domains/twitch-clips/twitch-clips.errors";
+import { NftErrors } from "../nfts/nft.errors";
 
 function ClipDetail() {
   const { clipId } = useParams<{ clipId: string }>();
@@ -55,7 +56,13 @@ function ClipDetail() {
       // TODO hardcoded user Id
       (userStore.id === "30094526" || clip.broadcasterId === userStore.id)
     ) {
-      await nftService.prepareMetadataAndMintClip(clip.id);
+      try {
+        // TODO test if we need .catch instead if it throws in the setTimeout fn call
+        await nftService.prepareMetadataAndMintClip(clip.id);
+      } catch (error) {
+        // TODO SENTRY MONITOR
+        nftStore.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+      }
     } else {
       // TODO SENTRY MONITOR
       snackbarClient.sendError(TwitchClipsErrors.CLIP_DOES_NOT_BELONG_TO_USER);

@@ -11,6 +11,7 @@ import Marketplace from "./marketplace/Marketplace";
 import AlertSnackbar from "../modules/snackbar/Snackbar";
 import { AppRoute } from "../lib/constants";
 import { OnboardingButton } from "./connectMetamask/ConnectMetamask";
+import ErrorBoundary from "../modules/error/ErrorBoundry";
 
 export default function App() {
   return (
@@ -43,13 +44,19 @@ export default function App() {
               <Marketplace />
             </Route>
             <Route exact path={AppRoute.ABOUT}>
-              <Playground />
+              <ErrorBoundary>
+                <Playground />
+              </ErrorBoundary>
             </Route>
             <Route exact path={AppRoute.CLIPS}>
-              <Clips />
+              <ErrorBoundary>
+                <Clips />
+              </ErrorBoundary>
             </Route>
             <Route path={AppRoute.CLIP}>
-              <ClipDetail />
+              <ErrorBoundary>
+                <ClipDetail />
+              </ErrorBoundary>
             </Route>
             <Route exact path={AppRoute.OAUTH_REDIRECT}>
               <OAuth2Redirect />

@@ -116,8 +116,7 @@ export class NftService {
     return metamaskProvider;
   }
 
-  // TODO make private again
-  mintNFT = async (signer: ethers.providers.JsonRpcSigner, data: { metadataCid: string, clipId: string, walletAddress: string }) => {
+  private mintNFT = async (signer: ethers.providers.JsonRpcSigner, data: { metadataCid: string, clipId: string, walletAddress: string }) => {
     const { metadataCid, clipId, walletAddress } = data;
     if (metadataCid && clipId) {
       // TODO handle the wait time in UI
