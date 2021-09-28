@@ -7,7 +7,7 @@ import ContractClient from '../../lib/contract/contract.client';
 import EthereumClient from '../../lib/ethereum/ethereum.client';
 import { ConnectInfo, EthereumProvider, ProviderMessage, ProviderRpcError } from '../../lib/ethereum/ethereum.types';
 import { NftStore } from "../../store/nft.store";
-import { clearClipToMetadataPair, storeClipToMetadataPair } from "./nft.utils";
+import { clearClipToMetadataPair, isClipMetadataCreated, storeClipToMetadataPair } from "./nft.local-storage";
 import { snackbarClient } from '../../modules/snackbar/snackbar.client';
 import { ContractErrors, isRpcError, NftErrors, RpcErrors } from './nft.errors';
 
@@ -40,10 +40,22 @@ export class NftService {
 
     const userWalletAddress = await ethereumClient.signer.getAddress();
 
+    const data = isClipMetadataCreated(clipId);
+    if (data && data.address === userWalletAddress) {
+      // clip metadata was already stored on IPFS and address approved in contract -> just mint
+      await this.mintNFT(ethereumClient.signer, {
+        metadataCid: data.metadataCid,
+        walletAddress: data.address,
+        clipId,
+      });
+      return;
+    }
+
     const resp = await clipItApiClient.storeClip(clipId, userWalletAddress);
 
     if (resp.statusOk && !isStoreClipError(resp.body)) {
-      storeClipToMetadataPair(clipId, resp.body.metadataCid!); // TODO fix !
+      // TODO fix !
+      storeClipToMetadataPair(clipId, { metadataCid: resp.body.metadataCid!, address: userWalletAddress });
       const txHash = resp.body.transactionHash!; // TODO fix !
 
       const transaction = await ethereumClient.ethersProvider.getTransaction(txHash);
@@ -59,12 +71,10 @@ export class NftService {
   }
 
   requestAccounts = async (ethereumClient: EthereumClient) => {
-    console.log("[LOG]:requestAccounts", ethereumClient)
     // ask user to connect wallet to app
     try {
       // this should be called everytime we need to have users account setup properly
       const requestAccounts = await ethereumClient.requestAccounts();
-      console.log("[LOG]:requestAccounts:success", requestAccounts);
       this.nftStore.setAccounts(requestAccounts);
     } catch (error) {
       console.log("[LOG]:requestAccounts:error", error);
@@ -87,7 +97,6 @@ export class NftService {
   initializeEthereumClient = (provider: EthereumProvider): EthereumClient | null => {
     let ethereumClient: EthereumClient;
     try {
-      console.log('[LOG]:registering handlers')
       ethereumClient = new EthereumClient(provider, {
         handleConnect: this.handleConnect,
         handleDisconnect: this.handleDisconnect,
