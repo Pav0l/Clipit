@@ -1,6 +1,7 @@
 import "./ClipDetail.css";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
+import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
@@ -8,6 +9,7 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import ErrorWithRetry from "../../modules/error/Error";
 
 import { useStore } from "../../store/StoreProvider";
 import { TwitchUserService } from "../../domains/twitch-user/twitch-user.service";
@@ -15,7 +17,6 @@ import { TwitchClipsService } from "../../domains/twitch-clips/twitch-clips.serv
 import { TwitchGameService } from "../../domains/twitch-games/twitch-games.service";
 import { NftService } from "../../domains/nfts/nft.service";
 import { snackbarClient } from "../../modules/snackbar/snackbar.client";
-import ErrorWithRetry from "../../modules/error/Error";
 import { TwitchClipsErrors } from "../../domains/twitch-clips/twitch-clips.errors";
 import { NftErrors } from "../nfts/nft.errors";
 
@@ -31,6 +32,8 @@ function ClipDetail() {
 
   const clip = clipsStore.getClip(clipId);
 
+  const history = useHistory();
+
   useEffect(() => {
     if (!userStore.id) {
       userService.getUser();
@@ -39,6 +42,20 @@ function ClipDetail() {
     if (!clip || clip.id !== clipId) {
       clipsService.getClip(clipId);
     }
+
+    const disposer = reaction(
+      () => nftStore.tokenId,
+      (tokenId) => {
+        console.log("tokenId reaction - redirecting", tokenId);
+        if (tokenId) {
+          history.push(`/nfts/${tokenId}`);
+        }
+      }
+    );
+
+    return () => {
+      disposer();
+    };
   }, []);
 
   useEffect(() => {
@@ -46,6 +63,13 @@ function ClipDetail() {
       gamesService.getGames(clip.gameId);
     }
   }, [clipsStore.clips.length]);
+
+  // useEffect(() => {
+  //   console.log("tokenId useEffect", nftStore.tokenId);
+  //   if (nftStore.tokenId) {
+  //     history.push(`/nfts/${nftStore.tokenId}`);
+  //   }
+  // }, [nftStore.tokenId]);
 
   const initMint = async () => {
     setDisabled(true);

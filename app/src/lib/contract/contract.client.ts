@@ -48,7 +48,7 @@ export default class ContractClient {
     );
 
     const emittedEvents = await this.contract.queryFilter(filter);
-    console.log('mint transfers to wallet', emittedEvents);
+    console.log('CLIPIT Transfer events:', emittedEvents);
 
     return emittedEvents;
   }

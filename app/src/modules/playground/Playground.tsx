@@ -1,23 +1,35 @@
+import { isObservable, isComputed, spy, isObservableProp } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import ErrorBoundary from "../error/ErrorBoundry";
+import { useStore } from "../../store/StoreProvider";
 
 const Playground = observer(function Playground() {
+  const { testStore } = useStore();
+
+  useEffect(() => {
+    if (testStore.mightHaveText) {
+      console.log("we DO have text:", testStore.mightHaveText);
+    } else {
+      console.log("NO TEXT");
+    }
+  }, [testStore.mightHaveText]);
+
+  useEffect(() => {
+    if (testStore.yesText) {
+      console.log("we DO have yes text:", testStore.yesText);
+    } else {
+      console.log("NO YES TEXT");
+    }
+  }, [testStore.yesText]);
+
   return (
     <div>
-      <div>Two in one</div>
-      <ErrorBoundary>
-        <BuggyCounter />
-        <BuggyCounter />
-      </ErrorBoundary>
-
-      <div>Two separate</div>
-      <ErrorBoundary>
-        <BuggyCounter />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <BuggyCounter />
-      </ErrorBoundary>
+      <button onClick={() => testStore.setText("text is here")}>
+        SET TEXT
+      </button>
+      <button onClick={() => testStore.setYesText("yes yes yes")}>
+        SET YES TEXT
+      </button>
     </div>
   );
 });

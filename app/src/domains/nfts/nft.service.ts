@@ -6,10 +6,11 @@ import { clipItApiClient, isStoreClipError, StoreClipResp } from "../../lib/clip
 import ContractClient from '../../lib/contract/contract.client';
 import EthereumClient from '../../lib/ethereum/ethereum.client';
 import { ConnectInfo, EthereumProvider, ProviderMessage, ProviderRpcError } from '../../lib/ethereum/ethereum.types';
-import { NftStore } from "../../store/nft.store";
+import { NftStore } from "./nft.store";
 import { clearClipToMetadataPair, isClipMetadataCreated, storeClipToMetadataPair } from "./nft.local-storage";
 import { snackbarClient } from '../../modules/snackbar/snackbar.client';
 import { ContractErrors, isRpcError, NftErrors, RpcErrors } from './nft.errors';
+import { ipfsClient } from '../../lib/ipfs/ipfs.client';
 
 
 export class NftService {
@@ -70,6 +71,48 @@ export class NftService {
     this.nftStore.meta.setLoading(false);
   }
 
+  getMetadataFromIpfs = async (cid: string) => {
+    return ipfsClient.getMetadata(cid);
+  }
+
+  // TODO rename
+  getAddressClips = async () => {
+    const provider = await this.getProvider();
+    if (!provider) {
+      // Just return, user was notified & started onboarding flow
+      return;
+    }
+    const ethereumClient = this.initializeEthereumClient(provider);
+
+    if (!ethereumClient) {
+      // Just return, user was notified in initializeEthereumClient via snackbar message
+      return;
+    }
+    const currentWalletAddress = await ethereumClient.signer.getAddress();
+
+    const contractClient = this.initializeContractClient(ethereumClient.signer);
+
+    const events = await contractClient.getWalletsClipNFTs(
+      currentWalletAddress
+    );
+
+    const tokenIds: string[] = this.getTokenIdsFromEvents(events);
+    console.log("tokenIds", tokenIds);
+
+
+    const metadataCollection: Record<string, any> = {};
+    for (const tokenId of tokenIds) {
+      const uri = await contractClient.getMetadataTokenUri(tokenId);
+      const metadataCid = uri.replace("ipfs://", "").split("/")[0];
+      console.log("metadataCid", metadataCid);
+
+      const metadata = await this.getMetadataFromIpfs(metadataCid);
+      metadataCollection[tokenId] = metadata;
+    }
+
+    this.nftStore.setMetadataCollection(metadataCollection);
+  }
+
   requestAccounts = async (ethereumClient: EthereumClient) => {
     // ask user to connect wallet to app
     try {
@@ -112,6 +155,14 @@ export class NftService {
     return ethereumClient;
   }
 
+  initializeContractClient = (signer: ethers.providers.JsonRpcSigner) => {
+    return new ContractClient(signer, {
+      handleApproval: this.handlerAPPROVAL,
+      handleApprovalAll: this.handlerAPPROVAL_ALL,
+      handleTransfer: this.handlerTRANSFER
+    });
+  }
+
   private async getProvider(): Promise<EthereumProvider | null> {
     const metamaskProvider = await detectEthereumProvider() as Promise<EthereumProvider | null>;
 
@@ -131,11 +182,7 @@ export class NftService {
       // TODO handle the wait time in UI
       this.nftStore.setConfirmTx();
 
-      const contractClient = new ContractClient(signer, {
-        handleApproval: this.handlerAPPROVAL,
-        handleApprovalAll: this.handlerAPPROVAL_ALL,
-        handleTransfer: this.handlerTRANSFER
-      })
+      const contractClient = this.initializeContractClient(signer);
 
       try {
         const tx = await contractClient.mint(walletAddress, metadataCid);
@@ -218,7 +265,10 @@ export class NftService {
   };
 
   private handlerTRANSFER = (from?: string | null, to?: string | null, tokenId?: BigNumberish | null) => {
-    console.log(`[TRANSFER] from ${from} to ${to} for ${tokenId}`)
+    console.log(`[TRANSFER] from ${from} to ${to} for ${tokenId}`);
+    if (tokenId) {
+      this.nftStore.setTokenId(tokenId.toString());
+    }
   };
 
   private handleConnect = (data: ConnectInfo) => {
@@ -239,6 +289,11 @@ export class NftService {
 
   private handleMessage = (message: ProviderMessage) => {
     console.log("[LOG]:message:", message);
+  }
+
+  // TODO fix any
+  private getTokenIdsFromEvents = (transferOrApprovalEvents: any[]) => {
+    return transferOrApprovalEvents?.map(event => event.args.tokenId.toString());
   }
 
 }

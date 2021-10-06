@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 import { makeAutoObservable } from "mobx"
-import { MetadataAttrs, StoreClipResp } from "../lib/clipit-api/clipit-api.client";
-import { MetaStore } from "./meta.store";
+import { MetadataAttrs, StoreClipResp } from "../../lib/clipit-api/clipit-api.client";
+import { MetaStore } from "../../store/meta.store";
 
 enum MintingProgress {
   CONFIRM_TRANSACTION = "Generated transaction to create the NFT. Please sign it in your MetaMask wallet",
@@ -11,33 +11,35 @@ enum MintingProgress {
 
 export class NftStore {
   meta: MetaStore;
-  tokenId?: BigNumber;
   /**
    * clipId from a tx that was sent to backend to be allowed to be minted
    */
   confirmedClipId?: string;
+  metadata?: Metadata;
 
   accounts: string[] = [];
-
-
-  metadata?: Metadata
+  tokenId?: string;
 
   confirmationProgress: number = 0;
-  waitingForBlockConfirmations = false;
-
-
+  waitingForBlockConfirmations: boolean = false;
 
   waitingForMintTx: boolean = false;
   progressMessage?: MintingProgress;
-  transactionHash?: string;
+  transactionHash?: string = undefined;
+
+  metadataCollection?: Record<string, any>;
 
   constructor(metaStore: MetaStore) {
     makeAutoObservable(this);
     this.meta = metaStore;
   }
 
+  setMetadataCollection(data: Record<string, any>) {
+    this.metadataCollection = data;
+  }
+
   setAccounts = (accounts: string[]) => {
-    console.log('store: setting accs', accounts)
+    console.log('[store]:accounts:', accounts)
     this.accounts = accounts;
   }
 
@@ -47,9 +49,7 @@ export class NftStore {
   }
 
   setPendingTx() {
-    console.log("setting ", MintingProgress.TX_SIGNED)
     this.progressMessage = MintingProgress.TX_SIGNED;
-    console.log("set", this.progressMessage);
   }
 
   setSuccessTx() {
@@ -69,6 +69,11 @@ export class NftStore {
 
   createMetadata(data: StoreClipResp) {
     this.metadata = new Metadata(data);
+  }
+
+  setTokenId(tokenId: string) {
+    this.tokenId = tokenId;
+    console.log(`[store]:tokenId:`, tokenId);
   }
 }
 

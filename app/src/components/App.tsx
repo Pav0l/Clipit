@@ -12,6 +12,8 @@ import AlertSnackbar from "../modules/snackbar/Snackbar";
 import { AppRoute } from "../lib/constants";
 import { OnboardingButton } from "./connectMetamask/ConnectMetamask";
 import ErrorBoundary from "../modules/error/ErrorBoundry";
+import Nft from "./nfts/Nft";
+import Nfts from "./nfts/Nfts";
 
 export default function App() {
   return (
@@ -25,6 +27,9 @@ export default function App() {
               </li>
               <li>
                 <Link to={AppRoute.MARKETPLACE}>Marketplace</Link>
+              </li>
+              <li>
+                <Link to={AppRoute.NFTS}>Nfts</Link>
               </li>
               <li>
                 <Link to={AppRoute.CLIPS}>Clips</Link>
@@ -43,18 +48,26 @@ export default function App() {
             <Route exact path={AppRoute.MARKETPLACE}>
               <Marketplace />
             </Route>
+            <Route exact path={AppRoute.NFTS}>
+              {/* TODO this route needs to be auth protected */}
+              <Nfts />
+            </Route>
+            <Route exact path={AppRoute.NFT}>
+              {/* TODO this route needs to be auth protected */}
+              <Nft />
+            </Route>
             <Route exact path={AppRoute.ABOUT}>
-              <ErrorBoundary>
-                <Playground />
-              </ErrorBoundary>
+              <Playground />
             </Route>
             <Route exact path={AppRoute.CLIPS}>
               <ErrorBoundary>
+                {/* TODO this route needs to be auth protected */}
                 <Clips />
               </ErrorBoundary>
             </Route>
             <Route path={AppRoute.CLIP}>
               <ErrorBoundary>
+                {/* TODO this route needs to be auth protected */}
                 <ClipDetail />
               </ErrorBoundary>
             </Route>
