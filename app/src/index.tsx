@@ -15,8 +15,8 @@ import NftContainer from "./domains/nfts/NftContainer";
 import NftsContainer from "./domains/nfts/NftsContainer";
 import ClipDetailContainer from "./domains/twitch-clips/ClipDetailContainer";
 import ClipsContainer from "./domains/twitch-clips/ClipsContainer";
-import Snackbar from "./domains/snackbar/Snackbar";
-import { snackbarClient } from "./domains/snackbar/snackbar.client";
+import Snackbar from "./lib/snackbar/Snackbar";
+import { snackbarClient } from "./lib/snackbar/snackbar.client";
 
 import Home from "./components/home/Home";
 import OAuth2Redirect from "./lib/twitch-oauth/OAuth2Redirect/OAuth2Redirect";

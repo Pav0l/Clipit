@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core";
 import ErrorWithRetry from "../../modules/error/Error";
 
-import { SnackbarClient } from "../snackbar/snackbar.client";
+import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 import { TwitchClipsErrors } from "./twitch-clips.errors";
 import { NftErrors } from "../nfts/nft.errors";
 import { ClipsStore } from "./clips.store";

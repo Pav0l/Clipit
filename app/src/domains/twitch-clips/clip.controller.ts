@@ -3,7 +3,7 @@ import { getSlugFromUrl } from "./twitch-clips.utils";
 import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client"
 import { ClipsStore } from "./clips.store";
 import { TwitchClipsErrors } from "./twitch-clips.errors";
-import { SnackbarClient } from "../snackbar/snackbar.client";
+import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 
 
 export class ClipController {

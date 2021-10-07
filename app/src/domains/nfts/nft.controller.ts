@@ -1,6 +1,6 @@
 import { ClipItApiClient, isStoreClipError, StoreClipResp } from "../../lib/clipit-api/clipit-api.client";
 import { clearClipToMetadataPair, isClipMetadataCreated, storeClipToMetadataPair } from "./nft.local-storage";
-import { SnackbarClient } from '../snackbar/snackbar.client';
+import { SnackbarClient } from '../../lib/snackbar/snackbar.client';
 import { ContractErrors, isRpcError, NftErrors, RpcErrors } from './nft.errors';
 
 import { NftStore } from "./nft.store";

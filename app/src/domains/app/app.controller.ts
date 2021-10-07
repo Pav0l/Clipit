@@ -2,7 +2,7 @@ import { ClipItApiClient } from "../../lib/clipit-api/clipit-api.client";
 import ContractClient from "../../lib/contract/contract.client";
 import EthereumClient from "../../lib/ethereum/ethereum.client";
 import { IpfsClient } from "../../lib/ipfs/ipfs.client";
-import { SnackbarClient } from "../snackbar/snackbar.client";
+import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 import { AppModel } from "./app.model";
 import { NftController } from "../nfts/nft.controller";
 import { ClipController } from "../twitch-clips/clip.controller";

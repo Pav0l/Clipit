@@ -8,7 +8,7 @@ import EthereumClient from '../../lib/ethereum/ethereum.client';
 import { ConnectInfo, EthereumProvider, ProviderMessage, ProviderRpcError } from '../../lib/ethereum/ethereum.types';
 import { NftStore } from "./nft.store";
 import { clearClipToMetadataPair, isClipMetadataCreated, storeClipToMetadataPair } from "./nft.local-storage";
-import { snackbarClient } from '../snackbar/snackbar.client';
+import { snackbarClient } from '../../lib/snackbar/snackbar.client';
 import { ContractErrors, isRpcError, NftErrors, RpcErrors } from './nft.errors';
 import { ipfsClient } from '../../lib/ipfs/ipfs.client';
 
