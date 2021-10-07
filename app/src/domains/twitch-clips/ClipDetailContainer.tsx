@@ -20,7 +20,7 @@ import { UserModel } from "../twitch-user/user.model";
 import { GameModel } from "../twitch-games/game.model";
 import { NftModel } from "../nfts/nft.model";
 import { IAppController } from "../app/app.controller";
-import { useWeb3 } from "../app/useWeb3";
+import { useWeb3 } from "../../lib/hooks/useWeb3";
 
 interface Props {
   model: {

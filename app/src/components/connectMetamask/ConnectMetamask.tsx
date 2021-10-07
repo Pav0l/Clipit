@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 
 import { NftModel } from "../../domains/nfts/nft.model";
 import { IAppController } from "../../domains/app/app.controller";
-import { useWeb3 } from "../../domains/app/useWeb3";
+import { useWeb3 } from "../../lib/hooks/useWeb3";
 
 const ONBOARD_TEXT = "Install MetaMask";
 const CONNECT_TEXT = "Connect";

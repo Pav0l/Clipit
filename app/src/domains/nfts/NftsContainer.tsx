@@ -5,7 +5,7 @@ import { NftModel } from "./nft.model";
 import { NftCard } from "../../components/nfts/NftCard";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import { IAppController } from "../app/app.controller";
-import { useWeb3 } from "../app/useWeb3";
+import { useWeb3 } from "../../lib/hooks/useWeb3";
 import { Link } from "react-router-dom";
 import { AppRoute } from "../../lib/constants";
 

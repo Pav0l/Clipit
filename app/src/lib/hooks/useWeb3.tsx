@@ -2,10 +2,10 @@ import { useState } from "react";
 import { BigNumberish } from "@ethersproject/bignumber";
 import detectEthereumProvider from "@metamask/detect-provider";
 
-import { NftModel } from "../nfts/nft.model";
-import EthereumClient from "../../lib/ethereum/ethereum.client";
-import ContractClient from "../../lib/contract/contract.client";
-import { EthereumProvider } from "../../lib/ethereum/ethereum.types";
+import { NftModel } from "../../domains/nfts/nft.model";
+import EthereumClient from "../ethereum/ethereum.client";
+import ContractClient from "../contract/contract.client";
+import { EthereumProvider } from "../ethereum/ethereum.types";
 
 export function useWeb3(nftModel: NftModel) {
   const [{ contract, ethereum }, setWeb3] = useState<{
