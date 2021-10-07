@@ -1,7 +1,8 @@
 import { HttpClient } from "../http-client";
 import { cloudFlareGatewayUri } from "../constants";
 
-class IpfsClient {
+// TODO export interface instead?
+export class IpfsClient {
 
   constructor(private httpClient: HttpClient) { }
 

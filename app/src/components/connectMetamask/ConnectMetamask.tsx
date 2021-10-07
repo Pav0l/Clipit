@@ -11,7 +11,7 @@ const ONBOARD_TEXT = "Install MetaMask";
 const CONNECT_TEXT = "Connect";
 const CONNECTED_TEXT = "Connected";
 
-export const OnboardingButton = observer(() => {
+function ConnectMetamaskButton() {
   const [buttonText, setButtonText] = useState(ONBOARD_TEXT);
   const [isDisabled, setDisabled] = useState(false);
   const [ethereumClient, setEthClient] = useState<EthereumClient | null>(null);
@@ -79,4 +79,6 @@ export const OnboardingButton = observer(() => {
       {buttonText}
     </Button>
   );
-});
+}
+
+export default observer(ConnectMetamaskButton);

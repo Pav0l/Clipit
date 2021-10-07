@@ -1,6 +1,5 @@
-import { BigNumber } from "ethers";
 import { makeAutoObservable } from "mobx"
-import { MetadataAttrs, StoreClipResp } from "../../lib/clipit-api/clipit-api.client";
+import { ipfsIoGatewayUri, pinataGatewayUri } from "../../lib/constants";
 import { MetaStore } from "../../store/meta.store";
 
 enum MintingProgress {
@@ -11,14 +10,6 @@ enum MintingProgress {
 
 export class NftStore {
   meta: MetaStore;
-  /**
-   * clipId from a tx that was sent to backend to be allowed to be minted
-   */
-  confirmedClipId?: string;
-  metadata?: Metadata;
-
-  accounts: string[] = [];
-  tokenId?: string;
 
   confirmationProgress: number = 0;
   waitingForBlockConfirmations: boolean = false;
@@ -27,15 +18,33 @@ export class NftStore {
   progressMessage?: MintingProgress;
   transactionHash?: string = undefined;
 
-  metadataCollection?: Record<string, any>;
+  /**
+   * clipId from a tx that was sent to backend to be allowed to be minted
+   */
+  confirmedClipId?: string;
+  metadataCid?: string;
+  metadata?: Metadata;
+  tokenId?: string;
+  accounts: string[] = [];
+
+  /**
+   * Object that holds {tokenId: metadata} key-value pairs
+   */
+  metadataCollection: Record<string, Metadata> = {};
 
   constructor(metaStore: MetaStore) {
     makeAutoObservable(this);
     this.meta = metaStore;
   }
 
-  setMetadataCollection(data: Record<string, any>) {
-    this.metadataCollection = data;
+  setMetadataCid(cid?: string) {
+    this.metadataCid = cid;
+  }
+
+  setMetadataCollection(data: Record<string, MetadataInput>, ipfsGatewayUri: string = ipfsIoGatewayUri) {
+    const collection: Record<string, Metadata> = {};
+    Object.keys(data).forEach(key => collection[key] = new Metadata(data[key], ipfsGatewayUri));
+    this.metadataCollection = collection;
   }
 
   setAccounts = (accounts: string[]) => {
@@ -67,8 +76,8 @@ export class NftStore {
     this.confirmedClipId = clipId;
   }
 
-  createMetadata(data: StoreClipResp) {
-    this.metadata = new Metadata(data);
+  createMetadata(data: MetadataInput, ipfsGatewayUri: string = pinataGatewayUri) {
+    this.metadata = new Metadata(data, ipfsGatewayUri);
   }
 
   setTokenId(tokenId: string) {
@@ -78,43 +87,38 @@ export class NftStore {
 }
 
 
-
-
-interface IMetadataAttrs {
-  traitType?: "Game" | "Streamer";
-  value?: string;
+interface MetadataInput {
+  cid?: string
+  name?: string
+  description?: string
+  // TODO maybe remove - unused?
+  image?: string
 }
 
-
 class Metadata {
-  clipCid?: string;
-  metadataCid?: string;
-  ownerAddress?: string; // address that is approved to mint this metadata into nft
+  clipTitle: string;
+  // TODO maybe remove - unused?
+  clipCid: string;
+  description: string;
+  clipIpfsUri: string;
 
-  name?: string;
-  description?: string;
-  clipIpfsUri?: string;
-  attributes?: Array<IMetadataAttrs>
-
-
-  constructor(data: StoreClipResp) {
+  constructor(data: MetadataInput, private ipfsGatewayUri: string) {
     makeAutoObservable(this);
 
-    this.metadataCid = data.metadataCid;
-    this.ownerAddress = data.address;
-    this.clipCid = data.metadata?.cid;
-    this.name = data.metadata?.name;
-    this.description = data.metadata?.description;
-    this.clipIpfsUri = data.metadata?.image;
-    this.attributes = this.transformAttrs(data.metadata?.attributes);
+    this.clipCid = this.validateField(data.cid);
+    this.clipTitle = this.validateField(data.name);
+    this.description = this.validateField(data.description);
+    this.clipIpfsUri = this.createClipIpfsGatewayUri(this.validateField(data.cid));
   }
 
-  private transformAttrs(attrs: MetadataAttrs[] = []): Array<IMetadataAttrs> {
-    return attrs.map(attribute => {
-      return {
-        traitType: attribute.trait_type,
-        value: attribute.value
-      }
-    })
+  private validateField<T>(field: unknown) {
+    if (typeof field === undefined) {
+      throw new Error(`Invalid metadata field type.`);
+    }
+    return field as T;
+  }
+
+  private createClipIpfsGatewayUri = (cid: string) => {
+    return `${this.ipfsGatewayUri}/${cid}`;
   }
 }

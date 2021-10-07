@@ -241,12 +241,13 @@ export class NftService {
 
     if (diff >= REQUIRED_NUM_OF_CONFIRMATIONS) {
       this.nftStore.doneConfirmations(clipId);
-      this.nftStore.createMetadata(metadataData);
+      this.nftStore.createMetadata(metadataData.metadata!);
+      this.nftStore.setMetadataCid(metadataData.metadataCid)
 
       const walletAddress = await eC.signer.getAddress();
 
       await this.mintNFT(eC.signer, {
-        metadataCid: this.nftStore.metadata?.metadataCid!,
+        metadataCid: this.nftStore.metadataCid!,
         clipId, walletAddress
       }); // TODO: fix !
       return; // end condition for the recursive call
@@ -265,7 +266,7 @@ export class NftService {
   };
 
   private handlerTRANSFER = (from?: string | null, to?: string | null, tokenId?: BigNumberish | null) => {
-    console.log(`[TRANSFER] from ${from} to ${to} for ${tokenId}`);
+    console.log(`[TRANSFER](nftService) from ${from} to ${to} for ${tokenId}`);
     if (tokenId) {
       this.nftStore.setTokenId(tokenId.toString());
     }

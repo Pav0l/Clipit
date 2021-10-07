@@ -2,7 +2,7 @@ import { Box, Typography, Link } from "@material-ui/core";
 
 interface Props {
   text: string;
-  retryHandler?: () => void;
+  withRetry?: boolean;
 }
 
 function PleaseTryAgain() {
@@ -21,7 +21,7 @@ function PleaseTryAgain() {
   );
 }
 
-function ErrorWithRetry({ text, retryHandler }: Props) {
+function ErrorWithRetry({ text, withRetry }: Props) {
   return (
     <Box
       display="flex"
@@ -31,7 +31,7 @@ function ErrorWithRetry({ text, retryHandler }: Props) {
       flexDirection="column"
     >
       <Typography variant="h6">{text}</Typography>
-      <PleaseTryAgain />
+      {withRetry ? <PleaseTryAgain /> : null}
     </Box>
   );
 }

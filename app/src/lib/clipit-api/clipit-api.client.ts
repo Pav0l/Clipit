@@ -2,7 +2,8 @@ import { HttpClient, RawResponse } from "../http-client";
 import { clipItUri } from "../constants";
 import { getAccessToken, getTwitchOAuth2AuthorizeUrl } from "../twitch-oauth/twitch-oauth.utils";
 
-class ClipItApiClient {
+// TODO export interface?
+export class ClipItApiClient {
 
   constructor(private httpClient: HttpClient) { }
 

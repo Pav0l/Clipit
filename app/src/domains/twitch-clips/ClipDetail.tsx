@@ -156,20 +156,8 @@ function ClipDetail() {
         <div>Ready for minting</div>
         <CardMedia component="iframe" src={clip.embedUrl} title={clip.title} />
 
-        <div>Title: {nftStore.metadata.name}</div>
+        <div>Title: {nftStore.metadata.clipTitle}</div>
         <div>Descripton: {nftStore.metadata.description}</div>
-        <div>
-          Attributes:
-          <ul>
-            {nftStore.metadata.attributes?.map((attr, idx) => {
-              return (
-                <li key={idx}>
-                  {attr.traitType}: {attr.value}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
       </div>
     );
   }
