@@ -2,6 +2,7 @@ import { ClipItApiClient } from "../../lib/clipit-api/clipit-api.client";
 import ContractClient from "../../lib/contract/contract.client";
 import EthereumClient from "../../lib/ethereum/ethereum.client";
 import { IpfsClient } from "../../lib/ipfs/ipfs.client";
+import { SnackbarClient } from "../snackbar/snackbar.client";
 import { IStore } from "../../store/root.store";
 import { NftController } from "../nfts/nft.controller";
 
@@ -16,6 +17,7 @@ export class AppController implements IAppController {
 
   constructor(
     private model: IStore,
+    private snackbarClient: SnackbarClient,
     private clipitApi: ClipItApiClient,
     private ipfsApi: IpfsClient
   ) {
@@ -27,6 +29,7 @@ export class AppController implements IAppController {
     if (!this.nft) {
       this.nft = new NftController(
         this.model.nftStore,
+        this.snackbarClient,
         this.clipitApi,
         this.ipfsApi,
         ethereum,

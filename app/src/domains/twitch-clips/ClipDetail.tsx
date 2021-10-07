@@ -16,7 +16,7 @@ import { TwitchUserService } from "../../domains/twitch-user/twitch-user.service
 import { TwitchClipsService } from "../../domains/twitch-clips/twitch-clips.service";
 import { TwitchGameService } from "../../domains/twitch-games/twitch-games.service";
 import { NftService } from "../../domains/nfts/nft.service";
-import { snackbarClient } from "../../modules/snackbar/snackbar.client";
+import { snackbarClient } from "../snackbar/snackbar.client";
 import { TwitchClipsErrors } from "../../domains/twitch-clips/twitch-clips.errors";
 import { NftErrors } from "../nfts/nft.errors";
 

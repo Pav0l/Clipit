@@ -1,8 +1,11 @@
 import { SnackSeverity } from "./types";
 
+export interface SnackbarClient {
+  sendError: (text: string) => void;
+  sendSuccess: (text: string) => void;
+}
 
-class SnackbarClient {
-
+class Snackbar implements SnackbarClient {
   sendError(text: string) {
     this.send(text, "error");
   }
@@ -16,4 +19,7 @@ class SnackbarClient {
   }
 }
 
-export const snackbarClient = new SnackbarClient();
+/**
+ * snackbarClient exposes a simple API to interact with the Snackbar component
+ */
+export const snackbarClient = new Snackbar();

@@ -2,7 +2,7 @@ import { getSlugFromUrl } from "./twitch-clips.utils";
 import { isTwitchError, twitchApiClient } from "../../lib/twitch-api/twitch-api.client"
 import { ClipsStore } from "./clips.store";
 import { TwitchClipsErrors } from "./twitch-clips.errors";
-import { snackbarClient } from "../../modules/snackbar/snackbar.client";
+import { snackbarClient } from "../snackbar/snackbar.client";
 
 
 export class TwitchClipsService {

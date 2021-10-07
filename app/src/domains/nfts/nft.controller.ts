@@ -1,6 +1,6 @@
 import { ClipItApiClient, isStoreClipError, StoreClipResp } from "../../lib/clipit-api/clipit-api.client";
 import { clearClipToMetadataPair, isClipMetadataCreated, storeClipToMetadataPair } from "./nft.local-storage";
-import { snackbarClient } from '../../modules/snackbar/snackbar.client';
+import { SnackbarClient } from '../snackbar/snackbar.client';
 import { ContractErrors, isRpcError, NftErrors, RpcErrors } from './nft.errors';
 
 import { NftStore } from "./nft.store";
@@ -13,6 +13,7 @@ export class NftController {
 
   constructor(
     private nftStore: NftStore,
+    private snackbarClient: SnackbarClient,
     private clipitApi: ClipItApiClient,
     private ipfsClient: IpfsClient,
     private ethereumClient: EthereumClient,
@@ -50,7 +51,7 @@ export class NftController {
 
       await this.waitForBlockConfirmations(transaction.blockNumber!, clipId, resp.body);
     } else if (isStoreClipError(resp.body) && resp.body.error === "wallet does not have enough funds to mint clip") {
-      snackbarClient.sendError(resp.body.error)
+      this.snackbarClient.sendError(resp.body.error)
     } else {
       this.nftStore.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     }
@@ -111,15 +112,15 @@ export class NftController {
       if (isRpcError(error)) {
         switch (error.code) {
           case RpcErrors.REQUEST_ALREADY_PENDING:
-            snackbarClient.sendError(NftErrors.REQUEST_ALREADY_PENDING)
+            this.snackbarClient.sendError(NftErrors.REQUEST_ALREADY_PENDING)
             return;
 
           default:
-            snackbarClient.sendError(NftErrors.CONNECT_METAMASK);
+            this.snackbarClient.sendError(NftErrors.CONNECT_METAMASK);
             return;
         }
       }
-      snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
+      this.snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
     }
   }
 
@@ -146,18 +147,18 @@ export class NftController {
         if (isRpcError(error)) {
           switch (error.code) {
             case RpcErrors.USER_REJECTED_REQUEST:
-              snackbarClient.sendError(NftErrors.MINT_REJECTED);
+              this.snackbarClient.sendError(NftErrors.MINT_REJECTED);
               break;
             case RpcErrors.INTERNAL_ERROR:
               if ((error.data?.message as string).includes("token already minted")) {
-                snackbarClient.sendError(ContractErrors.TOKEN_ALREADY_MINTED);
+                this.snackbarClient.sendError(ContractErrors.TOKEN_ALREADY_MINTED);
               } else if ((error.data?.message as string).includes("not allowed to mint this token")) {
-                snackbarClient.sendError(ContractErrors.ADDRESS_NOT_ALLOWED);
+                this.snackbarClient.sendError(ContractErrors.ADDRESS_NOT_ALLOWED);
               }
               break;
             default:
               // SENTRY
-              snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
+              this.snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
               break;
           }
           return;

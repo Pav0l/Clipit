@@ -2,9 +2,9 @@ import { makeAutoObservable } from "mobx"
 import { ISnack, SnackSeverity } from "./types";
 
 /**
- * SnackbarStore handles messages that should be displayed to user via Snackbar
+ * SnackbarModel handles messages that should be displayed to user via Snackbar
  */
-export class SnackbarStore {
+export class SnackbarModel {
   open = false;
   message: ISnack | undefined = undefined;
   messageList: ISnack[] = [];

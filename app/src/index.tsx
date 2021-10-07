@@ -19,19 +19,21 @@ import OAuth2Redirect from "./components/oauth2-redirect/OAuth2Redirect";
 import Marketplace from "./components/marketplace/Marketplace";
 import Navbar from "./components/navbar/Navbar";
 
-import AlertSnackbar from "./modules/snackbar/Snackbar";
+import Snackbar from "./domains/snackbar/Snackbar";
 import ErrorBoundary from "./modules/error/ErrorBoundry";
 import Playground from "./modules/playground/Playground";
 import { ClipItApiClient } from "./lib/clipit-api/clipit-api.client";
 import { HttpClient } from "./lib/http-client";
 import { AppController } from "./domains/app/app.controller";
 import NftsContainer from "./domains/nfts/NftsContainer";
+import { snackbarClient } from "./domains/snackbar/snackbar.client";
 
 async function initializeApp() {
   const model = store;
 
   const app = new AppController(
     model,
+    snackbarClient,
     new ClipItApiClient(new HttpClient(clipItUri)),
     new IpfsClient(new HttpClient(cloudFlareGatewayUri))
   );
@@ -51,7 +53,7 @@ async function initializeApp() {
           <Router basename="/">
             <Navbar redirect={getTwitchOAuth2AuthorizeUrl} />
 
-            <AlertSnackbar />
+            <Snackbar model={{ snackbar: model.snackbar }} />
 
             <Switch>
               <Route exact path={AppRoute.MARKETPLACE}>

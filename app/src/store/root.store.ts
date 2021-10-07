@@ -2,7 +2,7 @@ import { ClipsStore } from "../domains/twitch-clips/clips.store";
 import { GamesStore } from "./games.store";
 import { MetaStore } from "./meta.store";
 import { NftStore } from "../domains/nfts/nft.store";
-import { SnackbarStore } from "../modules/snackbar/snackbar.store";
+import { SnackbarModel } from "../domains/snackbar/snackbar.model";
 import { TestStore } from "../modules/playground/playground.store";
 import { UserStore } from "./user.store";
 
@@ -13,7 +13,7 @@ export interface IStore {
   gameStore: GamesStore;
   nftStore: NftStore;
 
-  snackbarStore: SnackbarStore;
+  snackbar: SnackbarModel;
 
   testStore: TestStore;
 
@@ -24,7 +24,7 @@ class Store implements IStore {
   userStore: UserStore;
   gameStore: GamesStore;
   nftStore: NftStore;
-  snackbarStore: SnackbarStore;
+  snackbar: SnackbarModel;
 
   testStore: TestStore;
 
@@ -34,7 +34,7 @@ class Store implements IStore {
     this.userStore = new UserStore(new MetaStore());
     this.gameStore = new GamesStore(new MetaStore());
     this.nftStore = new NftStore(new MetaStore());
-    this.snackbarStore = new SnackbarStore();
+    this.snackbar = new SnackbarModel();
 
     this.testStore = new TestStore();
   }

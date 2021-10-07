@@ -5,8 +5,8 @@ import Grow from "@material-ui/core/Grow";
 import { TransitionProps } from "@material-ui/core/transitions";
 import MuiAlert, { AlertProps } from "@material-ui/lab/Alert";
 
-import { useStore } from "../../store/StoreProvider";
 import { ISnack } from "./types";
+import { SnackbarModel } from "./snackbar.model";
 
 function GrowTransition(props: TransitionProps) {
   return <Grow {...props} />;
@@ -16,16 +16,15 @@ function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-function TransitionSnackbar() {
-  const { snackbarStore } = useStore();
-  const { message, messageList, open } = snackbarStore;
+function TransitionSnackbar({ model }: { model: { snackbar: SnackbarModel } }) {
+  const { message, messageList, open } = model.snackbar;
 
   const handleClose = (_: SyntheticEvent | MouseEvent, reason?: string) => {
     if (reason === "clickaway") {
       return;
     }
 
-    snackbarStore.close();
+    model.snackbar.close();
   };
 
   const handleMessage = (ev: MessageEvent<ISnack>) => {
@@ -36,10 +35,13 @@ function TransitionSnackbar() {
     if (ev.data && ev.data.text && ev.data.severity) {
       switch (ev.data.severity) {
         case "error":
-          snackbarStore.addErrorToSnackbarQue(ev.data.text, ev.data.duration);
+          model.snackbar.addErrorToSnackbarQue(ev.data.text, ev.data.duration);
           break;
         case "success":
-          snackbarStore.addSuccessToSnackbarQue(ev.data.text, ev.data.duration);
+          model.snackbar.addSuccessToSnackbarQue(
+            ev.data.text,
+            ev.data.duration
+          );
           break;
       }
     }
@@ -56,11 +58,11 @@ function TransitionSnackbar() {
   useEffect(() => {
     if (messageList.length && !message) {
       // show new message
-      snackbarStore.displayMessageFromQue();
+      model.snackbar.displayMessageFromQue();
     } else if (messageList.length && message && open) {
       // new snack addedd to msgList
       // close current snack
-      snackbarStore.close();
+      model.snackbar.close();
     }
   }, [message, messageList, open]);
 

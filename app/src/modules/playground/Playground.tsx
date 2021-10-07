@@ -1,34 +1,16 @@
-import { isObservable, isComputed, spy, isObservableProp } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
+import { snackbarClient } from "../../domains/snackbar/snackbar.client";
 import { useStore } from "../../store/StoreProvider";
 
 const Playground = observer(function Playground() {
-  const { testStore } = useStore();
-
-  useEffect(() => {
-    if (testStore.mightHaveText) {
-      console.log("we DO have text:", testStore.mightHaveText);
-    } else {
-      console.log("NO TEXT");
-    }
-  }, [testStore.mightHaveText]);
-
-  useEffect(() => {
-    if (testStore.yesText) {
-      console.log("we DO have yes text:", testStore.yesText);
-    } else {
-      console.log("NO YES TEXT");
-    }
-  }, [testStore.yesText]);
-
   return (
     <div>
-      <button onClick={() => testStore.setText("text is here")}>
-        SET TEXT
+      <button onClick={() => snackbarClient.sendError("text is here")}>
+        SET ERROR
       </button>
-      <button onClick={() => testStore.setYesText("yes yes yes")}>
-        SET YES TEXT
+      <button onClick={() => snackbarClient.sendSuccess("yes yes yes")}>
+        SET SUCCESS
       </button>
     </div>
   );
