@@ -6,7 +6,7 @@ import { Box, Typography } from "@material-ui/core";
 import ErrorWithRetry from "../../modules/error/Error";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import ClipList from "./ClipList";
-import { UserStore } from "../../store/user.store";
+import { UserModel } from "../twitch-user/user.model";
 import { GameModel } from "../twitch-games/game.model";
 import { ClipsStore } from "./clips.store";
 import { ClipController } from "./clip.controller";
@@ -16,7 +16,7 @@ import { UserController } from "../twitch-user/user.controller";
 interface Props {
   model: {
     clip: ClipsStore;
-    user: UserStore;
+    user: UserModel;
     game: GameModel;
   };
   operations: {

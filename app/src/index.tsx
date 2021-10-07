@@ -81,7 +81,7 @@ async function initializeApp() {
                   <ClipsContainer
                     model={{
                       clip: model.clipsStore,
-                      user: model.userStore,
+                      user: model.user,
                       game: model.game
                     }}
                     operations={{
@@ -98,7 +98,7 @@ async function initializeApp() {
                   <ClipDetailContainer
                     model={{
                       clip: model.clipsStore,
-                      user: model.userStore,
+                      user: model.user,
                       game: model.game,
                       nft: model.nftStore
                     }}

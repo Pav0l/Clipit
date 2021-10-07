@@ -1,8 +1,8 @@
 import { makeAutoObservable } from "mobx"
-import { MetaStore } from "./meta.store";
+import { MetaStore } from "../../store/meta.store";
 
 
-export interface User {
+interface User {
   id: string;
   display_name: string;
   login: string; // login name
@@ -10,7 +10,7 @@ export interface User {
   email: string;
 }
 
-export class UserStore {
+export class UserModel {
   id: string = "";
   display_name: string = "";
   login: string = "";
