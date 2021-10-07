@@ -27,6 +27,7 @@ import { HttpClient } from "./lib/http-client";
 import { AppController } from "./domains/app/app.controller";
 import NftsContainer from "./domains/nfts/NftsContainer";
 import { snackbarClient } from "./domains/snackbar/snackbar.client";
+import { twitchApiClient } from "./lib/twitch-api/twitch-api.client";
 
 async function initializeApp() {
   const model = store;
@@ -35,6 +36,7 @@ async function initializeApp() {
     model,
     snackbarClient,
     new ClipItApiClient(new HttpClient(clipItUri)),
+    twitchApiClient,
     new IpfsClient(new HttpClient(cloudFlareGatewayUri))
   );
 
@@ -92,7 +94,10 @@ async function initializeApp() {
                 <Playground />
               </Route>
               <Route path={AppRoute.HOME}>
-                <Home />
+                <Home
+                  model={{ clip: model.clipsStore }}
+                  operations={{ clip: operations.clip }}
+                />
               </Route>
             </Switch>
           </Router>

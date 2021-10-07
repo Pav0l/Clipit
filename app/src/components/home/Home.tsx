@@ -8,32 +8,39 @@ import {
   Typography
 } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
-import { useStore } from "../../store/StoreProvider";
 import { useInputData } from "../../hooks/useInputData";
-import { TwitchClipsService } from "../../domains/twitch-clips/twitch-clips.service";
 import { useHistory } from "react-router-dom";
+import { ClipsStore } from "../../domains/twitch-clips/clips.store";
+import { ClipController } from "../../domains/twitch-clips/clip.controller";
 
-function Home() {
-  const { clipsStore } = useStore();
+interface Props {
+  model: {
+    clip: ClipsStore;
+  };
+  operations: {
+    clip: ClipController;
+  };
+}
+
+function Home({ model, operations }: Props) {
   const [inputData, inputHandler, clearInput] = useInputData();
 
-  const clipService = new TwitchClipsService(clipsStore);
   const history = useHistory();
 
   const buttonHandler = (event: React.MouseEvent) => {
     event.preventDefault();
 
-    clipsStore.meta.setLoading(true);
-    const clipId = clipService.validateClipUrl(inputData.trim());
+    model.clip.meta.setLoading(true);
+    const clipId = operations.clip.validateClipUrl(inputData.trim());
 
     if (clipId) {
       history.push(`/clips/${clipId}`);
     }
     clearInput();
-    clipsStore.meta.setLoading(false);
+    model.clip.meta.setLoading(false);
   };
 
-  if (clipsStore.meta.isLoading) {
+  if (model.clip.meta.isLoading) {
     return (
       <Box className="container">
         <CircularProgress />

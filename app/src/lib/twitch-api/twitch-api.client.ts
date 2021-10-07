@@ -1,7 +1,15 @@
-import { HttpClient } from "../http-client";
+import { HttpClient, RawResponse } from "../http-client";
 import { requestFulfilledInterceptor, responseFulfilledInterceptor } from "./twitch-api.utils";
 
-class TwitchApiClient {
+export interface TwitchApiClient {
+  getUsers: () => Promise<RawResponse<{ data: TwitchUserResp[] } | TwitchError>>;
+  getClips: (queryParams: TwitchClipQuery, cursor?: string) => Promise<RawResponse<{ data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError>>;
+  getGames: (gameId: string, cursor?: string) => Promise<RawResponse<{ data: TwitchGameResp[]; pagination?: TwitchPaginationResp } | TwitchError>>;
+  isTwitchError: <T>(body: T | TwitchError) => body is TwitchError;
+}
+
+
+class TwitchApi implements TwitchApiClient {
 
   constructor(private httpClient: HttpClient) { }
 
@@ -37,10 +45,14 @@ class TwitchApiClient {
       qs: queryParams
     })
   }
+
+  isTwitchError = <T>(body: T | TwitchError): body is TwitchError => {
+    return (body as TwitchError).error !== undefined;
+  }
 }
 
 
-export const twitchApiClient = new TwitchApiClient(new HttpClient("https://api.twitch.tv/helix", {
+export const twitchApiClient = new TwitchApi(new HttpClient("https://api.twitch.tv/helix", {
   request: { onFulfilled: requestFulfilledInterceptor },
   response: { onFulfilled: responseFulfilledInterceptor }
 }));
