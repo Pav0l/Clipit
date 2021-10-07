@@ -3,7 +3,7 @@ import { GameModel } from "../twitch-games/game.model";
 import { MetaModel } from "./meta.model";
 import { NftStore } from "../nfts/nft.store";
 import { SnackbarModel } from "../../lib/snackbar/snackbar.model";
-import { TestStore } from "../../modules/playground/playground.store";
+import { TestStore } from "../playground/playground.store";
 import { UserModel } from "../twitch-user/user.model";
 
 
