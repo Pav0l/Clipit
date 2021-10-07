@@ -10,24 +10,24 @@ import { getTwitchOAuth2AuthorizeUrl } from "./lib/twitch-oauth/twitch-oauth.uti
 import { store } from "./store/root.store";
 import { StoreProvider } from "./store/StoreProvider";
 
-import ClipDetail from "./domains/twitch-clips/ClipDetail";
+import { AppController } from "./domains/app/app.controller";
 import NftContainer from "./domains/nfts/NftContainer";
+import NftsContainer from "./domains/nfts/NftsContainer";
+import ClipDetailContainer from "./domains/twitch-clips/ClipDetailContainer";
+import ClipsContainer from "./domains/twitch-clips/ClipsContainer";
+import Snackbar from "./domains/snackbar/Snackbar";
+import { snackbarClient } from "./domains/snackbar/snackbar.client";
 
 import Home from "./components/home/Home";
 import OAuth2Redirect from "./lib/twitch-oauth/OAuth2Redirect/OAuth2Redirect";
 import Marketplace from "./components/marketplace/Marketplace";
 import Navbar from "./components/navbar/Navbar";
 
-import Snackbar from "./domains/snackbar/Snackbar";
 import ErrorBoundary from "./modules/error/ErrorBoundry";
 import Playground from "./modules/playground/Playground";
 import { ClipItApiClient } from "./lib/clipit-api/clipit-api.client";
 import { HttpClient } from "./lib/http-client";
-import { AppController } from "./domains/app/app.controller";
-import NftsContainer from "./domains/nfts/NftsContainer";
-import { snackbarClient } from "./domains/snackbar/snackbar.client";
 import { twitchApiClient } from "./lib/twitch-api/twitch-api.client";
-import ClipsContainer from "./domains/twitch-clips/ClipsContainer";
 
 async function initializeApp() {
   const model = store;
@@ -95,7 +95,16 @@ async function initializeApp() {
               <Route exact path={AppRoute.CLIP}>
                 <ErrorBoundary>
                   {/* TODO this route needs to be auth protected */}
-                  <ClipDetail />
+                  <ClipDetailContainer
+                    model={{
+                      clip: model.clipsStore,
+                      user: model.userStore,
+                      game: model.gameStore,
+                      nft: model.nftStore
+                    }}
+                    operations={operations}
+                    snackbar={snackbarClient}
+                  />
                 </ErrorBoundary>
               </Route>
               <Route exact path={AppRoute.OAUTH_REDIRECT}>

@@ -14,6 +14,8 @@ import { UserController } from "../twitch-user/user.controller";
 export interface IAppController {
   nft?: NftController;
   clip: ClipController;
+  game: GameController;
+  user: UserController;
 
   createNftCtrl: (ethereum: EthereumClient, contract: ContractClient) => void;
 }
