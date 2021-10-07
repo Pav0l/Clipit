@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 
-import { NftStore } from "./nft.store";
+import { NftModel } from "./nft.model";
 import { NftCard } from "../../components/nfts/NftCard";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import { IAppController } from "../app/app.controller";
@@ -11,7 +11,7 @@ import { AppRoute } from "../../lib/constants";
 
 interface Props {
   model: {
-    nft: NftStore;
+    nft: NftModel;
   };
   operations: IAppController;
 }

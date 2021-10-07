@@ -3,7 +3,7 @@ import { clearClipToMetadataPair, isClipMetadataCreated, storeClipToMetadataPair
 import { SnackbarClient } from '../../lib/snackbar/snackbar.client';
 import { ContractErrors, isRpcError, NftErrors, RpcErrors } from './nft.errors';
 
-import { NftStore } from "./nft.store";
+import { NftModel } from "./nft.model";
 import ContractClient from '../../lib/contract/contract.client';
 import EthereumClient from '../../lib/ethereum/ethereum.client';
 import { IpfsClient } from '../../lib/ipfs/ipfs.client';
@@ -12,7 +12,7 @@ import { IpfsClient } from '../../lib/ipfs/ipfs.client';
 export class NftController {
 
   constructor(
-    private nftStore: NftStore,
+    private model: NftModel,
     private snackbarClient: SnackbarClient,
     private clipitApi: ClipItApiClient,
     private ipfsClient: IpfsClient,
@@ -29,7 +29,7 @@ export class NftController {
     await this.requestAccounts();
 
     // TODO - this loader will take about 45-60 seconds, so there needs to be something better tha just loader
-    this.nftStore.meta.setLoading(true);
+    this.model.meta.setLoading(true);
 
     const userWalletAddress = await this.ethereumClient.signer.getAddress();
 
@@ -53,10 +53,10 @@ export class NftController {
     } else if (isStoreClipError(resp.body) && resp.body.error === "wallet does not have enough funds to mint clip") {
       this.snackbarClient.sendError(resp.body.error)
     } else {
-      this.nftStore.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+      this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     }
 
-    this.nftStore.meta.setLoading(false);
+    this.model.meta.setLoading(false);
   }
 
   getMetadataFromIpfs = async (cid: string) => {
@@ -69,11 +69,11 @@ export class NftController {
     console.log("metadataCid", metadataCid);
 
     const metadata = await this.getMetadataFromIpfs(metadataCid);
-    this.nftStore.createMetadata(metadata);
+    this.model.createMetadata(metadata);
   }
 
   fetchTokenMetadataForAddress = async () => {
-    this.nftStore.meta.setLoading(true);
+    this.model.meta.setLoading(true);
     const currentWalletAddress = await this.ethereumClient.signer.getAddress();
 
     const events = await this.contractClient.getWalletsClipNFTs(
@@ -96,8 +96,8 @@ export class NftController {
       metadataCollection[tokenId] = metadata;
     }
 
-    this.nftStore.setMetadataCollection(metadataCollection);
-    this.nftStore.meta.setLoading(false);
+    this.model.setMetadataCollection(metadataCollection);
+    this.model.meta.setLoading(false);
   }
 
   requestAccounts = async () => {
@@ -105,7 +105,7 @@ export class NftController {
     try {
       // this should be called everytime we need to have users account setup properly
       const requestAccounts = await this.ethereumClient.requestAccounts();
-      this.nftStore.setAccounts(requestAccounts);
+      this.model.setAccounts(requestAccounts);
     } catch (error) {
       console.log("[LOG]:requestAccounts:error", error);
 
@@ -127,20 +127,20 @@ export class NftController {
   private mintNFT = async (metadataCid: string, clipId: string, walletAddress: string) => {
     if (metadataCid && clipId) {
       // TODO handle the wait time in UI
-      this.nftStore.setConfirmTx();
+      this.model.setConfirmTx();
 
       try {
         const tx = await this.contractClient.mint(walletAddress, metadataCid);
         console.log("[LOG]:minting NFT in tx", tx.hash);
 
         // TODO - this does not display the state change properly
-        this.nftStore.setPendingTx();
+        this.model.setPendingTx();
 
         const receipt = await tx.wait();
         console.log("[LOG]:mint:done! gas used to mint:", receipt.gasUsed.toString());
         clearClipToMetadataPair(clipId);
 
-        this.nftStore.setSuccessTx();
+        this.model.setSuccessTx();
       } catch (error) {
         console.log("[LOG]:mint:error", error);
 
@@ -165,12 +165,12 @@ export class NftController {
         } else {
           // SENTRY
           // unknown error
-          this.nftStore.meta.setError(NftErrors.FAILED_TO_MINT);
+          this.model.meta.setError(NftErrors.FAILED_TO_MINT);
         }
       }
     } else {
       console.log("[LOG]:mint:missing metadataCid when minting", metadataCid, clipId);
-      this.nftStore.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+      this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     }
   }
 
@@ -181,17 +181,17 @@ export class NftController {
     const diff = currentBlockNum - txBlockNum;
     const percentageProgress = Math.floor((diff * 100) / REQUIRED_NUM_OF_CONFIRMATIONS);
 
-    this.nftStore.setConfirmationProgress(percentageProgress)
+    this.model.setConfirmationProgress(percentageProgress)
     console.log(`Waiting for block confirmations.\nCurrent block number:${currentBlockNum}\nTransaction block number:${txBlockNum}\nProgress:${percentageProgress}%`);
 
     if (diff >= REQUIRED_NUM_OF_CONFIRMATIONS) {
-      this.nftStore.doneConfirmations(clipId);
-      this.nftStore.createMetadata(metadataData.metadata!);
-      this.nftStore.setMetadataCid(metadataData.metadataCid)
+      this.model.doneConfirmations(clipId);
+      this.model.createMetadata(metadataData.metadata!);
+      this.model.setMetadataCid(metadataData.metadataCid)
 
       const walletAddress = await this.ethereumClient.signer.getAddress();
 
-      await this.mintNFT(this.nftStore.metadataCid!, clipId, walletAddress); // TODO: fix !
+      await this.mintNFT(this.model.metadataCid!, clipId, walletAddress); // TODO: fix !
       return; // end condition for the recursive call
     }
     setTimeout(() => {

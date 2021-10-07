@@ -8,7 +8,7 @@ enum MintingProgress {
   TX_CONFIRMED = "NFT minted! Taking you to the NFTs page..."
 }
 
-export class NftStore {
+export class NftModel {
   meta: MetaModel;
 
   confirmationProgress: number = 0;

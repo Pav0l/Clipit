@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import { IAppController } from "../../domains/app/app.controller";
-import { NftStore } from "../../domains/nfts/nft.store";
+import { NftModel } from "../../domains/nfts/nft.model";
 import { AppRoute } from "../../lib/constants";
 import LoginWithTwitch from "../../lib/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
 import ConnectMetamaskButton from "../connectMetamask/ConnectMetamask";
 
 interface Props {
   model: {
-    nft: NftStore;
+    nft: NftModel;
   };
   operations: IAppController;
   redirect: () => string;

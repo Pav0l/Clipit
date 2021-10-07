@@ -3,7 +3,7 @@ import MetaMaskOnboarding from "@metamask/onboarding";
 import { observer } from "mobx-react-lite";
 import { useState, useRef, useEffect } from "react";
 
-import { NftStore } from "../../domains/nfts/nft.store";
+import { NftModel } from "../../domains/nfts/nft.model";
 import { IAppController } from "../../domains/app/app.controller";
 import { useWeb3 } from "../../domains/app/useWeb3";
 
@@ -13,7 +13,7 @@ const CONNECTED_TEXT = "Connected";
 
 interface Props {
   model: {
-    nft: NftStore;
+    nft: NftModel;
   };
   operations: IAppController;
 }

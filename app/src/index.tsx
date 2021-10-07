@@ -53,7 +53,7 @@ async function initializeApp() {
           <Router basename="/">
             <Navbar
               redirect={getTwitchOAuth2AuthorizeUrl}
-              model={{ nft: model.nftStore }}
+              model={{ nft: model.nft }}
               operations={operations}
             />
 
@@ -66,14 +66,14 @@ async function initializeApp() {
               <Route exact path={AppRoute.NFTS}>
                 {/* TODO this route needs to be auth protected */}
                 <NftsContainer
-                  model={{ nft: model.nftStore }}
+                  model={{ nft: model.nft }}
                   operations={operations}
                 />
               </Route>
               <Route exact path={AppRoute.NFT}>
                 {/* TODO this route needs to be auth protected */}
                 <NftContainer
-                  model={{ nft: model.nftStore }}
+                  model={{ nft: model.nft }}
                   operations={operations}
                 />
               </Route>
@@ -102,7 +102,7 @@ async function initializeApp() {
                       clip: model.clipsStore,
                       user: model.user,
                       game: model.game,
-                      nft: model.nftStore
+                      nft: model.nft
                     }}
                     operations={operations}
                     snackbar={snackbarClient}

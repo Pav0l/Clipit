@@ -2,12 +2,12 @@ import { useState } from "react";
 import { BigNumberish } from "@ethersproject/bignumber";
 import detectEthereumProvider from "@metamask/detect-provider";
 
-import { NftStore } from "../nfts/nft.store";
+import { NftModel } from "../nfts/nft.model";
 import EthereumClient from "../../lib/ethereum/ethereum.client";
 import ContractClient from "../../lib/contract/contract.client";
 import { EthereumProvider } from "../../lib/ethereum/ethereum.types";
 
-export function useWeb3(nftStore: NftStore) {
+export function useWeb3(nftModel: NftModel) {
   const [{ contract, ethereum }, setWeb3] = useState<{
     contract: ContractClient | null;
     ethereum: EthereumClient | null;
@@ -27,7 +27,7 @@ export function useWeb3(nftStore: NftStore) {
     // TODO remove log
     console.log("creating new ethereum & contract client");
     const ethereum = new EthereumClient(metamaskProvider, {
-      handleAccountsChange: nftStore.setAccounts,
+      handleAccountsChange: nftModel.setAccounts,
       handleConnect: (data) => console.log("handleConnect", data),
       handleDisconnect: (data) => console.log("handleDisconnect", data),
       handleMessage: (data) => console.log("handleMessage", data)
@@ -59,7 +59,7 @@ export function useWeb3(nftStore: NftStore) {
       ) => {
         console.log(`[TRANSFER](useWeb3) from ${from} to ${to} for ${tokenId}`);
         if (tokenId) {
-          nftStore.setTokenId(tokenId.toString());
+          nftModel.setTokenId(tokenId.toString());
         }
       }
     });
