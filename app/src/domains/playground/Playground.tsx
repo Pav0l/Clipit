@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { snackbarClient } from "../../lib/snackbar/snackbar.client";
-import { useStore } from "../../store/StoreProvider";
+import { useStore } from "../../components/storeProvider/StoreProvider";
 
 const Playground = observer(function Playground() {
   return (

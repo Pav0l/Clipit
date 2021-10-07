@@ -8,7 +8,7 @@ import {
   Typography
 } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
-import { useInputData } from "../../hooks/useInputData";
+import { useInputData } from "../../lib/hooks/useInputData";
 import { useHistory } from "react-router-dom";
 import { ClipsStore } from "../../domains/twitch-clips/clips.store";
 import { ClipController } from "../../domains/twitch-clips/clip.controller";

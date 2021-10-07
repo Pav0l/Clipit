@@ -8,7 +8,7 @@ import { IpfsClient } from "./lib/ipfs/ipfs.client";
 import { getTwitchOAuth2AuthorizeUrl } from "./lib/twitch-oauth/twitch-oauth.utils";
 
 import { appModel } from "./domains/app/app.model";
-import { StoreProvider } from "./store/StoreProvider";
+import { StoreProvider } from "./components/storeProvider/StoreProvider";
 
 import { AppController } from "./domains/app/app.controller";
 import NftContainer from "./domains/nfts/NftContainer";

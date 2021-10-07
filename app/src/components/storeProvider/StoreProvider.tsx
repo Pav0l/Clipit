@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import { AppModel, appModel } from "../domains/app/app.model";
+import { AppModel, appModel } from "../../domains/app/app.model";
 
 const StoreContext = createContext<AppModel>(appModel);
 

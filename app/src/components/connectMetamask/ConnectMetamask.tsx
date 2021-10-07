@@ -3,7 +3,7 @@ import MetaMaskOnboarding from "@metamask/onboarding";
 import { observer } from "mobx-react-lite";
 import { useState, useRef, useEffect } from "react";
 import { EthereumProvider } from "../../lib/ethereum/ethereum.types";
-import { useStore } from "../../store/StoreProvider";
+import { useStore } from "../storeProvider/StoreProvider";
 import { NftService } from "../../domains/nfts/nft.service";
 import EthereumClient from "../../lib/ethereum/ethereum.client";
 
