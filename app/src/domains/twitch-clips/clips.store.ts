@@ -1,14 +1,14 @@
 import { makeAutoObservable } from "mobx"
-import { MetaStore } from "../../store/meta.store";
+import { MetaModel } from "../app/meta.model";
 
 
 export class ClipsStore {
   clips: TwitchClip[] = [];
-  meta: MetaStore;
+  meta: MetaModel;
 
-  constructor(metaStore: MetaStore) {
+  constructor(metaModel: MetaModel) {
     makeAutoObservable(this);
-    this.meta = metaStore;
+    this.meta = metaModel;
   }
 
   appendMultipleClips(clips: ITwitchClip[]) {

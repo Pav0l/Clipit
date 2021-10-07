@@ -7,7 +7,7 @@ import { AppRoute, clipItUri, cloudFlareGatewayUri } from "./lib/constants";
 import { IpfsClient } from "./lib/ipfs/ipfs.client";
 import { getTwitchOAuth2AuthorizeUrl } from "./lib/twitch-oauth/twitch-oauth.utils";
 
-import { store } from "./store/root.store";
+import { appModel } from "./domains/app/app.model";
 import { StoreProvider } from "./store/StoreProvider";
 
 import { AppController } from "./domains/app/app.controller";
@@ -30,17 +30,15 @@ import { HttpClient } from "./lib/http-client";
 import { twitchApiClient } from "./lib/twitch-api/twitch-api.client";
 
 async function initializeApp() {
-  const model = store;
-
   const app = new AppController(
-    model,
+    appModel,
     snackbarClient,
     new ClipItApiClient(new HttpClient(clipItUri)),
     twitchApiClient,
     new IpfsClient(new HttpClient(cloudFlareGatewayUri))
   );
 
-  return { model, operations: app };
+  return { model: appModel, operations: app };
 }
 
 (async () => {

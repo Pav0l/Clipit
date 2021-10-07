@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx"
-import { MetaStore } from "../../store/meta.store";
+import { MetaModel } from "../app/meta.model";
 
 
 interface User {
@@ -17,11 +17,11 @@ export class UserModel {
   profile_image_url: string = "";
   email: string = "";
 
-  meta: MetaStore;
+  meta: MetaModel;
 
-  constructor(metaStore: MetaStore) {
+  constructor(meta: MetaModel) {
     makeAutoObservable(this);
-    this.meta = metaStore;
+    this.meta = meta;
   }
 
   setUser(user: User) {

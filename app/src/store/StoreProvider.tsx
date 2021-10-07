@@ -1,11 +1,11 @@
 import { createContext, useContext } from "react";
-import { IStore, store } from "./root.store";
+import { AppModel, appModel } from "../domains/app/app.model";
 
-const StoreContext = createContext<IStore>(store);
+const StoreContext = createContext<AppModel>(appModel);
 
 export function StoreProvider({ children }: { children: JSX.Element }) {
   return (
-    <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
+    <StoreContext.Provider value={appModel}>{children}</StoreContext.Provider>
   );
 }
 

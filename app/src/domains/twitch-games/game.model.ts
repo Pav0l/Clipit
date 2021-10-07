@@ -1,14 +1,14 @@
 import { makeAutoObservable } from "mobx"
-import { MetaStore } from "../../store/meta.store";
+import { MetaModel } from "../app/meta.model";
 
 
 export class GameModel {
   games: { [id: string]: string; } = {};
-  meta: MetaStore;
+  meta: MetaModel;
 
-  constructor(metaStore: MetaStore) {
+  constructor(meta: MetaModel) {
     makeAutoObservable(this);
-    this.meta = metaStore;
+    this.meta = meta;
   }
 
   addGame(game: ITwitchGame) {

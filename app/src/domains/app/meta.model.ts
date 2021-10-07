@@ -3,7 +3,7 @@ import { makeAutoObservable } from "mobx"
 /**
  * MetaStore keeps metadata about stores (loading, error, ...)
  */
-export class MetaStore {
+export class MetaModel {
   isLoading: boolean = false;
   hasError: boolean = false;
   error: string = "";

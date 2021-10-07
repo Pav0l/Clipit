@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx"
 import { ipfsIoGatewayUri, pinataGatewayUri } from "../../lib/constants";
-import { MetaStore } from "../../store/meta.store";
+import { MetaModel } from "../app/meta.model";
 
 enum MintingProgress {
   CONFIRM_TRANSACTION = "Generated transaction to create the NFT. Please sign it in your MetaMask wallet",
@@ -9,7 +9,7 @@ enum MintingProgress {
 }
 
 export class NftStore {
-  meta: MetaStore;
+  meta: MetaModel;
 
   confirmationProgress: number = 0;
   waitingForBlockConfirmations: boolean = false;
@@ -32,9 +32,9 @@ export class NftStore {
    */
   metadataCollection: Record<string, Metadata> = {};
 
-  constructor(metaStore: MetaStore) {
+  constructor(meta: MetaModel) {
     makeAutoObservable(this);
-    this.meta = metaStore;
+    this.meta = meta;
   }
 
   setMetadataCid(cid?: string) {

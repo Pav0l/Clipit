@@ -3,7 +3,7 @@ import ContractClient from "../../lib/contract/contract.client";
 import EthereumClient from "../../lib/ethereum/ethereum.client";
 import { IpfsClient } from "../../lib/ipfs/ipfs.client";
 import { SnackbarClient } from "../snackbar/snackbar.client";
-import { IStore } from "../../store/root.store";
+import { AppModel } from "./app.model";
 import { NftController } from "../nfts/nft.controller";
 import { ClipController } from "../twitch-clips/clip.controller";
 import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client";
@@ -28,7 +28,7 @@ export class AppController implements IAppController {
   user: UserController;
 
   constructor(
-    private model: IStore,
+    private model: AppModel,
     private snackbarClient: SnackbarClient,
     private clipitApi: ClipItApiClient,
     private twitchApi: TwitchApiClient,
