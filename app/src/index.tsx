@@ -51,7 +51,11 @@ async function initializeApp() {
       <React.StrictMode>
         <StoreProvider>
           <Router basename="/">
-            <Navbar redirect={getTwitchOAuth2AuthorizeUrl} />
+            <Navbar
+              redirect={getTwitchOAuth2AuthorizeUrl}
+              model={{ nft: model.nftStore }}
+              operations={operations}
+            />
 
             <Snackbar model={{ snackbar: model.snackbar }} />
 

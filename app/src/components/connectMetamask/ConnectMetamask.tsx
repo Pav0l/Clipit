@@ -2,28 +2,33 @@ import { Button } from "@material-ui/core";
 import MetaMaskOnboarding from "@metamask/onboarding";
 import { observer } from "mobx-react-lite";
 import { useState, useRef, useEffect } from "react";
-import { EthereumProvider } from "../../lib/ethereum/ethereum.types";
-import { useStore } from "../storeProvider/StoreProvider";
-import { NftService } from "../../domains/nfts/nft.service";
-import EthereumClient from "../../lib/ethereum/ethereum.client";
+
+import { NftStore } from "../../domains/nfts/nft.store";
+import { IAppController } from "../../domains/app/app.controller";
+import { useWeb3 } from "../../domains/app/useWeb3";
 
 const ONBOARD_TEXT = "Install MetaMask";
 const CONNECT_TEXT = "Connect";
 const CONNECTED_TEXT = "Connected";
 
-function ConnectMetamaskButton() {
+interface Props {
+  model: {
+    nft: NftStore;
+  };
+  operations: IAppController;
+}
+
+function ConnectMetamaskButton({ model, operations }: Props) {
   const [buttonText, setButtonText] = useState(ONBOARD_TEXT);
   const [isDisabled, setDisabled] = useState(false);
-  const [ethereumClient, setEthClient] = useState<EthereumClient | null>(null);
+
+  const { ethereum, contract, initializeWeb3 } = useWeb3(model.nft);
 
   const onboarding = useRef<MetaMaskOnboarding>();
 
-  const { nftStore } = useStore();
-  const nftService = new NftService(nftStore);
-
   const setAccounts = async () => {
-    if (ethereumClient !== null) {
-      nftService.requestAccounts(ethereumClient);
+    if (operations.nft) {
+      operations.nft.requestAccounts();
     }
   };
 
@@ -31,31 +36,21 @@ function ConnectMetamaskButton() {
     if (!onboarding.current) {
       onboarding.current = new MetaMaskOnboarding();
     }
-  }, []);
 
-  useEffect(() => {
-    if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      const ethereumClient = nftService.initializeEthereumClient(
-        window.ethereum as EthereumProvider
-      );
-      setEthClient(ethereumClient);
+    if (!ethereum || !contract) {
+      initializeWeb3();
     }
   }, []);
 
   useEffect(() => {
-    if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      if (ethereumClient && nftStore.accounts.length === 0) {
-        // TODO - without calling this, we don't know if user already connected wallet or not
-        // so the button can say "CONNECT" even if it is already connected
-        // but with this, we always popup metamask when wallet is not yet connected
-        // nftService.requestAccounts(ethereumClient);
-      }
+    if (!operations.nft && ethereum && contract) {
+      operations.createNftCtrl(ethereum, contract);
     }
-  }, [ethereumClient]);
+  }, [ethereum, contract]);
 
   useEffect(() => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      if (nftStore.accounts.length > 0) {
+      if (model.nft.accounts.length > 0) {
         setButtonText(CONNECTED_TEXT);
         setDisabled(true);
         onboarding.current!.stopOnboarding();
@@ -64,7 +59,7 @@ function ConnectMetamaskButton() {
         setDisabled(false);
       }
     }
-  }, [nftStore.accounts, nftStore.accounts.length]);
+  }, [model.nft.accounts, model.nft.accounts.length]);
 
   const onClick = async () => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {

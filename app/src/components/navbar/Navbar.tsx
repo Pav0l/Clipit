@@ -1,13 +1,19 @@
 import { Link } from "react-router-dom";
+import { IAppController } from "../../domains/app/app.controller";
+import { NftStore } from "../../domains/nfts/nft.store";
 import { AppRoute } from "../../lib/constants";
 import LoginWithTwitch from "../../lib/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
 import ConnectMetamaskButton from "../connectMetamask/ConnectMetamask";
 
 interface Props {
+  model: {
+    nft: NftStore;
+  };
+  operations: IAppController;
   redirect: () => string;
 }
 
-export default function Navbar({ redirect }: Props) {
+export default function Navbar({ model, operations, redirect }: Props) {
   return (
     <nav>
       <ul>
@@ -38,7 +44,7 @@ export default function Navbar({ redirect }: Props) {
           <Link to={AppRoute.ABOUT}>About</Link>
         </li>
         <LoginWithTwitch redirect={redirect} />
-        <ConnectMetamaskButton />
+        <ConnectMetamaskButton model={model} operations={operations} />
       </ul>
     </nav>
   );
