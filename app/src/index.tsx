@@ -23,7 +23,7 @@ import OAuth2Redirect from "./lib/twitch-oauth/OAuth2Redirect/OAuth2Redirect";
 import Marketplace from "./components/marketplace/Marketplace";
 import Navbar from "./components/navbar/Navbar";
 
-import ErrorBoundary from "./modules/error/ErrorBoundry";
+import ErrorBoundary from "./components/error/ErrorBoundry";
 import Playground from "./modules/playground/Playground";
 import { ClipItApiClient } from "./lib/clipit-api/clipit-api.client";
 import { HttpClient } from "./lib/http-client";

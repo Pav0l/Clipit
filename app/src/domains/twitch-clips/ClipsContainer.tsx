@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { Box, Typography } from "@material-ui/core";
 
-import ErrorWithRetry from "../../modules/error/Error";
+import ErrorWithRetry from "../../components/error/Error";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import ClipList from "./ClipList";
 import { UserModel } from "../twitch-user/user.model";

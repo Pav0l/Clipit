@@ -10,7 +10,7 @@ import {
   Button,
   Typography
 } from "@material-ui/core";
-import ErrorWithRetry from "../../modules/error/Error";
+import ErrorWithRetry from "../../components/error/Error";
 
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 import { TwitchClipsErrors } from "./twitch-clips.errors";

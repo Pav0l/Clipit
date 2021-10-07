@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useParams } from "react-router";
 import { useEffect } from "react";
 
-import ErrorWithRetry from "../../modules/error/Error";
+import ErrorWithRetry from "../../components/error/Error";
 import { NftStore } from "./nft.store";
 import { NftCard } from "../../components/nfts/NftCard";
 import FullPageLoader from "../../components/loader/FullPageLoader";
