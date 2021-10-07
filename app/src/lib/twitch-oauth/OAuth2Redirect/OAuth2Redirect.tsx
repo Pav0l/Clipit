@@ -1,15 +1,16 @@
-import "./OAuth2Redirect.css";
 import { observer } from "mobx-react-lite";
-import {
-  parseDataFromState,
-  parseDataFromUrl,
-  storeTokenAndRemoveSecret,
-  verifyStateSecret,
-  getTwitchOAuth2AuthorizeUrl
-} from "../../lib/twitch-oauth/twitch-oauth.utils";
 import { useHistory } from "react-router-dom";
 import { Typography } from "@material-ui/core";
-import LoginWithTwitch from "../loginWithTwitch/LoginWithTwitch";
+
+import "./OAuth2Redirect.css";
+import {
+  parseDataFromUrl,
+  parseDataFromState,
+  verifyStateSecret,
+  storeTokenAndRemoveSecret,
+  getTwitchOAuth2AuthorizeUrl
+} from "../twitch-oauth.utils";
+import LoginWithTwitch from "../LoginWithTwitch/LoginWithTwitch";
 
 const OAuth2Redirect = observer(() => {
   const { access_token: token, state } = parseDataFromUrl(

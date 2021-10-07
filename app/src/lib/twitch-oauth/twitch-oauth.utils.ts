@@ -28,13 +28,13 @@ export const parseDataFromState = (state: string) => {
   }
 }
 
-export const generateRandomString = () => {
+const generateRandomString = () => {
   const uintArr = new Uint16Array(10);
   window.crypto.getRandomValues(uintArr);
   return JSON.stringify(Array.from(uintArr));
 }
 
-export enum OauthQueryParams {
+enum OauthQueryParams {
   ACCESS_TOKEN = "access_token",
   STATE = "state",
   REDIRECT_URI = "redirect_uri",

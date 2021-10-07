@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { AppRoute } from "../../lib/constants";
-import LoginWithTwitch from "../loginWithTwitch/LoginWithTwitch";
+import LoginWithTwitch from "../../lib/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
 import ConnectMetamaskButton from "../connectMetamask/ConnectMetamask";
 
 interface Props {

@@ -32,4 +32,7 @@ class TwitchOAuthApiClient {
   }
 }
 
+/**
+ * unused
+ */
 export const twitchOauthClient = new TwitchOAuthApiClient(new HttpClient("https://id.twitch.tv"));

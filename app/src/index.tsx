@@ -15,7 +15,7 @@ import ClipDetail from "./domains/twitch-clips/ClipDetail";
 import NftContainer from "./domains/nfts/NftContainer";
 
 import Home from "./components/home/Home";
-import OAuth2Redirect from "./components/oauth2-redirect/OAuth2Redirect";
+import OAuth2Redirect from "./lib/twitch-oauth/OAuth2Redirect/OAuth2Redirect";
 import Marketplace from "./components/marketplace/Marketplace";
 import Navbar from "./components/navbar/Navbar";
 
