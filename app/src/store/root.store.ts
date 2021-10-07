@@ -1,5 +1,5 @@
 import { ClipsStore } from "../domains/twitch-clips/clips.store";
-import { GamesStore } from "./games.store";
+import { GameModel } from "../domains/twitch-games/game.model";
 import { MetaStore } from "./meta.store";
 import { NftStore } from "../domains/nfts/nft.store";
 import { SnackbarModel } from "../domains/snackbar/snackbar.model";
@@ -10,7 +10,7 @@ import { UserStore } from "./user.store";
 export interface IStore {
   clipsStore: ClipsStore;
   userStore: UserStore;
-  gameStore: GamesStore;
+  game: GameModel;
   nftStore: NftStore;
 
   snackbar: SnackbarModel;
@@ -22,7 +22,7 @@ export interface IStore {
 class Store implements IStore {
   clipsStore: ClipsStore;
   userStore: UserStore;
-  gameStore: GamesStore;
+  game: GameModel;
   nftStore: NftStore;
   snackbar: SnackbarModel;
 
@@ -32,7 +32,7 @@ class Store implements IStore {
   constructor() {
     this.clipsStore = new ClipsStore(new MetaStore());
     this.userStore = new UserStore(new MetaStore());
-    this.gameStore = new GamesStore(new MetaStore());
+    this.game = new GameModel(new MetaStore());
     this.nftStore = new NftStore(new MetaStore());
     this.snackbar = new SnackbarModel();
 

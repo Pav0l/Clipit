@@ -1,10 +1,10 @@
 import { isTwitchError, TwitchApiClient } from "../../lib/twitch-api/twitch-api.client"
-import { GamesStore } from "../../store/games.store";
+import { GameModel } from "./game.model";
 
 
 export class GameController {
 
-  constructor(private model: GamesStore, private twitchApi: TwitchApiClient) { }
+  constructor(private model: GameModel, private twitchApi: TwitchApiClient) { }
 
   getGames = async (gameId: string) => {
     this.model.meta.setLoading(true);

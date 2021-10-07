@@ -17,7 +17,7 @@ import { TwitchClipsErrors } from "./twitch-clips.errors";
 import { NftErrors } from "../nfts/nft.errors";
 import { ClipsStore } from "./clips.store";
 import { UserStore } from "../../store/user.store";
-import { GamesStore } from "../../store/games.store";
+import { GameModel } from "../twitch-games/game.model";
 import { NftStore } from "../nfts/nft.store";
 import { IAppController } from "../app/app.controller";
 import { useWeb3 } from "../app/useWeb3";
@@ -26,7 +26,7 @@ interface Props {
   model: {
     clip: ClipsStore;
     user: UserStore;
-    game: GamesStore;
+    game: GameModel;
     nft: NftStore;
   };
   operations: IAppController;

@@ -35,7 +35,7 @@ export class AppController implements IAppController {
     private ipfsApi: IpfsClient
   ) {
     this.clip = new ClipController(model.clipsStore, this.snackbarClient, this.twitchApi);
-    this.game = new GameController(model.gameStore, this.twitchApi);
+    this.game = new GameController(model.game, this.twitchApi);
     this.user = new UserController(model.userStore, this.twitchApi);
   }
 

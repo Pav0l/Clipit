@@ -1,8 +1,8 @@
 import { makeAutoObservable } from "mobx"
-import { MetaStore } from "./meta.store";
+import { MetaStore } from "../../store/meta.store";
 
 
-export class GamesStore {
+export class GameModel {
   games: { [id: string]: string; } = {};
   meta: MetaStore;
 

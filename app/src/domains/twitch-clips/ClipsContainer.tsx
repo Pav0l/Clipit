@@ -7,7 +7,7 @@ import ErrorWithRetry from "../../modules/error/Error";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import ClipList from "./ClipList";
 import { UserStore } from "../../store/user.store";
-import { GamesStore } from "../../store/games.store";
+import { GameModel } from "../twitch-games/game.model";
 import { ClipsStore } from "./clips.store";
 import { ClipController } from "./clip.controller";
 import { GameController } from "../twitch-games/game.controller";
@@ -17,7 +17,7 @@ interface Props {
   model: {
     clip: ClipsStore;
     user: UserStore;
-    game: GamesStore;
+    game: GameModel;
   };
   operations: {
     clip: ClipController;

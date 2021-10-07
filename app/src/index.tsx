@@ -82,7 +82,7 @@ async function initializeApp() {
                     model={{
                       clip: model.clipsStore,
                       user: model.userStore,
-                      game: model.gameStore
+                      game: model.game
                     }}
                     operations={{
                       clip: operations.clip,
@@ -99,7 +99,7 @@ async function initializeApp() {
                     model={{
                       clip: model.clipsStore,
                       user: model.userStore,
-                      game: model.gameStore,
+                      game: model.game,
                       nft: model.nftStore
                     }}
                     operations={operations}
