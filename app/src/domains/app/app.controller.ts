@@ -34,7 +34,7 @@ export class AppController implements IAppController {
     private twitchApi: TwitchApiClient,
     private ipfsApi: IpfsClient
   ) {
-    this.clip = new ClipController(model.clipsStore, this.snackbarClient, this.twitchApi);
+    this.clip = new ClipController(model.clip, this.snackbarClient, this.twitchApi);
     this.game = new GameController(model.game, this.twitchApi);
     this.user = new UserController(model.user, this.twitchApi);
   }
@@ -49,7 +49,7 @@ export class AppController implements IAppController {
     console.log('creating new nft controller:', Boolean(!this.nft));
     if (!this.nft) {
       this.nft = new NftController(
-        this.model.nftStore,
+        this.model.nft,
         this.snackbarClient,
         this.clipitApi,
         this.ipfsApi,

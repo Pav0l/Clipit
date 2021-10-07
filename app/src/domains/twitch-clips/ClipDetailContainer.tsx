@@ -15,7 +15,7 @@ import ErrorWithRetry from "../../components/error/Error";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 import { TwitchClipsErrors } from "./twitch-clips.errors";
 import { NftErrors } from "../nfts/nft.errors";
-import { ClipsStore } from "./clips.store";
+import { ClipModel } from "./clip.model";
 import { UserModel } from "../twitch-user/user.model";
 import { GameModel } from "../twitch-games/game.model";
 import { NftModel } from "../nfts/nft.model";
@@ -24,7 +24,7 @@ import { useWeb3 } from "../app/useWeb3";
 
 interface Props {
   model: {
-    clip: ClipsStore;
+    clip: ClipModel;
     user: UserModel;
     game: GameModel;
     nft: NftModel;

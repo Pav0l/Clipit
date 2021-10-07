@@ -8,14 +8,14 @@ import FullPageLoader from "../../components/loader/FullPageLoader";
 import ClipList from "./ClipList";
 import { UserModel } from "../twitch-user/user.model";
 import { GameModel } from "../twitch-games/game.model";
-import { ClipsStore } from "./clips.store";
+import { ClipModel } from "./clip.model";
 import { ClipController } from "./clip.controller";
 import { GameController } from "../twitch-games/game.controller";
 import { UserController } from "../twitch-user/user.controller";
 
 interface Props {
   model: {
-    clip: ClipsStore;
+    clip: ClipModel;
     user: UserModel;
     game: GameModel;
   };

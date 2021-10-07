@@ -1,4 +1,4 @@
-import { ClipsStore } from "../twitch-clips/clips.store";
+import { ClipModel } from "../twitch-clips/clip.model";
 import { GameModel } from "../twitch-games/game.model";
 import { MetaModel } from "./meta.model";
 import { NftModel } from "../nfts/nft.model";
@@ -8,7 +8,7 @@ import { UserModel } from "../twitch-user/user.model";
 
 
 export interface AppModel {
-  clipsStore: ClipsStore;
+  clip: ClipModel;
   user: UserModel;
   game: GameModel;
   nft: NftModel;
@@ -20,7 +20,7 @@ export interface AppModel {
 }
 
 class Model implements AppModel {
-  clipsStore: ClipsStore;
+  clip: ClipModel;
   user: UserModel;
   game: GameModel;
   nft: NftModel;
@@ -30,7 +30,7 @@ class Model implements AppModel {
 
 
   constructor() {
-    this.clipsStore = new ClipsStore(new MetaModel());
+    this.clip = new ClipModel(new MetaModel());
     this.user = new UserModel(new MetaModel());
     this.game = new GameModel(new MetaModel());
     this.nft = new NftModel(new MetaModel());

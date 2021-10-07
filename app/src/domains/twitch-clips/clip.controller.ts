@@ -1,7 +1,7 @@
 // TODO consider this import - maybe it should be here in ctrl (find out when wrinting tests)
 import { getSlugFromUrl } from "./twitch-clips.utils";
 import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client"
-import { ClipsStore } from "./clips.store";
+import { ClipModel } from "./clip.model";
 import { TwitchClipsErrors } from "./twitch-clips.errors";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 
@@ -9,7 +9,7 @@ import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 export class ClipController {
 
   constructor(
-    private model: ClipsStore,
+    private model: ClipModel,
     private snackbar: SnackbarClient,
     private twitchApi: TwitchApiClient,
   ) { }

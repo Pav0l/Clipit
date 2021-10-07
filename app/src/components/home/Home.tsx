@@ -10,12 +10,12 @@ import {
 import { observer } from "mobx-react-lite";
 import { useInputData } from "../../lib/hooks/useInputData";
 import { useHistory } from "react-router-dom";
-import { ClipsStore } from "../../domains/twitch-clips/clips.store";
+import { ClipModel } from "../../domains/twitch-clips/clip.model";
 import { ClipController } from "../../domains/twitch-clips/clip.controller";
 
 interface Props {
   model: {
-    clip: ClipsStore;
+    clip: ClipModel;
   };
   operations: {
     clip: ClipController;

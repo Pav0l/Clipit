@@ -82,7 +82,7 @@ async function initializeApp() {
                   {/* TODO this route needs to be auth protected */}
                   <ClipsContainer
                     model={{
-                      clip: model.clipsStore,
+                      clip: model.clip,
                       user: model.user,
                       game: model.game
                     }}
@@ -99,7 +99,7 @@ async function initializeApp() {
                   {/* TODO this route needs to be auth protected */}
                   <ClipDetailContainer
                     model={{
-                      clip: model.clipsStore,
+                      clip: model.clip,
                       user: model.user,
                       game: model.game,
                       nft: model.nft
@@ -117,7 +117,7 @@ async function initializeApp() {
               </Route>
               <Route path={AppRoute.HOME}>
                 <Home
-                  model={{ clip: model.clipsStore }}
+                  model={{ clip: model.clip }}
                   operations={{ clip: operations.clip }}
                 />
               </Route>
