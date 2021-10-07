@@ -69,4 +69,7 @@ function Clips() {
   );
 }
 
+/**
+ * unused
+ */
 export default observer(Clips);

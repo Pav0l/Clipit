@@ -10,7 +10,6 @@ import { getTwitchOAuth2AuthorizeUrl } from "./lib/twitch-oauth/twitch-oauth.uti
 import { store } from "./store/root.store";
 import { StoreProvider } from "./store/StoreProvider";
 
-import Clips from "./domains/twitch-clips/Clips";
 import ClipDetail from "./domains/twitch-clips/ClipDetail";
 import NftContainer from "./domains/nfts/NftContainer";
 
@@ -28,6 +27,7 @@ import { AppController } from "./domains/app/app.controller";
 import NftsContainer from "./domains/nfts/NftsContainer";
 import { snackbarClient } from "./domains/snackbar/snackbar.client";
 import { twitchApiClient } from "./lib/twitch-api/twitch-api.client";
+import ClipsContainer from "./domains/twitch-clips/ClipsContainer";
 
 async function initializeApp() {
   const model = store;
@@ -78,7 +78,18 @@ async function initializeApp() {
               <Route exact path={AppRoute.CLIPS}>
                 <ErrorBoundary>
                   {/* TODO this route needs to be auth protected */}
-                  <Clips />
+                  <ClipsContainer
+                    model={{
+                      clip: model.clipsStore,
+                      user: model.userStore,
+                      game: model.gameStore
+                    }}
+                    operations={{
+                      clip: operations.clip,
+                      game: operations.game,
+                      user: operations.user
+                    }}
+                  />
                 </ErrorBoundary>
               </Route>
               <Route exact path={AppRoute.CLIP}>
