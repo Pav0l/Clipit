@@ -20,7 +20,6 @@ import { UserModel } from "../twitch-user/user.model";
 import { GameModel } from "../twitch-games/game.model";
 import { NftModel } from "../nfts/nft.model";
 import { IAppController } from "../app/app.controller";
-import { useWeb3 } from "../../lib/hooks/useWeb3";
 
 interface Props {
   model: {
@@ -40,7 +39,6 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
   const clip = model.clip.getClip(clipId);
 
   const history = useHistory();
-  const { ethereum, contract, initializeWeb3 } = useWeb3(model.nft);
 
   useEffect(() => {
     if (!model.user.id) {
@@ -49,10 +47,6 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
 
     if (!clip || clip.id !== clipId) {
       operations.clip.getClip(clipId);
-    }
-
-    if (!ethereum || !contract) {
-      initializeWeb3();
     }
   }, []);
 
@@ -72,10 +66,17 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
       (model.user.id === "30094526" || clip.broadcasterId === model.user.id)
     ) {
       try {
-        if (!ethereum || !contract) {
-          throw new Error("Failed to initialize web3");
+        try {
+          const { ethereum, contract } =
+            await operations.initializeWeb3Clients();
+
+          if (!operations.nft && ethereum && contract) {
+            operations.createNftCtrl(ethereum, contract);
+          }
+        } catch (error) {
+          snackbar.sendError((error as Error).message);
+          return;
         }
-        operations.createNftCtrl(ethereum, contract);
 
         if (!operations.nft) {
           throw new Error("Failed to initialize nft controller");

@@ -64,40 +64,50 @@ export class NftController {
   }
 
   getTokenMetadata = async (tokenId: string) => {
-    const uri = await this.contractClient.getMetadataTokenUri(tokenId);
-    const metadataCid = uri.replace("ipfs://", "").split("/")[0];
-    console.log("metadataCid", metadataCid);
-
-    const metadata = await this.getMetadataFromIpfs(metadataCid);
-    this.model.createMetadata(metadata);
-  }
-
-  fetchTokenMetadataForAddress = async () => {
-    this.model.meta.setLoading(true);
-    const currentWalletAddress = await this.ethereumClient.signer.getAddress();
-
-    const events = await this.contractClient.getWalletsClipNFTs(
-      currentWalletAddress
-    );
-
-    const tokenIds: string[] = this.getTokenIdsFromEvents(events);
-    console.log("tokenIds", tokenIds);
-
-
-    const metadataCollection: Record<string, any> = {};
-    for (const tokenId of tokenIds) {
+    try {
       const uri = await this.contractClient.getMetadataTokenUri(tokenId);
       const metadataCid = uri.replace("ipfs://", "").split("/")[0];
       console.log("metadataCid", metadataCid);
 
       const metadata = await this.getMetadataFromIpfs(metadataCid);
-      console.log("metadata", metadata);
-
-      metadataCollection[tokenId] = metadata;
+      this.model.createMetadata(metadata);
+    } catch (error) {
+      // TODO SENTRY
+      this.model.meta.setError(NftErrors.INSTALL_METAMASK);
     }
+  }
 
-    this.model.setMetadataCollection(metadataCollection);
-    this.model.meta.setLoading(false);
+  fetchTokenMetadataForAddress = async () => {
+    try {
+      this.model.meta.setLoading(true);
+      const currentWalletAddress = await this.ethereumClient.signer.getAddress();
+
+      const events = await this.contractClient.getWalletsClipNFTs(
+        currentWalletAddress
+      );
+
+      const tokenIds: string[] = this.getTokenIdsFromEvents(events);
+      console.log("tokenIds", tokenIds);
+
+
+      const metadataCollection: Record<string, any> = {};
+      for (const tokenId of tokenIds) {
+        const uri = await this.contractClient.getMetadataTokenUri(tokenId);
+        const metadataCid = uri.replace("ipfs://", "").split("/")[0];
+        console.log("metadataCid", metadataCid);
+
+        const metadata = await this.getMetadataFromIpfs(metadataCid);
+        console.log("metadata", metadata);
+
+        metadataCollection[tokenId] = metadata;
+      }
+
+      this.model.setMetadataCollection(metadataCollection);
+      this.model.meta.setLoading(false);
+    } catch (error) {
+      // TODO SENTRY
+      this.model.meta.setError(NftErrors.INSTALL_METAMASK);
+    }
   }
 
   requestAccounts = async () => {
@@ -199,11 +209,8 @@ export class NftController {
     }, 6500); // The avg block time is around 12 seconds, but we don't want to wait that long
   }
 
-
-
   // TODO fix any
   private getTokenIdsFromEvents = (transferOrApprovalEvents: any[]) => {
     return transferOrApprovalEvents?.map(event => event.args.tokenId.toString());
   }
-
 }

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { IAppController } from "../../domains/app/app.controller";
 import { NftModel } from "../../domains/nfts/nft.model";
 import { AppRoute } from "../../lib/constants";
+import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 import LoginWithTwitch from "../../lib/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
 import ConnectMetamaskButton from "../connectMetamask/ConnectMetamask";
 
@@ -11,9 +12,15 @@ interface Props {
   };
   operations: IAppController;
   redirect: () => string;
+  snackbar: SnackbarClient;
 }
 
-export default function Navbar({ model, operations, redirect }: Props) {
+export default function Navbar({
+  model,
+  operations,
+  redirect,
+  snackbar
+}: Props) {
   return (
     <nav>
       <ul>
@@ -44,7 +51,11 @@ export default function Navbar({ model, operations, redirect }: Props) {
           <Link to={AppRoute.ABOUT}>About</Link>
         </li>
         <LoginWithTwitch redirect={redirect} />
-        <ConnectMetamaskButton model={model} operations={operations} />
+        <ConnectMetamaskButton
+          model={model}
+          operations={operations}
+          snackbar={snackbar}
+        />
       </ul>
     </nav>
   );

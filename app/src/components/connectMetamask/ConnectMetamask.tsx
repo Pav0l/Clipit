@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 
 import { NftModel } from "../../domains/nfts/nft.model";
 import { IAppController } from "../../domains/app/app.controller";
-import { useWeb3 } from "../../lib/hooks/useWeb3";
+import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 
 const ONBOARD_TEXT = "Install MetaMask";
 const CONNECT_TEXT = "Connect";
@@ -16,37 +16,20 @@ interface Props {
     nft: NftModel;
   };
   operations: IAppController;
+  snackbar: SnackbarClient;
 }
 
-function ConnectMetamaskButton({ model, operations }: Props) {
+function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
   const [buttonText, setButtonText] = useState(ONBOARD_TEXT);
   const [isDisabled, setDisabled] = useState(false);
 
-  const { ethereum, contract, initializeWeb3 } = useWeb3(model.nft);
-
   const onboarding = useRef<MetaMaskOnboarding>();
-
-  const setAccounts = async () => {
-    if (operations.nft) {
-      operations.nft.requestAccounts();
-    }
-  };
 
   useEffect(() => {
     if (!onboarding.current) {
       onboarding.current = new MetaMaskOnboarding();
     }
-
-    if (!ethereum || !contract) {
-      initializeWeb3();
-    }
   }, []);
-
-  useEffect(() => {
-    if (!operations.nft && ethereum && contract) {
-      operations.createNftCtrl(ethereum, contract);
-    }
-  }, [ethereum, contract]);
 
   useEffect(() => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
@@ -63,7 +46,24 @@ function ConnectMetamaskButton({ model, operations }: Props) {
 
   const onClick = async () => {
     if (MetaMaskOnboarding.isMetaMaskInstalled()) {
-      setAccounts();
+      try {
+        const { ethereum, contract } = await operations.initializeWeb3Clients();
+
+        if (!operations.nft && ethereum && contract) {
+          operations.createNftCtrl(ethereum, contract);
+        }
+
+        if (!operations.nft) {
+          throw new Error(
+            "Something went wrong. Please install MetaMask and try again"
+          );
+        }
+
+        operations.nft.requestAccounts();
+      } catch (error) {
+        snackbar.sendError((error as Error).message);
+        return;
+      }
     } else {
       onboarding.current!.startOnboarding();
     }

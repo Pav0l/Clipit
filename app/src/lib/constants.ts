@@ -1,4 +1,3 @@
-import { OpenSeaPort, Network } from "opensea-js";
 
 // TODO configurable variables into config file
 // CONTRACT -> into config

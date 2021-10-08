@@ -6,9 +6,10 @@ import { NftModel } from "../../domains/nfts/nft.model";
 import EthereumClient from "../ethereum/ethereum.client";
 import ContractClient from "../contract/contract.client";
 import { EthereumProvider } from "../ethereum/ethereum.types";
+import { NftErrors } from "../../domains/nfts/nft.errors";
 
 export function useWeb3(nftModel: NftModel) {
-  const [{ contract, ethereum }, setWeb3] = useState<{
+  const [{ ethereum, contract }, setWeb3] = useState<{
     contract: ContractClient | null;
     ethereum: EthereumClient | null;
   }>({
@@ -17,12 +18,14 @@ export function useWeb3(nftModel: NftModel) {
   });
 
   async function initializeWeb3() {
+    nftModel.meta.setLoading(true);
+
     const metamaskProvider =
       (await detectEthereumProvider()) as EthereumProvider | null;
 
     if (metamaskProvider === null) {
-      // TODO handle onboarding flow!
-      throw new Error("Please install MetaMask");
+      nftModel.meta.setError(NftErrors.INSTALL_METAMASK);
+      return;
     }
     // TODO remove log
     console.log("creating new ethereum & contract client");
@@ -65,6 +68,7 @@ export function useWeb3(nftModel: NftModel) {
     });
 
     setWeb3({ ethereum, contract });
+    nftModel.meta.setLoading(false);
   }
 
   return { ethereum, contract, initializeWeb3 };

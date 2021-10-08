@@ -55,6 +55,7 @@ async function initializeApp() {
               redirect={getTwitchOAuth2AuthorizeUrl}
               model={{ nft: model.nft }}
               operations={operations}
+              snackbar={snackbarClient}
             />
 
             <Snackbar model={{ snackbar: model.snackbar }} />

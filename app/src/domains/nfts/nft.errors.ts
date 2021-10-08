@@ -1,6 +1,6 @@
 export enum NftErrors {
-  INSTALL_METAMASK = "Please install MetaMask extension and connect your Ethereum Wallet",
-  CONNECT_METAMASK = "Connect your MetaMask wallet to create clip NFT",
+  INSTALL_METAMASK = "Please install MetaMask extension and click the Connect button to view or create Clip NFTs",
+  CONNECT_METAMASK = "Connect your MetaMask wallet to view or create Clip NFTs",
   DISCONNECTED = "It seems we were disconnected. Please check your internet connection",
   FAILED_TO_MINT = "Failed to generate the NFT",
   CONFITM_MINT = "Please confirm the mint transaction in MetaMask",

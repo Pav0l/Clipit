@@ -20,6 +20,7 @@ function NftContainer({ model, operations }: Props) {
   // fetch tokenId from URL
   const { tokenId } = useParams<{ tokenId?: string }>();
   if (!tokenId) {
+    // TODO SENTRY + how is this handled?
     return <ErrorWithRetry text="Something went wrong" withRetry={true} />;
   }
   // construct ethereum and contract clients
@@ -35,11 +36,17 @@ function NftContainer({ model, operations }: Props) {
     if (!operations.nft && ethereum && contract) {
       operations.createNftCtrl(ethereum, contract);
     }
-    // fetch metadata again if controller was just created (operator updated with new controller)
+
     if (!model.nft.metadata && operations.nft) {
       operations.nft.getTokenMetadata(tokenId);
     }
   }, [ethereum, contract]);
+
+  // MetaMask not installed
+  if (model.nft.meta.hasError) {
+    // TODO add onboarding and retry handler button to error msg
+    return <ErrorWithRetry text={model.nft.meta.error} withRetry={false} />;
+  }
 
   if (model.nft.metadata) {
     return (

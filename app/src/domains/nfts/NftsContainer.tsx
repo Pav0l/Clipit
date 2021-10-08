@@ -8,6 +8,7 @@ import { IAppController } from "../app/app.controller";
 import { useWeb3 } from "../../lib/hooks/useWeb3";
 import { Link } from "react-router-dom";
 import { AppRoute } from "../../lib/constants";
+import ErrorWithRetry from "../../components/error/Error";
 
 interface Props {
   model: {
@@ -36,6 +37,12 @@ function NftsContainer({ model, operations }: Props) {
       operations.nft.fetchTokenMetadataForAddress();
     }
   }, [ethereum, contract]);
+
+  // MetaMask not installed
+  if (model.nft.meta.hasError) {
+    // TODO add onboarding and retry handler button to error msg
+    return <ErrorWithRetry text={model.nft.meta.error} withRetry={false} />;
+  }
 
   if (model.nft.meta.isLoading) {
     return <FullPageLoader />;
