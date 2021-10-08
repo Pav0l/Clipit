@@ -28,6 +28,8 @@ import Playground from "./domains/playground/Playground";
 import { ClipItApiClient } from "./lib/clipit-api/clipit-api.client";
 import { HttpClient } from "./lib/http-client";
 import { twitchApiClient } from "./lib/twitch-api/twitch-api.client";
+import ThemeProvider from "./components/themeProvider/ThemeProvider";
+import { defaultTheme } from "./components/themeProvider/theme";
 
 async function initializeApp() {
   const app = new AppController(
@@ -50,80 +52,82 @@ async function initializeApp() {
     ReactDOM.render(
       <React.StrictMode>
         <StoreProvider>
-          <Router basename="/">
-            <Navbar
-              redirect={getTwitchOAuth2AuthorizeUrl}
-              model={{ nft: model.nft }}
-              operations={operations}
-              snackbar={snackbarClient}
-            />
+          <ThemeProvider theme={defaultTheme}>
+            <Router basename="/">
+              <Navbar
+                redirect={getTwitchOAuth2AuthorizeUrl}
+                model={{ nft: model.nft }}
+                operations={operations}
+                snackbar={snackbarClient}
+              />
 
-            <Snackbar model={{ snackbar: model.snackbar }} />
+              <Snackbar model={{ snackbar: model.snackbar }} />
 
-            <Switch>
-              <Route exact path={AppRoute.MARKETPLACE}>
-                <Marketplace />
-              </Route>
-              <Route exact path={AppRoute.NFTS}>
-                {/* TODO this route needs to be auth protected */}
-                <NftsContainer
-                  model={{ nft: model.nft }}
-                  operations={operations}
-                />
-              </Route>
-              <Route exact path={AppRoute.NFT}>
-                {/* TODO this route needs to be auth protected */}
-                <NftContainer
-                  model={{ nft: model.nft }}
-                  operations={operations}
-                />
-              </Route>
-              <Route exact path={AppRoute.CLIPS}>
-                <ErrorBoundary>
+              <Switch>
+                <Route exact path={AppRoute.MARKETPLACE}>
+                  <Marketplace />
+                </Route>
+                <Route exact path={AppRoute.NFTS}>
                   {/* TODO this route needs to be auth protected */}
-                  <ClipsContainer
-                    model={{
-                      clip: model.clip,
-                      user: model.user,
-                      game: model.game
-                    }}
-                    operations={{
-                      clip: operations.clip,
-                      game: operations.game,
-                      user: operations.user
-                    }}
-                  />
-                </ErrorBoundary>
-              </Route>
-              <Route exact path={AppRoute.CLIP}>
-                <ErrorBoundary>
-                  {/* TODO this route needs to be auth protected */}
-                  <ClipDetailContainer
-                    model={{
-                      clip: model.clip,
-                      user: model.user,
-                      game: model.game,
-                      nft: model.nft
-                    }}
+                  <NftsContainer
+                    model={{ nft: model.nft }}
                     operations={operations}
-                    snackbar={snackbarClient}
                   />
-                </ErrorBoundary>
-              </Route>
-              <Route exact path={AppRoute.OAUTH_REDIRECT}>
-                <OAuth2Redirect />
-              </Route>
-              <Route exact path={AppRoute.ABOUT}>
-                <Playground />
-              </Route>
-              <Route path={AppRoute.HOME}>
-                <Home
-                  model={{ clip: model.clip }}
-                  operations={{ clip: operations.clip }}
-                />
-              </Route>
-            </Switch>
-          </Router>
+                </Route>
+                <Route exact path={AppRoute.NFT}>
+                  {/* TODO this route needs to be auth protected */}
+                  <NftContainer
+                    model={{ nft: model.nft }}
+                    operations={operations}
+                  />
+                </Route>
+                <Route exact path={AppRoute.CLIPS}>
+                  <ErrorBoundary>
+                    {/* TODO this route needs to be auth protected */}
+                    <ClipsContainer
+                      model={{
+                        clip: model.clip,
+                        user: model.user,
+                        game: model.game
+                      }}
+                      operations={{
+                        clip: operations.clip,
+                        game: operations.game,
+                        user: operations.user
+                      }}
+                    />
+                  </ErrorBoundary>
+                </Route>
+                <Route exact path={AppRoute.CLIP}>
+                  <ErrorBoundary>
+                    {/* TODO this route needs to be auth protected */}
+                    <ClipDetailContainer
+                      model={{
+                        clip: model.clip,
+                        user: model.user,
+                        game: model.game,
+                        nft: model.nft
+                      }}
+                      operations={operations}
+                      snackbar={snackbarClient}
+                    />
+                  </ErrorBoundary>
+                </Route>
+                <Route exact path={AppRoute.OAUTH_REDIRECT}>
+                  <OAuth2Redirect />
+                </Route>
+                <Route exact path={AppRoute.ABOUT}>
+                  <Playground />
+                </Route>
+                <Route path={AppRoute.HOME}>
+                  <Home
+                    model={{ clip: model.clip }}
+                    operations={{ clip: operations.clip }}
+                  />
+                </Route>
+              </Switch>
+            </Router>
+          </ThemeProvider>
         </StoreProvider>
       </React.StrictMode>,
       document.getElementById("root")

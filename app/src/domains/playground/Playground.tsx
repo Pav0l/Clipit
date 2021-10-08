@@ -1,15 +1,23 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { snackbarClient } from "../../lib/snackbar/snackbar.client";
-import { useStore } from "../../components/storeProvider/StoreProvider";
+import { makeStyles, Theme } from "@material-ui/core";
 
 const Playground = observer(function Playground() {
+  const classes = useStyles();
+
   return (
     <div>
-      <button onClick={() => snackbarClient.sendError("text is here")}>
+      <button
+        className={classes.btn}
+        onClick={() => snackbarClient.sendError("text is here")}
+      >
         SET ERROR
       </button>
-      <button onClick={() => snackbarClient.sendSuccess("yes yes yes")}>
+      <button
+        className={classes.btn2}
+        onClick={() => snackbarClient.sendSuccess("yes yes yes")}
+      >
         SET SUCCESS
       </button>
     </div>
@@ -17,6 +25,17 @@ const Playground = observer(function Playground() {
 });
 
 export default Playground;
+
+const useStyles = makeStyles<Theme>((theme) => ({
+  btn: {
+    background: theme.palette.background.default,
+    color: theme.palette.text.primary
+  },
+  btn2: {
+    background: theme.palette.background.default,
+    color: theme.palette.text.secondary
+  }
+}));
 
 function BuggyCounter() {
   const [counter, setCount] = useState(0);

@@ -17,7 +17,6 @@ class TwitchOAuthApiClient {
         Authorization: `Bearer ${token}`
       }
     });
-    // TODO handle 401
     console.log(resp);
   }
 
