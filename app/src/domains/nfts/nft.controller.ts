@@ -65,11 +65,7 @@ export class NftController {
 
   getTokenMetadata = async (tokenId: string) => {
     try {
-      const uri = await this.contractClient.getMetadataTokenUri(tokenId);
-      const metadataCid = uri.replace("ipfs://", "").split("/")[0];
-      console.log("metadataCid", metadataCid);
-
-      const metadata = await this.getMetadataFromIpfs(metadataCid);
+      const metadata = await this.fetchTokenMetadata(tokenId)
       this.model.createMetadata(metadata);
     } catch (error) {
       // TODO SENTRY
@@ -77,7 +73,7 @@ export class NftController {
     }
   }
 
-  fetchTokenMetadataForAddress = async () => {
+  getCurrentSignerTokensMetadata = async () => {
     try {
       this.model.meta.setLoading(true);
       const currentWalletAddress = await this.ethereumClient.signer.getAddress();
@@ -89,16 +85,9 @@ export class NftController {
       const tokenIds: string[] = this.getTokenIdsFromEvents(events);
       console.log("tokenIds", tokenIds);
 
-
       const metadataCollection: Record<string, any> = {};
       for (const tokenId of tokenIds) {
-        const uri = await this.contractClient.getMetadataTokenUri(tokenId);
-        const metadataCid = uri.replace("ipfs://", "").split("/")[0];
-        console.log("metadataCid", metadataCid);
-
-        const metadata = await this.getMetadataFromIpfs(metadataCid);
-        console.log("metadata", metadata);
-
+        const metadata = await this.fetchTokenMetadata(tokenId)
         metadataCollection[tokenId] = metadata;
       }
 
@@ -132,6 +121,13 @@ export class NftController {
       }
       this.snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
     }
+  }
+
+  private fetchTokenMetadata = async (tokenId: string) => {
+    const uri = await this.contractClient.getMetadataTokenUri(tokenId);
+    const metadataCid = uri.replace("ipfs://", "").split("/")[0];
+
+    return await this.getMetadataFromIpfs(metadataCid);
   }
 
   private mintNFT = async (metadataCid: string, clipId: string, walletAddress: string) => {

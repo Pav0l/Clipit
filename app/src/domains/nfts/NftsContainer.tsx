@@ -34,7 +34,7 @@ function NftsContainer({ model, operations }: Props) {
     }
     // fetch current address token ids and its metadata
     if (tokenIds.length === 0 && operations.nft) {
-      operations.nft.fetchTokenMetadataForAddress();
+      operations.nft.getCurrentSignerTokensMetadata();
     }
   }, [ethereum, contract]);
 
