@@ -1,5 +1,4 @@
 import { Button } from "@material-ui/core";
-import "./LoginWithTwitch.css";
 
 function LoginWithTwitch({ redirect }: { redirect: () => string }) {
   return (

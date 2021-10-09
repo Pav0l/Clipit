@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { makeStyles, Typography, Link } from "@material-ui/core";
+import { Link as RouterLink } from "react-router-dom";
 import { IAppController } from "../../domains/app/app.controller";
 import { NftModel } from "../../domains/nfts/nft.model";
 import { AppRoute } from "../../lib/constants";
@@ -21,42 +22,67 @@ export default function Navbar({
   redirect,
   snackbar
 }: Props) {
+  const classes = useStyles();
+
   return (
-    <nav>
-      <ul>
-        <li>
-          <Link to={AppRoute.HOME}>Home</Link>
-        </li>
-        <li>
-          <Link to={AppRoute.MARKETPLACE}>Marketplace</Link>
-        </li>
-        <li>
-          <Link to={AppRoute.NFTS}>Nfts</Link>
-        </li>
-        {/* TODO remove this link */}
-        <li>
-          <Link
-            to={
-              AppRoute.NFTS +
-              "/36233396072335468701985568828909990904923376377298966903472230465470283407670"
-            }
-          >
-            Nft one
-          </Link>
-        </li>
-        <li>
-          <Link to={AppRoute.CLIPS}>Clips</Link>
-        </li>
-        <li>
-          <Link to={AppRoute.ABOUT}>About</Link>
-        </li>
+    <nav className={classes.nav}>
+      <div className={classes.div}>
+        <LinkButton to={AppRoute.HOME} text="Home" />
+        <LinkButton to={AppRoute.MARKETPLACE} text="Marketplace" />
+        <LinkButton to={AppRoute.NFTS} text="NFTs" />
+        {/* <LinkButton
+          to={
+            AppRoute.NFTS +
+            "/36233396072335468701985568828909990904923376377298966903472230465470283407670"
+          }
+          text="DELETE ME"
+        /> */}
+
+        <LinkButton to={AppRoute.CLIPS} text="Clips" />
+        <LinkButton to={AppRoute.ABOUT} text="About" />
+      </div>
+
+      <div>
         <LoginWithTwitch redirect={redirect} />
         <ConnectMetamaskButton
           model={model}
           operations={operations}
           snackbar={snackbar}
         />
-      </ul>
+      </div>
     </nav>
   );
 }
+
+function LinkButton({ to, text }: { to: AppRoute; text: string }) {
+  const classes = useStyles();
+  return (
+    <Link
+      component={RouterLink}
+      to={to}
+      underline="none"
+      className={classes.li}
+    >
+      <Typography>{text}</Typography>
+    </Link>
+  );
+}
+
+const useStyles = makeStyles((theme) => ({
+  nav: {
+    margin: "1rem 0",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between"
+  },
+  div: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    margin: 0
+  },
+  li: {
+    display: "block",
+    padding: "0.5rem 1rem"
+  }
+}));
