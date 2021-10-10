@@ -1,17 +1,11 @@
-import "./Home.css";
 import React from "react";
-import {
-  Button,
-  CircularProgress,
-  Box,
-  TextField,
-  Typography
-} from "@material-ui/core";
+import { Button, makeStyles, TextField, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useInputData } from "../../lib/hooks/useInputData";
 import { useHistory } from "react-router-dom";
 import { ClipModel } from "../../domains/twitch-clips/clip.model";
 import { ClipController } from "../../domains/twitch-clips/clip.controller";
+import FullPageLoader from "../loader/FullPageLoader";
 
 interface Props {
   model: {
@@ -26,6 +20,7 @@ function Home({ model, operations }: Props) {
   const [inputData, inputHandler, clearInput] = useInputData();
 
   const history = useHistory();
+  const classes = useStyles();
 
   const buttonHandler = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -41,33 +36,31 @@ function Home({ model, operations }: Props) {
   };
 
   if (model.clip.meta.isLoading) {
-    return (
-      <Box className="container">
-        <CircularProgress />
-      </Box>
-    );
+    return <FullPageLoader />;
   }
 
   return (
-    <div className="container">
-      <main className="main">
-        <h1 className="title">clip it</h1>
-        <Typography variant="h4" className="description">
+    <div className={classes.container}>
+      <main className={classes.main}>
+        <Typography variant="h2" className={classes.title}>
+          clip it
+        </Typography>
+        <Typography variant="h4" className={classes.description}>
           {/* Show off your great moments by generating immutable NFTs stored on distributed file system */}
           Convert your greatest moments to unique digital collectibles for your
           fans to collect
         </Typography>
         <TextField
           id="clip_url_input"
-          label="Twitch clip URL:"
-          className="input"
+          label="Login with Twitch or enter Twitch clip URL:"
+          className={classes.input}
           value={inputData}
           onChange={(ev) => inputHandler(ev)}
         ></TextField>
         <Button
           variant="contained"
           color="primary"
-          className="button"
+          className={classes.button}
           onClick={(ev) => buttonHandler(ev)}
         >
           Generate NFT
@@ -78,3 +71,39 @@ function Home({ model, operations }: Props) {
 }
 
 export default observer(Home);
+
+const useStyles = makeStyles((theme) => ({
+  title: {
+    textAlign: "center",
+    cursor: "default",
+    color: "#2176FF", // theme.palette.text.primary,
+    textDecoration: "none",
+    margin: "1rem 0",
+    fontWeight: "bolder"
+  },
+  input: {
+    width: "80vw",
+    margin: "1.8rem 0",
+    color: theme.palette.text.hint
+  },
+  description: {
+    maxWidth: "80vw"
+  },
+  button: {
+    alignSelf: "flex-end",
+    backgroundColor: "#2176FF"
+  },
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  main: {
+    padding: "5rem 0",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "flex-start"
+  }
+}));

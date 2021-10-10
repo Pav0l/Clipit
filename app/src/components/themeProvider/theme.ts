@@ -10,6 +10,9 @@ export const defaultThemeOpts: ThemeOptions = {
     background: {
     },
     text: {
+      // primary: "#2176FF",
+      // secondary: "#F79824",
+      // hint: "#31393C"
     }
   }
 };

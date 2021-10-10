@@ -83,6 +83,11 @@ const useStyles = makeStyles((theme) => ({
   },
   li: {
     display: "block",
-    padding: "0.5rem 1rem"
+    padding: "0.5rem 1rem",
+    color: theme.palette.text.primary,
+    "& :hover": {
+      // TODO - this flickers because it applies on child typography
+      // borderBottom: `1px solid ${theme.palette.text.secondary}`
+    }
   }
 }));
