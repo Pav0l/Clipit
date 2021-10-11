@@ -1,4 +1,3 @@
-import "./ClipDetail.css";
 import { useEffect, useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { observer } from "mobx-react-lite";

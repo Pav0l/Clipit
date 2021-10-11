@@ -1,4 +1,3 @@
-import "./Clips.css";
 import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { Box, Typography } from "@material-ui/core";
