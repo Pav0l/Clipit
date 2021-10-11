@@ -24,7 +24,7 @@ export const ipfsIoGatewayUri = "https://ipfs.io/ipfs";
 // export const seaport = new OpenSeaPort((window as any).ethereum, {
 //   networkName: Network.Rinkeby
 // });
-export const openSeaCollectionUrl = "https://testnets.opensea.io/collection"; // -> into config
+export const openSeaCollectionUrl = "https://testnets.opensea.io/collection/clipit?embed=true"; // -> into config
 
 // TWITCH
 export const twitchAppClientId = "0japyt7fgxgarzd4oadqk8bb2orf0f";
