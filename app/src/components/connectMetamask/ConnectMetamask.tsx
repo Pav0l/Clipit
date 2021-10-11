@@ -1,4 +1,4 @@
-import { Button } from "@material-ui/core";
+import { Button, makeStyles } from "@material-ui/core";
 import MetaMaskOnboarding from "@metamask/onboarding";
 import { observer } from "mobx-react-lite";
 import { useState, useRef, useEffect } from "react";
@@ -6,6 +6,8 @@ import { useState, useRef, useEffect } from "react";
 import { NftModel } from "../../domains/nfts/nft.model";
 import { IAppController } from "../../domains/app/app.controller";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
+
+import MetamaskIcon from "../../assets/metamask.svg";
 
 const ONBOARD_TEXT = "Install MetaMask";
 const CONNECT_TEXT = "Connect";
@@ -24,6 +26,7 @@ function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
   const [isDisabled, setDisabled] = useState(false);
 
   const onboarding = useRef<MetaMaskOnboarding>();
+  const classes = useStyles();
 
   useEffect(() => {
     if (!onboarding.current) {
@@ -70,10 +73,23 @@ function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
   };
 
   return (
-    <Button disabled={isDisabled} onClick={onClick}>
+    <Button
+      startIcon={<MetamaskIcon />}
+      className={classes.button}
+      disabled={isDisabled}
+      onClick={onClick}
+    >
       {buttonText}
     </Button>
   );
 }
 
 export default observer(ConnectMetamaskButton);
+
+const useStyles = makeStyles(() => ({
+  button: {
+    border: "1px solid black",
+    padding: "5px 10px",
+    textTransform: "none"
+  }
+}));
