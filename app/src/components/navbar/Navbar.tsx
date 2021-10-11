@@ -1,4 +1,10 @@
-import { makeStyles, Typography, Link } from "@material-ui/core";
+import {
+  makeStyles,
+  Typography,
+  Link,
+  AppBar,
+  Toolbar
+} from "@material-ui/core";
 import { Link as RouterLink } from "react-router-dom";
 import { IAppController } from "../../domains/app/app.controller";
 import { NftModel } from "../../domains/nfts/nft.model";
@@ -25,32 +31,26 @@ export default function Navbar({
   const classes = useStyles();
 
   return (
-    <nav className={classes.nav}>
-      <div className={classes.div}>
-        <LinkButton to={AppRoute.HOME} text="Home" />
-        <LinkButton to={AppRoute.MARKETPLACE} text="Marketplace" />
-        <LinkButton to={AppRoute.NFTS} text="NFTs" />
-        {/* <LinkButton
-          to={
-            AppRoute.NFTS +
-            "/36233396072335468701985568828909990904923376377298966903472230465470283407670"
-          }
-          text="DELETE ME"
-        /> */}
+    <AppBar position="static" className={classes.appbar}>
+      <Toolbar className={classes.toolbar}>
+        <div className={classes.div}>
+          <LinkButton to={AppRoute.HOME} text="Home" />
+          <LinkButton to={AppRoute.MARKETPLACE} text="Marketplace" />
+          <LinkButton to={AppRoute.NFTS} text="NFTs" />
+          <LinkButton to={AppRoute.CLIPS} text="Clips" />
+          <LinkButton to={AppRoute.ABOUT} text="About" />
+        </div>
 
-        <LinkButton to={AppRoute.CLIPS} text="Clips" />
-        <LinkButton to={AppRoute.ABOUT} text="About" />
-      </div>
-
-      <div>
-        <LoginWithTwitch redirect={redirect} />
-        <ConnectMetamaskButton
-          model={model}
-          operations={operations}
-          snackbar={snackbar}
-        />
-      </div>
-    </nav>
+        <div>
+          <LoginWithTwitch redirect={redirect} />
+          <ConnectMetamaskButton
+            model={model}
+            operations={operations}
+            snackbar={snackbar}
+          />
+        </div>
+      </Toolbar>
+    </AppBar>
   );
 }
 
@@ -69,11 +69,15 @@ function LinkButton({ to, text }: { to: AppRoute; text: string }) {
 }
 
 const useStyles = makeStyles((theme) => ({
-  nav: {
-    margin: "1rem 0",
+  appbar: {
+    backgroundColor: "#fff",
+    boxShadow: "none"
+  },
+  toolbar: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    margin: 0
   },
   div: {
     display: "flex",
@@ -85,9 +89,9 @@ const useStyles = makeStyles((theme) => ({
     display: "block",
     padding: "0.5rem 1rem",
     color: theme.palette.text.primary,
-    "& :hover": {
-      // TODO - this flickers because it applies on child typography
-      // borderBottom: `1px solid ${theme.palette.text.secondary}`
+    borderBottom: "1px solid white",
+    "&:hover": {
+      borderBottom: `1px solid black`
     }
   }
 }));

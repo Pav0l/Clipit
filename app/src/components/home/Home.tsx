@@ -40,8 +40,8 @@ function Home({ model, operations }: Props) {
   }
 
   return (
-    <div className={classes.container}>
-      <main className={classes.main}>
+    <main className={classes.main}>
+      <section className={classes.section}>
         <Typography variant="h2" className={classes.title}>
           clip it
         </Typography>
@@ -65,8 +65,8 @@ function Home({ model, operations }: Props) {
         >
           Generate NFT
         </Button>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }
 
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
   title: {
     textAlign: "center",
     cursor: "default",
-    color: "#2176FF", // theme.palette.text.primary,
+    color: "#2176FF",
     textDecoration: "none",
     margin: "1rem 0",
     fontWeight: "bolder"
@@ -93,13 +93,14 @@ const useStyles = makeStyles((theme) => ({
     alignSelf: "flex-end",
     backgroundColor: "#2176FF"
   },
-  container: {
+  main: {
+    marginTop: "5rem",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center"
   },
-  main: {
+  section: {
     padding: "5rem 0",
     display: "flex",
     flexDirection: "column",
