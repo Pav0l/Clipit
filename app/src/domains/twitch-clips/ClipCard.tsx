@@ -1,50 +1,51 @@
-import "./ClipCard.css";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-// import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
+import {
+  makeStyles,
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+  Typography
+} from "@material-ui/core";
 
-export function ClipCard(props: ClipCardProps) {
+interface Props {
+  title: string;
+  thumbnailUrl: string;
+}
+
+export function ClipCard(props: Props) {
+  const classes = useStyles();
+
   return (
-    <Card className="clip-card">
+    <Card className={classes.card}>
       <CardActionArea>
         <CardMedia
           component="img"
-          alt={props.title}
+          alt="Clip thumbnail"
           image={props.thumbnailUrl}
-          title={props.title}
         />
-        <CardContent className="clip-text">
-          <Typography variant="subtitle1" component="h6" className="clip-title">
+        <CardContent>
+          <Typography
+            variant="subtitle1"
+            component="p"
+            noWrap
+            className={classes.title}
+          >
             {props.title}
           </Typography>
-          {/* <Typography variant="body2" color="textSecondary" component="p">
-            {props.broadcasterName} playing {props.gameId}
-          </Typography> */}
-          <Typography variant="body2" color="textSecondary" component="p">
-            {props.viewCount} views
-          </Typography>
-          {/* <Button size="small" color="primary">
-            Mint
-          </Button> */}
         </CardContent>
       </CardActionArea>
-      {/* <CardActions>
-        <Button size="small" color="primary">
-          Mint
-        </Button>
-      </CardActions> */}
     </Card>
   );
 }
 
-interface ClipCardProps {
-  title: string;
-  thumbnailUrl: string;
-  broadcasterName: string;
-  gameId: string;
-  viewCount: number;
-}
+const useStyles = makeStyles(() => ({
+  card: {
+    width: "25rem",
+    margin: "1rem",
+    maxWidth: "350px"
+  },
+  title: {
+    fontWeight: 600,
+    color: "#31393C"
+  }
+}));
