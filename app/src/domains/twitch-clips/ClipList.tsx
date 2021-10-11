@@ -1,7 +1,5 @@
-import "./Clips.css";
-
 import { Link } from "react-router-dom";
-import { Box, Typography } from "@material-ui/core";
+import { Box, makeStyles, Typography } from "@material-ui/core";
 
 import { ClipCard } from "./ClipCard";
 
@@ -20,31 +18,35 @@ interface Clip {
 }
 
 function EmptyList() {
+  const classes = useStyles();
+
   return (
-    <Box className="clips-container with-center-content">
+    <Box className={classes.noClipsContainer}>
       <Typography variant="h6" component="h6">
-        Looks like you don't have any Twitch clips yet...
+        Looks like there aren't any yet 🤷‍♂️...
       </Typography>
+      {/* TODO - add "create clip" button here that creates clip via twitch API? 
+            - or redirects to broadcasters vids or wherever streamers make clips
+       */}
     </Box>
   );
 }
 
 export default function ClipList({ clipList }: Props) {
+  const classes = useStyles();
+
   return (
     <>
       {clipList.length === 0 ? (
         <EmptyList />
       ) : (
-        <Box className="clips-container">
+        <Box className={classes.container}>
           {clipList.map((clip, idx) => {
             return (
-              <Link to={`/clips/${clip.id}`} key={idx}>
+              <Link to={`/clips/${clip.id}`} key={idx} className={classes.link}>
                 <ClipCard
                   title={clip.title}
-                  gameId={clip.game}
-                  broadcasterName={clip.broadcasterName}
                   thumbnailUrl={clip.thumbnailUrl}
-                  viewCount={clip.viewCount}
                   key={idx}
                 />
               </Link>
@@ -63,3 +65,22 @@ export default function ClipList({ clipList }: Props) {
     </>
   );
 }
+
+const useStyles = makeStyles(() => ({
+  link: {
+    textDecoration: "none"
+  },
+  container: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    flexWrap: "wrap"
+  },
+  noClipsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginTop: "2rem"
+  }
+}));
