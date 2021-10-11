@@ -8,8 +8,7 @@ export default function FullPageLoader() {
       width="100%"
       justifyContent="center"
       flexDirection="column"
-      // TODO fix height
-      minHeight="100vh"
+      minHeight="90vh"
     >
       <CircularProgress />
     </Box>
