@@ -23,7 +23,7 @@ function EmptyList() {
   return (
     <Box className={classes.noClipsContainer}>
       <Typography variant="h6" component="h6">
-        Looks like there aren't any yet 🤷‍♂️...
+        Looks like you don't have any Twitch Clips yet...
       </Typography>
       {/* TODO - add "create clip" button here that creates clip via twitch API? 
             - or redirects to broadcasters vids or wherever streamers make clips
@@ -68,13 +68,15 @@ export default function ClipList({ clipList }: Props) {
 
 const useStyles = makeStyles(() => ({
   link: {
-    textDecoration: "none"
+    textDecoration: "none",
+    margin: "1rem"
   },
   container: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-around",
-    flexWrap: "wrap"
+    justifyContent: "center",
+    flexWrap: "wrap",
+    margin: "0 1rem"
   },
   noClipsContainer: {
     display: "flex",

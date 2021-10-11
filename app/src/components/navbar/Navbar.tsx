@@ -71,7 +71,8 @@ function LinkButton({ to, text }: { to: AppRoute; text: string }) {
 const useStyles = makeStyles((theme) => ({
   appbar: {
     backgroundColor: "#fff",
-    boxShadow: "none"
+    boxShadow: "none",
+    marginBottom: "0.5rem"
   },
   toolbar: {
     display: "flex",

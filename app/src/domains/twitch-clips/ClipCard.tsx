@@ -40,12 +40,12 @@ export function ClipCard(props: Props) {
 
 const useStyles = makeStyles(() => ({
   card: {
-    width: "25rem",
-    margin: "1rem",
+    width: "25vw",
     maxWidth: "350px"
   },
   title: {
     fontWeight: 600,
-    color: "#31393C"
+    color: "#31393C",
+    fontSize: "1rem"
   }
 }));

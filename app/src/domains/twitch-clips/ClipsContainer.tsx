@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
-import { Box, Typography } from "@material-ui/core";
 
 import ErrorWithRetry from "../../components/error/Error";
 import FullPageLoader from "../../components/loader/FullPageLoader";
@@ -66,17 +65,13 @@ function ClipsContainer({ model, operations }: Props) {
   });
 
   return (
-    <Box>
-      <Typography variant="h5" component="h5">
-        Your Twitch clips
-      </Typography>
-
+    <>
       {model.user.meta.isLoading || model.clip.meta.isLoading ? (
         <FullPageLoader />
       ) : (
         <ClipList clipList={clipList} />
       )}
-    </Box>
+    </>
   );
 }
 
