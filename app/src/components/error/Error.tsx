@@ -1,4 +1,4 @@
-import { Box, Typography, Link } from "@material-ui/core";
+import { Box, Typography, Link, makeStyles } from "@material-ui/core";
 
 interface Props {
   text: string;
@@ -6,22 +6,34 @@ interface Props {
 }
 
 function PleaseTryAgain() {
+  const classes = useStyles();
+
   return (
     <Box>
-      Please{" "}
-      <Link href={window.location.href} underline="always">
-        try again
-      </Link>{" "}
-      or {/* TODO implement 'contact us' form */}
-      <Link href="#" underline="always">
-        contact us
-      </Link>
-      .
+      <Typography variant="body1" className={classes.bodyP}>
+        Please{" "}
+        <Link
+          component="button"
+          variant="body1"
+          className={classes.linkBtn}
+          onClick={() => window.location.reload()}
+          underline="always"
+        >
+          try again
+        </Link>{" "}
+        or {/* TODO implement 'contact us' form */}
+        <Link href="#" underline="always">
+          contact us
+        </Link>
+        .
+      </Typography>
     </Box>
   );
 }
 
 function ErrorWithRetry({ text, withRetry }: Props) {
+  const classes = useStyles();
+
   return (
     <Box
       display="flex"
@@ -30,10 +42,24 @@ function ErrorWithRetry({ text, withRetry }: Props) {
       justifyContent="center"
       flexDirection="column"
     >
-      <Typography variant="h6">{text}</Typography>
+      <Typography variant="h5" className={classes.title}>
+        {text}
+      </Typography>
       {withRetry ? <PleaseTryAgain /> : null}
     </Box>
   );
 }
 
 export default ErrorWithRetry;
+
+const useStyles = makeStyles(() => ({
+  title: {
+    marginTop: "15rem"
+  },
+  bodyP: {
+    margin: "1rem 0"
+  },
+  linkBtn: {
+    verticalAlign: "baseline"
+  }
+}));
