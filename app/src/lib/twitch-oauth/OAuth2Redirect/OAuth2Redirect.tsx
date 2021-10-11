@@ -1,16 +1,13 @@
 import { observer } from "mobx-react-lite";
 import { useHistory } from "react-router-dom";
-import { Typography } from "@material-ui/core";
 
-import "./OAuth2Redirect.css";
 import {
   parseDataFromUrl,
   parseDataFromState,
   verifyStateSecret,
-  storeTokenAndRemoveSecret,
-  getTwitchOAuth2AuthorizeUrl
+  storeTokenAndRemoveSecret
 } from "../twitch-oauth.utils";
-import LoginWithTwitch from "../LoginWithTwitch/LoginWithTwitch";
+import ErrorWithRetry from "../../../components/error/Error";
 
 const OAuth2Redirect = observer(() => {
   const { access_token: token, state } = parseDataFromUrl(
@@ -31,12 +28,10 @@ const OAuth2Redirect = observer(() => {
   }
 
   return (
-    <Typography variant="h6" className="description">
-      Something went wrong with your Twitch Login. Please try again or contact
-      us.
-      <br></br>
-      <LoginWithTwitch redirect={getTwitchOAuth2AuthorizeUrl} />
-    </Typography>
+    <ErrorWithRetry
+      text="Something went wrong with your Twitch Login."
+      withRetry={true}
+    />
   );
 });
 
