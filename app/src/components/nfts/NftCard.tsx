@@ -1,7 +1,10 @@
-import CardMedia from "@material-ui/core/CardMedia";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
+import {
+  CardMedia,
+  Card,
+  CardContent,
+  Typography,
+  makeStyles
+} from "@material-ui/core";
 
 interface Props {
   clipIpfsUri: string;
@@ -13,9 +16,15 @@ interface Props {
  * NftCard presentation component displays NFTs metadata as a card with embedded video player
  */
 export function NftCard({ clipIpfsUri, clipTitle, clipDescription }: Props) {
+  const classes = useStyles();
+
   return (
-    <Card>
-      <CardMedia component="iframe" src={clipIpfsUri} title={clipTitle} />
+    <Card className={classes.card}>
+      <CardMedia
+        component="video"
+        src={clipIpfsUri}
+        title={`CLIP NFT video: ${clipTitle}`}
+      />
       <CardContent>
         <Typography variant="subtitle1" component="h6">
           {clipTitle}
@@ -27,3 +36,10 @@ export function NftCard({ clipIpfsUri, clipTitle, clipDescription }: Props) {
     </Card>
   );
 }
+
+const useStyles = makeStyles(() => ({
+  card: {
+    margin: "1rem",
+    maxWidth: "85vw"
+  }
+}));
