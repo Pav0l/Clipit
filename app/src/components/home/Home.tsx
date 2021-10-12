@@ -63,7 +63,7 @@ function Home({ model, operations }: Props) {
           className={classes.button}
           onClick={(ev) => buttonHandler(ev)}
         >
-          Generate NFT
+          Create NFT
         </Button>
       </section>
     </main>
@@ -90,8 +90,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: "80vw"
   },
   button: {
-    alignSelf: "flex-end",
-    backgroundColor: "#2176FF"
+    alignSelf: "flex-end"
   },
   main: {
     marginTop: "5rem",

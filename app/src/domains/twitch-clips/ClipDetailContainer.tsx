@@ -3,11 +3,11 @@ import { useParams, useHistory } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import {
   Card,
-  CardActionArea,
   CardContent,
   CardMedia,
   Button,
-  Typography
+  Typography,
+  makeStyles
 } from "@material-ui/core";
 import ErrorWithRetry from "../../components/error/Error";
 
@@ -19,6 +19,7 @@ import { UserModel } from "../twitch-user/user.model";
 import { GameModel } from "../twitch-games/game.model";
 import { NftModel } from "../nfts/nft.model";
 import { IAppController } from "../app/app.controller";
+import FullPageLoader from "../../components/loader/FullPageLoader";
 
 interface Props {
   model: {
@@ -38,6 +39,7 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
   const clip = model.clip.getClip(clipId);
 
   const history = useHistory();
+  const classes = useStyles();
 
   useEffect(() => {
     if (!model.user.id) {
@@ -125,7 +127,7 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
     model.user.meta.isLoading ||
     model.nft.meta.isLoading
   ) {
-    return <div>Loading...</div>;
+    return <FullPageLoader />;
   }
 
   if (!clip) {
@@ -155,10 +157,21 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
   }
 
   return (
-    <Card className="clip-detail">
-      <CardActionArea>
-        <CardMedia component="iframe" src={clip.embedUrl} title={clip.title} />
-        <CardContent className="clip-detail-text">
+    <Card className={classes.container}>
+      <CardMedia
+        component="iframe"
+        frameBorder="0"
+        scrolling="no"
+        allowFullScreen={true}
+        height="100%"
+        width="100%"
+        src={clip.embedUrl}
+        title={"Twitch clip embedded in iframe"}
+        className={classes.iframe}
+      />
+
+      <CardContent className={classes.content}>
+        <div>
           <Typography variant="subtitle1" component="h6" className="clip-title">
             {clip.title}
           </Typography>
@@ -166,21 +179,40 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
             {clip.broadcasterName} playing{" "}
             {model.game.getGame(clip.gameId) ?? "game"}
           </Typography>
-        </CardContent>
-      </CardActionArea>
-      <Button
-        size="small"
-        color="primary"
-        disabled={isDisabled}
-        onClick={initMint}
-      >
-        Mint
-      </Button>
+        </div>
+        <Button
+          size="medium"
+          color="primary"
+          variant="contained"
+          disabled={isDisabled}
+          onClick={initMint}
+        >
+          {/* Mint */}
+          Create NFT
+        </Button>
+      </CardContent>
     </Card>
   );
 }
 
 export default observer(ClipDetailContainer);
+
+const useStyles = makeStyles(() => ({
+  container: {
+    margin: "2rem auto",
+    borderRadius: "0px"
+  },
+  iframe: {
+    // video aspect ratio is 16:9
+    width: "80vw",
+    height: "45vw"
+  },
+  content: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between"
+  }
+}));
 
 /**
 

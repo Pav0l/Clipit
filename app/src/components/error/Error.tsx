@@ -34,6 +34,11 @@ function PleaseTryAgain() {
 function ErrorWithRetry({ text, withRetry }: Props) {
   const classes = useStyles();
 
+  if (!text) {
+    text = "Something went wrong.";
+    withRetry = true;
+  }
+
   return (
     <Box
       display="flex"

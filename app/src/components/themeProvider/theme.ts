@@ -4,15 +4,17 @@ import { createTheme, ThemeOptions } from "@material-ui/core";
 export const defaultThemeOpts: ThemeOptions = {
   // TODO
   overrides: {
+    "MuiButton": {
+      containedPrimary: {
+        backgroundColor: "#2176FF"
+      }
+    }
 
   },
   palette: {
     background: {
     },
     text: {
-      // primary: "#2176FF",
-      // secondary: "#F79824",
-      // hint: "#31393C"
     }
   }
 };
