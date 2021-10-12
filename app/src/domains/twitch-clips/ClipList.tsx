@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Box, makeStyles, Typography } from "@material-ui/core";
 
 import { ClipCard } from "./ClipCard";
+import VideoList from "../../components/videoList/VideoList";
 
 interface Props {
   clipList: Clip[];
@@ -40,7 +41,7 @@ export default function ClipList({ clipList }: Props) {
       {clipList.length === 0 ? (
         <EmptyList />
       ) : (
-        <Box className={classes.container}>
+        <VideoList>
           {clipList.map((clip, idx) => {
             return (
               <Link to={`/clips/${clip.id}`} key={idx} className={classes.link}>
@@ -52,7 +53,7 @@ export default function ClipList({ clipList }: Props) {
               </Link>
             );
           })}
-        </Box>
+        </VideoList>
       )}
 
       {/* <Button
@@ -70,13 +71,6 @@ const useStyles = makeStyles(() => ({
   link: {
     textDecoration: "none",
     margin: "1rem"
-  },
-  container: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    flexWrap: "wrap",
-    margin: "0 1rem"
   },
   noClipsContainer: {
     display: "flex",

@@ -9,6 +9,7 @@ import { useWeb3 } from "../../lib/hooks/useWeb3";
 import { Link } from "react-router-dom";
 import { AppRoute } from "../../lib/constants";
 import ErrorWithRetry from "../../components/error/Error";
+import VideoList from "../../components/videoList/VideoList";
 
 interface Props {
   model: {
@@ -58,8 +59,7 @@ function NftsContainer({ model, operations }: Props) {
   }
 
   return (
-    // TODO box -> flexbox + css
-    <div>
+    <VideoList>
       {tokenIds.map((tokenId, idx) => (
         <NftCard
           key={idx}
@@ -68,7 +68,7 @@ function NftsContainer({ model, operations }: Props) {
           clipDescription={model.nft.metadataCollection[tokenId].description}
         />
       ))}
-    </div>
+    </VideoList>
   );
 }
 
