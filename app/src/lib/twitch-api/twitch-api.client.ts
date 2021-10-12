@@ -140,9 +140,20 @@ const clip = {
   thumbnail_url: "https://clips-media-assets2.twitch.tv/AT-cm%7C1300029032-preview-260x147.jpg",
   view_count: 20000
 };
+const clip1 = {
+  id: "VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW",
+  url: "https://clips.twitch.tv/VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW",
+  embed_url: `https://clips.twitch.tv/embed?clip=VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW`,
+  broadcaster_id: "30094526",
+  broadcaster_name: "h0pp",
+  game_id: "493057",
+  title: "Hi there! Hi there! Hi there! Hi there! Hi there! Hi there! Hi there! Hi there! Hi there! Hi there! ",
+  thumbnail_url: "https://clips-media-assets2.twitch.tv/AT-cm%7C1300029032-preview-260x147.jpg",
+  view_count: 20000
+};
 
 const clipResp = {
-  data: [clip, clip, clip, clip, clip, clip, clip, clip]
+  data: [clip1, clip, clip1, clip, clip1, clip1, clip, clip, clip, clip, clip, clip, clip, clip, clip]
 };
 
 const res = {
