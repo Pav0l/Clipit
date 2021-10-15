@@ -1,13 +1,52 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { snackbarClient } from "../../lib/snackbar/snackbar.client";
+import {
+  SnackbarClient,
+  snackbarClient
+} from "../../lib/snackbar/snackbar.client";
 import { makeStyles, Theme } from "@material-ui/core";
+import { NftModel } from "../nfts/nft.model";
+import { IAppController } from "../app/app.controller";
 
-const Playground = observer(function Playground() {
+interface Props {
+  model: {
+    nft: NftModel;
+  };
+  operations: IAppController;
+  snackbar: SnackbarClient;
+}
+
+const Playground = observer(function Playground({
+  model,
+  operations,
+  snackbar
+}: Props) {
   const classes = useStyles();
+
+  const onClick = async () => {
+    try {
+      const { ethereum, contract } = await operations.initializeWeb3Clients();
+
+      if (!operations.nft && ethereum && contract) {
+        operations.createNftCtrl(ethereum, contract);
+      }
+
+      if (!operations.nft) {
+        throw new Error(
+          "Something went wrong. Please install MetaMask and try again"
+        );
+      }
+
+      // DO SOMETHING
+    } catch (error) {
+      snackbar.sendError((error as Error).message);
+      return;
+    }
+  };
 
   return (
     <div>
+      <button onClick={onClick}>Do something!</button>
       <button
         className={classes.btn}
         onClick={() => snackbarClient.sendError("text is here")}

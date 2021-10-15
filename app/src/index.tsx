@@ -117,7 +117,13 @@ async function initializeApp() {
                   <OAuth2Redirect />
                 </Route>
                 <Route exact path={AppRoute.ABOUT}>
-                  <Playground />
+                  <Playground
+                    model={{
+                      nft: model.nft
+                    }}
+                    operations={operations}
+                    snackbar={snackbarClient}
+                  />
                 </Route>
                 <Route path={AppRoute.HOME}>
                   <Home

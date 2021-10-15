@@ -20,6 +20,9 @@ export class NftController {
     private contractClient: ContractClient
   ) { }
 
+  requestClipVerificationAndSign = async () => {
+  }
+
   /**
    * This method is UX heavy. It handles the MetaMask / Ethereum stuff (install metamask / connect metamask / approve transaction)
    * @param clipId 
