@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 // TODO:
 // - change owner
 // - deposit & withdraw (payable)
+// - kill contract
 
 contract ClipIt is ERC721 {
 
@@ -14,16 +15,8 @@ contract ClipIt is ERC721 {
 
   address public owner;
 
-  enum CidMintStatus {
-    NotExistantOrCanceled,
-    Allowed,
-    Minted
-  }
-
   // Mapping from tokenId to ipfs CID
   mapping(uint256 => string) private content;
-  // Mapping keeps track of which address is allowed to mint which CID
-  mapping(address => mapping(string => CidMintStatus)) private isAllowedToMint;
 
   constructor() ERC721("ClipIt", "CLIP") {
     baseTokenUri = "ipfs://";
@@ -35,9 +28,11 @@ contract ClipIt is ERC721 {
     _;
   }
 
-  modifier notYetMinted(address _to, string memory _cid) {
-    require(!(isAllowedToMint[_to][_cid] == CidMintStatus.Minted), "token already minted");
-    _;
+  function verifySignature(string memory _msg, address _to, uint8 v, bytes32 r, bytes32 s) internal view returns(bool) {
+    bytes32 _msgHash = keccak256(abi.encodePacked(_msg, _to));
+    bytes32 _ethSignedMsgHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _msgHash));
+  
+    return ecrecover(_ethSignedMsgHash, v, r, s) == owner;
   }
 
   function tokenURI(uint256 _tokenId) public view override returns (string memory) {
@@ -47,31 +42,18 @@ contract ClipIt is ERC721 {
     return string(abi.encodePacked(baseURI, content[_tokenId]));
   }
 
-  function mint(address _to, string memory _cid) public {
-    require(isAllowedToMint[_to][_cid] == CidMintStatus.Allowed, "address not allowed to mint this token");
+  function mint(address _to, string memory _cid, uint8 v, bytes32 r, bytes32 s) public {
+    require(verifySignature(_cid, _to, v, r, s), "address not allowed to mint");
 
     uint256 _tokenId = uint256(keccak256(abi.encode(_cid)));
 
     _safeMint(_to, _tokenId);
 
     content[_tokenId] = _cid;
-    isAllowedToMint[_to][_cid] = CidMintStatus.Minted;
   }
 
   function setBaseURI(string memory _uri) external onlyOwner {
     baseTokenUri = _uri;
-  }
-
-  function allowMint(address _to, string memory _cid) external onlyOwner notYetMinted(_to, _cid) {
-    isAllowedToMint[_to][_cid] = CidMintStatus.Allowed;
-  }
-
-  function cancelMint(address _to, string memory _cid) external onlyOwner notYetMinted(_to, _cid) {
-    isAllowedToMint[_to][_cid] = CidMintStatus.NotExistantOrCanceled;
-  }
-
-  function getAllowedToMint(address _to, string memory _cid) external view onlyOwner returns(CidMintStatus) {
-    return isAllowedToMint[_to][_cid];
   }
 
   function _baseURI() internal view override returns (string memory) {

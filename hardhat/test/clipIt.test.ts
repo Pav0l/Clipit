@@ -2,7 +2,7 @@ import { ethers, waffle } from "hardhat";
 import { expect } from "chai";
 import { BigNumber, ContractFactory, ContractReceipt, Wallet } from "ethers";
 import { ClipIt } from "../typechain/ClipIt"
-import { CONTRACT_NAME } from "../lib";
+import { CONTRACT_NAME, generateSignature } from "../lib";
 
 
 function expectEventWithArgs<T>(receipt: ContractReceipt, eventName: string, assertion: (eventArgs: any) => T) {
@@ -20,8 +20,8 @@ describe("ClipIt", function () {
   let contract: ClipIt;
   let one: Wallet, two: Wallet, three: Wallet, beforeEachWallet: Wallet;
 
-  const clipCID = 'clipCID';
-  // 'clipCID' token Id
+  const clipCID = "clipCID";
+  // "clipCID" token Id
   const tid = BigNumber.from("3168405825740219867040700576505120080443780731148527622846639649708184909701");
   const defaultBaseURI = "ipfs://"
 
@@ -31,8 +31,8 @@ describe("ClipIt", function () {
     contractFactory = await ethers.getContractFactory(CONTRACT_NAME, { signer: one });
     contract = await contractFactory.deploy() as ClipIt;
 
-    await contract.allowMint(beforeEachWallet.address, clipCID);
-    await contract.mint(beforeEachWallet.address, clipCID);
+    const sig = await generateSignature(one, clipCID, beforeEachWallet.address);
+    await contract.mint(beforeEachWallet.address, clipCID, BigNumber.from(sig.v), sig.r, sig.s);
   })
 
   it("deploy: set proper owner, contract name & symbol", async () => {
@@ -46,80 +46,9 @@ describe("ClipIt", function () {
     expect(symbol).to.eql("CLIP");
   });
 
-  it("allowMint: can only be called by contract owner", async () => {
-    const twoCaller = await contract.connect(two);
-    await expect(twoCaller.allowMint(two.address, 'cid')).to.be.revertedWith("caller is not owner");
-  });
-
-  it("allowMint: allows an address to mint a specific cid", async () => {
-    await contract.allowMint(two.address, "cid");
-    await contract.mint(two.address, "cid");
-  });
-
-
-  it("allowMint: single address can approve multiple cids", async () => {
-    await contract.allowMint(two.address, "cid1");
-    await contract.allowMint(two.address, "cid2");
-    await contract.mint(two.address, "cid1");
-    await contract.mint(two.address, "cid2");
-  });
-
-
-  it("allowMint: overwrites cancelMint", async () => {
-    await contract.allowMint(two.address, "cid");
-    await contract.cancelMint(two.address, "cid");
-    await contract.allowMint(two.address, "cid");
-    await contract.mint(two.address, "cid");
-  });
-
-  it("allowMint: can not allow minted cid", async () => {
-    await contract.allowMint(two.address, "cid");
-    await contract.mint(two.address, "cid");
-    await expect(contract.allowMint(two.address, "cid")).to.be.revertedWith("token already minted");
-  });
-
-  it("allowMint: can be called multiple times on same cid", async () => {
-    await contract.allowMint(two.address, "cid");
-    await contract.allowMint(two.address, "cid");
-    await contract.allowMint(two.address, "cid");
-    const cidMintStatus = await contract.getAllowedToMint(two.address, "cid");
-    expect(cidMintStatus).to.eql(1); // 1 === Allowed
-  });
-
-  it("cancelMint: can only be called by contract owner", async () => {
-    const twoCaller = await contract.connect(two);
-    await expect(twoCaller.cancelMint(two.address, 'cid')).to.be.revertedWith("caller is not owner");
-  });
-
-  it("cancelMint: cancel previously allowed cid mint from an address", async () => {
-    await contract.allowMint(two.address, "cid");
-    await contract.cancelMint(two.address, "cid");
-    await expect(contract.mint(two.address, "cid")).to.be.revertedWith("address not allowed to mint this token");
-  });
-
-  it("cancelMint: cannot be called on non-existent or minted cid", async () => {
-    await contract.allowMint(two.address, "cid");
-    await contract.mint(two.address, "cid");
-    await expect(contract.cancelMint(two.address, "cid")).to.be.revertedWith("token already minted");
-  });
-
-  it("cancelMint: can be called multiple times on same cid", async () => {
-    await contract.cancelMint(two.address, "cid");
-    await contract.cancelMint(two.address, "cid");
-    await contract.cancelMint(two.address, "cid");
-
-    const cidMintStatus = await contract.getAllowedToMint(two.address, "cid");
-    expect(cidMintStatus).to.eql(0); // 0 === NotExistantOrCanceled
-  });
-
-  it("getAllowedToMint: can only be called by owner", async () => {
-    const twoCaller = await contract.connect(two);
-    await expect(twoCaller.getAllowedToMint(two.address, 'cid')).to.be.revertedWith("caller is not owner");
-  });
-
   it("mint: generates new tokenId for owner, adds proper tokenId owner, emits msg", async () => {
-    await contract.allowMint(two.address, "cid");
-    const tx = await contract.mint(two.address, 'cid');
+    const sig = await generateSignature(one, "cid", two.address);
+    const tx = await contract.mint(two.address, "cid", BigNumber.from(sig.v), sig.r, sig.s);
     const receipt = await tx.wait();
 
     const args = expectEventWithArgs<{ tokenId: BigNumber }>(receipt, "Transfer", (args) => {
@@ -139,44 +68,30 @@ describe("ClipIt", function () {
   });
 
   it("mint: can not mint to 0 address", async () => {
-    await contract.allowMint(ethers.constants.AddressZero, "cid");
-    await expect(contract.mint(ethers.constants.AddressZero, 'cid')).to.be.revertedWith("ERC721: mint to the zero address");
+    const sig = await generateSignature(one, "cid", ethers.constants.AddressZero);
+    await expect(contract.mint(ethers.constants.AddressZero, "cid", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("ERC721: mint to the zero address");
   });
 
   it("mint: can not mint CID that already exists", async () => {
-    await contract.allowMint(one.address, clipCID);
+    const sig = await generateSignature(one, clipCID, one.address);
     // clipCID minted in beforeEach block
-    await expect(contract.mint(one.address, clipCID)).to.be.revertedWith("ERC721: token already minted")
+    await expect(contract.mint(one.address, clipCID, BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("ERC721: token already minted")
   });
 
-  it("mint: does not allow minting non-existing address", async () => {
-    await expect(contract.mint(two.address, "cid")).to.be.revertedWith("address not allowed to mint this token");
+  it("mint: does not allow minting with invalid signature signer", async () => {
+    // signer `two` is not contract owner
+    const sig = await generateSignature(two, "cid", two.address);
+    await expect(contract.mint(two.address, "cid", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("address not allowed to mint");
   });
 
-  it("mint: does not allow minting token from address that was not pre-approved", async () => {
-    // approve different address than minting
-    await contract.allowMint(one.address, "cid");
-    await expect(contract.mint(two.address, "cid")).to.be.revertedWith("address not allowed to mint this token");
+  it("mint: does not allow minting with invalid signature address", async () => {
+    const sig = await generateSignature(one, "cid", three.address);
+    await expect(contract.mint(two.address, "cid", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("address not allowed to mint");
   });
 
-  it("mint: does not allow minting non-existing _cid", async () => {
-    // approve different CID than minting
-    await contract.allowMint(two.address, clipCID);
-    await expect(contract.mint(two.address, "cid")).to.be.revertedWith("address not allowed to mint this token");
-  });
-
-  it("mint: does not allow minting _cid that was already minted", async () => {
-    await contract.allowMint(two.address, "cid");
-    await contract.mint(two.address, "cid");
-    await expect(contract.mint(two.address, "cid")).to.be.revertedWith("address not allowed to mint this token")
-  });
-
-  it("mint: changes token state to Minted in isAllowedToMint mapping", async () => {
-    await contract.allowMint(two.address, "cid");
-    await contract.mint(two.address, "cid");
-
-    const cidMintStatus = await contract.getAllowedToMint(two.address, "cid");
-    expect(cidMintStatus).to.eql(2); // 2 === Minted
+  it("mint: does not allow minting with invalid signature cid", async () => {
+    const sig = await generateSignature(one, "cid", two.address);
+    await expect(contract.mint(two.address, "cid2", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("address not allowed to mint");
   });
 
   it("ownerOf: non existing tokenId reverts", async () => {
@@ -198,12 +113,12 @@ describe("ClipIt", function () {
   });
 
   it("tokenURI: reverts if tokenId does not exist", async () => {
-    await expect(contract.tokenURI('does-not-exist')).to.be.reverted;
+    await expect(contract.tokenURI("does-not-exist")).to.be.reverted;
   });
 
   it("setBaseURI: can be only called by contract owner", async () => {
     const twoCaller = await contract.connect(two);
-    await expect(twoCaller.setBaseURI('foo')).to.be.reverted;
+    await expect(twoCaller.setBaseURI("foo")).to.be.reverted;
   });
 
   it("setBaseURI: permanently changes baseTokenURI", async () => {
@@ -235,10 +150,10 @@ describe("ClipIt", function () {
     const tx = await ownerCaller.approve(three.address, tid);
     const receipt = await tx.wait();
 
-    expectEventWithArgs(receipt, 'Approval', (args) => {
-      expect(args['owner']).to.eql(beforeEachWallet.address);
-      expect(args['approved']).to.eql(three.address);
-      expect(args['tokenId'].toString()).to.eql(tid.toString());
+    expectEventWithArgs(receipt, "Approval", (args) => {
+      expect(args["owner"]).to.eql(beforeEachWallet.address);
+      expect(args["approved"]).to.eql(three.address);
+      expect(args["tokenId"].toString()).to.eql(tid.toString());
     });
 
     const isApproved = await contract.getApproved(tid);
@@ -274,10 +189,10 @@ describe("ClipIt", function () {
     const tx = await contract.setApprovalForAll(two.address, true);
     const receipt = await tx.wait();
 
-    expectEventWithArgs(receipt, 'ApprovalForAll', (args) => {
-      expect(args['owner']).to.eql(one.address);
-      expect(args['operator']).to.eql(two.address);
-      expect(args['approved']).to.eql(true);
+    expectEventWithArgs(receipt, "ApprovalForAll", (args) => {
+      expect(args["owner"]).to.eql(one.address);
+      expect(args["operator"]).to.eql(two.address);
+      expect(args["approved"]).to.eql(true);
     });
 
     expect(await contract.isApprovedForAll(one.address, two.address)).to.eql(true);
@@ -336,10 +251,10 @@ describe("ClipIt", function () {
         const tx = await ownerCaller["safeTransferFrom(address,address,uint256)"](beforeEachWallet.address, one.address, tid);
         const receipt = await tx.wait();
 
-        expectEventWithArgs(receipt, 'Approval', (args) => {
-          expect(args['owner']).to.eql(beforeEachWallet.address);
-          expect(args['approved']).to.eql(ethers.constants.AddressZero);
-          expect(args['tokenId'].toString()).to.eql(tid.toString());
+        expectEventWithArgs(receipt, "Approval", (args) => {
+          expect(args["owner"]).to.eql(beforeEachWallet.address);
+          expect(args["approved"]).to.eql(ethers.constants.AddressZero);
+          expect(args["tokenId"].toString()).to.eql(tid.toString());
         });
 
         expect(await ownerCaller.getApproved(tid)).to.eql(ethers.constants.AddressZero);
@@ -348,10 +263,10 @@ describe("ClipIt", function () {
         expect((await ownerCaller.balanceOf(one.address)).toNumber()).to.eql(oneAddressBalance + 1);
         expect(await ownerCaller.ownerOf(tid)).to.eql(one.address);
 
-        expectEventWithArgs(receipt, 'Transfer', (args) => {
-          expect(args['from']).to.eql(beforeEachWallet.address);
-          expect(args['to']).to.eql(one.address);
-          expect(args['tokenId'].toString()).to.eql(tid.toString());
+        expectEventWithArgs(receipt, "Transfer", (args) => {
+          expect(args["from"]).to.eql(beforeEachWallet.address);
+          expect(args["to"]).to.eql(one.address);
+          expect(args["tokenId"].toString()).to.eql(tid.toString());
         });
       });
     });
