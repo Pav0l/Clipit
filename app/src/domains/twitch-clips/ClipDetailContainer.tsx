@@ -84,8 +84,8 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
           throw new Error("Failed to initialize nft controller");
         }
 
-        // TODO test if we need .catch instead if it throws in the setTimeout fn call
         await operations.nft.prepareMetadataAndMintClip(clip.id);
+        // TODO the tokenId here is from previous mint!
         console.log("tokenId from mint -> redirecting", model.nft.tokenId);
         if (model.nft.tokenId) {
           history.push(`/nfts/${model.nft.tokenId}`);

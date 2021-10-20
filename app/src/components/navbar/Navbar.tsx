@@ -5,6 +5,7 @@ import {
   AppBar,
   Toolbar
 } from "@material-ui/core";
+import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { IAppController } from "../../domains/app/app.controller";
 import { NftModel } from "../../domains/nfts/nft.model";
@@ -29,16 +30,42 @@ export default function Navbar({
   snackbar
 }: Props) {
   const classes = useStyles();
+  const [active, setActive] = useState<AppRoute | undefined>(undefined);
 
   return (
     <AppBar position="static" className={classes.appbar}>
       <Toolbar className={classes.toolbar}>
         <div className={classes.div}>
-          <LinkButton to={AppRoute.HOME} text="Home" />
-          <LinkButton to={AppRoute.MARKETPLACE} text="Marketplace" />
-          <LinkButton to={AppRoute.NFTS} text="NFTs" />
-          <LinkButton to={AppRoute.CLIPS} text="Clips" />
-          <LinkButton to={AppRoute.ABOUT} text="About" />
+          <LinkButton
+            to={AppRoute.HOME}
+            text="Home"
+            active={active}
+            setActive={setActive}
+          />
+          <LinkButton
+            to={AppRoute.MARKETPLACE}
+            text="Marketplace"
+            active={active}
+            setActive={setActive}
+          />
+          <LinkButton
+            to={AppRoute.NFTS}
+            text="NFTs"
+            active={active}
+            setActive={setActive}
+          />
+          <LinkButton
+            to={AppRoute.CLIPS}
+            text="Clips"
+            active={active}
+            setActive={setActive}
+          />
+          <LinkButton
+            to={AppRoute.ABOUT}
+            text="About"
+            active={active}
+            setActive={setActive}
+          />
         </div>
 
         <div>
@@ -54,14 +81,32 @@ export default function Navbar({
   );
 }
 
-function LinkButton({ to, text }: { to: AppRoute; text: string }) {
+function LinkButton({
+  to,
+  text,
+  active,
+  setActive
+}: {
+  to: AppRoute;
+  text: string;
+  active: AppRoute | undefined;
+  setActive: (to: AppRoute) => void;
+}) {
   const classes = useStyles();
+
+  useEffect(() => {
+    if (location.pathname === to) {
+      setActive(to);
+    }
+  }, []);
+
   return (
     <Link
       component={RouterLink}
       to={to}
       underline="none"
-      className={classes.li}
+      className={`${classes.li} ${active === to ? classes.active : ""}`}
+      onClick={() => setActive(to)}
     >
       <Typography>{text}</Typography>
     </Link>
@@ -94,5 +139,8 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       borderBottom: `1px solid black`
     }
+  },
+  active: {
+    borderBottom: "1px solid black"
   }
 }));

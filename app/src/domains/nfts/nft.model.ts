@@ -7,7 +7,7 @@ enum MintStatus {
 }
 
 enum StoreClipStatus {
-  PREPARING_CLIP = "Preparing your clip, this may some time. Please do not refresh the page.",
+  PREPARING_CLIP = "Preparing your clip, this may take some time. Please do not refresh the page.",
   GENERATING_SIG = "Almost there, generating a signature for your clip...",
 }
 
