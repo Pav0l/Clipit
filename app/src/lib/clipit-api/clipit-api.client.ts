@@ -1,7 +1,6 @@
 import { HttpClient, RawResponse } from "../http-client";
-import { getAccessToken, getTwitchOAuth2AuthorizeUrl } from "../twitch-oauth/twitch-oauth.utils";
+import { getAccessToken, getTwitchOAuth2AuthorizeUrl } from "../twitch-oauth/twitch-oauth.public.api";
 
-// TODO export interface?
 export class ClipItApiClient {
 
   constructor(private httpClient: HttpClient) { }

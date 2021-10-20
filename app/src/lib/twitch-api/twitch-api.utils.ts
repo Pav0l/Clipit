@@ -2,7 +2,7 @@ import { AxiosRequestConfig, AxiosResponse } from "axios";
 
 import { localStorage } from "../local-storage";
 import { twitchAppClientId, twitchAccessToken } from "../constants";
-import { getTwitchOAuth2AuthorizeUrl, getAccessToken } from "../twitch-oauth/twitch-oauth.utils";
+import { getTwitchOAuth2AuthorizeUrl, getAccessToken } from "../twitch-oauth/twitch-oauth.public.api";
 
 
 export function requestFulfilledInterceptor(config: AxiosRequestConfig) {

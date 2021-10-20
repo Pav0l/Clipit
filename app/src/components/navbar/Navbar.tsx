@@ -12,11 +12,13 @@ import { NftModel } from "../../domains/nfts/nft.model";
 import { AppRoute } from "../../lib/constants";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 import LoginWithTwitch from "../../lib/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
+import { OAuthModel } from "../../lib/twitch-oauth/oauth.model";
 import ConnectMetamaskButton from "../connectMetamask/ConnectMetamask";
 
 interface Props {
   model: {
     nft: NftModel;
+    auth: OAuthModel;
   };
   operations: IAppController;
   redirect: () => string;
@@ -48,18 +50,23 @@ export default function Navbar({
             active={active}
             setActive={setActive}
           />
-          <LinkButton
-            to={AppRoute.NFTS}
-            text="NFTs"
-            active={active}
-            setActive={setActive}
-          />
-          <LinkButton
-            to={AppRoute.CLIPS}
-            text="Clips"
-            active={active}
-            setActive={setActive}
-          />
+          {model.auth.isLoggedIn ? (
+            <LinkButton
+              to={AppRoute.NFTS}
+              text="NFTs"
+              active={active}
+              setActive={setActive}
+            />
+          ) : null}
+
+          {model.auth.isLoggedIn ? (
+            <LinkButton
+              to={AppRoute.CLIPS}
+              text="Clips"
+              active={active}
+              setActive={setActive}
+            />
+          ) : null}
           <LinkButton
             to={AppRoute.ABOUT}
             text="About"
@@ -69,7 +76,11 @@ export default function Navbar({
         </div>
 
         <div>
-          <LoginWithTwitch redirect={redirect} />
+          <LoginWithTwitch
+            model={{ auth: model.auth }}
+            operations={operations.auth}
+            redirect={redirect}
+          />
           <ConnectMetamaskButton
             model={model}
             operations={operations}

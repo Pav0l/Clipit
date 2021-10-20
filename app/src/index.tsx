@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./index.css";
 import { AppRoute, clipItUri, cloudFlareGatewayUri } from "./lib/constants";
 import { IpfsClient } from "./lib/ipfs/ipfs.client";
-import { getTwitchOAuth2AuthorizeUrl } from "./lib/twitch-oauth/twitch-oauth.utils";
+import { getTwitchOAuth2AuthorizeUrl } from "./lib/twitch-oauth/twitch-oauth.public.api";
 
 import { appModel } from "./domains/app/app.model";
 import { StoreProvider } from "./components/storeProvider/StoreProvider";
@@ -30,6 +30,7 @@ import { HttpClient } from "./lib/http-client";
 import { twitchApiClient } from "./lib/twitch-api/twitch-api.client";
 import ThemeProvider from "./components/themeProvider/ThemeProvider";
 import { defaultTheme } from "./components/themeProvider/theme";
+import { LocalStorage } from "./lib/local-storage";
 
 async function initializeApp() {
   const app = new AppController(
@@ -37,7 +38,8 @@ async function initializeApp() {
     snackbarClient,
     new ClipItApiClient(new HttpClient(clipItUri)),
     twitchApiClient,
-    new IpfsClient(new HttpClient(cloudFlareGatewayUri))
+    new IpfsClient(new HttpClient(cloudFlareGatewayUri)),
+    new LocalStorage()
   );
 
   return { model: appModel, operations: app };
@@ -56,7 +58,7 @@ async function initializeApp() {
             <Router basename="/">
               <Navbar
                 redirect={getTwitchOAuth2AuthorizeUrl}
-                model={{ nft: model.nft }}
+                model={{ nft: model.nft, auth: model.auth }}
                 operations={operations}
                 snackbar={snackbarClient}
               />
@@ -114,7 +116,7 @@ async function initializeApp() {
                   </ErrorBoundary>
                 </Route>
                 <Route exact path={AppRoute.OAUTH_REDIRECT}>
-                  <OAuth2Redirect />
+                  <OAuth2Redirect operations={operations.auth} />
                 </Route>
                 <Route exact path={AppRoute.ABOUT}>
                   <Playground

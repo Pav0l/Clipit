@@ -1,13 +1,27 @@
 import { Button, makeStyles } from "@material-ui/core";
+import { OAuthController } from "../oauth.controller";
+import { OAuthModel } from "../oauth.model";
 
-function LoginWithTwitch({ redirect }: { redirect: () => string }) {
+interface Props {
+  model: {
+    auth: OAuthModel;
+  };
+  operations: OAuthController;
+  redirect: () => string;
+}
+
+function LoginWithTwitch({ model, operations, redirect }: Props) {
   const classes = useStyles();
+  const isLoggedIn = model.auth.isLoggedIn;
+
   return (
     <Button
-      className={classes.button}
-      onClick={() => (location.href = redirect())}
+      className={`${classes.button} ${isLoggedIn ? classes.logOut : ""}`}
+      onClick={
+        isLoggedIn ? operations.logout : () => (location.href = redirect())
+      }
     >
-      Login with Twitch
+      {isLoggedIn ? "Log out" : "Login with Twitch"}
     </Button>
   );
 }
@@ -27,6 +41,14 @@ const useStyles = makeStyles(() => ({
     "&:hover": {
       backgroundColor: "#772ce8",
       color: "#fff"
+    }
+  },
+  logOut: {
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
+    color: "#000",
+    "&:hover": {
+      backgroundColor: "rgba(0, 0, 0, 0.1)",
+      color: "#000"
     }
   }
 }));

@@ -1,26 +1,25 @@
 import { observer } from "mobx-react-lite";
 import { useHistory } from "react-router-dom";
 
-import {
-  parseDataFromUrl,
-  parseDataFromState,
-  verifyStateSecret,
-  storeTokenAndRemoveSecret
-} from "../twitch-oauth.utils";
 import ErrorWithRetry from "../../../components/error/Error";
+import { OAuthController } from "../oauth.controller";
 
-const OAuth2Redirect = observer(() => {
-  const { access_token: token, state } = parseDataFromUrl(
+interface Props {
+  operations: OAuthController;
+}
+
+const OAuth2Redirect = observer(({ operations }: Props) => {
+  const { access_token: token, state } = operations.parseDataFromUrl(
     new URL(location.href)
   );
 
   const history = useHistory();
 
   if (token) {
-    const { referrer, secret } = parseDataFromState(state);
+    const { referrer, secret } = operations.parseDataFromState(state);
 
-    if (verifyStateSecret(secret)) {
-      storeTokenAndRemoveSecret(token);
+    if (operations.verifyStateSecret(secret)) {
+      operations.storeTokenAndRemoveSecret(token);
       // this wanted to be <Redirect to={referrer} /> but react router didnt play nice with mobx observer
       history.push(referrer);
       return <div>Redirecting...</div>;

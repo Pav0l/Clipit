@@ -13,6 +13,8 @@ import { NftController } from "../nfts/nft.controller";
 import { ClipController } from "../twitch-clips/clip.controller";
 import { GameController } from "../twitch-games/game.controller";
 import { UserController } from "../twitch-user/user.controller";
+import { OAuthController } from "../../lib/twitch-oauth/oauth.controller";
+import { ILocalStorage } from "../../lib/local-storage";
 
 
 export interface IAppController {
@@ -20,6 +22,7 @@ export interface IAppController {
   clip: ClipController;
   game: GameController;
   user: UserController;
+  auth: OAuthController;
 
   createNftCtrl: (ethereum: EthereumClient, contract: ContractClient) => void;
   initializeWeb3Clients: () => Promise<{ ethereum: EthereumClient; contract: ContractClient }>;
@@ -31,17 +34,21 @@ export class AppController implements IAppController {
   clip: ClipController;
   game: GameController;
   user: UserController;
+  auth: OAuthController;
 
   constructor(
     private model: AppModel,
     private snackbarClient: SnackbarClient,
     private clipitApi: ClipItApiClient,
     private twitchApi: TwitchApiClient,
-    private ipfsApi: IpfsClient
+    private ipfsApi: IpfsClient,
+    private storage: ILocalStorage
   ) {
     this.clip = new ClipController(model.clip, this.snackbarClient, this.twitchApi);
     this.game = new GameController(model.game, this.twitchApi);
     this.user = new UserController(model.user, this.twitchApi);
+    this.auth = new OAuthController(model.auth, this.storage);
+    this.auth.checkTokenInStorage();
   }
 
   async initializeWeb3Clients() {

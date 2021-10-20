@@ -1,4 +1,11 @@
-class LocalStorage {
+
+export interface ILocalStorage {
+  setItem: (key: string, value: string) => void;
+  getItem: (key: string) => string | null;
+  removeItem: (key: string) => void;
+}
+
+export class LocalStorage implements ILocalStorage {
 
   setItem(key: string, value: string): void {
     window.localStorage.setItem(key, value);
