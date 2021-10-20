@@ -35,7 +35,10 @@ export class ClipController {
     const data = await this.twitchApi.getClips({ id: clipId });
 
     if (data.statusOk && !this.twitchApi.isTwitchError(data.body)) {
-      this.model.appendClip(data.body.data[0]);
+      const clip = data.body.data[0];
+      if (clip) {
+        this.model.appendClip(clip);
+      }
     } else {
       // TODO SENTRY MONITOR
       this.model.meta.setError(TwitchClipsErrors.UNABLE_TO_GET_CLIPS);

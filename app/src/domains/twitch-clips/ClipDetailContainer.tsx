@@ -113,15 +113,6 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
     return <ErrorWithRetry text={model.nft.meta.error}></ErrorWithRetry>;
   }
 
-  if (model.nft.waitingForBlockConfirmations) {
-    return (
-      <div>
-        Waiting for block confirmations. Progress:{" "}
-        {model.nft.confirmationProgress.toString()}% done
-      </div>
-    );
-  }
-
   if (
     model.clip.meta.isLoading ||
     model.user.meta.isLoading ||
@@ -132,10 +123,11 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
 
   if (!clip) {
     return (
-      <div>
-        It seems we can't find the clip you are looking for. It's possible the
-        clip does not belong to you, or it doesn't exist.
-      </div>
+      <ErrorWithRetry
+        text="It seems we can't find the clip you are looking for. It's possible the
+      clip does not belong to you, or it doesn't exist."
+        withRetry={false}
+      ></ErrorWithRetry>
     );
   }
 
@@ -144,16 +136,12 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
     model.user.id !== "30094526" &&
     clip.broadcasterId !== model.user.id
   ) {
-    return <div>You can only create clip NFTs of your own clips</div>;
-  }
-
-  console.log(
-    "tx mint wait",
-    model.nft.waitingForMintTx,
-    model.nft.progressMessage
-  );
-  if (model.nft.waitingForMintTx) {
-    return <div>{model.nft.progressMessage}</div>;
+    return (
+      <ErrorWithRetry
+        text="You can only create clip NFTs of your own clips"
+        withRetry={false}
+      ></ErrorWithRetry>
+    );
   }
 
   return (
@@ -205,7 +193,8 @@ const useStyles = makeStyles(() => ({
   iframe: {
     // video aspect ratio is 16:9
     width: "80vw",
-    height: "45vw"
+    height: "45vw",
+    maxHeight: "70vh"
   },
   content: {
     display: "flex",

@@ -1,12 +1,14 @@
-import { ClipItApiClient, isStoreClipError, StoreClipResp } from "../../lib/clipit-api/clipit-api.client";
+import type { ClipItApiClient, StoreClipResp } from "../../lib/clipit-api/clipit-api.client";
+import type { NftModel, Signature } from "./nft.model";
+import type ContractClient from '../../lib/contract/contract.client';
+import type EthereumClient from '../../lib/ethereum/ethereum.client';
+import type { IpfsClient } from '../../lib/ipfs/ipfs.client';
+import type { SnackbarClient } from '../../lib/snackbar/snackbar.client';
+
+import { isStoreClipError } from "../../lib/clipit-api/clipit-api.client";
 import { clearClipToMetadataPair, isClipMetadataCreated, storeClipToMetadataPair } from "./nft.local-storage";
-import { SnackbarClient } from '../../lib/snackbar/snackbar.client';
 import { ContractErrors, isRpcError, NftErrors, RpcErrors } from './nft.errors';
 
-import { NftModel } from "./nft.model";
-import ContractClient from '../../lib/contract/contract.client';
-import EthereumClient from '../../lib/ethereum/ethereum.client';
-import { IpfsClient } from '../../lib/ipfs/ipfs.client';
 
 
 export class NftController {
@@ -29,27 +31,24 @@ export class NftController {
     await this.requestAccounts();
 
     // TODO - this loader will take about 45-60 seconds, so there needs to be something better tha just loader
+    // "Preparing your Clip to be minted to NFT"
+    // "Generating your signature"
     this.model.meta.setLoading(true);
 
-    const userWalletAddress = await this.ethereumClient.signer.getAddress();
+    const userAddress = await this.ethereumClient.signer.getAddress();
 
-    const data = isClipMetadataCreated(clipId);
-    if (data && data.address === userWalletAddress) {
-      // clip metadata was already stored on IPFS and address approved in contract -> just mint
-      await this.mintNFT(data.metadataCid, clipId, data.address);
-      return;
-    }
-
-    const resp = await this.clipitApi.storeClip(clipId, userWalletAddress);
+    const resp = await this.clipitApi.storeClip(clipId, userAddress);
 
     if (resp.statusOk && !isStoreClipError(resp.body)) {
-      // TODO fix !
-      storeClipToMetadataPair(clipId, { metadataCid: resp.body.metadataCid!, address: userWalletAddress });
-      const txHash = resp.body.transactionHash!; // TODO fix !
 
-      const transaction = await this.ethereumClient.ethersProvider.getTransaction(txHash);
+      this.model.doneConfirmations(clipId);
+      this.model.createMetadata(resp.body.metadata!); // TODO fix !
+      this.model.setMetadataCid(resp.body.metadataCid);
 
-      await this.waitForBlockConfirmations(transaction.blockNumber!, clipId, resp.body);
+      // "Clip ready to be turned into an NFT. Please confirm the transaction"
+
+      await this.mintNFT(resp.body.metadataCid!, clipId, userAddress, resp.body.signature); // TODO: fix !
+
     } else if (isStoreClipError(resp.body) && resp.body.error === "wallet does not have enough funds to mint clip") {
       this.snackbarClient.sendError(resp.body.error)
     } else {
@@ -130,13 +129,11 @@ export class NftController {
     return await this.getMetadataFromIpfs(metadataCid);
   }
 
-  private mintNFT = async (metadataCid: string, clipId: string, walletAddress: string) => {
+  private mintNFT = async (metadataCid: string, clipId: string, walletAddress: string, signature: Signature) => {
     if (metadataCid && clipId) {
-      // TODO handle the wait time in UI
-      this.model.setConfirmTx();
 
       try {
-        const tx = await this.contractClient.mint(walletAddress, metadataCid);
+        const tx = await this.contractClient.mint(walletAddress, metadataCid, signature.v, signature.r, signature.s);
         console.log("[LOG]:minting NFT in tx", tx.hash);
 
         // TODO - this does not display the state change properly
@@ -156,9 +153,10 @@ export class NftController {
               this.snackbarClient.sendError(NftErrors.MINT_REJECTED);
               break;
             case RpcErrors.INTERNAL_ERROR:
+              // contract errors / reverts
               if ((error.data?.message as string).includes("token already minted")) {
                 this.snackbarClient.sendError(ContractErrors.TOKEN_ALREADY_MINTED);
-              } else if ((error.data?.message as string).includes("not allowed to mint this token")) {
+              } else if ((error.data?.message as string).includes("not allowed to mint")) {
                 this.snackbarClient.sendError(ContractErrors.ADDRESS_NOT_ALLOWED);
               }
               break;
@@ -197,7 +195,7 @@ export class NftController {
 
       const walletAddress = await this.ethereumClient.signer.getAddress();
 
-      await this.mintNFT(this.model.metadataCid!, clipId, walletAddress); // TODO: fix !
+      // await this.mintNFT(this.model.metadataCid!, clipId, walletAddress); // TODO: fix !
       return; // end condition for the recursive call
     }
     setTimeout(() => {

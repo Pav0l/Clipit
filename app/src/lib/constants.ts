@@ -11,7 +11,7 @@ export const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 export const ipfsBaseUri = `http://127.0.0.1:8080/ipfs`;
 
 // CLIPIT -> into config
-export const clipItUri = "http://localhost:8000/v1"
+export const clipItUri = "http://localhost:8000/v2"
 
 // IPFS
 export const pinataGatewayUri = "https://gateway.pinata.cloud/ipfs";

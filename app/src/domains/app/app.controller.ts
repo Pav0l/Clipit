@@ -1,7 +1,7 @@
 import detectEthereumProvider from "@metamask/detect-provider";
 import { BigNumberish } from "@ethersproject/bignumber";
 
-import { ClipItApiClient } from "../../lib/clipit-api/clipit-api.client";
+import type { ClipItApiClient } from "../../lib/clipit-api/clipit-api.client";
 import ContractClient from "../../lib/contract/contract.client";
 import EthereumClient from "../../lib/ethereum/ethereum.client";
 import { IpfsClient } from "../../lib/ipfs/ipfs.client";

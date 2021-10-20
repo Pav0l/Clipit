@@ -1,5 +1,4 @@
 import { HttpClient, RawResponse } from "../http-client";
-import { clipItUri } from "../constants";
 import { getAccessToken, getTwitchOAuth2AuthorizeUrl } from "../twitch-oauth/twitch-oauth.utils";
 
 // TODO export interface?
@@ -31,8 +30,6 @@ export class ClipItApiClient {
 }
 
 
-export const clipItApiClient = new ClipItApiClient(new HttpClient(clipItUri));
-
 interface StoreClipError {
   error: string;
 }
@@ -43,11 +40,17 @@ export function isStoreClipError(body: StoreClipError | unknown): body is StoreC
 
 
 export interface StoreClipResp {
-  metadataCid?: string;
-  id?: string; // clip id
-  address?: string; //compare with current user address to double check if it didn't change in the meantime
-  transactionHash?: string; // -> so that we can track num of generated blocks after our tx was included?
-  metadata?: Metadata;
+  metadataCid: string;
+  id: string; // clip id
+  address: string; //compare with current user address to double check if it didn't change in the meantime
+  signature: Signature;
+  metadata: Metadata;
+}
+
+interface Signature {
+  r: string;
+  s: string;
+  v: number;
 }
 
 interface Metadata {
@@ -84,10 +87,15 @@ const mtdt: Metadata = {
   name: 'clip title'
 }
 const localResponse: StoreClipResp = {
-  address: '0x8fF5d1D8A2983a476baAA36C3edcf7Ee13ACB481',
+  address: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',
+  id: 'clip slug',
   metadata: mtdt,
-  metadataCid: `waka-baka-metadata-cid-${Math.random()}`,
-  transactionHash: '0x76aef399139997b8540df5b5b4488657c74e727ec4bc36e25d84cb71b368520b'
+  metadataCid: "bafybeiealga7wox5q4hzyhusi5izfbkpyvgydphyjwb76r75y5idkvlawa", // `waka-baka-metadata-cid-${Math.random()}`,
+  signature: {
+    r: "0xbc12a9848f4013acef6cbad65ed735e651a8776d4de5ae9622b3b0d0bafe2c86",
+    s: "0x69db1e666aa7632462ecae2b33ce53d745c2f708b3ec115dec68e9de4fbe48fd",
+    v: 28
+  }
 }
 
 function responsePromise(): Promise<RawResponse<StoreClipResp>> {

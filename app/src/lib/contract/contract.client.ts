@@ -1,4 +1,4 @@
-import { ethers, BigNumberish } from "ethers";
+import { ethers, BigNumberish, BigNumber } from "ethers";
 
 import ContractBuild from "./ClipIt.json";
 import { ClipIt } from "./ClipIt";
@@ -30,8 +30,8 @@ export default class ContractClient {
     this.contract.on(ContractEvents.TRANSFER, handlers.handleTransfer);
   }
 
-  async mint(to: string, metadataCid: string) {
-    return this.contract.mint(to, metadataCid);
+  async mint(to: string, metadataCid: string, v: number, r: string, s: string) {
+    return this.contract.mint(to, metadataCid, BigNumber.from(v), r, s);
   }
 
 

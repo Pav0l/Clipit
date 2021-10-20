@@ -87,6 +87,12 @@ export class NftModel {
 }
 
 
+export interface Signature {
+  v: number;
+  r: string;
+  s: string
+}
+
 interface MetadataInput {
   cid?: string
   name?: string

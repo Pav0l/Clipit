@@ -40,13 +40,7 @@ function ErrorWithRetry({ text, withRetry }: Props) {
   }
 
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      width="100%"
-      justifyContent="center"
-      flexDirection="column"
-    >
+    <Box className={classes.container}>
       <Typography variant="h5" className={classes.title}>
         {text}
       </Typography>
@@ -58,6 +52,14 @@ function ErrorWithRetry({ text, withRetry }: Props) {
 export default ErrorWithRetry;
 
 const useStyles = makeStyles(() => ({
+  container: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+    margin: "0 10rem",
+    textAlign: "center"
+  },
   title: {
     marginTop: "15rem"
   },
