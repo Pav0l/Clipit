@@ -1,7 +1,7 @@
 import { Box, Typography, Link, makeStyles } from "@material-ui/core";
 
 interface Props {
-  text: string;
+  text?: string;
   withRetry?: boolean;
 }
 

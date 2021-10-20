@@ -20,6 +20,7 @@ import { GameModel } from "../twitch-games/game.model";
 import { NftModel } from "../nfts/nft.model";
 import { IAppController } from "../app/app.controller";
 import FullPageLoader from "../../components/loader/FullPageLoader";
+import LinearLoader from "../../components/loader/LinearLoader";
 
 interface Props {
   model: {
@@ -139,6 +140,33 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
     return (
       <ErrorWithRetry
         text="You can only create clip NFTs of your own clips"
+        withRetry={false}
+      ></ErrorWithRetry>
+    );
+  }
+
+  console.log(
+    "storeClip state",
+    model.nft.storeClipLoad,
+    model.nft.storeClipStatus,
+    model.nft.storeClipLoad && model.nft.storeClipStatus !== undefined
+  );
+
+  console.log(
+    "mint state",
+    model.nft.mintLoad,
+    model.nft.mintStatus,
+    model.nft.mintLoad && model.nft.mintStatus !== undefined
+  );
+
+  if (model.nft.storeClipLoad && model.nft.storeClipStatus !== undefined) {
+    return <LinearLoader text={model.nft.storeClipStatus}></LinearLoader>;
+  }
+
+  if (model.nft.mintLoad && model.nft.mintStatus !== undefined) {
+    return (
+      <ErrorWithRetry
+        text={model.nft.mintStatus}
         withRetry={false}
       ></ErrorWithRetry>
     );

@@ -2,27 +2,26 @@ import { makeAutoObservable } from "mobx"
 import { ipfsIoGatewayUri, pinataGatewayUri } from "../../lib/constants";
 import { MetaModel } from "../app/meta.model";
 
-enum MintingProgress {
-  CONFIRM_TRANSACTION = "Generated transaction to create the NFT. Please sign it in your MetaMask wallet",
-  TX_SIGNED = "Transaction status: Pending...",
-  TX_CONFIRMED = "NFT minted! Taking you to the NFTs page..."
+enum MintStatus {
+  CONFIRM_MINT = "Clip ready to be turned into an NFT!\nPlease confirm the transaction in MetaMask",
+}
+
+enum StoreClipStatus {
+  PREPARING_CLIP = "Preparing your clip, this may some time. Please do not refresh the page.",
+  GENERATING_SIG = "Almost there, generating a signature for your clip...",
 }
 
 export class NftModel {
   meta: MetaModel;
 
-  confirmationProgress: number = 0;
-  waitingForBlockConfirmations: boolean = false;
+  // Saving clip & generating signature loader
+  storeClipLoad: boolean = false;
+  storeClipStatus?: StoreClipStatus;
+  storeClipTimeoutId?: number;
+  // Minting NFT loader
+  mintLoad: boolean = false;
+  mintStatus?: MintStatus;
 
-  waitingForMintTx: boolean = false;
-  progressMessage?: MintingProgress;
-  transactionHash?: string = undefined;
-
-  /**
-   * clipId from a tx that was sent to backend to be allowed to be minted
-   */
-  confirmedClipId?: string;
-  metadataCid?: string;
   metadata?: Metadata;
   tokenId?: string;
   accounts: string[] = [];
@@ -37,8 +36,39 @@ export class NftModel {
     this.meta = meta;
   }
 
-  setMetadataCid(cid?: string) {
-    this.metadataCid = cid;
+  startClipStoreLoader() {
+    this.storeClipLoad = true;
+    this.setClipStoreStatus(StoreClipStatus.PREPARING_CLIP);
+
+    const timeoutId = window.setTimeout(() => {
+      this.setClipStoreStatus(StoreClipStatus.GENERATING_SIG);
+    }, 20_000);
+
+    this.storeClipTimeoutId = timeoutId;
+  }
+
+  private stopClipStoreLoader() {
+    clearTimeout(this.storeClipTimeoutId);
+    this.storeClipTimeoutId = undefined;
+    this.storeClipLoad = false;
+  }
+  private setClipStoreStatus(status: StoreClipStatus) {
+    this.storeClipStatus = status;
+  }
+
+  stopClipStoreLoaderAndStartMintLoader() {
+    this.stopClipStoreLoader();
+    this.startMintLoader()
+  }
+
+  private startMintLoader() {
+    this.mintLoad = true;
+    this.mintStatus = MintStatus.CONFIRM_MINT;
+  }
+
+  stopMintLoader() {
+    this.mintLoad = false;
+    this.mintStatus = undefined;
   }
 
   setMetadataCollection(data: Record<string, MetadataInput>, ipfsGatewayUri: string = ipfsIoGatewayUri) {
@@ -50,30 +80,6 @@ export class NftModel {
   setAccounts = (accounts: string[]) => {
     console.log('[store]:accounts:', accounts)
     this.accounts = accounts;
-  }
-
-  setConfirmTx() {
-    this.waitingForMintTx = true;
-    this.progressMessage = MintingProgress.CONFIRM_TRANSACTION;
-  }
-
-  setPendingTx() {
-    this.progressMessage = MintingProgress.TX_SIGNED;
-  }
-
-  setSuccessTx() {
-    this.progressMessage = MintingProgress.TX_CONFIRMED;
-  }
-
-  setConfirmationProgress(percentageDone: number) {
-    this.waitingForBlockConfirmations = true;
-    this.confirmationProgress = percentageDone;
-  }
-
-  doneConfirmations(clipId: string) {
-    this.waitingForBlockConfirmations = false;
-    this.confirmationProgress = 0;
-    this.confirmedClipId = clipId;
   }
 
   createMetadata(data: MetadataInput, ipfsGatewayUri: string = pinataGatewayUri) {
