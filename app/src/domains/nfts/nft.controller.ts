@@ -89,11 +89,16 @@ export class NftController {
     }
   }
 
+  /**
+   * requestAccounts opens MetaMask and asks user to connect wallet to app
+   * @returns an array of connected account addresses
+   */
   requestAccounts = async () => {
-    // ask user to connect wallet to app
     try {
       // this should be called everytime we need to have users account setup properly
       const requestAccounts = await this.ethereumClient.requestAccounts();
+      console.log('[nft.controller]: requestAccounts', requestAccounts);
+
       this.model.setAccounts(requestAccounts);
     } catch (error) {
       console.log("[LOG]:requestAccounts:error", error);
@@ -110,6 +115,21 @@ export class NftController {
         }
       }
       this.snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
+    }
+  }
+
+  /**
+   * getAccounts tries to get providers accounts
+   * @returns an array of connected account addresses or empty array if no account is connected to app
+   */
+  getAccounts = async () => {
+    try {
+      const accounts = await this.ethereumClient.ethAccounts();
+      console.log('[nft.controller]: ethAccounts', accounts);
+
+      this.model.setAccounts(accounts);
+    } catch (error) {
+      console.log("[LOG]:ethAccounts:error", error);
     }
   }
 

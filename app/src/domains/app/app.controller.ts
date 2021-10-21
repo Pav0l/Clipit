@@ -26,6 +26,7 @@ export interface IAppController {
 
   createNftCtrl: (ethereum: EthereumClient, contract: ContractClient) => void;
   initializeWeb3Clients: () => Promise<{ ethereum: EthereumClient; contract: ContractClient }>;
+  getEthAccounts: () => Promise<void>;
 }
 
 
@@ -51,6 +52,18 @@ export class AppController implements IAppController {
     this.auth.checkTokenInStorage();
   }
 
+  async getEthAccounts() {
+    const { ethereum, contract } = await this.initializeWeb3Clients();
+
+    this.createNftCtrl(ethereum, contract);
+
+    if (this.nft) {
+      console.log('[app.controller]:requesting acs');
+      this.nft.getAccounts();
+    }
+
+  }
+
   async initializeWeb3Clients() {
     const metamaskProvider =
       (await detectEthereumProvider()) as EthereumProvider | null;
@@ -62,8 +75,10 @@ export class AppController implements IAppController {
     // TODO remove log
     console.log("creating new ethereum & contract client");
     const ethereum = new EthereumClient(metamaskProvider, {
-      handleAccountsChange: this.model.nft.setAccounts,
-      handleConnect: (data) => console.log("handleConnect", data),
+      handleAccountsChange: (data) => {
+        console.log('[app.controller]: handleAccountsChange', data);
+        this.model.nft.setAccounts(data)
+      }, handleConnect: (data) => console.log("handleConnect", data),
       handleDisconnect: (data) => console.log("handleDisconnect", data),
       handleMessage: (data) => console.log("handleMessage", data)
     });

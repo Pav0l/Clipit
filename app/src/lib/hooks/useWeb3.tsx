@@ -30,7 +30,10 @@ export function useWeb3(nftModel: NftModel) {
     // TODO remove log
     console.log("creating new ethereum & contract client");
     const ethereum = new EthereumClient(metamaskProvider, {
-      handleAccountsChange: nftModel.setAccounts,
+      handleAccountsChange: (data) => {
+        console.log("[useWeb3]: handleAccountsChange", data);
+        nftModel.setAccounts(data);
+      },
       handleConnect: (data) => console.log("handleConnect", data),
       handleDisconnect: (data) => console.log("handleDisconnect", data),
       handleMessage: (data) => console.log("handleMessage", data)

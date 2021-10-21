@@ -32,6 +32,10 @@ export default class EthereumClient {
     return this.provider.request<Promise<string[]>>({ method: 'eth_requestAccounts' });
   }
 
+  ethAccounts = async () => {
+    return this.provider.request<Promise<string[]>>({ method: 'eth_accounts' });
+  }
+
   private handleChainChanged = (chainId: ChainId) => {
     console.log("[LOG]:chainChanged:chainId", chainId)
     if (this.chainId !== chainId) {

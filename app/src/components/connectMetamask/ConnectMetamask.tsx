@@ -21,6 +21,8 @@ interface Props {
   snackbar: SnackbarClient;
 }
 
+const { isMetaMaskInstalled } = MetaMaskOnboarding;
+
 function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
   const [buttonText, setButtonText] = useState(ONBOARD_TEXT);
   const [isDisabled, setDisabled] = useState(false);
@@ -32,10 +34,14 @@ function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
     if (!onboarding.current) {
       onboarding.current = new MetaMaskOnboarding();
     }
+
+    if (isMetaMaskInstalled()) {
+      operations.getEthAccounts();
+    }
   }, []);
 
   useEffect(() => {
-    if (MetaMaskOnboarding.isMetaMaskInstalled()) {
+    if (isMetaMaskInstalled()) {
       if (model.nft.accounts.length > 0) {
         setButtonText(CONNECTED_TEXT);
         setDisabled(true);
@@ -48,18 +54,21 @@ function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
   }, [model.nft.accounts, model.nft.accounts.length]);
 
   const onClick = async () => {
-    if (MetaMaskOnboarding.isMetaMaskInstalled()) {
+    if (isMetaMaskInstalled()) {
       try {
-        const { ethereum, contract } = await operations.initializeWeb3Clients();
-
-        if (!operations.nft && ethereum && contract) {
-          operations.createNftCtrl(ethereum, contract);
-        }
-
         if (!operations.nft) {
-          throw new Error(
-            "Something went wrong. Please install MetaMask and try again"
-          );
+          const { ethereum, contract } =
+            await operations.initializeWeb3Clients();
+
+          if (ethereum && contract) {
+            operations.createNftCtrl(ethereum, contract);
+          }
+
+          if (!operations.nft) {
+            throw new Error(
+              "Something went wrong. Please install MetaMask and try again"
+            );
+          }
         }
 
         operations.nft.requestAccounts();
