@@ -17,6 +17,7 @@ const useStyles = makeStyles(() => ({
   container: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    minHeight: "90vh"
   }
 }));

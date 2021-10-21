@@ -145,20 +145,6 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
     );
   }
 
-  console.log(
-    "storeClip state",
-    model.nft.storeClipLoad,
-    model.nft.storeClipStatus,
-    model.nft.storeClipLoad && model.nft.storeClipStatus !== undefined
-  );
-
-  console.log(
-    "mint state",
-    model.nft.mintLoad,
-    model.nft.mintStatus,
-    model.nft.mintLoad && model.nft.mintStatus !== undefined
-  );
-
   if (model.nft.storeClipLoad && model.nft.storeClipStatus !== undefined) {
     return <LinearLoader text={model.nft.storeClipStatus}></LinearLoader>;
   }

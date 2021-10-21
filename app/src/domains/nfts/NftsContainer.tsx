@@ -10,6 +10,8 @@ import { Link } from "react-router-dom";
 import { AppRoute } from "../../lib/constants";
 import ErrorWithRetry from "../../components/error/Error";
 import VideoList from "../../components/videoList/VideoList";
+import CenteredContainer from "../../components/container/CenteredContainer";
+import { Typography } from "@material-ui/core";
 
 interface Props {
   model: {
@@ -51,10 +53,12 @@ function NftsContainer({ model, operations }: Props) {
 
   if (tokenIds.length === 0) {
     return (
-      <div>
-        It seems you have no NFTs yet. Try{" "}
-        <Link to={AppRoute.CLIPS}>minting your first clip</Link>.
-      </div>
+      <CenteredContainer>
+        <Typography variant="h6" component="h6">
+          It seems you have no NFTs yet. Try{" "}
+          <Link to={AppRoute.CLIPS}>minting your first clip</Link>.
+        </Typography>
+      </CenteredContainer>
     );
   }
 

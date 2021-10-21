@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
-import { Box, makeStyles, Typography } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
 
 import { ClipCard } from "./ClipCard";
 import VideoList from "../../components/videoList/VideoList";
+import CenteredContainer from "../../components/container/CenteredContainer";
 
 interface Props {
   clipList: Clip[];
@@ -19,17 +20,15 @@ interface Clip {
 }
 
 function EmptyList() {
-  const classes = useStyles();
-
   return (
-    <Box className={classes.noClipsContainer}>
+    <CenteredContainer>
       <Typography variant="h6" component="h6">
         Looks like you don't have any Twitch Clips yet...
       </Typography>
       {/* TODO - add "create clip" button here that creates clip via twitch API? 
             - or redirects to broadcasters vids or wherever streamers make clips
        */}
-    </Box>
+    </CenteredContainer>
   );
 }
 
@@ -71,12 +70,5 @@ const useStyles = makeStyles(() => ({
   link: {
     textDecoration: "none",
     margin: "1rem"
-  },
-  noClipsContainer: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    marginTop: "2rem"
   }
 }));
