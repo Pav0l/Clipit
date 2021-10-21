@@ -6,6 +6,7 @@ import { useHistory } from "react-router-dom";
 import { ClipModel } from "../../domains/twitch-clips/clip.model";
 import { ClipController } from "../../domains/twitch-clips/clip.controller";
 import FullPageLoader from "../loader/FullPageLoader";
+import CenteredContainer from "../container/CenteredContainer";
 
 interface Props {
   model: {
@@ -40,7 +41,7 @@ function Home({ model, operations }: Props) {
   }
 
   return (
-    <main className={classes.main}>
+    <CenteredContainer className={classes.main}>
       <section className={classes.section}>
         <Typography variant="h2" className={classes.title}>
           clip it
@@ -66,7 +67,7 @@ function Home({ model, operations }: Props) {
           Create NFT
         </Button>
       </section>
-    </main>
+    </CenteredContainer>
   );
 }
 
@@ -94,10 +95,7 @@ const useStyles = makeStyles((theme) => ({
   },
   main: {
     marginTop: "5rem",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center"
+    flexDirection: "column"
   },
   section: {
     padding: "5rem 0",

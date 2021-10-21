@@ -8,6 +8,7 @@ import { NftCard } from "../../components/nfts/NftCard";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import { IAppController } from "../app/app.controller";
 import { useWeb3 } from "../../lib/hooks/useWeb3";
+import CenteredContainer from "../../components/container/CenteredContainer";
 
 interface Props {
   model: {
@@ -50,11 +51,13 @@ function NftContainer({ model, operations }: Props) {
 
   if (model.nft.metadata) {
     return (
-      <NftCard
-        clipIpfsUri={model.nft.metadata.clipIpfsUri}
-        clipTitle={model.nft.metadata.clipTitle}
-        clipDescription={model.nft.metadata.description}
-      />
+      <CenteredContainer>
+        <NftCard
+          clipIpfsUri={model.nft.metadata.clipIpfsUri}
+          clipTitle={model.nft.metadata.clipTitle}
+          clipDescription={model.nft.metadata.description}
+        />
+      </CenteredContainer>
     );
   }
 

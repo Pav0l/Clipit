@@ -24,6 +24,7 @@ export function NftCard({ clipIpfsUri, clipTitle, clipDescription }: Props) {
         component="video"
         src={clipIpfsUri}
         title={`CLIP NFT video: ${clipTitle}`}
+        className={classes.video}
       />
       <CardContent>
         <Typography variant="subtitle1" component="h6">
@@ -41,5 +42,8 @@ const useStyles = makeStyles(() => ({
   card: {
     margin: "1rem",
     maxWidth: "85vw"
+  },
+  video: {
+    maxHeight: "70vh"
   }
 }));

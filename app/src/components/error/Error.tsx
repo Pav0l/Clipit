@@ -1,4 +1,5 @@
 import { Box, Typography, Link, makeStyles } from "@material-ui/core";
+import CenteredContainer from "../container/CenteredContainer";
 
 interface Props {
   text?: string;
@@ -40,12 +41,12 @@ function ErrorWithRetry({ text, withRetry }: Props) {
   }
 
   return (
-    <Box className={classes.container}>
+    <CenteredContainer className={classes.container}>
       <Typography variant="h5" className={classes.title}>
         {text}
       </Typography>
-      {withRetry ? <PleaseTryAgain /> : null}
-    </Box>
+      {withRetry ? <PleaseTryAgain /> : <></>}
+    </CenteredContainer>
   );
 }
 
@@ -53,9 +54,6 @@ export default ErrorWithRetry;
 
 const useStyles = makeStyles(() => ({
   container: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
     flexDirection: "column",
     margin: "0 10rem",
     textAlign: "center"
