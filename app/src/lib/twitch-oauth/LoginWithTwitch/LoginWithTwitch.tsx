@@ -7,10 +7,9 @@ interface Props {
     auth: OAuthModel;
   };
   operations: OAuthController;
-  redirect: () => string;
 }
 
-function LoginWithTwitch({ model, operations, redirect }: Props) {
+function LoginWithTwitch({ model, operations }: Props) {
   const classes = useStyles();
   const isLoggedIn = model.auth.isLoggedIn;
 
@@ -18,7 +17,9 @@ function LoginWithTwitch({ model, operations, redirect }: Props) {
     <Button
       className={`${classes.button} ${isLoggedIn ? classes.logOut : ""}`}
       onClick={
-        isLoggedIn ? operations.logout : () => (location.href = redirect())
+        isLoggedIn
+          ? operations.logout
+          : () => (location.href = operations.getTwitchOAuth2AuthorizeUrl())
       }
     >
       {isLoggedIn ? "Log out" : "Login with Twitch"}

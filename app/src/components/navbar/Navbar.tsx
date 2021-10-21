@@ -5,6 +5,7 @@ import {
   AppBar,
   Toolbar
 } from "@material-ui/core";
+import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { IAppController } from "../../domains/app/app.controller";
@@ -21,14 +22,12 @@ interface Props {
     auth: OAuthModel;
   };
   operations: IAppController;
-  redirect: () => string;
   snackbar: SnackbarClient;
 }
 
-export default function Navbar({
+export default observer(function Navbar({
   model,
   operations,
-  redirect,
   snackbar
 }: Props) {
   const classes = useStyles();
@@ -79,7 +78,6 @@ export default function Navbar({
           <LoginWithTwitch
             model={{ auth: model.auth }}
             operations={operations.auth}
-            redirect={redirect}
           />
           <ConnectMetamaskButton
             model={model}
@@ -90,7 +88,7 @@ export default function Navbar({
       </Toolbar>
     </AppBar>
   );
-}
+});
 
 function LinkButton({
   to,

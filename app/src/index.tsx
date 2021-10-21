@@ -5,11 +5,8 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./index.css";
 import { AppRoute, clipItUri, cloudFlareGatewayUri } from "./lib/constants";
 import { IpfsClient } from "./lib/ipfs/ipfs.client";
-import { getTwitchOAuth2AuthorizeUrl } from "./lib/twitch-oauth/twitch-oauth.public.api";
-
 import { appModel } from "./domains/app/app.model";
 import { StoreProvider } from "./components/storeProvider/StoreProvider";
-
 import { AppController } from "./domains/app/app.controller";
 import NftContainer from "./domains/nfts/NftContainer";
 import NftsContainer from "./domains/nfts/NftsContainer";
@@ -17,12 +14,10 @@ import ClipDetailContainer from "./domains/twitch-clips/ClipDetailContainer";
 import ClipsContainer from "./domains/twitch-clips/ClipsContainer";
 import Snackbar from "./lib/snackbar/Snackbar";
 import { snackbarClient } from "./lib/snackbar/snackbar.client";
-
 import Home from "./components/home/Home";
 import OAuth2Redirect from "./lib/twitch-oauth/OAuth2Redirect/OAuth2Redirect";
 import Marketplace from "./components/marketplace/Marketplace";
 import Navbar from "./components/navbar/Navbar";
-
 import ErrorBoundary from "./components/error/ErrorBoundry";
 import Playground from "./domains/playground/Playground";
 import { ClipItApiClient } from "./lib/clipit-api/clipit-api.client";
@@ -31,6 +26,7 @@ import { twitchApiClient } from "./lib/twitch-api/twitch-api.client";
 import ThemeProvider from "./components/themeProvider/ThemeProvider";
 import { defaultTheme } from "./components/themeProvider/theme";
 import { LocalStorage } from "./lib/local-storage";
+import OAuthProtectedRoute from "./lib/twitch-oauth/OAuthProtected/OAuthProtectedRoute";
 
 async function initializeApp() {
   const app = new AppController(
@@ -57,7 +53,6 @@ async function initializeApp() {
           <ThemeProvider theme={defaultTheme}>
             <Router basename="/">
               <Navbar
-                redirect={getTwitchOAuth2AuthorizeUrl}
                 model={{ nft: model.nft, auth: model.auth }}
                 operations={operations}
                 snackbar={snackbarClient}
@@ -69,23 +64,35 @@ async function initializeApp() {
                 <Route exact path={AppRoute.MARKETPLACE}>
                   <Marketplace />
                 </Route>
-                <Route exact path={AppRoute.NFTS}>
-                  {/* TODO this route needs to be auth protected */}
+                <OAuthProtectedRoute
+                  exact
+                  path={AppRoute.NFTS}
+                  model={{ auth: model.auth }}
+                  operations={{ auth: operations.auth }}
+                >
                   <NftsContainer
                     model={{ nft: model.nft }}
                     operations={operations}
                   />
-                </Route>
-                <Route exact path={AppRoute.NFT}>
-                  {/* TODO this route needs to be auth protected */}
+                </OAuthProtectedRoute>
+                <OAuthProtectedRoute
+                  exact
+                  path={AppRoute.NFT}
+                  model={{ auth: model.auth }}
+                  operations={{ auth: operations.auth }}
+                >
                   <NftContainer
                     model={{ nft: model.nft }}
                     operations={operations}
                   />
-                </Route>
-                <Route exact path={AppRoute.CLIPS}>
+                </OAuthProtectedRoute>
+                <OAuthProtectedRoute
+                  exact
+                  path={AppRoute.CLIPS}
+                  model={{ auth: model.auth }}
+                  operations={{ auth: operations.auth }}
+                >
                   <ErrorBoundary>
-                    {/* TODO this route needs to be auth protected */}
                     <ClipsContainer
                       model={{
                         clip: model.clip,
@@ -99,10 +106,14 @@ async function initializeApp() {
                       }}
                     />
                   </ErrorBoundary>
-                </Route>
-                <Route exact path={AppRoute.CLIP}>
+                </OAuthProtectedRoute>
+                <OAuthProtectedRoute
+                  exact
+                  path={AppRoute.CLIP}
+                  model={{ auth: model.auth }}
+                  operations={{ auth: operations.auth }}
+                >
                   <ErrorBoundary>
-                    {/* TODO this route needs to be auth protected */}
                     <ClipDetailContainer
                       model={{
                         clip: model.clip,
@@ -114,7 +125,7 @@ async function initializeApp() {
                       snackbar={snackbarClient}
                     />
                   </ErrorBoundary>
-                </Route>
+                </OAuthProtectedRoute>
                 <Route exact path={AppRoute.OAUTH_REDIRECT}>
                   <OAuth2Redirect operations={operations.auth} />
                 </Route>
