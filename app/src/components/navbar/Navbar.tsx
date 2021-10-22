@@ -9,8 +9,8 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { IAppController } from "../../domains/app/app.controller";
-import { NftModel } from "../../domains/nfts/nft.model";
 import { AppRoute } from "../../lib/constants";
+import { EthereumModel } from "../../lib/ethereum/ethereum.model";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 import LoginWithTwitch from "../../lib/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
 import { OAuthModel } from "../../lib/twitch-oauth/oauth.model";
@@ -18,7 +18,7 @@ import ConnectMetamaskButton from "../connectMetamask/ConnectMetamask";
 
 interface Props {
   model: {
-    nft: NftModel;
+    eth: EthereumModel;
     auth: OAuthModel;
   };
   operations: IAppController;

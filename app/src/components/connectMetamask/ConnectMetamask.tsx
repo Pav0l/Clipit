@@ -3,7 +3,7 @@ import MetaMaskOnboarding from "@metamask/onboarding";
 import { observer } from "mobx-react-lite";
 import { useState, useRef, useEffect } from "react";
 
-import { NftModel } from "../../domains/nfts/nft.model";
+import { EthereumModel } from "../../lib/ethereum/ethereum.model";
 import { IAppController } from "../../domains/app/app.controller";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 
@@ -15,13 +15,11 @@ const CONNECTED_TEXT = "Connected";
 
 interface Props {
   model: {
-    nft: NftModel;
+    eth: EthereumModel;
   };
   operations: IAppController;
   snackbar: SnackbarClient;
 }
-
-const { isMetaMaskInstalled } = MetaMaskOnboarding;
 
 function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
   const [buttonText, setButtonText] = useState(ONBOARD_TEXT);
@@ -35,14 +33,12 @@ function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
       onboarding.current = new MetaMaskOnboarding();
     }
 
-    if (isMetaMaskInstalled()) {
-      operations.getEthAccounts();
-    }
+    operations.connectMetaMaskProviderIfNecessary();
   }, []);
 
   useEffect(() => {
-    if (isMetaMaskInstalled()) {
-      if (model.nft.accounts.length > 0) {
+    if (model.eth.isMetaMaskInstalled()) {
+      if (model.eth.isProviderConnected()) {
         setButtonText(CONNECTED_TEXT);
         setDisabled(true);
         onboarding.current!.stopOnboarding();
@@ -51,27 +47,16 @@ function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
         setDisabled(false);
       }
     }
-  }, [model.nft.accounts, model.nft.accounts.length]);
+  }, [model.eth.accounts, model.eth.accounts?.length]);
 
   const onClick = async () => {
-    if (isMetaMaskInstalled()) {
+    if (model.eth.isMetaMaskInstalled()) {
       try {
-        if (!operations.nft) {
-          const { ethereum, contract } =
-            await operations.initializeWeb3Clients();
-
-          if (ethereum && contract) {
-            operations.createNftCtrl(ethereum, contract);
-          }
-
-          if (!operations.nft) {
-            throw new Error(
-              "Something went wrong. Please install MetaMask and try again"
-            );
-          }
+        if (!operations.eth) {
+          operations.connectMetaMaskProviderIfNecessary();
         }
 
-        operations.nft.requestAccounts();
+        operations.eth!.requestAccounts();
       } catch (error) {
         snackbar.sendError((error as Error).message);
         return;

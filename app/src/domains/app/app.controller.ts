@@ -26,10 +26,13 @@ export interface IAppController {
   game: GameController;
   user: UserController;
   auth: OAuthController;
+  eth?: EthereumController;
+
 
   createNftCtrl: (ethereum: EthereumClient, contract: ContractClient) => void;
   initializeWeb3Clients: () => Promise<{ ethereum: EthereumClient; contract: ContractClient }>;
   getEthAccounts: () => Promise<void>;
+  connectMetaMaskProviderIfNecessary: () => Promise<void>;
 }
 
 
@@ -147,7 +150,7 @@ export class AppController implements IAppController {
       if (this.model.eth.isMetaMaskInstalled()) {
         try {
           this.eth = new EthereumController(this.model.eth, window.ethereum as EthereumProvider, this.snackbarClient);
-          await this.eth.requestAccounts();
+          await this.eth.ethAccounts();
         } catch (error) {
           // invalid provider -> Please install MetaMask and connect it error msg
           this.model.eth.meta.setError(MetaMaskErrors.INSTALL_METAMASK)

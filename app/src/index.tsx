@@ -53,7 +53,7 @@ async function initializeApp() {
           <ThemeProvider theme={defaultTheme}>
             <Router basename="/">
               <Navbar
-                model={{ nft: model.nft, auth: model.auth }}
+                model={{ eth: model.eth, auth: model.auth }}
                 operations={operations}
                 snackbar={snackbarClient}
               />
