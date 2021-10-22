@@ -15,6 +15,9 @@ import { GameController } from "../twitch-games/game.controller";
 import { UserController } from "../twitch-user/user.controller";
 import { OAuthController } from "../../lib/twitch-oauth/oauth.controller";
 import { ILocalStorage } from "../../lib/local-storage";
+import EthereumController from "../../lib/ethereum/ethereum.controller";
+import { MetaMaskErrors } from "../../lib/ethereum/ethereum.model";
+
 
 
 export interface IAppController {
@@ -37,6 +40,8 @@ export class AppController implements IAppController {
   user: UserController;
   auth: OAuthController;
 
+  eth?: EthereumController;
+
   constructor(
     private model: AppModel,
     private snackbarClient: SnackbarClient,
@@ -45,11 +50,11 @@ export class AppController implements IAppController {
     private ipfsApi: IpfsClient,
     private storage: ILocalStorage
   ) {
+    this.auth = new OAuthController(model.auth, this.storage);
+    this.auth.checkTokenInStorage();
     this.clip = new ClipController(model.clip, this.snackbarClient, this.twitchApi);
     this.game = new GameController(model.game, this.twitchApi);
     this.user = new UserController(model.user, this.twitchApi);
-    this.auth = new OAuthController(model.auth, this.storage);
-    this.auth.checkTokenInStorage();
   }
 
   async getEthAccounts() {
@@ -135,5 +140,23 @@ export class AppController implements IAppController {
         contract
       )
     }
+  }
+
+  async connectMetaMaskProviderIfNecessary() {
+    if (!this.model.eth.isProviderConnected()) {
+      if (this.model.eth.isMetaMaskInstalled()) {
+        try {
+          this.eth = new EthereumController(this.model.eth, window.ethereum as EthereumProvider, this.snackbarClient);
+          await this.eth.requestAccounts();
+        } catch (error) {
+          // invalid provider -> Please install MetaMask and connect it error msg
+          this.model.eth.meta.setError(MetaMaskErrors.INSTALL_METAMASK)
+        }
+      } else {
+        // MetaMask not installed
+        this.model.eth.meta.setError(MetaMaskErrors.INSTALL_METAMASK)
+      }
+    }
+    // provider should be connected 
   }
 }

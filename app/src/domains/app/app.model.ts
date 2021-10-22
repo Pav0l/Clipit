@@ -6,6 +6,7 @@ import { SnackbarModel } from "../../lib/snackbar/snackbar.model";
 import { TestStore } from "../playground/playground.store";
 import { UserModel } from "../twitch-user/user.model";
 import { OAuthModel } from "../../lib/twitch-oauth/oauth.model";
+import { EthereumModel } from "../../lib/ethereum/ethereum.model";
 
 
 export interface AppModel {
@@ -13,6 +14,7 @@ export interface AppModel {
   user: UserModel;
   game: GameModel;
   nft: NftModel;
+  eth: EthereumModel;
 
   auth: OAuthModel;
   snackbar: SnackbarModel;
@@ -28,6 +30,7 @@ class Model implements AppModel {
   nft: NftModel;
   snackbar: SnackbarModel;
   auth: OAuthModel;
+  eth: EthereumModel;
 
   testStore: TestStore;
 
@@ -37,6 +40,8 @@ class Model implements AppModel {
     this.user = new UserModel(new MetaModel());
     this.game = new GameModel(new MetaModel());
     this.nft = new NftModel(new MetaModel());
+    this.eth = new EthereumModel(new MetaModel());
+
     this.snackbar = new SnackbarModel();
     this.auth = new OAuthModel();
 
