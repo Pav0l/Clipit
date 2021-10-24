@@ -1,4 +1,4 @@
-export type SnackSeverity = "error" | "success";
+export type SnackSeverity = "error" | "success" | "info";
 
 export interface ISnack {
   text: string;

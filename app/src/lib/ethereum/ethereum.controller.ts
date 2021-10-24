@@ -50,6 +50,11 @@ export default class EthereumController {
     }
   }
 
+  /**
+   * ethAccounts silently requests users account (without opening up MetaMask).
+   * If MetaMask is not connected, it returns empty array.
+   * It only opens MetaMask if user is not logged into MetaMask
+   */
   ethAccounts = async () => {
     try {
       const accounts = await this.provider.request<Promise<string[]>>({ method: 'eth_accounts' });

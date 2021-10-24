@@ -52,11 +52,7 @@ function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
   const onClick = async () => {
     if (model.eth.isMetaMaskInstalled()) {
       try {
-        if (!operations.eth) {
-          operations.connectMetaMaskProviderIfNecessary();
-        }
-
-        operations.eth!.requestAccounts();
+        operations.eth?.requestAccounts();
       } catch (error) {
         snackbar.sendError((error as Error).message);
         return;

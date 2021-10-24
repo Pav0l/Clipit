@@ -24,6 +24,11 @@ export class SnackbarModel {
     this.open = true;
   }
 
+  addInfoToSnackbarQue(text: string, duration?: number) {
+    this.pushSnackMessage(text, "info", duration);
+    this.open = true;
+  }
+
   addSuccessToSnackbarQue(text: string, duration?: number) {
     this.pushSnackMessage(text, "success", duration);
     this.open = true;

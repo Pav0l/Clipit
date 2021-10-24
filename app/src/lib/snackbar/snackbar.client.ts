@@ -3,11 +3,16 @@ import { SnackSeverity } from "./types";
 export interface SnackbarClient {
   sendError: (text: string) => void;
   sendSuccess: (text: string) => void;
+  sendInfo: (text: string) => void;
 }
 
 class Snackbar implements SnackbarClient {
   sendError(text: string) {
     this.send(text, "error");
+  }
+
+  sendInfo(text: string) {
+    this.send(text, "info");
   }
 
   sendSuccess(text: string) {

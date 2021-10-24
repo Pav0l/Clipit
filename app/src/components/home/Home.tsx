@@ -94,7 +94,6 @@ const useStyles = makeStyles((theme) => ({
     alignSelf: "flex-end"
   },
   main: {
-    marginTop: "5rem",
     flexDirection: "column"
   },
   section: {
