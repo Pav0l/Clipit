@@ -7,7 +7,6 @@ import { NftModel } from "./nft.model";
 import { NftCard } from "../../components/nfts/NftCard";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import { IAppController } from "../app/app.controller";
-import { useWeb3 } from "../../lib/hooks/useWeb3";
 import CenteredContainer from "../../components/container/CenteredContainer";
 
 interface Props {
@@ -25,23 +24,10 @@ function NftContainer({ model, operations }: Props) {
     return <ErrorWithRetry text="Something went wrong" withRetry={true} />;
   }
   // construct ethereum and contract clients
-  const { ethereum, contract, initializeWeb3 } = useWeb3(model.nft);
 
   useEffect(() => {
-    if (!ethereum || !contract) {
-      initializeWeb3();
-    }
+    operations.requestConnectAndGetTokenMetadata(tokenId);
   }, []);
-
-  useEffect(() => {
-    if (!operations.nft && ethereum && contract) {
-      operations.createNftCtrl(ethereum, contract);
-    }
-
-    if (!model.nft.metadata && operations.nft) {
-      operations.nft.getTokenMetadata(tokenId);
-    }
-  }, [ethereum, contract]);
 
   // MetaMask not installed
   if (model.nft.meta.hasError) {

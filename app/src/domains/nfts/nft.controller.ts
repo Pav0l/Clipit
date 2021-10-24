@@ -1,7 +1,6 @@
 import type { ClipItApiClient } from "../../lib/clipit-api/clipit-api.client";
 import type { NftModel, Signature } from "./nft.model";
 import type ContractClient from '../../lib/contract/contract.client';
-import type EthereumClient from '../../lib/ethereum/ethereum.client';
 import type { IpfsClient } from '../../lib/ipfs/ipfs.client';
 import type { SnackbarClient } from '../../lib/snackbar/snackbar.client';
 
@@ -17,18 +16,13 @@ export class NftController {
     private snackbarClient: SnackbarClient,
     private clipitApi: ClipItApiClient,
     private ipfsClient: IpfsClient,
-    private ethereumClient: EthereumClient,
     private contractClient: ContractClient
   ) { }
 
-  prepareMetadataAndMintClip = async (clipId: string) => {
-    await this.requestAccounts();
-
+  prepareMetadataAndMintClip = async (clipId: string, address: string) => {
     this.model.startClipStoreLoader();
 
-    const userAddress = await this.ethereumClient.signer.getAddress();
-
-    const resp = await this.clipitApi.storeClip(clipId, userAddress);
+    const resp = await this.clipitApi.storeClip(clipId, address);
 
     if (resp.statusOk && !isStoreClipError(resp.body)) {
 
@@ -36,17 +30,12 @@ export class NftController {
 
       this.model.stopClipStoreLoaderAndStartMintLoader();
 
-      await this.mintNFT(resp.body.metadataCid, clipId, userAddress, resp.body.signature);
+      await this.mintNFT(resp.body.metadataCid, clipId, address, resp.body.signature);
 
       this.model.stopMintLoader();
-
-    } else if (isStoreClipError(resp.body) && resp.body.error === "wallet does not have enough funds to mint clip") {
-      this.snackbarClient.sendError(resp.body.error)
     } else {
-      this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+      this.snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
     }
-
-    this.model.meta.setLoading(false);
   }
 
   getMetadataFromIpfs = async (cid: string) => {
@@ -59,18 +48,15 @@ export class NftController {
       this.model.createMetadata(metadata);
     } catch (error) {
       // TODO SENTRY
-      this.model.meta.setError(NftErrors.INSTALL_METAMASK);
+      this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     }
   }
 
-  getCurrentSignerTokensMetadata = async () => {
+  getCurrentSignerTokensMetadata = async (address: string) => {
     try {
       this.model.meta.setLoading(true);
-      const currentWalletAddress = await this.ethereumClient.signer.getAddress();
 
-      const events = await this.contractClient.getWalletsClipNFTs(
-        currentWalletAddress
-      );
+      const events = await this.contractClient.getWalletsClipNFTs(address);
 
       const tokenIds: string[] = this.getTokenIdsFromEvents(events);
       console.log("tokenIds", tokenIds);
@@ -85,51 +71,7 @@ export class NftController {
       this.model.meta.setLoading(false);
     } catch (error) {
       // TODO SENTRY
-      this.model.meta.setError(NftErrors.INSTALL_METAMASK);
-    }
-  }
-
-  /**
-   * requestAccounts opens MetaMask and asks user to connect wallet to app
-   * @returns an array of connected account addresses
-   */
-  requestAccounts = async () => {
-    try {
-      // this should be called everytime we need to have users account setup properly
-      const requestAccounts = await this.ethereumClient.requestAccounts();
-      console.log('[nft.controller]: requestAccounts', requestAccounts);
-
-      this.model.setAccounts(requestAccounts);
-    } catch (error) {
-      console.log("[LOG]:requestAccounts:error", error);
-
-      if (isRpcError(error)) {
-        switch (error.code) {
-          case RpcErrors.REQUEST_ALREADY_PENDING:
-            this.snackbarClient.sendError(NftErrors.REQUEST_ALREADY_PENDING)
-            return;
-
-          default:
-            this.snackbarClient.sendError(NftErrors.CONNECT_METAMASK);
-            return;
-        }
-      }
-      this.snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
-    }
-  }
-
-  /**
-   * getAccounts tries to get providers accounts
-   * @returns an array of connected account addresses or empty array if no account is connected to app
-   */
-  getAccounts = async () => {
-    try {
-      const accounts = await this.ethereumClient.ethAccounts();
-      console.log('[nft.controller]: ethAccounts', accounts);
-
-      this.model.setAccounts(accounts);
-    } catch (error) {
-      console.log("[LOG]:ethAccounts:error", error);
+      this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     }
   }
 

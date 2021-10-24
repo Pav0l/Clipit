@@ -86,7 +86,7 @@ export class NftModel {
     this.metadata = new Metadata(data, ipfsGatewayUri);
   }
 
-  setTokenId(tokenId: string) {
+  setTokenId(tokenId: string | undefined) {
     this.tokenId = tokenId;
     console.log(`[store]:tokenId:`, tokenId);
   }

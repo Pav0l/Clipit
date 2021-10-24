@@ -119,7 +119,8 @@ async function initializeApp() {
                         clip: model.clip,
                         user: model.user,
                         game: model.game,
-                        nft: model.nft
+                        nft: model.nft,
+                        eth: model.eth
                       }}
                       operations={operations}
                       snackbar={snackbarClient}

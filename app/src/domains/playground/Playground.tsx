@@ -25,18 +25,6 @@ const Playground = observer(function Playground({
 
   const onClick = async () => {
     try {
-      const { ethereum, contract } = await operations.initializeWeb3Clients();
-
-      if (!operations.nft && ethereum && contract) {
-        operations.createNftCtrl(ethereum, contract);
-      }
-
-      if (!operations.nft) {
-        throw new Error(
-          "Something went wrong. Please install MetaMask and try again"
-        );
-      }
-
       // DO SOMETHING
     } catch (error) {
       snackbar.sendError((error as Error).message);

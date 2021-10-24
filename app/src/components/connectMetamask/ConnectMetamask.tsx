@@ -33,7 +33,7 @@ function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
       onboarding.current = new MetaMaskOnboarding();
     }
 
-    operations.connectMetaMaskProviderIfNecessary();
+    operations.connectMetaMaskIfNecessaryForConnectBtn();
   }, []);
 
   useEffect(() => {

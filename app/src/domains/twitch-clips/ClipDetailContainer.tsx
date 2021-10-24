@@ -12,8 +12,6 @@ import {
 import ErrorWithRetry from "../../components/error/Error";
 
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
-import { TwitchClipsErrors } from "./twitch-clips.errors";
-import { NftErrors } from "../nfts/nft.errors";
 import { ClipModel } from "./clip.model";
 import { UserModel } from "../twitch-user/user.model";
 import { GameModel } from "../twitch-games/game.model";
@@ -21,6 +19,7 @@ import { NftModel } from "../nfts/nft.model";
 import { IAppController } from "../app/app.controller";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import LinearLoader from "../../components/loader/LinearLoader";
+import { EthereumModel } from "../../lib/ethereum/ethereum.model";
 
 interface Props {
   model: {
@@ -28,10 +27,29 @@ interface Props {
     user: UserModel;
     game: GameModel;
     nft: NftModel;
+    eth: EthereumModel;
   };
   operations: IAppController;
   snackbar: SnackbarClient;
 }
+
+const useStyles = makeStyles(() => ({
+  container: {
+    margin: "2rem auto",
+    borderRadius: "0px"
+  },
+  iframe: {
+    // video aspect ratio is 16:9
+    width: "80vw",
+    height: "45vw",
+    maxHeight: "70vh"
+  },
+  content: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between"
+  }
+}));
 
 function ClipDetailContainer({ model, operations, snackbar }: Props) {
   const { clipId } = useParams<{ clipId: string }>();
@@ -58,7 +76,7 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
     }
   }, [model.clip.clips.length]);
 
-  const initMint = async () => {
+  const mint = async () => {
     setDisabled(true);
     // we need to verify that current user is owner of broadcaster of clip,
     // so we do not allow other people minting streamers clips
@@ -67,39 +85,20 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
       // TODO hardcoded user Id
       (model.user.id === "30094526" || clip.broadcasterId === model.user.id)
     ) {
-      try {
-        try {
-          const { ethereum, contract } =
-            await operations.initializeWeb3Clients();
+      // reset previously stored tokenId (this smells)
+      model.nft.setTokenId(undefined);
 
-          if (!operations.nft && ethereum && contract) {
-            operations.createNftCtrl(ethereum, contract);
-          }
-        } catch (error) {
-          snackbar.sendError((error as Error).message);
-          return;
-        }
+      await operations.requestConnectAndMint(clip.id);
 
-        if (!operations.nft) {
-          throw new Error("Failed to initialize nft controller");
-        }
-
-        await operations.nft.prepareMetadataAndMintClip(clip.id);
-        // TODO the tokenId here is from previous mint!
+      // TODO the tokenId here is from previous mint!
+      // also new tokenId exists only after the contract is successfully called, so it still can be unefined
+      // by the time we get here
+      if (model.nft.tokenId) {
         console.log("tokenId from mint -> redirecting", model.nft.tokenId);
-        if (model.nft.tokenId) {
-          history.push(`/nfts/${model.nft.tokenId}`);
-        }
-      } catch (error) {
-        // TODO SENTRY MONITOR
-        model.nft.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+        history.push(`/nfts/${model.nft.tokenId}`);
       }
-    } else {
-      // TODO SENTRY MONITOR
-      snackbar.sendError(TwitchClipsErrors.CLIP_DOES_NOT_BELONG_TO_USER);
+      setDisabled(false);
     }
-
-    setDisabled(false);
   };
 
   if (model.user.meta.hasError) {
@@ -187,7 +186,7 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
           color="primary"
           variant="contained"
           disabled={isDisabled}
-          onClick={initMint}
+          onClick={mint}
         >
           {/* Mint */}
           Create NFT
@@ -198,24 +197,6 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
 }
 
 export default observer(ClipDetailContainer);
-
-const useStyles = makeStyles(() => ({
-  container: {
-    margin: "2rem auto",
-    borderRadius: "0px"
-  },
-  iframe: {
-    // video aspect ratio is 16:9
-    width: "80vw",
-    height: "45vw",
-    maxHeight: "70vh"
-  },
-  content: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between"
-  }
-}));
 
 /**
 

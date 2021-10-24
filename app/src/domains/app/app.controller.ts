@@ -1,9 +1,8 @@
-import detectEthereumProvider from "@metamask/detect-provider";
+import { ethers } from "ethers";
 import { BigNumberish } from "@ethersproject/bignumber";
 
 import type { ClipItApiClient } from "../../lib/clipit-api/clipit-api.client";
 import ContractClient from "../../lib/contract/contract.client";
-import EthereumClient from "../../lib/ethereum/ethereum.client";
 import { IpfsClient } from "../../lib/ipfs/ipfs.client";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client";
@@ -17,6 +16,7 @@ import { OAuthController } from "../../lib/twitch-oauth/oauth.controller";
 import { ILocalStorage } from "../../lib/local-storage";
 import EthereumController from "../../lib/ethereum/ethereum.controller";
 import { MetaMaskErrors } from "../../lib/ethereum/ethereum.model";
+import { NftErrors } from "../nfts/nft.errors";
 
 
 
@@ -28,11 +28,10 @@ export interface IAppController {
   auth: OAuthController;
   eth?: EthereumController;
 
-
-  createNftCtrl: (ethereum: EthereumClient, contract: ContractClient) => void;
-  initializeWeb3Clients: () => Promise<{ ethereum: EthereumClient; contract: ContractClient }>;
-  getEthAccounts: () => Promise<void>;
-  connectMetaMaskProviderIfNecessary: () => Promise<void>;
+  connectMetaMaskIfNecessaryForConnectBtn: () => Promise<void>;
+  requestConnectAndGetTokensMetadata: () => Promise<void>;
+  requestConnectAndGetTokenMetadata: (tokenId: string) => Promise<void>;
+  requestConnectAndMint: (clipId: string) => Promise<void>;
 }
 
 
@@ -44,122 +43,216 @@ export class AppController implements IAppController {
   auth: OAuthController;
 
   eth?: EthereumController;
+  contract?: ContractClient;
 
   constructor(
     private model: AppModel,
-    private snackbarClient: SnackbarClient,
+    private snackbar: SnackbarClient,
     private clipitApi: ClipItApiClient,
     private twitchApi: TwitchApiClient,
     private ipfsApi: IpfsClient,
-    private storage: ILocalStorage
+    private storage: ILocalStorage,
   ) {
     this.auth = new OAuthController(model.auth, this.storage);
     this.auth.checkTokenInStorage();
-    this.clip = new ClipController(model.clip, this.snackbarClient, this.twitchApi);
+    this.clip = new ClipController(model.clip, this.snackbar, this.twitchApi);
     this.game = new GameController(model.game, this.twitchApi);
     this.user = new UserController(model.user, this.twitchApi);
   }
 
-  async getEthAccounts() {
-    const { ethereum, contract } = await this.initializeWeb3Clients();
+  async connectMetaMaskIfNecessaryForConnectBtn() {
+    console.log('[app.controller]:connectMetaMaskIfNecessaryForConnectBtn', this.model.eth.isMetaMaskInstalled(), this.model.eth.isProviderConnected());
 
-    this.createNftCtrl(ethereum, contract);
+    if (!this.model.eth.isMetaMaskInstalled()) {
+      // if MM is not installed, do nothing. the button will prompt for installation
+      return;
+    }
 
-    if (this.nft) {
-      console.log('[app.controller]:requesting acs');
-      this.nft.getAccounts();
+    // MM connected -> nothing to do
+    if (this.model.eth.isProviderConnected()) {
+      return;
+    }
+
+    try {
+      this.eth = new EthereumController(this.model.eth, window.ethereum as EthereumProvider, this.snackbar);
+      await this.eth.ethAccounts();
+    } catch (error) {
+      // TODO Sentry - this should not happen
+      console.log('[app.controller]:connectMetaMaskIfNecessaryForConnectBtn:error', error);
     }
 
   }
 
-  async initializeWeb3Clients() {
-    const metamaskProvider =
-      (await detectEthereumProvider()) as EthereumProvider | null;
+  async requestConnectAndGetTokensMetadata() {
+    console.log('requestConnectAndGetTokensMetadata', this.model.eth.isProviderConnected())
+    await this.initNftRoutes();
 
-    if (metamaskProvider === null) {
-      // TODO insert clickable link for snackbar
-      throw new Error("Please install MetaMask to view or create your NFTs.");
+    if (!this.model.eth.accounts || !this.model.eth.accounts[0]) {
+      this.model.eth.meta.setError(MetaMaskErrors.CONNECT_METAMASK);
+      return;
     }
-    // TODO remove log
-    console.log("creating new ethereum & contract client");
-    const ethereum = new EthereumClient(metamaskProvider, {
-      handleAccountsChange: (data) => {
-        console.log('[app.controller]: handleAccountsChange', data);
-        this.model.nft.setAccounts(data)
-      }, handleConnect: (data) => console.log("handleConnect", data),
-      handleDisconnect: (data) => console.log("handleDisconnect", data),
-      handleMessage: (data) => console.log("handleMessage", data)
-    });
+    this.nft!.getCurrentSignerTokensMetadata(this.model.eth.accounts[0]);
+  }
 
-    const contract = new ContractClient(ethereum.signer, {
-      handleApproval: (
-        owner?: string | null,
-        approved?: string | null,
-        tokenId?: BigNumberish | null
-      ) => {
-        console.log(
-          `[APPROVAL](initW3clients) from ${owner} to ${approved} for ${tokenId}`
-        );
-      },
-      handleApprovalAll: (
-        owner?: string | null,
-        operator?: string | null,
-        approved?: any
-      ) => {
-        console.log(
-          `[APPROVAL_ALL](initW3clients) from ${owner} to ${operator} approval status: ${approved}`
-        );
-      },
-      handleTransfer: (
-        from?: string | null,
-        to?: string | null,
-        tokenId?: BigNumberish | null
-      ) => {
-        console.log(`[TRANSFER](initW3clients) from ${from} to ${to} for ${tokenId}`);
-        if (tokenId) {
-          this.model.nft.setTokenId(tokenId.toString());
-        }
+  async requestConnectAndGetTokenMetadata(tokenId: string) {
+    console.log('requestConnectAndGetTokenMetadata', this.model.eth.isProviderConnected())
+
+    await this.initNftRoutes();
+    this.nft!.getTokenMetadata(tokenId);
+  }
+
+  async requestConnectAndMint(clipId: string) {
+    try {
+      if (!this.model.eth.isMetaMaskInstalled()) {
+        this.snackbar.sendInfo(MetaMaskErrors.INSTALL_METAMASK);
+        return;
       }
-    });
 
-    return { ethereum, contract };
+      if (!this.model.eth.isProviderConnected()) {
+        this.eth = new EthereumController(
+          this.model.eth,
+          window.ethereum as EthereumProvider,
+          this.snackbar
+        );
+
+
+        await this.eth.requestAccounts();
+      }
+
+      this.initContractIfNotExist(this.model.eth.signer);
+      if (!this.contract) {
+        // TODO track in sentry, this should not happen
+        this.snackbar.sendError(NftErrors.SOMETHING_WENT_WRONG);
+        return;
+      }
+
+      this.createNftCtrlIfNotExist(this.contract);
+
+      if (!this.nft) {
+        return;
+      }
+
+      if (!this.model.eth.accounts || !this.model.eth.accounts[0]) {
+        // TODO track in sentry, this should not happen
+        this.snackbar.sendError(NftErrors.SOMETHING_WENT_WRONG);
+        return;
+      }
+
+      await this.nft.prepareMetadataAndMintClip(
+        clipId,
+        this.model.eth.accounts[0]
+      );
+    } catch (error) {
+      // TODO sentry
+      // invalid provider
+      // init contract
+      // prepareMetadataAndMintClip
+      //  - storeClip error
+      this.snackbar.sendError(NftErrors.SOMETHING_WENT_WRONG);
+    }
+  }
+
+  private async initNftRoutes() {
+    // can't display this page if MM not installed
+    if (!this.model.eth.isMetaMaskInstalled()) {
+      this.model.nft.meta.setError(MetaMaskErrors.INSTALL_METAMASK);
+      return;
+    }
+
+    // MM not yet connected
+    if (!this.model.eth.isProviderConnected()) {
+      try {
+        this.eth = new EthereumController(this.model.eth, window.ethereum as EthereumProvider, this.snackbar);
+        await this.eth.requestAccounts();
+      } catch (error) {
+        // should not happen
+        this.snackbar.sendError(MetaMaskErrors.SOMETHING_WENT_WRONG);
+        return;
+      }
+    }
+
+    if (!this.model.eth.signer) {
+      // TODO sentry this should not happen
+      this.model.eth.meta.setError(MetaMaskErrors.SOMETHING_WENT_WRONG);
+      return;
+    }
+
+    this.initContractIfNotExist(this.model.eth.signer);
+    if (!this.contract) {
+      // TODO sentry this should not happen
+      this.model.eth.meta.setError(MetaMaskErrors.SOMETHING_WENT_WRONG);
+      return;
+    }
+
+    this.createNftCtrlIfNotExist(this.contract);
+
+    if (!this.nft) {
+      return;
+    }
+  }
+
+  private initContractIfNotExist(signer?: ethers.providers.JsonRpcSigner) {
+    if (!signer) {
+      return;
+    }
+
+    if (this.contract) {
+      return;
+    }
+
+    try {
+      this.contract = new ContractClient(signer, {
+        handleApproval: (
+          owner?: string | null,
+          approved?: string | null,
+          tokenId?: BigNumberish | null
+        ) => {
+          console.log(
+            `[APPROVAL](initContractIfNotExist) from ${owner} to ${approved} for ${tokenId}`
+          );
+        },
+        handleApprovalAll: (
+          owner?: string | null,
+          operator?: string | null,
+          approved?: any
+        ) => {
+          console.log(
+            `[APPROVAL_ALL](initContractIfNotExist) from ${owner} to ${operator} approval status: ${approved}`
+          );
+        },
+        handleTransfer: (
+          from?: string | null,
+          to?: string | null,
+          tokenId?: BigNumberish | null
+        ) => {
+          console.log(`[TRANSFER](initContractIfNotExist) from ${from} to ${to} for ${tokenId}`);
+          if (tokenId) {
+            this.model.nft.setTokenId(tokenId.toString());
+          }
+        }
+      });
+    } catch (error) {
+      // TODO sentry - probably invalid signer
+      this.snackbar.sendError(MetaMaskErrors.SOMETHING_WENT_WRONG);
+    }
   }
 
   /**
-   * createNftCtrl creates NftController instance. 
+   * createNftCtrlIfNotExist creates NftController instance. 
    * This will require MetaMask to be installed from the user,
    * that's why we're instantiating it only just when we need it
    */
-  createNftCtrl(ethereum: EthereumClient, contract: ContractClient) {
+  private createNftCtrlIfNotExist(contract: ContractClient) {
     // TODO remove log
-    console.log('creating new nft controller:', Boolean(!this.nft));
+    console.log('createNftCtrlIfNotExist:', Boolean(!this.nft));
     if (!this.nft) {
       this.nft = new NftController(
         this.model.nft,
-        this.snackbarClient,
+        this.snackbar,
         this.clipitApi,
         this.ipfsApi,
-        ethereum,
         contract
       )
     }
-  }
-
-  async connectMetaMaskProviderIfNecessary() {
-    if (!this.model.eth.isProviderConnected()) {
-      if (this.model.eth.isMetaMaskInstalled()) {
-        try {
-          this.eth = new EthereumController(this.model.eth, window.ethereum as EthereumProvider, this.snackbarClient);
-          await this.eth.ethAccounts();
-        } catch (error) {
-          // invalid provider -> Please install MetaMask and connect it error msg
-          this.model.eth.meta.setError(MetaMaskErrors.INSTALL_METAMASK)
-        }
-      } else {
-        // MetaMask not installed
-        this.model.eth.meta.setError(MetaMaskErrors.INSTALL_METAMASK)
-      }
-    }
-    // provider should be connected 
   }
 }

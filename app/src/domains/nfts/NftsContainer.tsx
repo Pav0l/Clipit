@@ -5,7 +5,6 @@ import { NftModel } from "./nft.model";
 import { NftCard } from "../../components/nfts/NftCard";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import { IAppController } from "../app/app.controller";
-import { useWeb3 } from "../../lib/hooks/useWeb3";
 import { Link } from "react-router-dom";
 import { AppRoute } from "../../lib/constants";
 import ErrorWithRetry from "../../components/error/Error";
@@ -21,25 +20,11 @@ interface Props {
 }
 
 function NftsContainer({ model, operations }: Props) {
-  // construct ethereum and contract clients
-  const { ethereum, contract, initializeWeb3 } = useWeb3(model.nft);
   const tokenIds = Object.keys(model.nft.metadataCollection);
 
   useEffect(() => {
-    if (!ethereum || !contract) {
-      initializeWeb3();
-    }
+    operations.requestConnectAndGetTokensMetadata();
   }, []);
-
-  useEffect(() => {
-    if (!operations.nft && ethereum && contract) {
-      operations.createNftCtrl(ethereum, contract);
-    }
-    // fetch current address token ids and its metadata
-    if (tokenIds.length === 0 && operations.nft) {
-      operations.nft.getCurrentSignerTokensMetadata();
-    }
-  }, [ethereum, contract]);
 
   // MetaMask not installed
   if (model.nft.meta.hasError) {
