@@ -226,9 +226,6 @@ export class AppController implements IAppController {
           tokenId?: BigNumberish | null
         ) => {
           console.log(`[TRANSFER](initContractIfNotExist) from ${from} to ${to} for ${tokenId}`);
-          if (tokenId) {
-            this.model.nft.setTokenId(tokenId.toString());
-          }
         }
       });
     } catch (error) {

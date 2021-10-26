@@ -52,4 +52,16 @@ export default class ContractClient {
 
     return emittedEvents;
   }
+
+  /**
+   * getTokenIdFromCid creates tokenId from cid
+   * @dev emulates contracts uint256(keccak256(abi.encode(_cid)))
+   */
+  getTokenIdFromCid(cid: string): string {
+    const encoded = ethers.utils.defaultAbiCoder.encode(["string"], [cid]);
+    const hashed = ethers.utils.keccak256(encoded);
+    const tokenId = BigNumber.from(hashed);
+
+    return tokenId.toString();
+  }
 }

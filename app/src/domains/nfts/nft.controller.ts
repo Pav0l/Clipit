@@ -32,6 +32,8 @@ export class NftController {
 
       await this.mintNFT(resp.body.metadataCid, clipId, address, resp.body.signature);
 
+      this.model.setTokenId(this.contractClient.getTokenIdFromCid(resp.body.metadataCid));
+
       this.model.stopMintLoader();
     } else {
       this.snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
