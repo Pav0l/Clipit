@@ -25,6 +25,8 @@ export function NftCard({ clipIpfsUri, clipTitle, clipDescription }: Props) {
         src={clipIpfsUri}
         title={`CLIP NFT video: ${clipTitle}`}
         className={classes.video}
+        controls
+        controlsList="nodownload"
       />
       <CardContent>
         <Typography variant="subtitle1" component="h6">
