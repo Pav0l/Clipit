@@ -85,17 +85,13 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
       // TODO hardcoded user Id
       (model.user.id === "30094526" || clip.broadcasterId === model.user.id)
     ) {
-      // reset previously stored tokenId (this smells)
-      model.nft.setTokenId(undefined);
-
       await operations.requestConnectAndMint(clip.id);
 
-      // TODO the tokenId here is from previous mint!
-      // also new tokenId exists only after the contract is successfully called, so it still can be unefined
-      // by the time we get here
-      if (model.nft.tokenId) {
-        console.log("tokenId from mint -> redirecting", model.nft.tokenId);
-        history.push(`/nfts/${model.nft.tokenId}`);
+      const tokenId = model.nft.tokenId;
+      if (tokenId) {
+        console.log("tokenId from mint -> redirecting", tokenId);
+        model.nft.setTokenId(undefined);
+        history.push(`/nfts/${tokenId}`);
       }
       setDisabled(false);
     }
