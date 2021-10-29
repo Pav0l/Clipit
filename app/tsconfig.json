@@ -18,6 +18,5 @@
     // https://mobx.js.org/installation.html#use-spec-compliant-transpilation-for-class-properties
     "useDefineForClassFields": true
   },
-  "include": ["src"],
-  "files": ["custom.d.ts"]
+  "include": ["src", "**.d.ts"]
 }
