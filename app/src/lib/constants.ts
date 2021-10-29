@@ -18,14 +18,6 @@ export const pinataGatewayUri = "https://gateway.pinata.cloud/ipfs";
 export const cloudFlareGatewayUri = "https://cloudflare-ipfs.com/ipfs";
 export const ipfsIoGatewayUri = "https://ipfs.io/ipfs";
 
-
-// OPENSEA -> networkName into config
-// TODO
-// export const seaport = new OpenSeaPort((window as any).ethereum, {
-//   networkName: Network.Rinkeby
-// });
-export const openSeaCollectionUrl = "https://testnets.opensea.io/collection/clipit?embed=true"; // -> into config
-
 // TWITCH
 export const twitchAppClientId = "0japyt7fgxgarzd4oadqk8bb2orf0f";
 export const twitchAccessToken = "twitch_auth_access_token";
