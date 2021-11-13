@@ -1,8 +1,13 @@
-import { ethers, waffle } from "hardhat";
+import { ethers, waffle, network } from "hardhat";
 import { expect } from "chai";
-import { BigNumber, ContractFactory, ContractReceipt, Wallet } from "ethers";
-import { ClipIt } from "../typechain/ClipIt"
-import { CONTRACT_NAME, generateSignature } from "../lib";
+import { BigNumber, ContractFactory, ContractReceipt, Wallet, BigNumberish } from "ethers";
+import { ClipIt } from "../typechain/ClipIt";
+import { Market } from "../typechain/Market";
+import { BaseERC20 } from "../typechain/BaseERC20";
+
+import { generateSignatureV2, Decimal, signPermit } from "../lib";
+import { arrayify, Bytes, Signature } from "@ethersproject/contracts/node_modules/@ethersproject/bytes";
+import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
 
 
 function expectEventWithArgs<T>(receipt: ContractReceipt, eventName: string, assertion: (eventArgs: any) => T) {
@@ -18,80 +23,113 @@ function expectEventWithArgs<T>(receipt: ContractReceipt, eventName: string, ass
 describe("ClipIt", function () {
   let contractFactory: ContractFactory;
   let contract: ClipIt;
-  let one: Wallet, two: Wallet, three: Wallet, beforeEachWallet: Wallet;
+  let marketContract: Market;
+  let contractOwner: Wallet, two: Wallet, three: Wallet, four: Wallet;
+  let currencyContract: BaseERC20;
 
   const clipCID = "clipCID";
   // "clipCID" token Id
-  const tid = BigNumber.from("3168405825740219867040700576505120080443780731148527622846639649708184909701");
-  const defaultBaseURI = "ipfs://"
+  const tid = BigNumber.from("0");
+  const invalidTokenId = BigNumber.from(1000);
+
+  const metadataURI = "ipfs://metadataCid";
+  const metadataHash = keccak256(toUtf8Bytes('metadata'));
+  const metadataHashBytes = arrayify(metadataHash);
+  const tokenURI = `ipfs://${clipCID}`;
+  const contentHash = keccak256(toUtf8Bytes('content'));
+  const contentHashBytes = arrayify(contentHash);
+
+  const defaultAsk = (amount: number = 1000, currency: string = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707") => ({
+    amount: amount,
+    currency: currency
+  });
+  const defaultBid = (currency: string, bidder: string, recipient?: string) => ({
+    // Amount of the currency being bid
+    amount: 500,
+    // Address to the ERC20 token being used to bid
+    currency,
+    // Address of the bidder
+    bidder,
+    // Address of the recipient
+    recipient: recipient ?? bidder,
+    // % of the next sale to award the current owner
+    sellOnShare: Decimal.from(10)
+  });
+
+  interface MediaData {
+    tokenURI: string;
+    metadataURI: string;
+    // keccak256(contentCid)
+    contentHash: Bytes;
+    // keccak256(metadataCid)
+    metadataHash: Bytes;
+  }
+
+  interface DecimalValue { value: BigNumber };
+
+  interface BidShares {
+    owner: DecimalValue;
+    prevOwner: DecimalValue;
+    creator: DecimalValue;
+  };
+
+  async function mint(
+    contract: ClipIt,
+    metadataURI: string,
+    tokenURI: string,
+    contentHash: Bytes,
+    metadataHash: Bytes,
+    shares: BidShares,
+    sig: Signature
+  ) {
+    const data: MediaData = {
+      tokenURI,
+      metadataURI,
+      contentHash,
+      metadataHash,
+    };
+    return contract.mint(data, shares, sig.v, sig.r, sig.s);
+  }
+
+  async function deployCurrency(owner: Wallet) {
+    const factory = await ethers.getContractFactory("BaseERC20", { signer: owner });
+    currencyContract = await factory.deploy('test', 'TEST', 18) as BaseERC20;
+    return currencyContract.address;
+  }
+
+  async function approveCurrency(owner: Wallet, spender: string) {
+    const ownerCaller = currencyContract.connect(owner);
+    await ownerCaller.approve(spender, ethers.constants.MaxUint256);
+  }
+  async function mintCurrency(to: string, value: BigNumberish = BigNumber.from("1000000")) {
+    await currencyContract.mint(to, value);
+  }
+
 
   beforeEach(async () => {
-    [one, two, beforeEachWallet, three] = waffle.provider.getWallets();
+    [contractOwner, two, three, four] = waffle.provider.getWallets();
 
-    contractFactory = await ethers.getContractFactory(CONTRACT_NAME, { signer: one });
-    contract = await contractFactory.deploy() as ClipIt;
+    const marketFactory = await ethers.getContractFactory("Market", { signer: contractOwner });
+    marketContract = await marketFactory.deploy() as Market;
 
-    const sig = await generateSignature(one, clipCID, beforeEachWallet.address);
-    await contract.mint(beforeEachWallet.address, clipCID, BigNumber.from(sig.v), sig.r, sig.s);
-  })
+    contractFactory = await ethers.getContractFactory("ClipIt", { signer: contractOwner });
+    contract = await contractFactory.deploy(marketContract.address) as ClipIt;
+
+    await marketContract.configure(contract.address);
+  });
 
   it("deploy: set proper owner, contract name & symbol", async () => {
     const owner = await contract.owner();
-    expect(owner).to.eql(one.address);
+    expect(owner).to.eql(contractOwner.address);
 
     const name = await contract.name();
-    expect(name).to.eql(CONTRACT_NAME);
+    expect(name).to.eql("ClipIt");
 
     const symbol = await contract.symbol();
     expect(symbol).to.eql("CLIP");
-  });
 
-  it("mint: generates new tokenId for owner, adds proper tokenId owner, emits msg", async () => {
-    const sig = await generateSignature(one, "cid", two.address);
-    const tx = await contract.mint(two.address, "cid", BigNumber.from(sig.v), sig.r, sig.s);
-    const receipt = await tx.wait();
-
-    const args = expectEventWithArgs<{ tokenId: BigNumber }>(receipt, "Transfer", (args) => {
-      expect(args["from"]).to.eql(ethers.constants.AddressZero);
-      expect(args["to"]).to.eql(two.address);
-      expect(args["tokenId"]).to.exist;
-      return { tokenId: args["tokenId"] };
-    });
-
-    expect(args?.tokenId).to.not.eql(undefined);
-
-    const ownerOf = await contract.ownerOf(args!.tokenId);
-    expect(ownerOf).to.eql(two.address);
-
-    const balanceOf = await contract.balanceOf(two.address);
-    expect(balanceOf.toString()).to.eql("1");
-  });
-
-  it("mint: can not mint to 0 address", async () => {
-    const sig = await generateSignature(one, "cid", ethers.constants.AddressZero);
-    await expect(contract.mint(ethers.constants.AddressZero, "cid", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("ERC721: mint to the zero address");
-  });
-
-  it("mint: can not mint CID that already exists", async () => {
-    const sig = await generateSignature(one, clipCID, one.address);
-    // clipCID minted in beforeEach block
-    await expect(contract.mint(one.address, clipCID, BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("ERC721: token already minted")
-  });
-
-  it("mint: does not allow minting with invalid signature signer", async () => {
-    // signer `two` is not contract owner
-    const sig = await generateSignature(two, "cid", two.address);
-    await expect(contract.mint(two.address, "cid", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("address not allowed to mint");
-  });
-
-  it("mint: does not allow minting with invalid signature address", async () => {
-    const sig = await generateSignature(one, "cid", three.address);
-    await expect(contract.mint(two.address, "cid", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("address not allowed to mint");
-  });
-
-  it("mint: does not allow minting with invalid signature cid", async () => {
-    const sig = await generateSignature(one, "cid", two.address);
-    await expect(contract.mint(two.address, "cid2", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("address not allowed to mint");
+    const market = await contract.marketContract();
+    expect(market).to.eql(marketContract.address);
   });
 
   it("ownerOf: non existing tokenId reverts", async () => {
@@ -107,168 +145,1245 @@ describe("ClipIt", function () {
     expect(balanceOf.toString()).to.eql("0");
   });
 
-  it("tokenURI: returns proper URI", async () => {
-    const tokenURI = await contract.tokenURI(tid);
-    expect(tokenURI).to.eql(defaultBaseURI + clipCID);
-  });
+  describe("mint:", () => {
+    it("generates new token", async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, two.address);
 
-  it("tokenURI: reverts if tokenId does not exist", async () => {
-    await expect(contract.tokenURI("does-not-exist")).to.be.reverted;
-  });
+      const signerTwo = await contract.connect(two);
+      const tx = await mint(signerTwo, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10),
+      }, sig);
+      const receipt = await tx.wait();
 
-  it("setBaseURI: can be only called by contract owner", async () => {
-    const twoCaller = await contract.connect(two);
-    await expect(twoCaller.setBaseURI("foo")).to.be.reverted;
-  });
+      expectEventWithArgs(receipt, "Transfer", (args) => {
+        expect(args["from"]).to.eql(ethers.constants.AddressZero);
+        expect(args["to"]).to.eql(two.address);
+        expect(args["tokenId"]).to.exist;
+        expect(args!.tokenId.toString()).to.eql("0");
+      });
 
-  it("setBaseURI: permanently changes baseTokenURI", async () => {
-    const newBase = "https://domain.com/"
-    await contract.setBaseURI(newBase);
+      const tokenCreator = await contract.tokenCreators(tid);
+      expect(tokenCreator).eq(two.address);
 
-    const tokenURI = await contract.tokenURI(tid);
-    expect(tokenURI).to.eql(newBase + clipCID);
-  });
+      const previousTokenOwners = await contract.previousTokenOwners(tid);
+      expect(previousTokenOwners).eq(two.address);
 
-  it("approve: non existing tokenId reverts", async () => {
-    await expect(
-      contract.approve(one.address, BigNumber.from("2168405825740219867040700576505120080443780731148527622846639649708184909701"))
-    ).to.be.revertedWith("ERC721: owner query for nonexistent token");
-  });
+      const tokenContentHashes = await contract.tokenContentHashes(tid);
+      expect(tokenContentHashes).eq(contentHash);
 
-  it("approve: owner of token approving transfer to himself", async () => {
-    await expect(contract.approve(beforeEachWallet.address, tid)).to.be.revertedWith("ERC721: approval to current owner");
-  });
+      const returnedTokenURI = await contract.tokenURI(tid);
+      expect(returnedTokenURI).eq(tokenURI);
 
-  it("approve: caller is not owner / 'approved for all' approves", async () => {
-    const invalidCaller = await contract.connect(three);
-    await expect(invalidCaller.approve(three.address, tid)).to.be.revertedWith("ERC721: approve caller is not owner nor approved for all");
-  });
+      const tokenMetadataHashes = await contract.tokenMetadataHashes(tid);
+      expect(tokenMetadataHashes).eq(metadataHash);
 
-  it("approve: approves transfer to address & emits event", async () => {
-    const ownerCaller = await contract.connect(beforeEachWallet);
+      const tokenMetadataURI = await contract.tokenMetadataURI(tid);
+      expect(tokenMetadataURI).eq(metadataURI);
 
-    const tx = await ownerCaller.approve(three.address, tid);
-    const receipt = await tx.wait();
+      const ownerOf = await contract.ownerOf(tid);
+      expect(ownerOf).eql(two.address);
 
-    expectEventWithArgs(receipt, "Approval", (args) => {
-      expect(args["owner"]).to.eql(beforeEachWallet.address);
-      expect(args["approved"]).to.eql(three.address);
-      expect(args["tokenId"].toString()).to.eql(tid.toString());
+      const token = await contract.tokenOfOwnerByIndex(two.address, 0);
+      expect(token.toString()).eql(tid.toString());
+
+      const bidShares = await marketContract.bidSharesForToken(tid);
+      expect(bidShares.owner.value.toString()).eql("80000000000000000000");
+      expect(bidShares.creator.value.toString()).eql("10000000000000000000");
+      expect(bidShares.prevOwner.value.toString()).eql("10000000000000000000");
     });
 
-    const isApproved = await contract.getApproved(tid);
-    expect(isApproved).to.eql(three.address);
-  });
+    // it("can not mint to 0 address", async () => {
+    //   // unable to do, since we use `msg.sender` for the `_to` parameter
+    //   // might need if we use the `_to` argument for `mint` function
+    // });
 
-  it("approve: to different address overwrites previous approval", async () => {
-    const ownerCaller = await contract.connect(beforeEachWallet);
-    await ownerCaller.approve(three.address, tid);
-    expect(await contract.getApproved(tid)).to.eql(three.address);
+    it("can not mint content that already was already minted", async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig);
 
-    await ownerCaller.approve(two.address, tid);
-    expect(await contract.getApproved(tid)).to.eql(two.address);
-
-    // zero address approval clears approval for tid
-    await ownerCaller.approve(ethers.constants.AddressZero, tid);
-    expect(await contract.getApproved(tid)).to.eql(ethers.constants.AddressZero);
-  });
-
-  it("getApproved: non existing tokenId reverts", async () => {
-    await expect(
-      contract.getApproved(BigNumber.from("2168405825740219867040700576505120080443780731148527622846639649708184909701"))
-    ).to.be.revertedWith("ERC721: approved query for nonexistent token");
-  });
-
-  it("setApprovalForAll: can not set approval for caller (self)", async () => {
-    await expect(
-      contract.setApprovalForAll(one.address, true)
-    ).to.be.revertedWith("ERC721: approve to caller");
-  });
-
-  it("setApprovalForAll: approves operator for transfers & emits event", async () => {
-    const tx = await contract.setApprovalForAll(two.address, true);
-    const receipt = await tx.wait();
-
-    expectEventWithArgs(receipt, "ApprovalForAll", (args) => {
-      expect(args["owner"]).to.eql(one.address);
-      expect(args["operator"]).to.eql(two.address);
-      expect(args["approved"]).to.eql(true);
+      await expect(mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10),
+      }, sig)).to.be.revertedWith("ClipIt: a token has already been created with this content hash")
     });
 
-    expect(await contract.isApprovedForAll(one.address, two.address)).to.eql(true);
+    it("does not allow minting with invalid signature signer", async () => {
+      // signer `two` is not contract owner
+      const sig = await generateSignatureV2(two, contentHash, two.address);
+      await expect(mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10),
+      }, sig)).to.be.revertedWith("ClipIt: address not allowed to mint");
+    });
+
+    it("does not allow minting with invalid signature address", async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, three.address);
+      // signed address and msg.sender do not match
+      await expect(mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10),
+      }, sig)).to.be.revertedWith("ClipIt: address not allowed to mint");
+    });
+
+    it("does not allow minting with invalid signature cid", async () => {
+      const contentHash = keccak256(toUtf8Bytes('other content identifier'));
+      const sig = await generateSignatureV2(contractOwner, contentHash, three.address);
+      // signed contentHash and ocntentHashBytes do not match
+      await expect(mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10),
+      }, sig)).to.be.revertedWith("ClipIt: address not allowed to mint");
+    });
+
+    it("token and mint URIs must exist", async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      // empty metadataURI
+      await expect(mint(contract, "", tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig)).to.be.revertedWith("ClipIt: specified uri must be non-empty");
+
+      // empty tokenURI
+      await expect(mint(contract, metadataURI, "", contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig)).to.be.revertedWith("ClipIt: specified uri must be non-empty");
+    });
+
+    it("contentHash can not be empty", async () => {
+      const sig = await generateSignatureV2(contractOwner, ethers.constants.HashZero, contractOwner.address);
+      await expect(mint(contract, metadataURI, tokenURI, arrayify(ethers.constants.HashZero), metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig)).to.be.revertedWith("ClipIt: content hash must be non-zero");
+    });
+
+    it("metadataHash can not be empty", async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      await expect(mint(contract, metadataURI, tokenURI, contentHashBytes, arrayify(ethers.constants.HashZero), {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig)).to.be.revertedWith("ClipIt: metadata hash must be non-zero");
+    });
+
+    it("bidShares must eql to 100", async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      await expect(mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        // owner share too big
+        owner: Decimal.from(90),
+        prevOwner: Decimal.from(10)
+      }, sig)).to.be.revertedWith("Market: Invalid bid shares, must sum to 100");
+    });
+
   });
 
-  it("setApprovalForAll: can overwrite previous approval for the same caller", async () => {
-    await contract.setApprovalForAll(two.address, true);
-    expect(await contract.isApprovedForAll(one.address, two.address)).to.eql(true);
+  describe("burn:", () => {
+    beforeEach(async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
 
-    await contract.setApprovalForAll(two.address, false);
-    expect(await contract.isApprovedForAll(one.address, two.address)).to.eql(false);
+      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig);
+    });
+
+    it("burns token", async () => {
+      // owner balance and token supply exist before burn
+      const balanceBefore = await contract.balanceOf(contractOwner.address);
+      expect(balanceBefore.toString()).eql("1");
+      const supplyBefore = await contract.totalSupply();
+      expect(supplyBefore.toString()).eql("1");
+
+      // burn
+      const tx = await contract.burn(tid);
+      const receipt = await tx.wait();
+
+      const balanceAfter = await contract.balanceOf(contractOwner.address);
+      // _holderTokens[owner] removed
+      expect(balanceAfter.toString()).eql("0");
+
+      const supplyAfter = await contract.totalSupply();
+      // _tokenOwners removed
+      expect(supplyAfter.toString()).eql("0");
+
+      // Transfer to zero address emitted
+      expectEventWithArgs<void>(receipt, "Transfer", (args) => {
+        expect(args["from"]).to.eql(contractOwner.address);
+        expect(args["to"]).to.eql(ethers.constants.AddressZero);
+        expect(args!.tokenId.toString()).to.eql("0");
+      });
+
+      // Approvals cleared
+      await expect(contract.getApproved(tid)).revertedWith("ERC721: approved query for nonexistent token")
+      // Approval event to zero address emitted
+      expectEventWithArgs<void>(receipt, "Approval", (args) => {
+        expect(args["owner"]).to.eql(contractOwner.address);
+        expect(args["approved"]).to.eql(ethers.constants.AddressZero);
+        expect(args!.tokenId.toString()).to.eql("0");
+      });
+
+      // tokenURI stays
+      const tokenUriAfterBurn = await contract.tokenURI(tid);
+      expect(tokenUriAfterBurn).eql(tokenURI);
+
+      // previousTokenOwners is deleted
+      const previousOwner = await contract.previousTokenOwners(tid);
+      expect(previousOwner).eql(ethers.constants.AddressZero);
+    });
+
+    it("approved caller can burn if owner is creator", async () => {
+      await contract.approve(two.address, tid);
+      const approvedCaller = contract.connect(two);
+
+      // burn
+      const tx = await approvedCaller.burn(tid);
+      const receipt = await tx.wait();
+
+      const balanceAfter = await approvedCaller.balanceOf(contractOwner.address);
+      // _holderTokens[owner] removed
+      expect(balanceAfter.toString()).eql("0");
+
+      const supplyAfter = await approvedCaller.totalSupply();
+      // _tokenOwners removed
+      expect(supplyAfter.toString()).eql("0");
+
+      // Transfer to zero address emitted
+      expectEventWithArgs<void>(receipt, "Transfer", (args) => {
+        expect(args["from"]).to.eql(contractOwner.address);
+        expect(args["to"]).to.eql(ethers.constants.AddressZero);
+        expect(args!.tokenId.toString()).to.eql("0");
+      });
+
+      // Approvals cleared
+      await expect(approvedCaller.getApproved(tid)).revertedWith("ERC721: approved query for nonexistent token")
+      // Approval event to zero address emitted
+      expectEventWithArgs<void>(receipt, "Approval", (args) => {
+        expect(args["owner"]).to.eql(contractOwner.address);
+        expect(args["approved"]).to.eql(ethers.constants.AddressZero);
+        expect(args!.tokenId.toString()).to.eql("0");
+      });
+
+      // tokenURI stays
+      const tokenUriAfterBurn = await approvedCaller.tokenURI(tid);
+      expect(tokenUriAfterBurn).eql(tokenURI);
+
+      // previousTokenOwners is deleted
+      const previousOwner = await approvedCaller.previousTokenOwners(tid);
+      expect(previousOwner).eql(ethers.constants.AddressZero);
+    });
+
+    it("can burn only existing token", async () => {
+      await expect(contract.burn(invalidTokenId)).revertedWith("ClipIt: nonexistent token");
+    });
+
+    it("caller has to be approved or owner", async () => {
+      const unknownCaller = contract.connect(four);
+      await expect(unknownCaller.burn(tid)).revertedWith("ClipIt: Only approved or owner");
+    });
+
+    it("caller has to be owner and creator", async () => {
+      await contract.transferFrom(contractOwner.address, four.address, tid);
+
+      const newOwner = contract.connect(four);
+      await expect(newOwner.burn(tid)).revertedWith("ClipIt: owner is not creator of media");
+    });
+
+    it("approved caller can not burn if owner is not creator", async () => {
+      await contract.transferFrom(contractOwner.address, four.address, tid);
+      const newOwner = contract.connect(four);
+      await newOwner.approve(two.address, tid);
+
+      const approvedCaller = contract.connect(two);
+      await expect(approvedCaller.burn(tid)).revertedWith("ClipIt: owner is not creator of media");
+    });
   });
 
-  it("isApprovedForAll: returns false for non-approved operators", async () => {
-    expect(await contract.isApprovedForAll(three.address, beforeEachWallet.address)).to.eql(false);
+  describe("updateTokenURI:", () => {
+    const newURI = "www.example.com";
+
+    beforeEach(async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+
+      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig);
+    });
+
+    it("only approved or owner", async () => {
+      const unknownCaller = contract.connect(four);
+      await expect(unknownCaller.updateTokenURI(tid, newURI)).revertedWith("ClipIt: Only approved or owner");
+    });
+
+    it("can not update tokenURI for non-existent token", async () => {
+      await expect(contract.updateTokenURI(invalidTokenId, newURI)).revertedWith("ERC721: operator query for nonexistent token");
+    });
+
+    it("can not update tokenURI for burned token", async () => {
+      await contract.burn(tid);
+      await expect(contract.updateTokenURI(tid, newURI)).revertedWith("ERC721: operator query for nonexistent token");
+    });
+
+    it("must be valid URI", async () => {
+      await expect(contract.updateTokenURI(tid, "")).revertedWith("ClipIt: specified uri must be non-empty");
+    });
+
+    it("sets the URI and emits for owner", async () => {
+      const tx = await contract.updateTokenURI(tid, newURI);
+      const receipt = await tx.wait();
+
+      expectEventWithArgs<void>(receipt, "TokenURIUpdated", (args) => {
+        expect(args["_tokenId"].toString()).to.eql(tid.toString());
+        expect(args["owner"]).to.eql(contractOwner.address);
+        expect(args["_uri"]).to.eql(newURI);
+      });
+
+      const updatedTokenURI = await contract.tokenURI(tid);
+      expect(updatedTokenURI).eql(newURI);
+    });
+
+    it("sets the URI and emits for approved", async () => {
+      await contract.approve(two.address, tid);
+
+      const approved = contract.connect(two);
+      const tx = await approved.updateTokenURI(tid, newURI);
+      const receipt = await tx.wait();
+
+      expectEventWithArgs<void>(receipt, "TokenURIUpdated", (args) => {
+        expect(args["_tokenId"].toString()).to.eql(tid.toString());
+        expect(args["owner"]).to.eql(two.address);
+        expect(args["_uri"]).to.eql(newURI);
+      });
+
+      const updatedTokenURI = await approved.tokenURI(tid);
+      expect(updatedTokenURI).eql(newURI);
+    });
   });
 
-  describe("token transfers", function () {
-    it("safeTransferFrom: non-existing token reverts", async () => {
+  describe("updateTokenMetadataURI:", () => {
+    const newURI = "www.example.com";
+
+    beforeEach(async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+
+      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig);
+    });
+
+    it("only approved or owner", async () => {
+      const unknownCaller = contract.connect(four);
+      await expect(unknownCaller.updateTokenMetadataURI(tid, newURI)).revertedWith("ClipIt: Only approved or owner");
+    });
+
+    it("can not update metadataURI for non-existent token", async () => {
+      await expect(contract.updateTokenMetadataURI(invalidTokenId, newURI)).revertedWith("ERC721: operator query for nonexistent token");
+    });
+
+    it("can not update metadataURI for burned token", async () => {
+      await contract.burn(tid);
+      await expect(contract.updateTokenMetadataURI(tid, newURI)).revertedWith("ERC721: operator query for nonexistent token");
+    });
+
+    it("must be valid URI", async () => {
+      await expect(contract.updateTokenMetadataURI(tid, "")).revertedWith("ClipIt: specified uri must be non-empty");
+    });
+
+    it("sets the URI and emits for owner", async () => {
+      const tx = await contract.updateTokenMetadataURI(tid, newURI);
+      const receipt = await tx.wait();
+
+      expectEventWithArgs<void>(receipt, "TokenMetadataURIUpdated", (args) => {
+        expect(args["_tokenId"].toString()).to.eql(tid.toString());
+        expect(args["owner"]).to.eql(contractOwner.address);
+        expect(args["_uri"]).to.eql(newURI);
+      });
+
+      const updatedTokenMetadataURI = await contract.tokenMetadataURI(tid);
+      expect(updatedTokenMetadataURI).eql(newURI);
+    });
+
+    it("sets the URI and emits for approved", async () => {
+      await contract.approve(two.address, tid);
+
+      const approved = contract.connect(two);
+      const tx = await approved.updateTokenMetadataURI(tid, newURI);
+      const receipt = await tx.wait();
+
+      expectEventWithArgs<void>(receipt, "TokenMetadataURIUpdated", (args) => {
+        expect(args["_tokenId"].toString()).to.eql(tid.toString());
+        expect(args["owner"]).to.eql(two.address);
+        expect(args["_uri"]).to.eql(newURI);
+      });
+
+      const updatedTokenMetadataURI = await approved.tokenMetadataURI(tid);
+      expect(updatedTokenMetadataURI).eql(newURI);
+    });
+  });
+
+  describe("approve:", () => {
+    beforeEach(async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+
+      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig);
+    });
+
+    it("non existing tokenId reverts", async () => {
       await expect(
-        contract["safeTransferFrom(address,address,uint256)"](one.address, beforeEachWallet.address, BigNumber.from("2168405825740219867040700576505120080443780731148527622846639649708184909701"))
-      ).to.be.revertedWith("ERC721: operator query for nonexistent token");
+        contract.approve(two.address, invalidTokenId)
+      ).to.be.revertedWith("ERC721: owner query for nonexistent token");
     });
 
-    it("safeTransferFrom: caller is not approved or owner", async () => {
+    it("owner of token approving transfer to himself", async () => {
+      await expect(contract.approve(contractOwner.address, tid)).to.be.revertedWith("ERC721: approval to current owner");
+    });
+
+    it("caller is not owner / 'approved for all' approves", async () => {
+      const invalidCaller = await contract.connect(three);
+      await expect(invalidCaller.approve(three.address, tid)).to.be.revertedWith("ERC721: approve caller is not owner nor approved for all");
+    });
+
+    it("approves transfer to address & emits event", async () => {
+      const tx = await contract.approve(three.address, tid);
+      const receipt = await tx.wait();
+
+      expectEventWithArgs(receipt, "Approval", (args) => {
+        expect(args["owner"]).to.eql(contractOwner.address);
+        expect(args["approved"]).to.eql(three.address);
+        expect(args["tokenId"].toString()).to.eql(tid.toString());
+      });
+
+      const isApproved = await contract.getApproved(tid);
+      expect(isApproved).to.eql(three.address);
+    });
+
+    it("to different address overwrites previous approval", async () => {
+      await contract.approve(three.address, tid);
+      expect(await contract.getApproved(tid)).to.eql(three.address);
+
+      await contract.approve(two.address, tid);
+      expect(await contract.getApproved(tid)).to.eql(two.address);
+
+      // zero address approval clears approval for tid
+      await contract.approve(ethers.constants.AddressZero, tid);
+      expect(await contract.getApproved(tid)).to.eql(ethers.constants.AddressZero);
+    });
+
+    it("getApproved: non existing tokenId reverts", async () => {
       await expect(
-        contract["safeTransferFrom(address,address,uint256)"](one.address, beforeEachWallet.address, tid)
-      ).to.be.revertedWith("ERC721: transfer caller is not owner nor approved");
+        contract.getApproved(BigNumber.from("2168405825740219867040700576505120080443780731148527622846639649708184909701"))
+      ).to.be.revertedWith("ERC721: approved query for nonexistent token");
+    });
+
+    describe("setApprovalForAll", () => {
+      it("can not set approval for caller (self)", async () => {
+        await expect(
+          contract.setApprovalForAll(contractOwner.address, true)
+        ).to.be.revertedWith("ERC721: approve to caller");
+      });
+
+      it("approves operator for transfers & emits event", async () => {
+        const tx = await contract.setApprovalForAll(two.address, true);
+        const receipt = await tx.wait();
+
+        expectEventWithArgs(receipt, "ApprovalForAll", (args) => {
+          expect(args["owner"]).to.eql(contractOwner.address);
+          expect(args["operator"]).to.eql(two.address);
+          expect(args["approved"]).to.eql(true);
+        });
+
+        expect(await contract.isApprovedForAll(contractOwner.address, two.address)).to.eql(true);
+      });
+
+      it("can overwrite previous approval for the same caller", async () => {
+        await contract.setApprovalForAll(two.address, true);
+        expect(await contract.isApprovedForAll(contractOwner.address, two.address)).to.eql(true);
+
+        await contract.setApprovalForAll(two.address, false);
+        expect(await contract.isApprovedForAll(contractOwner.address, two.address)).to.eql(false);
+      });
+
+      it("isApprovedForAll: returns false for non-approved operators", async () => {
+        expect(await contract.isApprovedForAll(three.address, four.address)).to.eql(false);
+      });
+    });
+
+  });
+
+  describe("revokeApproval:", () => {
+    beforeEach(async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+
+      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig);
+
+      await contract.approve(two.address, tid);
+    });
+
+    it("caller must be approved", async () => {
+      const unknownCaller = contract.connect(three);
+      await expect(unknownCaller.revokeApproval(tid)).revertedWith("ClipIt: caller not approved address");
+    });
+
+    it("token owner can not revoke approval", async () => {
+      await expect(contract.revokeApproval(tid)).revertedWith("ClipIt: caller not approved address");
+    });
+
+    it("token creator can not revoke approval", async () => {
+      const newOwner = contract.connect(three);
+      await contract.transferFrom(contractOwner.address, three.address, tid);
+
+      const owner = await contract.ownerOf(tid);
+      expect(owner).eql(three.address);
+
+      await expect(newOwner.revokeApproval(tid)).revertedWith("ClipIt: caller not approved address");
+    });
+
+    it("revokes approval & emits", async () => {
+      const approvedCaller = contract.connect(two);
+
+      let approved = await contract.getApproved(tid);
+      expect(approved).eql(two.address);
+
+      const tx = await approvedCaller.revokeApproval(tid);
+      const receipt = await tx.wait();
+      expectEventWithArgs(receipt, "Approval", (args) => {
+        expect(args["owner"]).to.eql(contractOwner.address);
+        expect(args["approved"]).to.eql(ethers.constants.AddressZero);
+        expect(args["tokenId"].toString()).to.eql(tid.toString());
+      });
+
+      approved = await contract.getApproved(tid);
+      expect(approved).eql(ethers.constants.AddressZero);
+    });
+  });
+
+  describe("permit:", () => {
+    const chainid = network.config.chainId!;
+
+    beforeEach(async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+
+      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig);
+    });
+
+    it("expired permit reverts", async () => {
+      const invalidDeadline = Math.floor(new Date().getTime() / 1000) - 60 * 60 * 24; // day old
+      const sig = await signPermit(contractOwner, two.address, contract.address, tid.toNumber(), chainid, invalidDeadline);
+
+      await expect(contract.permit(two.address, tid, sig!)).revertedWith("ClipIt: Permit expired");
+    });
+
+    it("token must exist", async () => {
+      const sig = await signPermit(contractOwner, two.address, contract.address, invalidTokenId.toNumber(), chainid);
+      await expect(contract.permit(two.address, invalidTokenId, sig!)).revertedWith("ClipIt: nonexistent token");
+    });
+
+    it("spender can not be zero address", async () => {
+      const sig = await signPermit(contractOwner, ethers.constants.AddressZero, contract.address, tid.toNumber(), chainid);
+      await expect(contract.permit(ethers.constants.AddressZero, tid, sig!)).revertedWith("ClipIt: spender cannot be 0x0");
+    });
+
+    it("invalid signature: invalid signer", async () => {
+      const sig = await signPermit(two, two.address, contract.address, tid.toNumber(), chainid);
+      await expect(contract.permit(two.address, tid, sig!)).revertedWith("ClipIt: Signature invalid");
+    });
+
+    it("invalid signature: stolen signature", async () => {
+      const otherCaller = contract.connect(three);
+
+      const sig = await signPermit(contractOwner, two.address, contract.address, tid.toNumber(), chainid);
+      await expect(otherCaller.permit(three.address, tid, sig!)).revertedWith("ClipIt: Signature invalid");
+    });
+
+    it("signature without deadline is valid", async () => {
+      const sig = await signPermit(contractOwner, two.address, contract.address, tid.toNumber(), chainid, 0);
+
+      const tx = await contract.permit(two.address, tid, sig!);
+      const receipt = await tx.wait();
+
+      expectEventWithArgs(receipt, "Approval", (args) => {
+        expect(args["owner"]).to.eql(contractOwner.address);
+        expect(args["approved"]).to.eql(two.address);
+        expect(args["tokenId"].toString()).to.eql(tid.toString());
+      });
+
+      const isApproved = await contract.getApproved(tid);
+      expect(isApproved).to.eql(two.address);
+    });
+
+    it("approves spender for a token", async () => {
+      const sig = await signPermit(contractOwner, two.address, contract.address, tid.toNumber(), chainid);
+
+      const tx = await contract.permit(two.address, tid, sig!);
+      const receipt = await tx.wait();
+
+      expectEventWithArgs(receipt, "Approval", (args) => {
+        expect(args["owner"]).to.eql(contractOwner.address);
+        expect(args["approved"]).to.eql(two.address);
+        expect(args["tokenId"].toString()).to.eql(tid.toString());
+      });
+
+      const isApproved = await contract.getApproved(tid);
+      expect(isApproved).to.eql(two.address);
+    });
+
+    it("spender can also submit the permit", async () => {
+      const spender = contract.connect(two);
+      // owner signature for spender
+      const sig = await signPermit(contractOwner, two.address, contract.address, tid.toNumber(), chainid);
+      await spender.permit(two.address, tid, sig!);
+    });
+  });
+
+  describe("safeTransferFrom:", () => {
+    beforeEach(async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+
+      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig);
+    });
+
+    it("non-existing token reverts", async () => {
+      await expect(
+        contract["safeTransferFrom(address,address,uint256)"](contractOwner.address, four.address, invalidTokenId)
+      ).revertedWith("ERC721: operator query for nonexistent token");
+    });
+
+    it("caller is not approved or owner", async () => {
+      const otherCaller = contract.connect(two);
+      await expect(
+        otherCaller["safeTransferFrom(address,address,uint256)"](two.address, four.address, tid)
+      ).revertedWith("ERC721: transfer caller is not owner nor approved");
     });
 
     describe("after approve", function () {
-      let ownerCaller: ClipIt;
+      let approvedCaller: ClipIt;
+      let approvedWallet: Wallet;
+
       beforeEach(async () => {
-        ownerCaller = await contract.connect(beforeEachWallet);
-        await ownerCaller.approve(one.address, tid);
+        approvedWallet = two;
+        approvedCaller = contract.connect(two);
+        await contract.approve(approvedWallet.address, tid);
       })
 
-      it("safeTransferFrom: caller is not owner reverts", async () => {
+      it("caller is not owner reverts", async () => {
         await expect(
-          // beforeEachWallet is owner (should be `from`)
-          ownerCaller["safeTransferFrom(address,address,uint256)"](one.address, ethers.constants.AddressZero, tid)
-        ).to.be.revertedWith("ERC721: transfer of token that is not own");
+          // `from` (four) is not owner
+          approvedCaller["safeTransferFrom(address,address,uint256)"](four.address, three.address, tid)
+        ).revertedWith("ERC721: transfer of token that is not own");
       });
 
-      it("safeTransferFrom: transfer to zero address reverts", async () => {
+      it("transfer to zero address reverts", async () => {
         await expect(
           // `to` can not be zero address
-          ownerCaller["safeTransferFrom(address,address,uint256)"](beforeEachWallet.address, ethers.constants.AddressZero, tid)
-        ).to.be.revertedWith("ERC721: transfer to the zero address");
+          approvedCaller["safeTransferFrom(address,address,uint256)"](contractOwner.address, ethers.constants.AddressZero, tid)
+        ).revertedWith("ERC721: transfer to the zero address");
       });
 
-      it("safeTransferFrom: clears approvals & emits event, updates token counts & new owner, emits event", async () => {
-        const beforeEachWalletBalance = (await ownerCaller.balanceOf(beforeEachWallet.address)).toNumber();
-        const oneAddressBalance = (await ownerCaller.balanceOf(one.address)).toNumber();
+      it("clears approvals & emits event, updates token counts & new owner, emits event", async () => {
+        const fourBalance = (await approvedCaller.balanceOf(four.address)).toNumber();
+        const ownerBalance = (await approvedCaller.balanceOf(contractOwner.address)).toNumber();
+        expect(await approvedCaller.ownerOf(tid)).to.eql(contractOwner.address);
 
-        const tx = await ownerCaller["safeTransferFrom(address,address,uint256)"](beforeEachWallet.address, one.address, tid);
+        const tx = await approvedCaller["safeTransferFrom(address,address,uint256)"](contractOwner.address, four.address, tid);
         const receipt = await tx.wait();
 
         expectEventWithArgs(receipt, "Approval", (args) => {
-          expect(args["owner"]).to.eql(beforeEachWallet.address);
+          expect(args["owner"]).to.eql(contractOwner.address);
           expect(args["approved"]).to.eql(ethers.constants.AddressZero);
           expect(args["tokenId"].toString()).to.eql(tid.toString());
         });
 
-        expect(await ownerCaller.getApproved(tid)).to.eql(ethers.constants.AddressZero);
+        expect(await approvedCaller.getApproved(tid)).to.eql(ethers.constants.AddressZero);
 
-        expect((await ownerCaller.balanceOf(beforeEachWallet.address)).toNumber()).to.eql(beforeEachWalletBalance - 1);
-        expect((await ownerCaller.balanceOf(one.address)).toNumber()).to.eql(oneAddressBalance + 1);
-        expect(await ownerCaller.ownerOf(tid)).to.eql(one.address);
+        expect((await approvedCaller.balanceOf(four.address)).toNumber()).to.eql(fourBalance + 1);
+        expect((await approvedCaller.balanceOf(contractOwner.address)).toNumber()).to.eql(ownerBalance - 1);
+        expect(await approvedCaller.ownerOf(tid)).to.eql(four.address);
 
         expectEventWithArgs(receipt, "Transfer", (args) => {
-          expect(args["from"]).to.eql(beforeEachWallet.address);
-          expect(args["to"]).to.eql(one.address);
+          expect(args["from"]).to.eql(contractOwner.address);
+          expect(args["to"]).to.eql(four.address);
           expect(args["tokenId"].toString()).to.eql(tid.toString());
         });
       });
+
+      it("removes previous ask", async () => {
+        const ask = {
+          amount: 10,
+          currency: "0xc778417e063141139fce010982780140aa0cd5ab"
+        };
+        await contract.setAsk(tid, ask);
+
+        await contract.transferFrom(contractOwner.address, two.address, tid);
+
+        const zeroAsk = await marketContract.currentAskForToken(tid);
+        expect(zeroAsk.amount.toNumber()).to.eql(0);
+        expect(zeroAsk.currency).to.eql(ethers.constants.AddressZero);
+
+      });
+    });
+  });
+
+  describe("setAsk:", () => {
+    beforeEach(async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+
+      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig);
+    });
+
+    it("can be called only by approved or owner", async () => {
+      const otherCaller = contract.connect(two);
+      await expect(otherCaller.setAsk(tid, defaultAsk())).revertedWith("ClipIt: Only approved or owner");
+    });
+
+    it("ask can not be 0", async () => {
+      await expect(contract.setAsk(tid, { ...defaultAsk(), amount: 0 })).revertedWith("Market: Ask invalid for share splitting");
+    });
+
+    it("ask can not be split between BidShares", async () => {
+      await expect(contract.setAsk(tid, { ...defaultAsk(), amount: 7 })).revertedWith("Market: Ask invalid for share splitting");
+    });
+
+    it("sets ask for token", async () => {
+      const ask = defaultAsk();
+      await contract.setAsk(tid, ask);
+
+      const askForToken = await marketContract.currentAskForToken(tid);
+      expect(askForToken.currency.toLowerCase()).eql(ask.currency.toLowerCase());
+      expect(askForToken.amount.toNumber()).eql(ask.amount);
+
+      // TODO assert events
+    });
+  });
+
+  describe("removeAsk:", () => {
+    beforeEach(async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+
+      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig);
+
+      await contract.setAsk(tid, defaultAsk());
+    });
+
+    it("can be called only by approved or owner", async () => {
+      const otherCaller = contract.connect(two);
+      await expect(otherCaller.removeAsk(tid)).revertedWith("ClipIt: Only approved or owner");
+    });
+
+    it("removes an ask for token", async () => {
+      await contract.removeAsk(tid);
+
+      const askForToken = await marketContract.currentAskForToken(tid);
+      expect(askForToken.currency.toLowerCase()).eql(ethers.constants.AddressZero);
+      expect(askForToken.amount.toNumber()).eql(0);
+      // TODO assert events
+    });
+  });
+
+  describe("setBid:", () => {
+    let bidder: ClipIt;
+    let otherBidder: ClipIt;
+    let bidderAddress: string, otherBidderAddress: string;
+    let currencyAddress: string;
+
+    beforeEach(async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+
+      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(0),
+        owner: Decimal.from(100),
+        prevOwner: Decimal.from(0)
+      }, sig);
+
+      bidder = contract.connect(two);
+      bidderAddress = two.address;
+      otherBidder = contract.connect(three);
+      otherBidderAddress = three.address;
+
+      currencyAddress = await deployCurrency(contractOwner);
+      await approveCurrency(contractOwner, marketContract.address);
+      await mintCurrency(contractOwner.address);
+      await approveCurrency(two, marketContract.address);
+      await mintCurrency(bidderAddress);
+      await approveCurrency(three, marketContract.address);
+      await mintCurrency(otherBidderAddress);
+
+    });
+
+    it("reverts on nonexisting tokenId", async () => {
+      await expect(
+        bidder.setBid(invalidTokenId, defaultBid(currencyAddress, bidderAddress))
+      ).revertedWith("ClipIt: nonexistent token");
+    });
+
+    it("sender is not bidder reverts", async () => {
+      await expect(
+        bidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress))
+      ).revertedWith("Market: Bidder must be msg sender");
+    });
+
+    it("callable only by 'media' contract", async () => {
+      await expect(
+        marketContract.setBid(tid, defaultBid(currencyAddress, bidderAddress), contractOwner.address)
+      ).revertedWith("Market: Only media contract");
+    });
+
+    it("cannot bid amount of 0", async () => {
+      await expect(
+        bidder.setBid(tid, { ...defaultBid(currencyAddress, bidderAddress), amount: 0 })
+      ).revertedWith("Market: cannot bid amount of 0");
+    });
+
+    it("bid currency cannot be 0 address", async () => {
+      await expect(
+        bidder.setBid(tid, { ...defaultBid(currencyAddress, bidderAddress), currency: ethers.constants.AddressZero })
+      ).revertedWith("Market: bid currency cannot be 0 address");
+    });
+
+    it("bid recipient cannot be 0 address", async () => {
+      await expect(
+        bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress, ethers.constants.AddressZero))
+      ).revertedWith("Market: bid recipient cannot be 0 addres");
+    });
+
+    it("invalid sellOnShare reverts", async () => {
+      const shares = await marketContract.bidSharesForToken(tid);
+      // creator BidShare from mint is X, so any sellOnShare that would make `creator share + sellOnShare` over 100
+      // is invalid
+      const invalidSellOnShare = Decimal.from(BigNumber.from(101).sub(shares.creator.value).toNumber());
+      await expect(
+        bidder.setBid(tid, { ...defaultBid(currencyAddress, bidderAddress), sellOnShare: invalidSellOnShare })
+      ).revertedWith("Market: Sell on fee invalid for share splitting");
+    });
+
+    it("reverts if bidder does not have enough allowance for their bidding currency", async () => {
+      const noAllowanceCaller = contract.connect(four);
+      await expect(
+        noAllowanceCaller.setBid(tid, defaultBid(currencyAddress, four.address))
+      ).revertedWith("SafeERC20: ERC20 operation did not succeed");
+    });
+
+    it("reverts if bidder does not have enough balance for their bidding currency", async () => {
+      const noBalanceCaller = contract.connect(four);
+      await approveCurrency(four, marketContract.address);
+      await expect(
+        noBalanceCaller.setBid(tid, defaultBid(currencyAddress, four.address))
+      ).revertedWith("SafeERC20: ERC20 operation did not succeed");
+    });
+
+    it("sets the bid", async () => {
+      const defBid = defaultBid(currencyAddress, bidderAddress);
+      await bidder.setBid(tid, defBid);
+
+      const bid = await marketContract.bidForTokenBidder(tid, bidderAddress);
+      expect(bid.currency).eq(defBid.currency);
+      expect(bid.amount.toNumber()).eq(defBid.amount);
+      expect(bid.recipient).eq(defBid.recipient);
+      expect(bid.bidder).eq(defBid.bidder);
+      expect(bid.sellOnShare.value.toString()).eq(defBid.sellOnShare.value.toString());
+    });
+
+    it("refunds bidders previous bid when it exist", async () => {
+      const bidderBalanceBeforeBid = await currencyContract.balanceOf(bidderAddress);
+
+      const defBid = defaultBid(currencyAddress, bidderAddress);
+      await bidder.setBid(tid, defBid);
+
+      // bidder balance is corret after fist bid
+      const bidderBalanceAfterBid = await currencyContract.balanceOf(bidderAddress);
+      expect(bidderBalanceAfterBid.toNumber())
+        .eql(bidderBalanceBeforeBid.sub(BigNumber.from(defBid.amount)).toNumber());
+
+      // this bid should refund previous bid
+      const higherBid = { ...defaultBid(currencyAddress, bidderAddress), amount: defBid.amount * 2 }
+      await bidder.setBid(tid, higherBid);
+
+      // bidder balance is eql as if the first bid did not happen (it was refunded)
+      const bidderBalanceAfterSecodBid = await currencyContract.balanceOf(bidderAddress);
+      expect(bidderBalanceAfterSecodBid.toNumber())
+        .eql(bidderBalanceBeforeBid.sub(BigNumber.from(higherBid.amount)).toNumber());
+    });
+
+    it("finalizes NFT transfer if bid > ask", async () => {
+      await contract.setAsk(tid, defaultAsk(10000, currencyAddress));
+
+      const ownerBalanceBefore = await currencyContract.balanceOf(contractOwner.address);
+
+      const bid = defaultBid(currencyAddress, bidderAddress);
+      bid.amount = 10000;
+      await bidder.setBid(tid, bid);
+
+      const ownerBalanceAfter = await currencyContract.balanceOf(contractOwner.address);
+      expect(ownerBalanceAfter.sub(ownerBalanceBefore).toNumber()).eql(10000);
+
+      const newOwner = await contract.ownerOf(tid);
+      expect(newOwner).eql(bidderAddress);
+    });
+
+
+    async function printBalance(promise: () => Promise<any>) {
+      let creatorBalanceBefore = await currencyContract.balanceOf(contractOwner.address);
+      let bidderBalanceBefore = await currencyContract.balanceOf(bidderAddress);
+      let otherBalanceBefore = await currencyContract.balanceOf(otherBidderAddress);
+
+      await promise();
+      let creatorBalance = await currencyContract.balanceOf(contractOwner.address);
+      let bidderBalance = await currencyContract.balanceOf(bidderAddress);
+      let otherBalance = await currencyContract.balanceOf(otherBidderAddress);
+
+      const shares = await marketContract.bidSharesForToken(tid);
+      console.log('owner shares:', shares.owner.value.toString())
+      console.log('previous owner shares:', shares.prevOwner.value.toString())
+
+      console.log(`creator balance change:`, creatorBalance.toNumber() - creatorBalanceBefore.toNumber());
+      console.log(`bidder balance change:`, bidderBalance.toNumber() - bidderBalanceBefore.toNumber());
+      console.log(`otherBidder balance change:`, otherBalance.toNumber() - otherBalanceBefore.toNumber());
+    }
+
+    it("sellOnShare test", async () => {
+      await contract.setAsk(tid, defaultAsk(500, currencyAddress));
+      await printBalance(async () => console.log(''));
+
+      console.log('\nBidder bidding 500 to creator');
+      // bid with 10% sellOnShare
+      // await bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress));
+      await printBalance(() => bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress)));
+      let newOwner = await contract.ownerOf(tid);
+      // bidder is owner
+      expect(newOwner).eql(bidderAddress);
+
+
+      console.log('\nOther bidding 500 to bidder');
+      bidder.setAsk(tid, defaultAsk(500, currencyAddress));
+      // await otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress));
+      await printBalance(() => otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress)));
+      newOwner = await contract.ownerOf(tid);
+      // bidder is owner
+      expect(newOwner).eql(otherBidderAddress);
+
+
+      console.log('\nBidder bidding 500 to other');
+      otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
+      // bid with 10% sellOnShare
+      // await bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress));
+      await printBalance(() => bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress)));
+      newOwner = await contract.ownerOf(tid);
+      // bidder is owner
+      expect(newOwner).eql(bidderAddress);
+
+
+      console.log('\nOther bidding 500 to bidder');
+      bidder.setAsk(tid, defaultAsk(500, currencyAddress));
+      // await otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress));
+      await printBalance(() => otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress)));
+      newOwner = await contract.ownerOf(tid);
+      // bidder is owner
+      expect(newOwner).eql(otherBidderAddress);
+
+
+      console.log('\nBidder bidding 500 to other with 50% sellOnShare');
+      otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
+      // bid with 10% sellOnShare
+      const bb = defaultBid(currencyAddress, bidderAddress);
+      bb.sellOnShare = Decimal.from(50);
+      // await bidder.setBid(tid, bb);
+      await printBalance(() => bidder.setBid(tid, bb));
+      newOwner = await contract.ownerOf(tid);
+      // bidder is owner
+      expect(newOwner).eql(bidderAddress);
+
+
+      console.log('\nOther bidding 500 to bidder with 40% sellOnShare');
+      bidder.setAsk(tid, defaultAsk(500, currencyAddress));
+      const xb = defaultBid(currencyAddress, otherBidderAddress);
+      xb.sellOnShare = Decimal.from(40);
+      // await otherBidder.setBid(tid, xb);
+      await printBalance(() => otherBidder.setBid(tid, xb));
+      newOwner = await contract.ownerOf(tid);
+      // bidder is owner
+      expect(newOwner).eql(otherBidderAddress);
+
+      console.log('\nBidder bidding 500 to other with 0% sellOnShare');
+      otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
+      // bid with 10% sellOnShare
+      const yb = defaultBid(currencyAddress, bidderAddress);
+      yb.sellOnShare = Decimal.from(0);
+      // await bidder.setBid(tid, yb);
+      await printBalance(() => bidder.setBid(tid, yb));
+      newOwner = await contract.ownerOf(tid);
+      // bidder is owner
+      expect(newOwner).eql(bidderAddress);
+
+      console.log('\nOther bidding 500 to bidder with 0% sellOnShare');
+      bidder.setAsk(tid, defaultAsk(500, currencyAddress));
+      const zb = defaultBid(currencyAddress, otherBidderAddress);
+      zb.sellOnShare = Decimal.from(0);
+      // await otherBidder.setBid(tid, zb);
+      await printBalance(() => otherBidder.setBid(tid, zb));
+      newOwner = await contract.ownerOf(tid);
+      // bidder is owner
+      expect(newOwner).eql(otherBidderAddress);
+
+      console.log('\nBidder bidding 500 to other with 0% sellOnShare');
+      otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
+      // bid with 10% sellOnShare
+      const wb = defaultBid(currencyAddress, bidderAddress);
+      wb.sellOnShare = Decimal.from(0);
+      // await bidder.setBid(tid, wb);
+      await printBalance(() => bidder.setBid(tid, wb));
+      newOwner = await contract.ownerOf(tid);
+      // bidder is owner
+      expect(newOwner).eql(bidderAddress);
+    });
+  });
+
+  describe("removeBid:", () => {
+    let bidder: ClipIt;
+    let otherBidder: ClipIt;
+    let bidderAddress: string, otherBidderAddress: string;
+    let currencyAddress: string;
+
+    beforeEach(async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+
+      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(0),
+        owner: Decimal.from(100),
+        prevOwner: Decimal.from(0)
+      }, sig);
+
+      bidder = contract.connect(two);
+      bidderAddress = two.address;
+      otherBidder = contract.connect(three);
+      otherBidderAddress = three.address;
+
+      currencyAddress = await deployCurrency(contractOwner);
+      await approveCurrency(contractOwner, marketContract.address);
+      await mintCurrency(contractOwner.address);
+      await approveCurrency(two, marketContract.address);
+      await mintCurrency(bidderAddress);
+      await approveCurrency(three, marketContract.address);
+      await mintCurrency(otherBidderAddress);
+    });
+
+    it("reverts on nonexisting tokenId", async () => {
+      await expect(
+        bidder.removeBid(invalidTokenId)
+      ).revertedWith("ClipIt: token with that id does not exist");
+    });
+
+    it("reverts if there is no existing bid on token", async () => {
+      await expect(
+        bidder.removeBid(tid)
+      ).revertedWith("Market: cannot remove bid amount of 0");
+    });
+
+    it("removes bid", async () => {
+      await bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress));
+      await bidder.removeBid(tid);
+      const b = await marketContract.bidForTokenBidder(tid, bidderAddress);
+      expect(b.bidder).eql(ethers.constants.AddressZero);
+      expect(b.amount.toString()).eql("0");
+    });
+
+
+    it("transfers bid amount to bidder", async () => {
+      const bid = defaultBid(currencyAddress, bidderAddress);
+      await bidder.setBid(tid, bid);
+
+      const balanceAfterBid = await currencyContract.balanceOf(bidderAddress);
+      await bidder.removeBid(tid);
+      const balanceAfterRemovingBid = await currencyContract.balanceOf(bidderAddress);
+
+      expect(balanceAfterRemovingBid.toNumber()).eql(balanceAfterBid.add(BigNumber.from(bid.amount)).toNumber());
+      // TODO assert event
+    });
+  });
+
+  describe("acceptBid:", () => {
+    let bidder: ClipIt;
+    let otherBidder: ClipIt;
+    let bidderAddress: string, otherBidderAddress: string;
+    let currencyAddress: string;
+
+    beforeEach(async () => {
+      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+
+      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10)
+      }, sig);
+
+      bidder = contract.connect(two);
+      bidderAddress = two.address;
+      otherBidder = contract.connect(three);
+      otherBidderAddress = three.address;
+
+      currencyAddress = await deployCurrency(contractOwner);
+      await approveCurrency(contractOwner, marketContract.address);
+      await mintCurrency(contractOwner.address);
+      await approveCurrency(two, marketContract.address);
+      await mintCurrency(bidderAddress);
+      await approveCurrency(three, marketContract.address);
+      await mintCurrency(otherBidderAddress);
+
+    });
+
+    it("reverts on nonexisting tokenId", async () => {
+      await expect(
+        bidder.acceptBid(invalidTokenId, defaultBid(currencyAddress, bidderAddress))
+      ).revertedWith("ERC721: operator query for nonexistent token");
+    });
+
+    it("only approved or owner can accept bid", async () => {
+      await expect(
+        bidder.acceptBid(tid, defaultBid(currencyAddress, bidderAddress))
+      ).revertedWith("ClipIt: Only approved or owner");
+    });
+
+    it("only allable via media contract", async () => {
+      await expect(
+        marketContract.acceptBid(tid, defaultBid(currencyAddress, otherBidderAddress))
+      ).revertedWith("Market: Only media contract");
+    });
+
+    it("can not accept non-existing bid", async () => {
+      await expect(
+        contract.acceptBid(tid, defaultBid(currencyAddress, otherBidderAddress))
+      ).revertedWith("Market: cannot accept bid of 0");
+    });
+
+    it("can not accept unexpected bid (different then setBid)", async () => {
+      const bid = defaultBid(currencyAddress, bidderAddress);
+      await bidder.setBid(tid, bid);
+      await expect(
+        contract.acceptBid(tid, { ...bid, amount: 555 })
+      ).revertedWith("Market: Unexpected bid found.");
+    });
+
+    it("accepted bid has to be valid for splitting", async () => {
+      const bid = defaultBid(currencyAddress, bidderAddress);
+      bid.amount = 89;
+      await bidder.setBid(tid, bid);
+      await expect(
+        contract.acceptBid(tid, bid)
+      ).revertedWith("Market: Bid invalid for share splitting");
+    });
+
+    it("accepts a bid", async () => {
+      let creatorBalanceBefore = await currencyContract.balanceOf(contractOwner.address);
+      let bidderBalanceBefore = await currencyContract.balanceOf(bidderAddress);
+      let otherBalanceBefore = await currencyContract.balanceOf(otherBidderAddress);
+
+      const bid = defaultBid(currencyAddress, bidderAddress);
+      bid.sellOnShare = Decimal.from(15);
+      await bidder.setBid(tid, bid);
+      await contract.acceptBid(tid, bid);
+
+      let creatorBalanceAfter = await currencyContract.balanceOf(contractOwner.address);
+      let bidderBalanceAfter = await currencyContract.balanceOf(bidderAddress);
+      let otherBalanceAfter = await currencyContract.balanceOf(otherBidderAddress);
+
+      expect(creatorBalanceAfter.toNumber() - creatorBalanceBefore.toNumber()).eql(500);
+      expect(bidderBalanceAfter.toNumber() - bidderBalanceBefore.toNumber()).eql(-500);
+      expect(otherBalanceAfter.toNumber() - otherBalanceBefore.toNumber()).eql(0);
+
+      const newOwner = await contract.ownerOf(tid);
+      expect(newOwner).eql(bidderAddress);
+
+      const bidShares = await marketContract.bidSharesForToken(tid);
+      expect(bidShares.creator.value.toString()).eql("10000000000000000000");
+      expect(bidShares.owner.value.toString()).eql("75000000000000000000");
+      expect(bidShares.prevOwner.value.toString()).eql("15000000000000000000");
+
+
+      // Another bid -> accept -> transfer
+      creatorBalanceBefore = await currencyContract.balanceOf(contractOwner.address);
+      bidderBalanceBefore = await currencyContract.balanceOf(bidderAddress);
+      otherBalanceBefore = await currencyContract.balanceOf(otherBidderAddress);
+
+      const otherBid = defaultBid(currencyAddress, otherBidderAddress);
+      otherBid.sellOnShare = Decimal.from(15);
+      await otherBidder.setBid(tid, otherBid);
+      await bidder.acceptBid(tid, otherBid);
+
+      creatorBalanceAfter = await currencyContract.balanceOf(contractOwner.address);
+      bidderBalanceAfter = await currencyContract.balanceOf(bidderAddress);
+      otherBalanceAfter = await currencyContract.balanceOf(otherBidderAddress);
+
+      // +10% to creator, +15% from sellOnFee for prevOwner
+      expect(creatorBalanceAfter.toNumber() - creatorBalanceBefore.toNumber()).eql(0.1 * 500 + 0.15 * 500);
+      // +75% for creator to owner
+      expect(bidderBalanceAfter.toNumber() - bidderBalanceBefore.toNumber()).eql(0.75 * 500);
+      expect(otherBalanceAfter.toNumber() - otherBalanceBefore.toNumber()).eql(-500);
+
+      const anotherNewOwner = await contract.ownerOf(tid);
+      expect(anotherNewOwner).eql(otherBidderAddress);
+
+      const newBidShares = await marketContract.bidSharesForToken(tid);
+      expect(newBidShares.creator.value.toString()).eql("10000000000000000000");
+      expect(newBidShares.owner.value.toString()).eql("75000000000000000000");
+      expect(newBidShares.prevOwner.value.toString()).eql("15000000000000000000");
+
+      const bidRemoved = await marketContract.bidForTokenBidder(tid, otherBidderAddress);
+      expect(bidRemoved.amount.toNumber()).eql(0);
+      expect(bidRemoved.bidder).eql(ethers.constants.AddressZero);
+      expect(bidRemoved.recipient).eql(ethers.constants.AddressZero);
+      expect(bidRemoved.currency).eql(ethers.constants.AddressZero);
+      expect(bidRemoved.sellOnShare.value.toString()).eq("0");
+    });
+
+    // TODO events where missing (check IMarket for events)
+  });
+
+  describe("erc165 support", () => {
+    it("supports media metadata interface", async () => {
+      const interfaceId = ethers.utils.arrayify('0x4e222e66');
+      const supportsId = await contract.supportsInterface(interfaceId);
+      expect(supportsId).eq(true);
     });
   });
 });

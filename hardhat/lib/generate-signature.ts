@@ -1,5 +1,7 @@
-import { Wallet, Signature } from "ethers";
-import { keccak256, toUtf8Bytes, hashMessage, arrayify } from "ethers/lib/utils";
+import { Wallet, Signature, BigNumberish, BytesLike } from "ethers";
+import { keccak256, toUtf8Bytes, hashMessage, arrayify, splitSignature } from "ethers/lib/utils";
+import { signTypedData } from 'eth-sig-util';
+import { ClipIt, ClipIt__factory } from "../typechain";
 
 
 /**
@@ -27,4 +29,84 @@ export async function generateSignature(signer: Wallet, cid: string, address: st
   const ethPrefixedMsgHash = hashMessage(msgHashBytes);
 
   return signer._signingKey().signDigest(ethPrefixedMsgHash);;
+}
+
+export async function generateSignatureV2(signer: Wallet, contentHash: string, address: string): Promise<Signature> {
+  const contentBytes = arrayify(contentHash);
+  const addressBytes = arrayify(address);
+
+  const msg = [...contentBytes, ...addressBytes];
+  const msgHash = keccak256(msg);
+  const msgHashBytes = arrayify(msgHash);
+
+  const ethPrefixedMsgHash = hashMessage(msgHashBytes);
+
+  return signer._signingKey().signDigest(ethPrefixedMsgHash);
+}
+
+
+const defaultDeadline = Math.floor(new Date().getTime() / 1000) + 60 * 60 * 24; // 24 hours
+export async function signPermit(
+  owner: Wallet,
+  spender: string,
+  tokenAddress: string,
+  tokenId: number,
+  chainId: number,
+  deadline: number = defaultDeadline
+): Promise<{
+  deadline: BigNumberish;
+  v: BigNumberish;
+  r: BytesLike;
+  s: BytesLike;
+} | void> {
+  try {
+    const contract = ClipIt__factory.connect(tokenAddress, owner)
+    const nonce = await (await contract.permitNonces(owner.address, tokenId)).toNumber();
+    const name = await contract.name();
+
+    const signedData = signTypedData(Buffer.from(owner.privateKey.slice(2), 'hex'), {
+      data: {
+        types: {
+          EIP712Domain: [
+            { name: 'name', type: 'string' },
+            { name: 'version', type: 'string' },
+            { name: 'chainId', type: 'uint256' },
+            { name: 'verifyingContract', type: 'address' },
+          ],
+          Permit: [
+            { name: 'spender', type: 'address' },
+            { name: 'tokenId', type: 'uint256' },
+            { name: 'nonce', type: 'uint256' },
+            { name: 'deadline', type: 'uint256' },
+          ],
+        },
+        primaryType: 'Permit',
+        domain: {
+          name,
+          version: '1',
+          chainId,
+          verifyingContract: contract.address
+        },
+        message: {
+          spender,
+          tokenId,
+          nonce,
+          deadline
+        }
+      }
+    });
+
+    const sig = splitSignature(signedData);
+
+    return {
+      r: sig.r,
+      s: sig.s,
+      v: sig.v,
+      deadline: deadline.toString(),
+    };
+
+  } catch (error) {
+    console.log('generateSignedTypedData:err:', error);
+    throw new Error('Unable to generate eth_signTypedData signature');
+  }
 }

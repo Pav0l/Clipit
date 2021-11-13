@@ -1,4 +1,5 @@
-import { getSignerWallet, generateSignature } from "../lib";
+import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
+import { getSignerWallet, generateSignature, generateSignatureV2 } from "../lib";
 
 
 const cid = "";
@@ -18,6 +19,9 @@ async function main() {
   const signature = await generateSignature(signer, cid, address);
 
   console.log("signature:", signature);
+
+  const sigV2 = await generateSignatureV2(signer, keccak256(toUtf8Bytes(cid)), address);
+  console.log("signatureV2", sigV2);
 }
 
 

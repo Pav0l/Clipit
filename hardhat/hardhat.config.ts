@@ -29,7 +29,7 @@ task("wallet:balance", "Prints Wallets balance in ETH")
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.4",
+    version: "0.7.6",
     settings: {
       optimizer: {
         enabled: true,
