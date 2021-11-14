@@ -1,27 +1,65 @@
-import { BigNumber } from "@ethersproject/bignumber";
+import { BytesLike, BigNumber, BigNumberish } from "ethers";
+import { keccak256, arrayify, toUtf8Bytes } from "ethers/lib/utils";
 import { ethers } from "hardhat";
-import { getSignerWallet, getContractAddress, generateSignature } from "../lib";
+import { getSignerWallet, getTokenAddress, generateSignatureV2, Decimal } from "../lib";
 import { ClipIt } from "../typechain/ClipIt";
 const Contract = require("../artifacts/contracts/ClipIt.sol/ClipIt.json");
 
 
-// TODO utilize input-handler for these
-const cid = "bafybeiealga7wox5q4hzyhusi5izfbkpyvgydphyjwb76r75y5idkvlawe";
+const tokenCid = "bafybeiealga7wox5q4hzyhusi5izfbkpyvgydphyjwb76r75y5idkvlawe";
+const metadataCid = "bafybeiealga7wox5q4hzyhusi5izfbkpyvgydphyjwb76r75y5idkvlawe";
+/**
+ * Wallet address that you wnat to mint to
+ */
 const address = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
+
+const metadataURI = `ipfs://${metadataCid}`;
+const metadataHash = keccak256(toUtf8Bytes(metadataCid));
+const metadataHashBytes = arrayify(metadataHash);
+
+const tokenURI = `ipfs://${tokenCid}`;
+const contentHash = keccak256(toUtf8Bytes(tokenCid));
+const contentHashBytes = arrayify(contentHash);
+
+interface ClipData {
+  tokenURI: string;
+  metadataURI: string;
+  contentHash: BytesLike;
+  metadataHash: BytesLike;
+};
+interface BidShares {
+  prevOwner: { value: BigNumberish };
+  creator: { value: BigNumberish };
+  owner: { value: BigNumberish };
+}
+
+const mintData: ClipData = {
+  tokenURI,
+  metadataURI,
+  contentHash: contentHashBytes,
+  metadataHash: metadataHashBytes,
+};
+
+// This needs to be set by the user
+const bidShares: BidShares = {
+  prevOwner: Decimal.from(0),
+  creator: Decimal.from(5),
+  owner: Decimal.from(95),
+}
 
 
 async function main() {
-  const contractAddress = getContractAddress();
+  const contractAddress = await getTokenAddress();
 
   const signer = getSignerWallet();
   const contract = (new ethers.Contract(contractAddress, Contract.abi, signer)) as ClipIt;
 
 
   console.log("generating signature...");
-  const signature = await generateSignature(signer, cid, address);
+  const signature = await generateSignatureV2(signer, contentHash, address);
 
   console.log("minting CLIP...");
-  const tx = await contract.mint(address, cid, BigNumber.from(signature.v), signature.r, signature.s);
+  const tx = await contract.mint(mintData, bidShares, BigNumber.from(signature.v), signature.r, signature.s);
   console.log('transacton complete...', tx);
 
   const receipt = await tx.wait();

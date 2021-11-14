@@ -1,12 +1,12 @@
 import { ethers } from "hardhat";
-import { getContractAddress } from "../lib/get-contract";
+import { getTokenAddress } from "../lib";
 import { getSignerWallet } from "../lib/get-signer-wallet";
 import { ClipIt } from "../typechain/ClipIt";
 const Contract = require("../artifacts/contracts/ClipIt.sol/ClipIt.json");
 
 
 async function main() {
-  const contractAddress = getContractAddress();
+  const contractAddress = await getTokenAddress();
   const signer = getSignerWallet();
   const contract = (new ethers.Contract(contractAddress, Contract.abi, signer)) as ClipIt;
 

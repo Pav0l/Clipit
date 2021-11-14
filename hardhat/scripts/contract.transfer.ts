@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { ethers } from "hardhat";
-import { getSignerWallet, getContractAddress, generateSignature } from "../lib";
+import { getSignerWallet, getTokenAddress } from "../lib";
 import { ClipIt } from "../typechain/ClipIt";
 const Contract = require("../artifacts/contracts/ClipIt.sol/ClipIt.json");
 
@@ -9,7 +9,7 @@ const to = "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC";
 const tokenId = "101352479550096108241817719032806142388122693513050901758856327660349146233044";
 
 async function main() {
-  const contractAddress = getContractAddress();
+  const contractAddress = await getTokenAddress();
 
   const signer = getSignerWallet();
   const contract = (new ethers.Contract(contractAddress, Contract.abi, signer)) as ClipIt;
