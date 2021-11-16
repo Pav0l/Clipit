@@ -3,10 +3,12 @@ import fs from "fs";
 import { ethers } from "hardhat";
 
 
-export function writeDeploymentAddresses(marketAddress: string, contractAddress: string, chainId: number) {
+export function writeDeploymentAddresses(marketAddress: string, tokenAddress: string, auctionAddress: string, wethAddress: string, chainId: number) {
   const data = JSON.stringify({
     [Contract.MARKET]: marketAddress,
-    [Contract.TOKEN]: contractAddress
+    [Contract.TOKEN]: tokenAddress,
+    [Contract.AUCTION]: auctionAddress,
+    [Contract.WETH]: wethAddress,
   }, null, 2);
 
   fs.writeFileSync(getDeploymentFilePath(chainId), data);
@@ -20,10 +22,27 @@ export async function getTokenAddress(): Promise<string> {
   return getContractAddress(Contract.TOKEN);
 }
 
+export async function getAuctionAddress(): Promise<string> {
+  return getContractAddress(Contract.AUCTION);
+}
+
+export async function getWETHAddress(): Promise<string> {
+  return getContractAddress(Contract.WETH);
+}
+
 enum Contract {
   MARKET = "market",
-  TOKEN = "token"
+  TOKEN = "token",
+  AUCTION = "auction",
+  WETH = "weth"
 };
+
+interface DeploymentData {
+  [Contract.TOKEN]: string;
+  [Contract.MARKET]: string;
+  [Contract.AUCTION]: string;
+  [Contract.WETH]: string;
+}
 
 /**
  * getContractAddress returns address of market or token contract 
@@ -45,7 +64,7 @@ async function getContractAddress(contract: Contract): Promise<string> {
     throw new Error(`FAILED TO READ DEPLOYMENT FILE FROM ${filePath}`);
   }
 
-  let deployment: { "market": string; "token": string } | undefined;
+  let deployment: DeploymentData | undefined;
   if (data) {
     try {
       deployment = JSON.parse(data);
