@@ -1,9 +1,9 @@
 import { BytesLike, BigNumber, BigNumberish } from "ethers";
 import { keccak256, arrayify, toUtf8Bytes } from "ethers/lib/utils";
 import { ethers } from "hardhat";
-import { getSignerWallet, getTokenAddress, generateSignatureV2, Decimal } from "../lib";
-import { ClipIt } from "../typechain/ClipIt";
-const Contract = require("../artifacts/contracts/ClipIt.sol/ClipIt.json");
+import { getSignerWallet, getTokenAddress, generateSignatureV2, Decimal } from "../../lib";
+import { ClipIt } from "../../typechain/ClipIt";
+const Contract = require("../../artifacts/contracts/ClipIt.sol/ClipIt.json");
 
 
 const tokenCid = "bafybeiealga7wox5q4hzyhusi5izfbkpyvgydphyjwb76r75y5idkvlawe";

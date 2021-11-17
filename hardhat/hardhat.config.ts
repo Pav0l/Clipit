@@ -6,6 +6,7 @@ import "hardhat-gas-reporter";
 import "hardhat-docgen";
 import { task } from "hardhat/config";
 import { HardhatUserConfig } from "hardhat/config";
+import { setupWallet } from './lib/setup-wallet';
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -22,6 +23,13 @@ task("wallet:balance", "Prints Wallets balance in ETH")
   .setAction(async (args, hre) => {
     const balance = await hre.ethers.provider.getBalance(args.wallet);
     console.log(hre.ethers.utils.formatEther(balance), "ETH");
+  });
+
+task("wallet:setup", "Setup N wallets with M ETH")
+  .addParam("count", "Number of wallets to setup")
+  .addParam("eth", "Amount of ETH to send to wallet")
+  .setAction(async (args, hre) => {
+    await setupWallet(args, hre);
   });
 
 // You need to export an object to set up your config

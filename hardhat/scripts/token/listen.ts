@@ -1,8 +1,8 @@
 import { ethers } from "hardhat";
-import { getTokenAddress } from "../lib";
-import { getSignerWallet } from "../lib/get-signer-wallet";
-import { ClipIt } from "../typechain/ClipIt";
-const Contract = require("../artifacts/contracts/ClipIt.sol/ClipIt.json");
+import { getTokenAddress } from "../../lib";
+import { getSignerWallet } from "../../lib/get-signer-wallet";
+import { ClipIt } from "../../typechain/ClipIt";
+const Contract = require("../../artifacts/contracts/ClipIt.sol/ClipIt.json");
 
 
 async function main() {
