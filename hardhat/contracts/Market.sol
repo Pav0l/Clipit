@@ -7,15 +7,18 @@ pragma experimental ABIEncoderV2;
  * NOTE: This file is a clone of the Zora Market.sol contract.
  * It was forked from https://github.com/ourzora/core at commit 09cac29fcd7a6604e3072d26a8d8fdf932b16d7b.
  *
- * The following functions needed to be modified:
+ * The following functions were modified:
  *  - changed solidity version
  *  - imported ClipIt contract instead of the original Media contract
+ *  - contract is now `Ownable`
+ *  - _finalizeNFTTransfer sends 1% from owners share and sends it to contract owner
  */
 
 import { SafeMath } from "@openzeppelin/contracts/math/SafeMath.sol";
 import { IERC721 } from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { Decimal } from "./Decimal.sol";
 import { ClipIt } from "./ClipIt.sol";
 import { IMarket } from "./interfaces/IMarket.sol";
@@ -24,7 +27,7 @@ import { IMarket } from "./interfaces/IMarket.sol";
  * @title A Market for pieces of media
  * @notice This contract contains all of the market logic for Media
  */
-contract Market is IMarket {
+contract Market is IMarket, Ownable {
   using SafeMath for uint256;
   using SafeERC20 for IERC20;
 
@@ -34,9 +37,6 @@ contract Market is IMarket {
    */
   // Address of the media contract that can call this market
   address public mediaContract;
-
-  // Deployment Address
-  address private _owner;
 
   // Mapping from token to mapping from bidder to bid
   mapping(uint256 => mapping(address => Bid)) private _tokenBidders;
@@ -150,16 +150,14 @@ contract Market is IMarket {
    * ****************
    */
 
-  constructor() public {
-    _owner = msg.sender;
-  }
+  constructor() public {}
 
   /**
    * @notice Sets the media contract address. This address is the only permitted address that
    * can call the mutable functions. This method can only be called once.
    */
   function configure(address mediaContractAddress) external override {
-    require(msg.sender == _owner, "Market: Only owner");
+    require(msg.sender == owner(), "Market: Only owner");
     require(mediaContract == address(0), "Market: Already configured");
     require(
       mediaContractAddress != address(0),
@@ -339,10 +337,17 @@ contract Market is IMarket {
 
     IERC20 token = IERC20(bid.currency);
 
+    uint256 ownerAmountFromBidShare = splitShare(bidShares.owner, bid.amount);
+    uint256 devAmount = ownerAmountFromBidShare.div(100); // 1% from media owners share
+    uint256 ownerAmount = ownerAmountFromBidShare.sub(devAmount);
+
+    // Transfer bid share to owner of contract
+    token.safeTransfer(owner(), devAmount);
+
     // Transfer bid share to owner of media
     token.safeTransfer(
       IERC721(mediaContract).ownerOf(tokenId),
-      splitShare(bidShares.owner, bid.amount)
+      ownerAmount
     );
     // Transfer bid share to creator of media
     token.safeTransfer(

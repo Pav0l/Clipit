@@ -1354,10 +1354,10 @@ describe("ClipIt", function () {
       bidderBalanceAfter = await currencyContract.balanceOf(bidderAddress);
       otherBalanceAfter = await currencyContract.balanceOf(otherBidderAddress);
 
-      // +10% to creator, +15% from sellOnFee for prevOwner
-      expect(creatorBalanceAfter.toNumber() - creatorBalanceBefore.toNumber()).eql(0.1 * 500 + 0.15 * 500);
-      // +75% for creator to owner
-      expect(bidderBalanceAfter.toNumber() - bidderBalanceBefore.toNumber()).eql(0.75 * 500);
+      // +10% to creator, +15% from sellOnFee for prevOwner, +1% of owner share as developer fee (to contract owner)
+      expect(creatorBalanceAfter.toNumber() - creatorBalanceBefore.toNumber()).eql(0.1 * 500 + 0.15 * 500 + Math.floor(0.75 * 500 * 0.01)); // 128
+      // +75% to owner of token minus the dev fee (1% of the 75%)
+      expect(bidderBalanceAfter.toNumber() - bidderBalanceBefore.toNumber()).eql(0.75 * 500 - Math.floor(0.75 * 500 * 0.01)); // 372
       expect(otherBalanceAfter.toNumber() - otherBalanceBefore.toNumber()).eql(-500);
 
       const anotherNewOwner = await contract.ownerOf(tid);
@@ -1384,6 +1384,30 @@ describe("ClipIt", function () {
       const interfaceId = ethers.utils.arrayify('0x4e222e66');
       const supportsId = await contract.supportsInterface(interfaceId);
       expect(supportsId).eq(true);
+    });
+  });
+
+  describe("ownable", () => {
+    it("ClipIt can transfer owner", async () => {
+      let owner = await contract.owner();
+      expect(owner).to.eql(contractOwner.address);
+
+      const newOwner = two;
+      await contract.transferOwnership(newOwner.address);
+
+      owner = await contract.owner();
+      expect(owner).to.eql(newOwner.address);
+    });
+
+    it("Market can transfer owner", async () => {
+      let owner = await marketContract.owner();
+      expect(owner).to.eql(contractOwner.address);
+
+      const newOwner = two;
+      await marketContract.transferOwnership(newOwner.address);
+
+      owner = await marketContract.owner();
+      expect(owner).to.eql(newOwner.address);
     });
   });
 });
