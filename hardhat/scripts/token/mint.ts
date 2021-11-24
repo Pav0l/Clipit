@@ -6,8 +6,8 @@ import { ClipIt } from "../../typechain/ClipIt";
 const Contract = require("../../artifacts/contracts/ClipIt.sol/ClipIt.json");
 
 
-const tokenCid = "bafybeiealga7wox5q4hzyhusi5izfbkpyvgydphyjwb76r75y5idkvlawe";
-const metadataCid = "bafybeiealga7wox5q4hzyhusi5izfbkpyvgydphyjwb76r75y5idkvlawe";
+const tokenCid = "tokenCID";
+const metadataCid = "metadataCID";
 /**
  * Wallet address that you wnat to mint to
  */
@@ -40,7 +40,7 @@ const mintData: ClipData = {
   metadataHash: metadataHashBytes,
 };
 
-// This needs to be set by the user
+// @USER This needs to be set by the user
 const bidShares: BidShares = {
   prevOwner: Decimal.from(0),
   creator: Decimal.from(5),
@@ -51,14 +51,17 @@ const bidShares: BidShares = {
 async function main() {
   const contractAddress = await getTokenAddress();
 
+  const wallets = await ethers.getSigners();
+  const creator = wallets[1];
+
   const signer = getSignerWallet();
-  const contract = (new ethers.Contract(contractAddress, Contract.abi, signer)) as ClipIt;
+  const contract = (new ethers.Contract(contractAddress, Contract.abi, creator)) as ClipIt;
 
 
   console.log("generating signature...");
-  const signature = await generateSignatureV2(signer, contentHash, address);
+  const signature = await generateSignatureV2(signer, contentHash, creator.address);
 
-  console.log("minting CLIP...");
+  console.log("minting CLIP...", mintData, bidShares);
   const tx = await contract.mint(mintData, bidShares, BigNumber.from(signature.v), signature.r, signature.s);
   console.log('transacton complete...', tx);
 

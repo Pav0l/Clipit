@@ -1,11 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { ethers } from "hardhat";
-import { getTokenAddress } from "../lib";
-import { getSignerWallet } from "../lib/get-signer-wallet";
-import { ClipIt } from "../typechain/ClipIt";
-const Contract = require("../artifacts/contracts/ClipIt.sol/ClipIt.json");
+import { getTokenAddress } from "../../lib";
+import { getSignerWallet } from "../../lib/get-signer-wallet";
+import { ClipIt } from "../../typechain/ClipIt";
+const Contract = require("../../artifacts/contracts/ClipIt.sol/ClipIt.json");
 
-const tokenId = "68919460976705972566622395162149526032156782722651794670000650452764152022153";
+const tokenId = "0x0000000000000000000000000000000000000000000000000000000000000001";
 
 async function main() {
   const contractAddress = await getTokenAddress();
@@ -18,6 +18,12 @@ async function main() {
 
   const tokenUri = await contract.tokenURI(BigNumber.from(tokenId));
   console.log('tokenUri:', tokenUri);
+
+  const tokenOwner = await contract.ownerOf(tokenId);
+  console.log('tokenOwner:', tokenOwner);
+
+  const wallets = await ethers.getSigners();
+  wallets.forEach(w => console.log(w.address));
 
 }
 
