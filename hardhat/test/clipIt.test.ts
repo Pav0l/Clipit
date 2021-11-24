@@ -5,7 +5,7 @@ import { ClipIt } from "../typechain/ClipIt";
 import { Market } from "../typechain/Market";
 import { BaseERC20 } from "../typechain/BaseERC20";
 
-import { generateSignatureV2, Decimal, signPermit } from "../lib";
+import { generateSignatureV2, Decimal } from "../lib";
 import { arrayify, Bytes, Signature } from "@ethersproject/contracts/node_modules/@ethersproject/bytes";
 import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
 
@@ -681,88 +681,6 @@ describe("ClipIt", function () {
 
       approved = await contract.getApproved(tid);
       expect(approved).eql(ethers.constants.AddressZero);
-    });
-  });
-
-  describe("permit:", () => {
-    const chainid = network.config.chainId!;
-
-    beforeEach(async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
-
-      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig);
-    });
-
-    it("expired permit reverts", async () => {
-      const invalidDeadline = Math.floor(new Date().getTime() / 1000) - 60 * 60 * 24; // day old
-      const sig = await signPermit(contractOwner, two.address, contract.address, tid.toNumber(), chainid, invalidDeadline);
-
-      await expect(contract.permit(two.address, tid, sig!)).revertedWith("ClipIt: Permit expired");
-    });
-
-    it("token must exist", async () => {
-      const sig = await signPermit(contractOwner, two.address, contract.address, invalidTokenId.toNumber(), chainid);
-      await expect(contract.permit(two.address, invalidTokenId, sig!)).revertedWith("ClipIt: nonexistent token");
-    });
-
-    it("spender can not be zero address", async () => {
-      const sig = await signPermit(contractOwner, ethers.constants.AddressZero, contract.address, tid.toNumber(), chainid);
-      await expect(contract.permit(ethers.constants.AddressZero, tid, sig!)).revertedWith("ClipIt: spender cannot be 0x0");
-    });
-
-    it("invalid signature: invalid signer", async () => {
-      const sig = await signPermit(two, two.address, contract.address, tid.toNumber(), chainid);
-      await expect(contract.permit(two.address, tid, sig!)).revertedWith("ClipIt: Signature invalid");
-    });
-
-    it("invalid signature: stolen signature", async () => {
-      const otherCaller = contract.connect(three);
-
-      const sig = await signPermit(contractOwner, two.address, contract.address, tid.toNumber(), chainid);
-      await expect(otherCaller.permit(three.address, tid, sig!)).revertedWith("ClipIt: Signature invalid");
-    });
-
-    it("signature without deadline is valid", async () => {
-      const sig = await signPermit(contractOwner, two.address, contract.address, tid.toNumber(), chainid, 0);
-
-      const tx = await contract.permit(two.address, tid, sig!);
-      const receipt = await tx.wait();
-
-      expectEventWithArgs(receipt, "Approval", (args) => {
-        expect(args["owner"]).to.eql(contractOwner.address);
-        expect(args["approved"]).to.eql(two.address);
-        expect(args["tokenId"].toString()).to.eql(tid.toString());
-      });
-
-      const isApproved = await contract.getApproved(tid);
-      expect(isApproved).to.eql(two.address);
-    });
-
-    it("approves spender for a token", async () => {
-      const sig = await signPermit(contractOwner, two.address, contract.address, tid.toNumber(), chainid);
-
-      const tx = await contract.permit(two.address, tid, sig!);
-      const receipt = await tx.wait();
-
-      expectEventWithArgs(receipt, "Approval", (args) => {
-        expect(args["owner"]).to.eql(contractOwner.address);
-        expect(args["approved"]).to.eql(two.address);
-        expect(args["tokenId"].toString()).to.eql(tid.toString());
-      });
-
-      const isApproved = await contract.getApproved(tid);
-      expect(isApproved).to.eql(two.address);
-    });
-
-    it("spender can also submit the permit", async () => {
-      const spender = contract.connect(two);
-      // owner signature for spender
-      const sig = await signPermit(contractOwner, two.address, contract.address, tid.toNumber(), chainid);
-      await spender.permit(two.address, tid, sig!);
     });
   });
 

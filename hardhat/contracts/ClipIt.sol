@@ -16,12 +16,13 @@ pragma experimental ABIEncoderV2;
  *     The ownership is verified by third-party API, where the creator generates the Clip.
  *  - `mintWithSig` was removed, since `mint` itself already required a signature
  *  - `onlyTokenWithContentHash` modifier was removed. creating token without content hash is prevented in `mint`
- *  - `onlyTokenWithMetadataHash`  modifier was removed. creating token without metadata hash is prevented in `mint`
+ *  - `onlyTokenWithMetadataHash` modifier was removed. creating token without metadata hash is prevented in `mint`
+ *  - `permit` function and `_calculateDomainSeparator` function as removed
+ *  - `_creatorTokens` mapping was removed
  */
 
 import { ERC721Burnable } from "./ERC721Burnable.sol";
 import { ERC721 } from "./ERC721.sol";
-import { EnumerableSet } from "@openzeppelin/contracts/utils/EnumerableSet.sol";
 import { Counters } from "@openzeppelin/contracts/utils/Counters.sol";
 import { SafeMath } from "@openzeppelin/contracts/math/SafeMath.sol";
 import { Math } from "@openzeppelin/contracts/math/Math.sol";
@@ -36,7 +37,6 @@ import "./interfaces/IClipIt.sol";
 contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
   using Counters for Counters.Counter;
   using SafeMath for uint256;
-  using EnumerableSet for EnumerableSet.UintSet;
 
   /* *******
    * Globals
@@ -52,9 +52,6 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
   // Mapping from token id to creator address
   mapping(uint256 => address) public tokenCreators;
 
-  // Mapping from creator address to their (enumerable) set of created tokens
-  mapping(address => EnumerableSet.UintSet) private _creatorTokens;
-
   // Mapping from token id to sha256 hash of content
   mapping(uint256 => bytes32) public tokenContentHashes;
 
@@ -66,13 +63,6 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
 
   // Mapping from contentHash to bool
   mapping(bytes32 => bool) private _contentHashes;
-
-  //keccak256("Permit(address spender,uint256 tokenId,uint256 nonce,uint256 deadline)");
-  bytes32 public constant PERMIT_TYPEHASH =
-    0x49ecf333e5b8c95c40fdafc95c1ad136e8914a8fb55e9dc8bb01eaa83a2df9ad;
-
-  // Mapping from address to token id to permit nonce
-  mapping(address => mapping(uint256 => uint256)) public permitNonces;
 
   /*
    *     bytes4(keccak256('name()')) == 0x06fdde03
@@ -190,7 +180,7 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
     override
     nonReentrant
   {
-    require(verifySignature(data.contentHash, msg.sender, v, r, s), "ClipIt: address not allowed to mint");
+    require(_verifySignature(data.contentHash, msg.sender, v, r, s), "ClipIt: address not allowed to mint");
     _mintForCreator(msg.sender, data, bidShares);
   }
 
@@ -332,49 +322,6 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
     emit TokenMetadataURIUpdated(tokenId, msg.sender, metadataURI);
   }
 
-  /**
-   * @notice See IClipIt
-   * @dev This method is loosely based on the permit for ERC-20 tokens in  EIP-2612, but modified
-   * for ERC-721.
-   */
-  function permit(
-    address spender,
-    uint256 tokenId,
-    EIP712Signature memory sig
-  ) public override nonReentrant onlyExistingToken(tokenId) {
-    require(
-      sig.deadline == 0 || sig.deadline >= block.timestamp,
-      "ClipIt: Permit expired"
-    );
-    require(spender != address(0), "ClipIt: spender cannot be 0x0");
-    bytes32 domainSeparator = _calculateDomainSeparator();
-
-    bytes32 digest = keccak256(
-      abi.encodePacked(
-        "\x19\x01",
-        domainSeparator,
-        keccak256(
-          abi.encode(
-            PERMIT_TYPEHASH,
-            spender,
-            tokenId,
-            permitNonces[ownerOf(tokenId)][tokenId]++,
-            sig.deadline
-          )
-        )
-      )
-    );
-
-    address recoveredAddress = ecrecover(digest, sig.v, sig.r, sig.s);
-
-    require(
-      recoveredAddress != address(0) && ownerOf(tokenId) == recoveredAddress,
-      "ClipIt: Signature invalid"
-    );
-
-    _approve(spender, tokenId);
-  }
-
   /* *****************
    * Private Functions
    * *****************
@@ -415,7 +362,6 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
     _setTokenMetadataHash(tokenId, data.metadataHash);
     _setTokenMetadataURI(tokenId, data.metadataURI);
     _setTokenURI(tokenId, data.tokenURI);
-    _creatorTokens[creator].add(tokenId);
     _contentHashes[data.contentHash] = true;
 
     tokenCreators[tokenId] = creator;
@@ -478,31 +424,7 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
     super._transfer(from, to, tokenId);
   }
 
-  /**
-   * @dev Calculates EIP712 DOMAIN_SEPARATOR based on the current contract and chain ID.
-   */
-  function _calculateDomainSeparator() internal view returns (bytes32) {
-    uint256 chainID;
-    /* solium-disable-next-line */
-    assembly {
-      chainID := chainid()
-    }
-
-    return
-      keccak256(
-        abi.encode(
-          keccak256(
-            "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"
-          ),
-          keccak256(bytes("ClipIt")),
-          keccak256(bytes("1")),
-          chainID,
-          address(this)
-        )
-      );
-  }
-
-  function verifySignature(
+  function _verifySignature(
     bytes32 _msg,
     address _to,
     uint8 v,

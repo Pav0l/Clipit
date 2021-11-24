@@ -22,14 +22,6 @@ import { IMarket } from "./IMarket.sol";
  * @title Interface for ClipIt "media"
  */
 interface IClipIt {
-  struct EIP712Signature {
-    // Deadline can be 0 if the signature is valid indefinitelly
-    uint256 deadline;
-    uint8 v;
-    bytes32 r;
-    bytes32 s;
-  }
-
   struct MediaData {
     // A valid URI of the content represented by this token
     string tokenURI;
@@ -106,13 +98,4 @@ interface IClipIt {
    */
   function updateTokenMetadataURI(uint256 tokenId, string calldata metadataURI)
     external;
-
-  /**
-   * @notice EIP-712 permit method. Sets an approved spender given a valid signature.
-   */
-  function permit(
-    address spender,
-    uint256 tokenId,
-    EIP712Signature calldata sig
-  ) external;
 }

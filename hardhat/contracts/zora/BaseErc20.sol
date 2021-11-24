@@ -13,7 +13,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
  *
  * Basic ERC20 Implementation
  */
-contract BaseERC20 is IERC20, Ownable {
+contract ZoraBaseERC20 is IERC20, Ownable {
     using SafeMath for uint256;
 
     // ============ Variables ============
