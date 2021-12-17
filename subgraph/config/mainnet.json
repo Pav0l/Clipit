@@ -1,0 +1,9 @@
+{
+  "marketAddress": "",
+  "marketStartBlock": 0,
+  "clipItAddress": "",
+  "clipItStartBlock": 0,
+  "network": "mainnet",
+  "auctionHouseAddress": "",
+  "auctionHouseStartBlock": 0
+}

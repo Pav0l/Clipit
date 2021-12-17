@@ -1,0 +1,9 @@
+{
+  "marketAddress": "0x9eA773AE18F7a90B7C000179bEfe72a709A4f090",
+  "marketStartBlock": 9654003,
+  "clipItAddress": "0x41b5Bcc09815231a16A1253f0215B3c404746848",
+  "clipItStartBlock": 9654004,
+  "network": "rinkeby",
+  "auctionHouseAddress": "",
+  "auctionHouseStartBlock": 0
+}
