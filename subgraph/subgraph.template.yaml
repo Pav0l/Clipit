@@ -4,11 +4,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: ClipIt
-    network: { { network } }
+    network: "{{network}}"
     source:
-      address: { { clipItAddress } }
+      address: "{{clipItAddress}}"
       abi: ClipIt
-      startBlock: { { clipItStartBlock } }
+      startBlock: {{clipItStartBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -34,11 +34,11 @@ dataSources:
       file: ./src/clip.ts
   - kind: ethereum/contract
     name: Market
-    network: { { network } }
+    network: "{{network}}"
     source:
-      address: { { marketAddress } }
+      address: "{{marketAddress}}"
       abi: Market
-      startBlock: { { marketStartBlock } }
+      startBlock: {{marketStartBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
