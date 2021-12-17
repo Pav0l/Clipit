@@ -6,33 +6,66 @@ dataSources:
     name: ClipIt
     network: rinkeby
     source:
-      address: "0x2f7dA92f3353c1ED272D9e84445DBD187Ae2Bda1"
+      address: "0x41b5Bcc09815231a16A1253f0215B3c404746848"
       abi: ClipIt
+      startBlock: 9654004
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - Approval
-        - ApprovalForAll
-        - OwnershipTransferred
-        - TokenMetadataURIUpdated
-        - TokenURIUpdated
-        - Transfer
+        - Clip
       abis:
         - name: ClipIt
           file: ./abis/ClipIt.json
+        - name: Market
+          file: ./abis/Market.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,indexed uint256)
           handler: handleApproval
         - event: ApprovalForAll(indexed address,indexed address,bool)
           handler: handleApprovalForAll
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
         - event: TokenMetadataURIUpdated(indexed uint256,address,string)
           handler: handleTokenMetadataURIUpdated
         - event: TokenURIUpdated(indexed uint256,address,string)
           handler: handleTokenURIUpdated
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
-      file: ./src/mapping.ts
+      file: ./src/clip.ts
+  - kind: ethereum/contract
+    name: Market
+    network: rinkeby
+    source:
+      address: "0x9eA773AE18F7a90B7C000179bEfe72a709A4f090"
+      abi: Market
+      startBlock: 9654003
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Ask
+        - Bid
+      abis:
+        - name: Market
+          file: ./abis/Market.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: ERC20SymbolBytes
+          file: ./abis/ERC20SymbolBytes.json
+        - name: ERC20NameBytes
+          file: ./abis/ERC20NameBytes.json
+      eventHandlers:
+        - event: BidShareUpdated(indexed uint256,((uint256),(uint256),(uint256)))
+          handler: handleBidShareUpdated
+        - event: AskCreated(indexed uint256,(uint256,address))
+          handler: handleAskCreated
+        - event: AskRemoved(indexed uint256,(uint256,address))
+          handler: handleAskRemoved
+        - event: BidCreated(indexed uint256,(uint256,address,address,address,(uint256)))
+          handler: handleBidCreated
+        - event: BidRemoved(indexed uint256,(uint256,address,address,address,(uint256)))
+          handler: handleBidRemoved
+        - event: BidFinalized(indexed uint256,(uint256,address,address,address,(uint256)))
+          handler: handleBidFinalized
+      file: ./src/market.ts

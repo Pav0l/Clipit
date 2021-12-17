@@ -167,29 +167,6 @@ export class ClipIt extends ethereum.SmartContract {
     return new ClipIt("ClipIt", address);
   }
 
-  PERMIT_TYPEHASH(): Bytes {
-    let result = super.call(
-      "PERMIT_TYPEHASH",
-      "PERMIT_TYPEHASH():(bytes32)",
-      []
-    );
-
-    return result[0].toBytes();
-  }
-
-  try_PERMIT_TYPEHASH(): ethereum.CallResult<Bytes> {
-    let result = super.tryCall(
-      "PERMIT_TYPEHASH",
-      "PERMIT_TYPEHASH():(bytes32)",
-      []
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBytes());
-  }
-
   balanceOf(owner: Address): BigInt {
     let result = super.call("balanceOf", "balanceOf(address):(uint256)", [
       ethereum.Value.fromAddress(owner)
@@ -337,38 +314,6 @@ export class ClipIt extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
-  }
-
-  permitNonces(param0: Address, param1: BigInt): BigInt {
-    let result = super.call(
-      "permitNonces",
-      "permitNonces(address,uint256):(uint256)",
-      [
-        ethereum.Value.fromAddress(param0),
-        ethereum.Value.fromUnsignedBigInt(param1)
-      ]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_permitNonces(
-    param0: Address,
-    param1: BigInt
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "permitNonces",
-      "permitNonces(address,uint256):(uint256)",
-      [
-        ethereum.Value.fromAddress(param0),
-        ethereum.Value.fromUnsignedBigInt(param1)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   previousTokenOwners(param0: BigInt): Address {
@@ -901,64 +846,6 @@ export class MintCallBidSharesCreatorStruct extends ethereum.Tuple {
 export class MintCallBidSharesOwnerStruct extends ethereum.Tuple {
   get value(): BigInt {
     return this[0].toBigInt();
-  }
-}
-
-export class PermitCall extends ethereum.Call {
-  get inputs(): PermitCall__Inputs {
-    return new PermitCall__Inputs(this);
-  }
-
-  get outputs(): PermitCall__Outputs {
-    return new PermitCall__Outputs(this);
-  }
-}
-
-export class PermitCall__Inputs {
-  _call: PermitCall;
-
-  constructor(call: PermitCall) {
-    this._call = call;
-  }
-
-  get spender(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get tokenId(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get sig(): PermitCallSigStruct {
-    return changetype<PermitCallSigStruct>(
-      this._call.inputValues[2].value.toTuple()
-    );
-  }
-}
-
-export class PermitCall__Outputs {
-  _call: PermitCall;
-
-  constructor(call: PermitCall) {
-    this._call = call;
-  }
-}
-
-export class PermitCallSigStruct extends ethereum.Tuple {
-  get deadline(): BigInt {
-    return this[0].toBigInt();
-  }
-
-  get v(): i32 {
-    return this[1].toI32();
-  }
-
-  get r(): Bytes {
-    return this[2].toBytes();
-  }
-
-  get s(): Bytes {
-    return this[3].toBytes();
   }
 }
 
