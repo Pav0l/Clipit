@@ -9,7 +9,7 @@ const METADATA = 'Metadata';
 
 export function handleApproval(event: Approval): void {
   const owner = event.params.owner.toHexString();
-  const tokenId = event.params.tokenId.toHexString();
+  const tokenId = event.params.tokenId.toString();
   const approved = event.params.approved.toHexString();
 
   log.info('[handleApproval] tokenId: {}, owner: {}, approved: {}', [tokenId, owner, approved]);
