@@ -1,6 +1,6 @@
 import { parseUnits } from "ethers/lib/utils";
 import { ethers } from "hardhat";
-import { Decimal, getTokenAddress, getWETHAddress } from "../../lib";
+import { Decimal, getMarketAddress, getTokenAddress, getWETHAddress } from "../../lib";
 import { WETH } from "../../typechain";
 import { ClipIt } from "../../typechain/ClipIt";
 import { Market } from "../../typechain/Market";
@@ -14,11 +14,12 @@ const tokenId = "0x0000000000000000000000000000000000000000000000000000000000000
 async function main() {
   const tokenAddress = await getTokenAddress();
   const wethAddress = await getWETHAddress();
+  const marketAddress = await getMarketAddress();
 
   const wallets = await ethers.getSigners();
   const bidder = wallets[2];
   const token = (new ethers.Contract(tokenAddress, ClipItContract.abi, bidder)) as ClipIt;
-  const market = (new ethers.Contract(tokenAddress, MarketContract.abi, bidder)) as Market;
+  const market = (new ethers.Contract(marketAddress, MarketContract.abi, bidder)) as Market;
   const currency = (new ethers.Contract(wethAddress, WETHContract.abi, bidder)) as WETH;
 
   // @USER This needs to be set by the user
