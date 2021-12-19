@@ -7,7 +7,7 @@ import { BaseERC20 } from "../typechain/BaseERC20";
 
 import { generateSignatureV2, Decimal } from "../lib";
 import { arrayify, Bytes, Signature } from "@ethersproject/contracts/node_modules/@ethersproject/bytes";
-import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
+import { keccak256, sha256, toUtf8Bytes } from "ethers/lib/utils";
 
 
 function expectEventWithArgs<T>(receipt: ContractReceipt, eventName: string, assertion: (eventArgs: any) => T) {
@@ -32,11 +32,12 @@ describe("ClipIt", function () {
   const tid = BigNumber.from("0");
   const invalidTokenId = BigNumber.from(1000);
 
+  const mtdt = '{"name":"Almost again","description":"streamer playing game","external_url":"https://foo.bar/nft/id","image":"ipfs://bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku","cid":"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku","attributes":[{"trait_type":"Game","value":"name of game"},{"trait_type":"Streamer","value":"name of streamer"}]}';
   const metadataURI = "ipfs://metadataCid";
-  const metadataHash = keccak256(toUtf8Bytes('metadata'));
+  const metadataHash = sha256(toUtf8Bytes(mtdt));
   const metadataHashBytes = arrayify(metadataHash);
   const tokenURI = `ipfs://${clipCID}`;
-  const contentHash = keccak256(toUtf8Bytes('content'));
+  const contentHash = sha256(toUtf8Bytes('content'));
   const contentHashBytes = arrayify(contentHash);
 
   const defaultAsk = (amount: number = 1000, currency: string = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707") => ({
