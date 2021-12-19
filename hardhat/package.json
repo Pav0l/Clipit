@@ -1,7 +1,7 @@
 {
-  "name": "project-template",
+  "name": "clip-it.hardhat",
   "version": "1.0.0",
-  "description": "template for hardhat powered Solidity projects",
+  "description": "ClipIt contracts",
   "scripts": {
     "deploy:localhost": "npx hardhat run ./scripts/dev.deploy.ts --network localhost",
     "deploy:ropsten": "npx hardhat run ./scripts/deploy.ts --network ropsten",
@@ -9,7 +9,7 @@
     "etherscan:verify:rinkeby": "npx hardhat verify --constructor-args etherscan-args.js --network rinkeby 0x8fF5d1D8A2983a476baAA36C3edcf7Ee13ACB481",
     "test": "npx hardhat test"
   },
-  "author": "Pavol Karas",
+  "author": "h0ppx",
   "license": "ISC",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",

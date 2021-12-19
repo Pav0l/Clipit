@@ -1,5 +1,5 @@
 {
-  "name": "clipit.subgraph",
+  "name": "clip-it.subgraph",
   "license": "MIT",
   "scripts": {
     "codegen": "graph codegen",

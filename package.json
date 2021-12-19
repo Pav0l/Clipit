@@ -1,0 +1,10 @@
+{
+  "name": "clip-it",
+  "version": "1.0.0",
+  "description": "ClipIt project repo",
+  "scripts": {
+    "update-abi": "cp hardhat/artifacts/contracts/ClipIt.sol/ClipIt.json app/src/lib/contract/ && cp hardhat/typechain/ClipIt.d.ts app/src/lib/contract/"
+  },
+  "author": "h0ppx",
+  "license": "GPL-3.0"
+}
