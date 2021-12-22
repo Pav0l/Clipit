@@ -57,7 +57,6 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
 
   const clip = model.clip.getClip(clipId);
 
-  const history = useHistory();
   const classes = useStyles();
 
   useEffect(() => {
@@ -87,12 +86,6 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
     ) {
       await operations.requestConnectAndMint(clip.id);
 
-      const tokenId = model.nft.tokenId;
-      if (tokenId) {
-        console.log("tokenId from mint -> redirecting", tokenId);
-        model.nft.setTokenId(undefined);
-        history.push(`/nfts/${tokenId}`);
-      }
       setDisabled(false);
     }
   };

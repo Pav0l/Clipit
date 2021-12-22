@@ -21,28 +21,68 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface ClipItInterface extends ethers.utils.Interface {
   functions: {
+    "acceptBid(uint256,tuple)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
+    "auctionTransfer(uint256,address)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "baseURI()": FunctionFragment;
+    "burn(uint256)": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
-    "mint(address,string,uint8,bytes32,bytes32)": FunctionFragment;
+    "marketContract()": FunctionFragment;
+    "mint(tuple,tuple,uint8,bytes32,bytes32)": FunctionFragment;
     "name()": FunctionFragment;
     "owner()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
+    "previousTokenOwners(uint256)": FunctionFragment;
+    "removeAsk(uint256)": FunctionFragment;
+    "removeBid(uint256)": FunctionFragment;
+    "renounceOwnership()": FunctionFragment;
+    "revokeApproval(uint256)": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
-    "setBaseURI(string)": FunctionFragment;
+    "setAsk(uint256,tuple)": FunctionFragment;
+    "setBid(uint256,tuple)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
+    "tokenByIndex(uint256)": FunctionFragment;
+    "tokenContentHashes(uint256)": FunctionFragment;
+    "tokenCreators(uint256)": FunctionFragment;
+    "tokenMetadataHashes(uint256)": FunctionFragment;
+    "tokenMetadataURI(uint256)": FunctionFragment;
+    "tokenOfOwnerByIndex(address,uint256)": FunctionFragment;
     "tokenURI(uint256)": FunctionFragment;
+    "totalSupply()": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
+    "transferOwnership(address)": FunctionFragment;
+    "updateTokenMetadataURI(uint256,string)": FunctionFragment;
+    "updateTokenURI(uint256,string)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "acceptBid",
+    values: [
+      BigNumberish,
+      {
+        amount: BigNumberish;
+        currency: string;
+        bidder: string;
+        recipient: string;
+        sellOnShare: { value: BigNumberish };
+      }
+    ]
+  ): string;
   encodeFunctionData(
     functionFragment: "approve",
     values: [string, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "auctionTransfer",
+    values: [BigNumberish, string]
+  ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(functionFragment: "baseURI", values?: undefined): string;
+  encodeFunctionData(functionFragment: "burn", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "getApproved",
     values: [BigNumberish]
@@ -52,13 +92,52 @@ interface ClipItInterface extends ethers.utils.Interface {
     values: [string, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "marketContract",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "mint",
-    values: [string, string, BigNumberish, BytesLike, BytesLike]
+    values: [
+      {
+        tokenURI: string;
+        metadataURI: string;
+        contentHash: BytesLike;
+        metadataHash: BytesLike;
+      },
+      {
+        prevOwner: { value: BigNumberish };
+        creator: { value: BigNumberish };
+        owner: { value: BigNumberish };
+      },
+      BigNumberish,
+      BytesLike,
+      BytesLike
+    ]
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "ownerOf",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "previousTokenOwners",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "removeAsk",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "removeBid",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "renounceOwnership",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "revokeApproval",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -69,23 +148,86 @@ interface ClipItInterface extends ethers.utils.Interface {
     functionFragment: "setApprovalForAll",
     values: [string, boolean]
   ): string;
-  encodeFunctionData(functionFragment: "setBaseURI", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "setAsk",
+    values: [BigNumberish, { amount: BigNumberish; currency: string }]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setBid",
+    values: [
+      BigNumberish,
+      {
+        amount: BigNumberish;
+        currency: string;
+        bidder: string;
+        recipient: string;
+        sellOnShare: { value: BigNumberish };
+      }
+    ]
+  ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "tokenByIndex",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenContentHashes",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenCreators",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenMetadataHashes",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenMetadataURI",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "tokenOfOwnerByIndex",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "tokenURI",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "totalSupply",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "transferFrom",
     values: [string, string, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "transferOwnership",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateTokenMetadataURI",
+    values: [BigNumberish, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "updateTokenURI",
+    values: [BigNumberish, string]
+  ): string;
 
+  decodeFunctionResult(functionFragment: "acceptBid", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "auctionTransfer",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "baseURI", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "burn", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
     data: BytesLike
@@ -94,10 +236,28 @@ interface ClipItInterface extends ethers.utils.Interface {
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "marketContract",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "mint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "previousTokenOwners",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "removeAsk", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "removeBid", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "revokeApproval",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "safeTransferFrom",
     data: BytesLike
@@ -106,26 +266,73 @@ interface ClipItInterface extends ethers.utils.Interface {
     functionFragment: "setApprovalForAll",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "setBaseURI", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setAsk", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setBid", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenByIndex",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenContentHashes",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenCreators",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenMetadataHashes",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenMetadataURI",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "tokenOfOwnerByIndex",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "totalSupply",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "transferFrom",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateTokenMetadataURI",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "updateTokenURI",
     data: BytesLike
   ): Result;
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
     "ApprovalForAll(address,address,bool)": EventFragment;
+    "OwnershipTransferred(address,address)": EventFragment;
+    "TokenMetadataURIUpdated(uint256,address,string)": EventFragment;
+    "TokenURIUpdated(uint256,address,string)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenMetadataURIUpdated"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "TokenURIUpdated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
@@ -173,13 +380,38 @@ export class ClipIt extends BaseContract {
   interface: ClipItInterface;
 
   functions: {
+    acceptBid(
+      tokenId: BigNumberish,
+      bid: {
+        amount: BigNumberish;
+        currency: string;
+        bidder: string;
+        recipient: string;
+        sellOnShare: { value: BigNumberish };
+      },
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    auctionTransfer(
+      tokenId: BigNumberish,
+      recipient: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     balanceOf(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    baseURI(overrides?: CallOverrides): Promise<[string]>;
+
+    burn(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -192,9 +424,20 @@ export class ClipIt extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    marketContract(overrides?: CallOverrides): Promise<[string]>;
+
     mint(
-      _to: string,
-      _cid: string,
+      data: {
+        tokenURI: string;
+        metadataURI: string;
+        contentHash: BytesLike;
+        metadataHash: BytesLike;
+      },
+      bidShares: {
+        prevOwner: { value: BigNumberish };
+        creator: { value: BigNumberish };
+        owner: { value: BigNumberish };
+      },
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
@@ -209,6 +452,30 @@ export class ClipIt extends BaseContract {
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    previousTokenOwners(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    removeAsk(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    removeBid(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    revokeApproval(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -231,8 +498,21 @@ export class ClipIt extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    setBaseURI(
-      _uri: string,
+    setAsk(
+      tokenId: BigNumberish,
+      ask: { amount: BigNumberish; currency: string },
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setBid(
+      tokenId: BigNumberish,
+      bid: {
+        amount: BigNumberish;
+        currency: string;
+        bidder: string;
+        recipient: string;
+        sellOnShare: { value: BigNumberish };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -243,10 +523,43 @@ export class ClipIt extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<[string]>;
 
-    tokenURI(
-      _tokenId: BigNumberish,
+    tokenByIndex(
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    tokenContentHashes(
+      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    tokenCreators(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    tokenMetadataHashes(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    tokenMetadataURI(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    tokenOfOwnerByIndex(
+      owner: string,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
+    tokenURI(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transferFrom(
       from: string,
@@ -254,7 +567,36 @@ export class ClipIt extends BaseContract {
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    updateTokenMetadataURI(
+      tokenId: BigNumberish,
+      metadataURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    updateTokenURI(
+      tokenId: BigNumberish,
+      _tokenURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
   };
+
+  acceptBid(
+    tokenId: BigNumberish,
+    bid: {
+      amount: BigNumberish;
+      currency: string;
+      bidder: string;
+      recipient: string;
+      sellOnShare: { value: BigNumberish };
+    },
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   approve(
     to: string,
@@ -262,7 +604,20 @@ export class ClipIt extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  auctionTransfer(
+    tokenId: BigNumberish,
+    recipient: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  baseURI(overrides?: CallOverrides): Promise<string>;
+
+  burn(
+    tokenId: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   getApproved(
     tokenId: BigNumberish,
@@ -275,9 +630,20 @@ export class ClipIt extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  marketContract(overrides?: CallOverrides): Promise<string>;
+
   mint(
-    _to: string,
-    _cid: string,
+    data: {
+      tokenURI: string;
+      metadataURI: string;
+      contentHash: BytesLike;
+      metadataHash: BytesLike;
+    },
+    bidShares: {
+      prevOwner: { value: BigNumberish };
+      creator: { value: BigNumberish };
+      owner: { value: BigNumberish };
+    },
     v: BigNumberish,
     r: BytesLike,
     s: BytesLike,
@@ -289,6 +655,30 @@ export class ClipIt extends BaseContract {
   owner(overrides?: CallOverrides): Promise<string>;
 
   ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+  previousTokenOwners(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  removeAsk(
+    tokenId: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  removeBid(
+    tokenId: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  renounceOwnership(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  revokeApproval(
+    tokenId: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   "safeTransferFrom(address,address,uint256)"(
     from: string,
@@ -311,8 +701,21 @@ export class ClipIt extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  setBaseURI(
-    _uri: string,
+  setAsk(
+    tokenId: BigNumberish,
+    ask: { amount: BigNumberish; currency: string },
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setBid(
+    tokenId: BigNumberish,
+    bid: {
+      amount: BigNumberish;
+      currency: string;
+      bidder: string;
+      recipient: string;
+      sellOnShare: { value: BigNumberish };
+    },
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -323,7 +726,37 @@ export class ClipIt extends BaseContract {
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
-  tokenURI(_tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+  tokenByIndex(
+    index: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  tokenContentHashes(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  tokenCreators(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+  tokenMetadataHashes(
+    arg0: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  tokenMetadataURI(
+    tokenId: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  tokenOfOwnerByIndex(
+    owner: string,
+    index: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
+  tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+  totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferFrom(
     from: string,
@@ -332,14 +765,53 @@ export class ClipIt extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  transferOwnership(
+    newOwner: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  updateTokenMetadataURI(
+    tokenId: BigNumberish,
+    metadataURI: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  updateTokenURI(
+    tokenId: BigNumberish,
+    _tokenURI: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   callStatic: {
+    acceptBid(
+      tokenId: BigNumberish,
+      bid: {
+        amount: BigNumberish;
+        currency: string;
+        bidder: string;
+        recipient: string;
+        sellOnShare: { value: BigNumberish };
+      },
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
+    auctionTransfer(
+      tokenId: BigNumberish,
+      recipient: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    baseURI(overrides?: CallOverrides): Promise<string>;
+
+    burn(tokenId: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -352,9 +824,20 @@ export class ClipIt extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    marketContract(overrides?: CallOverrides): Promise<string>;
+
     mint(
-      _to: string,
-      _cid: string,
+      data: {
+        tokenURI: string;
+        metadataURI: string;
+        contentHash: BytesLike;
+        metadataHash: BytesLike;
+      },
+      bidShares: {
+        prevOwner: { value: BigNumberish };
+        creator: { value: BigNumberish };
+        owner: { value: BigNumberish };
+      },
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
@@ -366,6 +849,22 @@ export class ClipIt extends BaseContract {
     owner(overrides?: CallOverrides): Promise<string>;
 
     ownerOf(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+    previousTokenOwners(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    removeAsk(tokenId: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
+    removeBid(tokenId: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
+    renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
+    revokeApproval(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     "safeTransferFrom(address,address,uint256)"(
       from: string,
@@ -388,7 +887,23 @@ export class ClipIt extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    setBaseURI(_uri: string, overrides?: CallOverrides): Promise<void>;
+    setAsk(
+      tokenId: BigNumberish,
+      ask: { amount: BigNumberish; currency: string },
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setBid(
+      tokenId: BigNumberish,
+      bid: {
+        amount: BigNumberish;
+        currency: string;
+        bidder: string;
+        recipient: string;
+        sellOnShare: { value: BigNumberish };
+      },
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     supportsInterface(
       interfaceId: BytesLike,
@@ -397,15 +912,62 @@ export class ClipIt extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
-    tokenURI(
-      _tokenId: BigNumberish,
+    tokenByIndex(
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenContentHashes(
+      arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    tokenCreators(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    tokenMetadataHashes(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    tokenMetadataURI(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    tokenOfOwnerByIndex(
+      owner: string,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferFrom(
       from: string,
       to: string,
       tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    updateTokenMetadataURI(
+      tokenId: BigNumberish,
+      metadataURI: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    updateTokenURI(
+      tokenId: BigNumberish,
+      _tokenURI: string,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -429,6 +991,32 @@ export class ClipIt extends BaseContract {
       { owner: string; operator: string; approved: boolean }
     >;
 
+    OwnershipTransferred(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    TokenMetadataURIUpdated(
+      _tokenId?: BigNumberish | null,
+      owner?: null,
+      _uri?: null
+    ): TypedEventFilter<
+      [BigNumber, string, string],
+      { _tokenId: BigNumber; owner: string; _uri: string }
+    >;
+
+    TokenURIUpdated(
+      _tokenId?: BigNumberish | null,
+      owner?: null,
+      _uri?: null
+    ): TypedEventFilter<
+      [BigNumber, string, string],
+      { _tokenId: BigNumber; owner: string; _uri: string }
+    >;
+
     Transfer(
       from?: string | null,
       to?: string | null,
@@ -440,13 +1028,38 @@ export class ClipIt extends BaseContract {
   };
 
   estimateGas: {
+    acceptBid(
+      tokenId: BigNumberish,
+      bid: {
+        amount: BigNumberish;
+        currency: string;
+        bidder: string;
+        recipient: string;
+        sellOnShare: { value: BigNumberish };
+      },
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    auctionTransfer(
+      tokenId: BigNumberish,
+      recipient: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    baseURI(overrides?: CallOverrides): Promise<BigNumber>;
+
+    burn(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     getApproved(
       tokenId: BigNumberish,
@@ -459,9 +1072,20 @@ export class ClipIt extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    marketContract(overrides?: CallOverrides): Promise<BigNumber>;
+
     mint(
-      _to: string,
-      _cid: string,
+      data: {
+        tokenURI: string;
+        metadataURI: string;
+        contentHash: BytesLike;
+        metadataHash: BytesLike;
+      },
+      bidShares: {
+        prevOwner: { value: BigNumberish };
+        creator: { value: BigNumberish };
+        owner: { value: BigNumberish };
+      },
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
@@ -477,6 +1101,30 @@ export class ClipIt extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    previousTokenOwners(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    removeAsk(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    removeBid(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    revokeApproval(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     "safeTransferFrom(address,address,uint256)"(
       from: string,
       to: string,
@@ -498,8 +1146,21 @@ export class ClipIt extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    setBaseURI(
-      _uri: string,
+    setAsk(
+      tokenId: BigNumberish,
+      ask: { amount: BigNumberish; currency: string },
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setBid(
+      tokenId: BigNumberish,
+      bid: {
+        amount: BigNumberish;
+        currency: string;
+        bidder: string;
+        recipient: string;
+        sellOnShare: { value: BigNumberish };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -510,10 +1171,43 @@ export class ClipIt extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
-    tokenURI(
-      _tokenId: BigNumberish,
+    tokenByIndex(
+      index: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    tokenContentHashes(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenCreators(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenMetadataHashes(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenMetadataURI(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenOfOwnerByIndex(
+      owner: string,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    tokenURI(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferFrom(
       from: string,
@@ -521,18 +1215,60 @@ export class ClipIt extends BaseContract {
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    updateTokenMetadataURI(
+      tokenId: BigNumberish,
+      metadataURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    updateTokenURI(
+      tokenId: BigNumberish,
+      _tokenURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
+    acceptBid(
+      tokenId: BigNumberish,
+      bid: {
+        amount: BigNumberish;
+        currency: string;
+        bidder: string;
+        recipient: string;
+        sellOnShare: { value: BigNumberish };
+      },
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     approve(
       to: string,
       tokenId: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    auctionTransfer(
+      tokenId: BigNumberish,
+      recipient: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     balanceOf(
       owner: string,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    baseURI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    burn(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     getApproved(
@@ -546,9 +1282,20 @@ export class ClipIt extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    marketContract(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     mint(
-      _to: string,
-      _cid: string,
+      data: {
+        tokenURI: string;
+        metadataURI: string;
+        contentHash: BytesLike;
+        metadataHash: BytesLike;
+      },
+      bidShares: {
+        prevOwner: { value: BigNumberish };
+        creator: { value: BigNumberish };
+        owner: { value: BigNumberish };
+      },
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
@@ -564,6 +1311,30 @@ export class ClipIt extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    previousTokenOwners(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    removeAsk(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    removeBid(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    revokeApproval(
+      tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     "safeTransferFrom(address,address,uint256)"(
       from: string,
       to: string,
@@ -585,8 +1356,21 @@ export class ClipIt extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    setBaseURI(
-      _uri: string,
+    setAsk(
+      tokenId: BigNumberish,
+      ask: { amount: BigNumberish; currency: string },
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setBid(
+      tokenId: BigNumberish,
+      bid: {
+        amount: BigNumberish;
+        currency: string;
+        bidder: string;
+        recipient: string;
+        sellOnShare: { value: BigNumberish };
+      },
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -597,15 +1381,65 @@ export class ClipIt extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    tokenURI(
-      _tokenId: BigNumberish,
+    tokenByIndex(
+      index: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    tokenContentHashes(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenCreators(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenMetadataHashes(
+      arg0: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenMetadataURI(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenOfOwnerByIndex(
+      owner: string,
+      index: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    tokenURI(
+      tokenId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferFrom(
       from: string,
       to: string,
       tokenId: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    updateTokenMetadataURI(
+      tokenId: BigNumberish,
+      metadataURI: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    updateTokenURI(
+      tokenId: BigNumberish,
+      _tokenURI: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

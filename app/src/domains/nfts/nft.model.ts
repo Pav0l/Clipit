@@ -4,6 +4,7 @@ import { MetaModel } from "../app/meta.model";
 
 enum MintStatus {
   CONFIRM_MINT = "Clip ready to be turned into an NFT!\nPlease confirm the transaction in MetaMask",
+  WAIT_FOR_TX = "Clip minted, waiting for the transaction to confirm..."
 }
 
 enum StoreClipStatus {
@@ -71,6 +72,11 @@ export class NftModel {
     this.mintStatus = undefined;
   }
 
+  setWaitForTransaction() {
+    this.mintLoad = true;
+    this.mintStatus = MintStatus.WAIT_FOR_TX;
+  }
+
   setMetadataCollection(data: Record<string, MetadataInput>, ipfsGatewayUri: string = ipfsIoGatewayUri) {
     const collection: Record<string, Metadata> = {};
     Object.keys(data).forEach(key => collection[key] = new Metadata(data[key], ipfsGatewayUri));
@@ -99,13 +105,21 @@ export interface Signature {
   s: string
 }
 
+
+// TODO unify these with clipit-api.client
 interface MetadataInput {
-  cid?: string
-  name?: string
-  description?: string
-  // TODO maybe remove - unused?
-  image?: string
+  name?: string;
+  description?: string;
+  external_url?: string;
+  clipUri?: string;
+  clipCid?: string;
+  attributes?: MetadataAttrs[];
 }
+interface MetadataAttrs {
+  trait_type?: "Game" | "Streamer";
+  value?: string;
+}
+
 
 class Metadata {
   clipTitle: string;
@@ -117,10 +131,10 @@ class Metadata {
   constructor(data: MetadataInput, private ipfsGatewayUri: string) {
     makeAutoObservable(this);
 
-    this.clipCid = this.validateField(data.cid);
+    this.clipCid = this.validateField(data.clipCid);
     this.clipTitle = this.validateField(data.name);
     this.description = this.validateField(data.description);
-    this.clipIpfsUri = this.createClipIpfsGatewayUri(this.validateField(data.cid));
+    this.clipIpfsUri = this.createClipIpfsGatewayUri(this.validateField(data.clipCid));
   }
 
   private validateField<T>(field: unknown) {

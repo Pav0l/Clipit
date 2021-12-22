@@ -1,11 +1,9 @@
 
 // TODO configurable variables into config file
 // CONTRACT -> into config
-export const contractAddress = "0xF741B99A2D9F7aDDa0e9090065c64F0F7C613547";
+export const contractAddress = "0x41b5Bcc09815231a16A1253f0215B3c404746848";
 // localhost: "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-// rinkeby v3: 0xF741B99A2D9F7aDDa0e9090065c64F0F7C613547
-// rinkeby v2: 0x4620F21E45274404dF937C17880d4320E108De4b
-// rinkeby v1: 0x6eA040eE61c7afC835b860923F08827bC98114D7
+// rinkeby: 0x41b5Bcc09815231a16A1253f0215B3c404746848
 
 
 // IPFS -> into config

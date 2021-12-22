@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { toJS } from "mobx";
 
 import "./index.css";
 import { AppRoute, clipItUri, cloudFlareGatewayUri } from "./lib/constants";
@@ -40,6 +41,10 @@ async function initializeApp() {
 
   return { model: appModel, operations: app };
 }
+
+window.getModel = () => {
+  return toJS(appModel);
+};
 
 (async () => {
   try {

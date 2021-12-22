@@ -1,4 +1,4 @@
-import { ethers, BigNumberish, BigNumber } from "ethers";
+import { ethers, BigNumberish, BigNumber, BytesLike } from "ethers";
 
 import ContractBuild from "./ClipIt.json";
 import { ClipIt } from "./ClipIt";
@@ -8,6 +8,25 @@ enum ContractEvents {
   APPROVE = "Approval",
   APPROVE_ALL = "ApprovalForAll",
   TRANSFER = "Transfer"
+}
+
+interface MediaData {
+  tokenURI: string;
+  metadataURI: string;
+  contentHash: BytesLike;
+  metadataHash: BytesLike;
+}
+
+interface BidShares {
+  prevOwner: { value: BigNumberish };
+  creator: { value: BigNumberish };
+  owner: { value: BigNumberish };
+}
+
+interface Signature {
+  v: BigNumberish,
+  r: BytesLike,
+  s: BytesLike,
 }
 
 interface EventHandlers {
@@ -22,7 +41,7 @@ export default class ContractClient {
   constructor(signer: ethers.providers.JsonRpcSigner, handlers: EventHandlers) {
     this.contract = (new ethers.Contract(contractAddress, ContractBuild.abi, signer)) as ClipIt;
 
-    // register listeners for contract events
+    // TODO these should be replaced by subgraph queries
     this.contract.on(ContractEvents.APPROVE, handlers.handleApproval);
 
     this.contract.on(ContractEvents.APPROVE_ALL, handlers.handleApprovalAll);
@@ -30,13 +49,16 @@ export default class ContractClient {
     this.contract.on(ContractEvents.TRANSFER, handlers.handleTransfer);
   }
 
-  async mint(to: string, metadataCid: string, v: number, r: string, s: string) {
-    return this.contract.mint(to, metadataCid, BigNumber.from(v), r, s);
+  async mint(data: MediaData, bidShares: BidShares, signature: Signature) {
+    return this.contract.mint(data, bidShares, signature.v, signature.r, signature.s);
   }
-
 
   async getMetadataTokenUri(tokenId: string) {
     return this.contract.tokenURI(tokenId);
+  }
+
+  async getMetadataUri(tokenId: string) {
+    return this.contract.tokenMetadataURI(tokenId);
   }
 
   // convienience method to fetch minted tokens from wallet
@@ -51,17 +73,5 @@ export default class ContractClient {
     console.log('CLIPIT Transfer events:', emittedEvents);
 
     return emittedEvents;
-  }
-
-  /**
-   * getTokenIdFromCid creates tokenId from cid
-   * @dev emulates contracts uint256(keccak256(abi.encode(_cid)))
-   */
-  getTokenIdFromCid(cid: string): string {
-    const encoded = ethers.utils.defaultAbiCoder.encode(["string"], [cid]);
-    const hashed = ethers.utils.keccak256(encoded);
-    const tokenId = BigNumber.from(hashed);
-
-    return tokenId.toString();
   }
 }

@@ -226,6 +226,23 @@ export class AppController implements IAppController {
           tokenId?: BigNumberish | null
         ) => {
           console.log(`[TRANSFER](initContractIfNotExist) from ${from} to ${to} for ${tokenId}`);
+
+          // TODO refactor this ugliness
+          if (location.pathname.includes('/nfts/')) {
+            console.log('multiple TRANSFER handler calls')
+            return;
+          }
+
+          this.model.nft.stopMintLoader();
+
+          const tId = tokenId?.toString()
+
+          this.model.nft.setTokenId(tId);
+          if (tId) {
+            console.log("tokenId from mint -> redirecting", tokenId);
+            this.model.nft.setTokenId(undefined);
+            location.replace(location.origin + `/nfts/${tokenId}`);
+          }
         }
       });
     } catch (error) {

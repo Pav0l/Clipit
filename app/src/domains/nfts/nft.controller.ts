@@ -6,6 +6,8 @@ import type { SnackbarClient } from '../../lib/snackbar/snackbar.client';
 
 import { isStoreClipError } from "../../lib/clipit-api/clipit-api.client";
 import { ContractErrors, isRpcError, NftErrors, RpcErrors } from './nft.errors';
+import { BytesLike } from "ethers";
+import { Decimal } from "../../lib/decimal/decimal";
 
 
 
@@ -25,16 +27,12 @@ export class NftController {
     const resp = await this.clipitApi.storeClip(clipId, address);
 
     if (resp.statusOk && !isStoreClipError(resp.body)) {
-
       this.model.createMetadata(resp.body.metadata!); // TODO fix !
 
       this.model.stopClipStoreLoaderAndStartMintLoader();
 
-      await this.mintNFT(resp.body.metadataCid, clipId, address, resp.body.signature);
+      await this.mintNFT(resp.body.mediadata, clipId, resp.body.signature);
 
-      this.model.setTokenId(this.contractClient.getTokenIdFromCid(resp.body.metadataCid));
-
-      this.model.stopMintLoader();
     } else {
       this.snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
     }
@@ -70,64 +68,72 @@ export class NftController {
       }
 
       this.model.setMetadataCollection(metadataCollection);
-      this.model.meta.setLoading(false);
     } catch (error) {
       // TODO SENTRY
       this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+    } finally {
+      this.model.meta.setLoading(false);
     }
   }
 
   private fetchTokenMetadata = async (tokenId: string) => {
-    const uri = await this.contractClient.getMetadataTokenUri(tokenId);
+    const uri = await this.contractClient.getMetadataUri(tokenId);
     const metadataCid = uri.replace("ipfs://", "").split("/")[0];
 
     return await this.getMetadataFromIpfs(metadataCid);
   }
 
-  private mintNFT = async (metadataCid: string, clipId: string, walletAddress: string, signature: Signature) => {
-    if (metadataCid && clipId) {
+  private mintNFT = async (data: { tokenURI: string, metadataURI: string, contentHash: BytesLike, metadataHash: BytesLike }, clipId: string, signature: Signature) => {
+    // TODO for now just set some default bidshares
+    const defaultBidshares = {
+      creator: Decimal.from(5),
+      owner: Decimal.from(95),
+      prevOwner: Decimal.from(0),
+    }
 
-      try {
-        const tx = await this.contractClient.mint(walletAddress, metadataCid, signature.v, signature.r, signature.s);
-        console.log("[LOG]:minting NFT in tx", tx.hash);
+    try {
+      const tx = await this.contractClient.mint(data, defaultBidshares, signature);
+      console.log("[LOG]:minting NFT in tx", tx.hash);
 
-        const receipt = await tx.wait();
-        console.log("[LOG]:mint:done! gas used to mint:", receipt.gasUsed.toString());
-      } catch (error) {
-        console.log("[LOG]:mint:error", error);
+      this.model.setWaitForTransaction();
 
-        if (isRpcError(error)) {
-          switch (error.code) {
-            case RpcErrors.USER_REJECTED_REQUEST:
-              this.snackbarClient.sendError(NftErrors.MINT_REJECTED);
-              // redirect to Clip, since we have the clip metadata, we'd otherwise display the IPFS Clip
-              // TODO this can definitely be improved
-              location.replace(`${location.origin}/clips/${clipId}`);
+      const receipt = await tx.wait();
+      console.log("[LOG]:mint:done! gas used to mint:", receipt.gasUsed.toString());
+    } catch (error) {
+      console.log("[LOG]:mint:error", error);
 
-              break;
-            case RpcErrors.INTERNAL_ERROR:
-              // contract errors / reverts
-              if ((error.data?.message as string).includes("token already minted")) {
-                this.snackbarClient.sendError(ContractErrors.TOKEN_ALREADY_MINTED);
-              } else if ((error.data?.message as string).includes("not allowed to mint")) {
-                this.snackbarClient.sendError(ContractErrors.ADDRESS_NOT_ALLOWED);
-              }
-              break;
-            default:
-              // SENTRY
-              this.snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
-              break;
-          }
-          return;
-        } else {
-          // SENTRY
-          // unknown error
-          this.model.meta.setError(NftErrors.FAILED_TO_MINT);
+      if (isRpcError(error)) {
+        // clean the loading screen
+        this.model.stopMintLoader();
+
+        // TODO double check these error codes with spec & errors that we get from contract
+        switch (error.code) {
+          case RpcErrors.USER_REJECTED_REQUEST:
+            this.snackbarClient.sendError(NftErrors.MINT_REJECTED);
+            // redirect to Clip, since we have the clip metadata, we'd otherwise display the IPFS Clip
+            // TODO this can definitely be improved
+            location.replace(`${location.origin}/clips/${clipId}`);
+
+            break;
+          case RpcErrors.INTERNAL_ERROR:
+            // contract errors / reverts
+            if (error.message.includes("token already minted") || error.message.includes("token has already been created with this content hash")) {
+              this.snackbarClient.sendError(ContractErrors.TOKEN_ALREADY_MINTED);
+            } else if ((error.data?.message as string).includes("not allowed to mint")) {
+              this.snackbarClient.sendError(ContractErrors.ADDRESS_NOT_ALLOWED);
+            }
+            break;
+          default:
+            // SENTRY
+            this.snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
+            break;
         }
+        return;
+      } else {
+        // SENTRY
+        // unknown error
+        this.model.meta.setError(NftErrors.FAILED_TO_MINT);
       }
-    } else {
-      console.log("[LOG]:mint:missing metadataCid when minting", metadataCid, clipId);
-      this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     }
   }
 
