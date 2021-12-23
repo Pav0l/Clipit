@@ -30,7 +30,6 @@ interface Props {
     eth: EthereumModel;
   };
   operations: IAppController;
-  snackbar: SnackbarClient;
 }
 
 const useStyles = makeStyles(() => ({
@@ -51,7 +50,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-function ClipDetailContainer({ model, operations, snackbar }: Props) {
+function ClipDetailContainer({ model, operations }: Props) {
   const { clipId } = useParams<{ clipId: string }>();
   const [isDisabled, setDisabled] = useState(false);
 
@@ -186,71 +185,3 @@ function ClipDetailContainer({ model, operations, snackbar }: Props) {
 }
 
 export default observer(ClipDetailContainer);
-
-/**
-
- 
-  const createTokenSale = async (event: React.MouseEvent) => {
-    event.preventDefault();
-
-    const expirationTime = Math.round(Date.now() / 1000 + 60 * 60 * 24);
-    console.log("creating order for token", tokenId);
-    const listing = await seaport.createSellOrder({
-      asset: {
-        tokenAddress: contractAddress,
-        tokenId: tokenId
-      },
-      accountAddress: await signer.getAddress(),
-      startAmount: 1,
-      expirationTime
-    });
-
-    console.log("order created", listing);
-  };
-
-    if (model.clip.meta.isLoading) {
-    return (
-      <Box className="container">
-        <Typography variant="h6" align="center" className="typography">
-          Generating your NFT. This may take a moment...
-        </Typography>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  
-  if (clipCid && model.nftd) {
-    return (
-      <Box className="container">
-        <Typography variant="h4" align="center" className="typography">
-          Congrats! Your clip is now an NFT 🎉🎉🎉
-        </Typography>
-        <Typography variant="h6" align="center">
-          Your clip is now stored on IPFS under {clipCid}
-        </Typography>
-        <Typography variant="h6" align="center">
-          And then minted into unique NFT, which you can trade with your fans.
-        </Typography>
-
-        <ClipCard cid={clipCid}></ClipCard>
-
-        <Button
-          variant="contained"
-          color="primary"
-          className="button"
-          disabled={isBtnDisabled}
-          onClick={(ev) => createTokenSale(ev)}
-        >
-          Put up for sale
-        </Button>
-        <Link to="/clips">
-          <Button variant="contained" color="primary" className="button">
-            Your NFT clips
-          </Button>
-        </Link>
-      </Box>
-    );
-  }
-
- */

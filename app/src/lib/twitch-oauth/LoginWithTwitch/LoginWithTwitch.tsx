@@ -1,4 +1,5 @@
 import { Button, makeStyles } from "@material-ui/core";
+import { observer } from "mobx-react-lite";
 import { OAuthController } from "../oauth.controller";
 import { OAuthModel } from "../oauth.model";
 
@@ -27,7 +28,7 @@ function LoginWithTwitch({ model, operations }: Props) {
   );
 }
 
-export default LoginWithTwitch;
+export default observer(LoginWithTwitch);
 
 const useStyles = makeStyles(() => ({
   button: {

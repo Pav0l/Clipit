@@ -33,7 +33,9 @@ export class TwitchGame {
   }
 }
 
+// https://dev.twitch.tv/docs/api/reference#get-games
 interface ITwitchGame {
   id?: string;
   name?: string;
+  box_art_url?: string;
 }

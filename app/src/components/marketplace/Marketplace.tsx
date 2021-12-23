@@ -4,7 +4,9 @@ import { observer } from "mobx-react-lite";
 function Marketplace() {
   const classes = useStyles();
 
-  return <div className={classes.frame}>Marketplace / Auction house </div>;
+  return (
+    <div className={classes.frame}>TODO: Marketplace / Auction house </div>
+  );
 }
 
 export default observer(Marketplace);

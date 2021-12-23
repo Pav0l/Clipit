@@ -31,7 +31,7 @@ import OAuthProtectedRoute from "./lib/twitch-oauth/OAuthProtected/OAuthProtecte
 async function initializeApp() {
   const model = new AppModel();
   const app = new AppController(
-    new AppModel(),
+    model,
     snackbarClient,
     new ClipItApiClient(new HttpClient(clipItUri)),
     twitchApiClient,
@@ -123,7 +123,6 @@ async function initializeApp() {
                       eth: model.eth
                     }}
                     operations={operations}
-                    snackbar={snackbarClient}
                   />
                 </ErrorBoundary>
               </OAuthProtectedRoute>

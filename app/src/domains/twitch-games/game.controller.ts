@@ -21,6 +21,7 @@ export class GameController {
   }
 
   getGamesForClips = async (gameIds: string[]) => {
+    // TODO throttle these, so we don't hit rate limits on users with many "variety" clips
     for (const gameId of gameIds) {
       // do not fetch gameIds for games we already know
       if (!this.model.games[gameId]) {
