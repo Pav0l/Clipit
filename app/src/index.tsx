@@ -6,8 +6,7 @@ import { toJS } from "mobx";
 import "./index.css";
 import { AppRoute, clipItUri, cloudFlareGatewayUri } from "./lib/constants";
 import { IpfsClient } from "./lib/ipfs/ipfs.client";
-import { appModel } from "./domains/app/app.model";
-import { StoreProvider } from "./components/storeProvider/StoreProvider";
+import { AppModel } from "./domains/app/app.model";
 import { AppController } from "./domains/app/app.controller";
 import NftContainer from "./domains/nfts/NftContainer";
 import NftsContainer from "./domains/nfts/NftsContainer";
@@ -30,8 +29,9 @@ import { LocalStorage } from "./lib/local-storage";
 import OAuthProtectedRoute from "./lib/twitch-oauth/OAuthProtected/OAuthProtectedRoute";
 
 async function initializeApp() {
+  const model = new AppModel();
   const app = new AppController(
-    appModel,
+    new AppModel(),
     snackbarClient,
     new ClipItApiClient(new HttpClient(clipItUri)),
     twitchApiClient,
@@ -39,12 +39,8 @@ async function initializeApp() {
     new LocalStorage()
   );
 
-  return { model: appModel, operations: app };
+  return { model, operations: app };
 }
-
-window.getModel = () => {
-  return toJS(appModel);
-};
 
 (async () => {
   try {
@@ -54,106 +50,104 @@ window.getModel = () => {
 
     ReactDOM.render(
       <React.StrictMode>
-        <StoreProvider>
-          <ThemeProvider theme={defaultTheme}>
-            <Router basename="/">
-              <Navbar
-                model={{ eth: model.eth, auth: model.auth }}
-                operations={operations}
-                snackbar={snackbarClient}
-              />
+        <ThemeProvider theme={defaultTheme}>
+          <Router basename="/">
+            <Navbar
+              model={{ eth: model.eth, auth: model.auth }}
+              operations={operations}
+              snackbar={snackbarClient}
+            />
 
-              <Snackbar model={{ snackbar: model.snackbar }} />
+            <Snackbar model={{ snackbar: model.snackbar }} />
 
-              <Switch>
-                <Route exact path={AppRoute.MARKETPLACE}>
-                  <Marketplace />
-                </Route>
-                <OAuthProtectedRoute
-                  exact
-                  path={AppRoute.NFTS}
-                  model={{ auth: model.auth }}
-                  operations={{ auth: operations.auth }}
-                >
-                  <NftsContainer
-                    model={{ nft: model.nft }}
-                    operations={operations}
-                  />
-                </OAuthProtectedRoute>
-                <OAuthProtectedRoute
-                  exact
-                  path={AppRoute.NFT}
-                  model={{ auth: model.auth }}
-                  operations={{ auth: operations.auth }}
-                >
-                  <NftContainer
-                    model={{ nft: model.nft }}
-                    operations={operations}
-                  />
-                </OAuthProtectedRoute>
-                <OAuthProtectedRoute
-                  exact
-                  path={AppRoute.CLIPS}
-                  model={{ auth: model.auth }}
-                  operations={{ auth: operations.auth }}
-                >
-                  <ErrorBoundary>
-                    <ClipsContainer
-                      model={{
-                        clip: model.clip,
-                        user: model.user,
-                        game: model.game
-                      }}
-                      operations={{
-                        clip: operations.clip,
-                        game: operations.game,
-                        user: operations.user
-                      }}
-                    />
-                  </ErrorBoundary>
-                </OAuthProtectedRoute>
-                <OAuthProtectedRoute
-                  exact
-                  path={AppRoute.CLIP}
-                  model={{ auth: model.auth }}
-                  operations={{ auth: operations.auth }}
-                >
-                  <ErrorBoundary>
-                    <ClipDetailContainer
-                      model={{
-                        clip: model.clip,
-                        user: model.user,
-                        game: model.game,
-                        nft: model.nft,
-                        eth: model.eth
-                      }}
-                      operations={operations}
-                      snackbar={snackbarClient}
-                    />
-                  </ErrorBoundary>
-                </OAuthProtectedRoute>
-                <Route exact path={AppRoute.OAUTH_REDIRECT}>
-                  <OAuth2Redirect operations={operations.auth} />
-                </Route>
-                <Route exact path={AppRoute.ABOUT}>
-                  <Playground
+            <Switch>
+              <Route exact path={AppRoute.MARKETPLACE}>
+                <Marketplace />
+              </Route>
+              <OAuthProtectedRoute
+                exact
+                path={AppRoute.NFTS}
+                model={{ auth: model.auth }}
+                operations={{ auth: operations.auth }}
+              >
+                <NftsContainer
+                  model={{ nft: model.nft }}
+                  operations={operations}
+                />
+              </OAuthProtectedRoute>
+              <OAuthProtectedRoute
+                exact
+                path={AppRoute.NFT}
+                model={{ auth: model.auth }}
+                operations={{ auth: operations.auth }}
+              >
+                <NftContainer
+                  model={{ nft: model.nft }}
+                  operations={operations}
+                />
+              </OAuthProtectedRoute>
+              <OAuthProtectedRoute
+                exact
+                path={AppRoute.CLIPS}
+                model={{ auth: model.auth }}
+                operations={{ auth: operations.auth }}
+              >
+                <ErrorBoundary>
+                  <ClipsContainer
                     model={{
-                      nft: model.nft
+                      clip: model.clip,
+                      user: model.user,
+                      game: model.game
+                    }}
+                    operations={{
+                      clip: operations.clip,
+                      game: operations.game,
+                      user: operations.user
+                    }}
+                  />
+                </ErrorBoundary>
+              </OAuthProtectedRoute>
+              <OAuthProtectedRoute
+                exact
+                path={AppRoute.CLIP}
+                model={{ auth: model.auth }}
+                operations={{ auth: operations.auth }}
+              >
+                <ErrorBoundary>
+                  <ClipDetailContainer
+                    model={{
+                      clip: model.clip,
+                      user: model.user,
+                      game: model.game,
+                      nft: model.nft,
+                      eth: model.eth
                     }}
                     operations={operations}
                     snackbar={snackbarClient}
                   />
-                </Route>
-                <Route path={AppRoute.HOME}>
-                  <Home
-                    model={{ clip: model.clip }}
-                    operations={{ clip: operations.clip }}
-                  />
-                </Route>
-              </Switch>
-            </Router>
-          </ThemeProvider>
-        </StoreProvider>
+                </ErrorBoundary>
+              </OAuthProtectedRoute>
+              <Route exact path={AppRoute.OAUTH_REDIRECT}>
+                <OAuth2Redirect operations={operations.auth} />
+              </Route>
+              <Route exact path={AppRoute.ABOUT}>
+                <Playground
+                  model={{
+                    nft: model.nft
+                  }}
+                  operations={operations}
+                  snackbar={snackbarClient}
+                />
+              </Route>
+              <Route path={AppRoute.HOME}>
+                <Home
+                  model={{ clip: model.clip }}
+                  operations={{ clip: operations.clip }}
+                />
+              </Route>
+            </Switch>
+          </Router>
+        </ThemeProvider>
       </React.StrictMode>,
       document.getElementById("root")
     );

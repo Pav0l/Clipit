@@ -9,7 +9,7 @@ import { OAuthModel } from "../../lib/twitch-oauth/oauth.model";
 import { EthereumModel } from "../../lib/ethereum/ethereum.model";
 
 
-export interface AppModel {
+export interface IAppModel {
   clip: ClipModel;
   user: UserModel;
   game: GameModel;
@@ -23,7 +23,7 @@ export interface AppModel {
 
 }
 
-class Model implements AppModel {
+export class AppModel implements IAppModel {
   clip: ClipModel;
   user: UserModel;
   game: GameModel;
@@ -48,5 +48,3 @@ class Model implements AppModel {
     this.testStore = new TestStore();
   }
 }
-
-export const appModel = new Model();
