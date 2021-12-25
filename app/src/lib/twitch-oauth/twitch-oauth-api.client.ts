@@ -1,5 +1,5 @@
-import { HttpClient } from "../http-client";
-import { twitchAppClientId } from "../constants";
+import { HttpClient } from "../http-client/http-client";
+import { twitchAppClientId, twitchOAuthUri } from "../constants";
 
 
 class TwitchOAuthApiClient {
@@ -34,4 +34,4 @@ class TwitchOAuthApiClient {
 /**
  * unused
  */
-export const twitchOauthClient = new TwitchOAuthApiClient(new HttpClient("https://id.twitch.tv"));
+export const twitchOauthClient = new TwitchOAuthApiClient(new HttpClient(twitchOAuthUri));

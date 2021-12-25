@@ -19,7 +19,6 @@ import { MetaMaskErrors } from "../../lib/ethereum/ethereum.model";
 import { NftErrors } from "../nfts/nft.errors";
 
 
-
 export interface IAppController {
   nft?: NftController;
   clip: ClipController;
@@ -84,7 +83,6 @@ export class AppController implements IAppController {
   }
 
   async requestConnectAndGetTokensMetadata() {
-    console.log('requestConnectAndGetTokensMetadata', this.model.eth.isProviderConnected())
     await this.initNftRoutes();
 
     if (!this.model.eth.accounts || !this.model.eth.accounts[0]) {
@@ -95,8 +93,6 @@ export class AppController implements IAppController {
   }
 
   async requestConnectAndGetTokenMetadata(tokenId: string) {
-    console.log('requestConnectAndGetTokenMetadata', this.model.eth.isProviderConnected())
-
     await this.initNftRoutes();
     this.nft!.getTokenMetadata(tokenId);
   }
@@ -227,7 +223,7 @@ export class AppController implements IAppController {
         ) => {
           console.log(`[TRANSFER](initContractIfNotExist) from ${from} to ${to} for ${tokenId}`);
 
-          // TODO refactor this ugliness
+          // TODO should check if tokenId is different than one in pathname
           if (location.pathname.includes('/nfts/')) {
             console.log('multiple TRANSFER handler calls')
             return;
@@ -257,8 +253,6 @@ export class AppController implements IAppController {
    * that's why we're instantiating it only just when we need it
    */
   private createNftCtrlIfNotExist(contract: ContractClient) {
-    // TODO remove log
-    console.log('createNftCtrlIfNotExist:', Boolean(!this.nft));
     if (!this.nft) {
       this.nft = new NftController(
         this.model.nft,

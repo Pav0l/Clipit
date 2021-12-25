@@ -1,4 +1,5 @@
-import { HttpClient, RawResponse } from "../http-client";
+import { twitchApiUri } from "../constants";
+import { HttpClient, RawResponse } from "../http-client/http-client";
 import { requestFulfilledInterceptor, responseFulfilledInterceptor } from "./twitch-api.utils";
 
 export interface TwitchApiClient {
@@ -52,7 +53,7 @@ class TwitchApi implements TwitchApiClient {
 }
 
 
-export const twitchApiClient = new TwitchApi(new HttpClient("https://api.twitch.tv/helix", {
+export const twitchApiClient = new TwitchApi(new HttpClient(twitchApiUri, {
   request: { onFulfilled: requestFulfilledInterceptor },
   response: { onFulfilled: responseFulfilledInterceptor }
 }));

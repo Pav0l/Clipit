@@ -48,8 +48,9 @@ function Home({ model, operations }: Props) {
         </Typography>
         <Typography variant="h4" className={classes.description}>
           {/* Show off your great moments by generating immutable NFTs stored on distributed file system */}
+          {/* Convert your greatest moments to unique digital collectibles for your fans to collect */}
           Convert your greatest moments to unique digital collectibles for your
-          fans to collect
+          fans
         </Typography>
         <TextField
           id="clip_url_input"

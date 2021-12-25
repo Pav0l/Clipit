@@ -21,7 +21,7 @@ import Navbar from "./components/navbar/Navbar";
 import ErrorBoundary from "./components/error/ErrorBoundry";
 import Playground from "./domains/playground/Playground";
 import { ClipItApiClient } from "./lib/clipit-api/clipit-api.client";
-import { HttpClient } from "./lib/http-client";
+import { HttpClient } from "./lib/http-client/http-client";
 import { twitchApiClient } from "./lib/twitch-api/twitch-api.client";
 import ThemeProvider from "./components/themeProvider/ThemeProvider";
 import { defaultTheme } from "./components/themeProvider/theme";

@@ -19,8 +19,11 @@ export const ipfsIoGatewayUri = "https://ipfs.io/ipfs";
 
 // TWITCH
 export const twitchAppClientId = "0japyt7fgxgarzd4oadqk8bb2orf0f";
+export const twitchApiUri = "https://api.twitch.tv/helix";
 export const twitchAccessToken = "twitch_auth_access_token";
 export const twitchSecretKey = "twitch_auth_state_secret";
+export const twitchOAuthUri = "https://id.twitch.tv";
+export const twitchScopes = "user:read:email user:read:follows user:read:subscriptions"; // clips:edit 
 
 // APP
 export enum AppRoute {

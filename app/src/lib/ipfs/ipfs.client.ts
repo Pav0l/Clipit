@@ -1,4 +1,4 @@
-import { HttpClient } from "../http-client";
+import { HttpClient } from "../http-client/http-client";
 import { cloudFlareGatewayUri } from "../constants";
 
 // TODO export interface instead?

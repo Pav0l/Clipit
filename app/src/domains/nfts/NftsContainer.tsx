@@ -26,6 +26,7 @@ function NftsContainer({ model, operations }: Props) {
     operations.requestConnectAndGetTokensMetadata();
   }, []);
 
+  // TODO MM not installed should be a custom error
   // MetaMask not installed
   if (model.nft.meta.hasError) {
     // TODO add onboarding and retry handler button to error msg
