@@ -1,5 +1,6 @@
 import { BytesLike } from "ethers";
 import { HttpClient, RawResponse } from "../http-client/http-client";
+// TODO this should not be here
 import { getAccessToken, getTwitchOAuth2AuthorizeUrl } from "../twitch-oauth/twitch-oauth.public.api";
 
 export class ClipItApiClient {

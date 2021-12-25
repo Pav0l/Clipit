@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { NftModel } from "./nft.model";
 import { NftCard } from "../../components/nfts/NftCard";
 import FullPageLoader from "../../components/loader/FullPageLoader";
-import { IAppController } from "../app/app.controller";
+import { IWeb3Controller } from "../app/app.controller";
 import { Link } from "react-router-dom";
 import { AppRoute } from "../../lib/constants";
 import ErrorWithRetry from "../../components/error/Error";
@@ -16,7 +16,7 @@ interface Props {
   model: {
     nft: NftModel;
   };
-  operations: IAppController;
+  operations: IWeb3Controller;
 }
 
 function NftsContainer({ model, operations }: Props) {

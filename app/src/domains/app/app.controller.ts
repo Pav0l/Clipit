@@ -5,27 +5,18 @@ import type { ClipItApiClient } from "../../lib/clipit-api/clipit-api.client";
 import ContractClient from "../../lib/contract/contract.client";
 import { IpfsClient } from "../../lib/ipfs/ipfs.client";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
-import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client";
 import { EthereumProvider } from "../../lib/ethereum/ethereum.types";
-import { AppModel } from "./app.model";
 import { NftController } from "../nfts/nft.controller";
-import { ClipController } from "../twitch-clips/clip.controller";
-import { GameController } from "../twitch-games/game.controller";
-import { UserController } from "../twitch-user/user.controller";
-import { OAuthController } from "../../lib/twitch-oauth/oauth.controller";
-import { ILocalStorage } from "../../lib/local-storage";
 import EthereumController from "../../lib/ethereum/ethereum.controller";
-import { MetaMaskErrors } from "../../lib/ethereum/ethereum.model";
+import { EthereumModel, MetaMaskErrors } from "../../lib/ethereum/ethereum.model";
 import { NftErrors } from "../nfts/nft.errors";
+import { NftModel } from "../nfts/nft.model";
 
 
-export interface IAppController {
+export interface IWeb3Controller {
   nft?: NftController;
-  clip: ClipController;
-  game: GameController;
-  user: UserController;
-  auth: OAuthController;
   eth?: EthereumController;
+  contract?: ContractClient;
 
   connectMetaMaskIfNecessaryForConnectBtn: () => Promise<void>;
   requestConnectAndGetTokensMetadata: () => Promise<void>;
@@ -34,46 +25,36 @@ export interface IAppController {
 }
 
 
-export class AppController implements IAppController {
+export class Web3Controller implements IWeb3Controller {
   nft?: NftController;
-  clip: ClipController;
-  game: GameController;
-  user: UserController;
-  auth: OAuthController;
-
   eth?: EthereumController;
   contract?: ContractClient;
 
   constructor(
-    private model: AppModel,
+    private ethModel: EthereumModel,
+    private nftModel: NftModel,
     private snackbar: SnackbarClient,
     private clipitApi: ClipItApiClient,
-    private twitchApi: TwitchApiClient,
     private ipfsApi: IpfsClient,
-    private storage: ILocalStorage,
   ) {
-    this.auth = new OAuthController(model.auth, this.storage);
-    this.auth.checkTokenInStorage();
-    this.clip = new ClipController(model.clip, this.snackbar, this.twitchApi);
-    this.game = new GameController(model.game, this.twitchApi);
-    this.user = new UserController(model.user, this.twitchApi);
+
   }
 
   async connectMetaMaskIfNecessaryForConnectBtn() {
-    console.log('[app.controller]:connectMetaMaskIfNecessaryForConnectBtn', this.model.eth.isMetaMaskInstalled(), this.model.eth.isProviderConnected());
+    console.log('[app.controller]:connectMetaMaskIfNecessaryForConnectBtn', this.ethModel.isMetaMaskInstalled(), this.ethModel.isProviderConnected());
 
-    if (!this.model.eth.isMetaMaskInstalled()) {
+    if (!this.ethModel.isMetaMaskInstalled()) {
       // if MM is not installed, do nothing. the button will prompt for installation
       return;
     }
 
     // MM connected -> nothing to do
-    if (this.model.eth.isProviderConnected()) {
+    if (this.ethModel.isProviderConnected()) {
       return;
     }
 
     try {
-      this.eth = new EthereumController(this.model.eth, window.ethereum as EthereumProvider, this.snackbar);
+      this.eth = new EthereumController(this.ethModel, window.ethereum as EthereumProvider, this.snackbar);
       await this.eth.ethAccounts();
     } catch (error) {
       // TODO Sentry - this should not happen
@@ -85,11 +66,11 @@ export class AppController implements IAppController {
   async requestConnectAndGetTokensMetadata() {
     await this.initNftRoutes();
 
-    if (!this.model.eth.accounts || !this.model.eth.accounts[0]) {
-      this.model.eth.meta.setError(MetaMaskErrors.CONNECT_METAMASK);
+    if (!this.ethModel.accounts || !this.ethModel.accounts[0]) {
+      this.ethModel.meta.setError(MetaMaskErrors.CONNECT_METAMASK);
       return;
     }
-    this.nft!.getCurrentSignerTokensMetadata(this.model.eth.accounts[0]);
+    this.nft!.getCurrentSignerTokensMetadata(this.ethModel.accounts[0]);
   }
 
   async requestConnectAndGetTokenMetadata(tokenId: string) {
@@ -99,14 +80,14 @@ export class AppController implements IAppController {
 
   async requestConnectAndMint(clipId: string) {
     try {
-      if (!this.model.eth.isMetaMaskInstalled()) {
+      if (!this.ethModel.isMetaMaskInstalled()) {
         this.snackbar.sendInfo(MetaMaskErrors.INSTALL_METAMASK);
         return;
       }
 
-      if (!this.model.eth.isProviderConnected()) {
+      if (!this.ethModel.isProviderConnected()) {
         this.eth = new EthereumController(
-          this.model.eth,
+          this.ethModel,
           window.ethereum as EthereumProvider,
           this.snackbar
         );
@@ -115,7 +96,7 @@ export class AppController implements IAppController {
         await this.eth.requestAccounts();
       }
 
-      this.initContractIfNotExist(this.model.eth.signer);
+      this.initContractIfNotExist(this.ethModel.signer);
       if (!this.contract) {
         // TODO track in sentry, this should not happen
         this.snackbar.sendError(NftErrors.SOMETHING_WENT_WRONG);
@@ -128,7 +109,7 @@ export class AppController implements IAppController {
         return;
       }
 
-      if (!this.model.eth.accounts || !this.model.eth.accounts[0]) {
+      if (!this.ethModel.accounts || !this.ethModel.accounts[0]) {
         // TODO track in sentry, this should not happen
         this.snackbar.sendError(NftErrors.SOMETHING_WENT_WRONG);
         return;
@@ -136,7 +117,7 @@ export class AppController implements IAppController {
 
       await this.nft.prepareMetadataAndMintClip(
         clipId,
-        this.model.eth.accounts[0]
+        this.ethModel.accounts[0]
       );
     } catch (error) {
       // TODO sentry
@@ -150,15 +131,15 @@ export class AppController implements IAppController {
 
   private async initNftRoutes() {
     // can't display this page if MM not installed
-    if (!this.model.eth.isMetaMaskInstalled()) {
-      this.model.nft.meta.setError(MetaMaskErrors.INSTALL_METAMASK);
+    if (!this.ethModel.isMetaMaskInstalled()) {
+      this.nftModel.meta.setError(MetaMaskErrors.INSTALL_METAMASK);
       return;
     }
 
     // MM not yet connected
-    if (!this.model.eth.isProviderConnected()) {
+    if (!this.ethModel.isProviderConnected()) {
       try {
-        this.eth = new EthereumController(this.model.eth, window.ethereum as EthereumProvider, this.snackbar);
+        this.eth = new EthereumController(this.ethModel, window.ethereum as EthereumProvider, this.snackbar);
         await this.eth.requestAccounts();
       } catch (error) {
         // should not happen
@@ -167,16 +148,16 @@ export class AppController implements IAppController {
       }
     }
 
-    if (!this.model.eth.signer) {
+    if (!this.ethModel.signer) {
       // TODO sentry this should not happen
-      this.model.eth.meta.setError(MetaMaskErrors.SOMETHING_WENT_WRONG);
+      this.ethModel.meta.setError(MetaMaskErrors.SOMETHING_WENT_WRONG);
       return;
     }
 
-    this.initContractIfNotExist(this.model.eth.signer);
+    this.initContractIfNotExist(this.ethModel.signer);
     if (!this.contract) {
       // TODO sentry this should not happen
-      this.model.eth.meta.setError(MetaMaskErrors.SOMETHING_WENT_WRONG);
+      this.ethModel.meta.setError(MetaMaskErrors.SOMETHING_WENT_WRONG);
       return;
     }
 
@@ -229,14 +210,14 @@ export class AppController implements IAppController {
             return;
           }
 
-          this.model.nft.stopMintLoader();
+          this.nftModel.stopMintLoader();
 
           const tId = tokenId?.toString()
 
-          this.model.nft.setTokenId(tId);
+          this.nftModel.setTokenId(tId);
           if (tId) {
             console.log("tokenId from mint -> redirecting", tokenId);
-            this.model.nft.setTokenId(undefined);
+            this.nftModel.setTokenId(undefined);
             location.replace(location.origin + `/nfts/${tokenId}`);
           }
         }
@@ -255,7 +236,7 @@ export class AppController implements IAppController {
   private createNftCtrlIfNotExist(contract: ContractClient) {
     if (!this.nft) {
       this.nft = new NftController(
-        this.model.nft,
+        this.nftModel,
         this.snackbar,
         this.clipitApi,
         this.ipfsApi,

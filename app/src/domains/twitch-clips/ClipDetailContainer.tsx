@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import {
   Card,
@@ -11,15 +11,16 @@ import {
 } from "@material-ui/core";
 import ErrorWithRetry from "../../components/error/Error";
 
-import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 import { ClipModel } from "./clip.model";
 import { UserModel } from "../twitch-user/user.model";
 import { GameModel } from "../twitch-games/game.model";
 import { NftModel } from "../nfts/nft.model";
-import { IAppController } from "../app/app.controller";
+import { IWeb3Controller } from "../app/app.controller";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import LinearLoader from "../../components/loader/LinearLoader";
-import { EthereumModel } from "../../lib/ethereum/ethereum.model";
+import { UserController } from "../twitch-user/user.controller";
+import { ClipController } from "./clip.controller";
+import { GameController } from "../twitch-games/game.controller";
 
 interface Props {
   model: {
@@ -27,9 +28,13 @@ interface Props {
     user: UserModel;
     game: GameModel;
     nft: NftModel;
-    eth: EthereumModel;
   };
-  operations: IAppController;
+  operations: {
+    web3: IWeb3Controller;
+    user: UserController;
+    clip: ClipController;
+    game: GameController;
+  };
 }
 
 const useStyles = makeStyles(() => ({
@@ -83,7 +88,7 @@ function ClipDetailContainer({ model, operations }: Props) {
       // TODO hardcoded user Id
       (model.user.id === "30094526" || clip.broadcasterId === model.user.id)
     ) {
-      await operations.requestConnectAndMint(clip.id);
+      await operations.web3.requestConnectAndMint(clip.id);
 
       setDisabled(false);
     }

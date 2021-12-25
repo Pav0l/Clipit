@@ -1,6 +1,4 @@
-import { twitchApiUri } from "../constants";
 import { HttpClient, RawResponse } from "../http-client/http-client";
-import { requestFulfilledInterceptor, responseFulfilledInterceptor } from "./twitch-api.utils";
 
 export interface TwitchApiClient {
   getUsers: () => Promise<RawResponse<{ data: TwitchUserResp[] } | TwitchError>>;
@@ -10,7 +8,7 @@ export interface TwitchApiClient {
 }
 
 
-class TwitchApi implements TwitchApiClient {
+export class TwitchApi implements TwitchApiClient {
 
   constructor(private httpClient: HttpClient) { }
 
@@ -52,15 +50,6 @@ class TwitchApi implements TwitchApiClient {
   }
 }
 
-
-export const twitchApiClient = new TwitchApi(new HttpClient(twitchApiUri, {
-  request: { onFulfilled: requestFulfilledInterceptor },
-  response: { onFulfilled: responseFulfilledInterceptor }
-}));
-
-export function isTwitchError<T>(body: T | TwitchError): body is TwitchError {
-  return (body as TwitchError).error !== undefined;
-}
 
 interface TwitchError {
   error: string;

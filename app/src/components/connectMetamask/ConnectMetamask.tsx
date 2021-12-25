@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { useState, useRef, useEffect } from "react";
 
 import { EthereumModel } from "../../lib/ethereum/ethereum.model";
-import { IAppController } from "../../domains/app/app.controller";
+import { IWeb3Controller } from "../../domains/app/app.controller";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 
 import MetamaskIcon from "../../assets/metamask.svg";
@@ -17,7 +17,7 @@ interface Props {
   model: {
     eth: EthereumModel;
   };
-  operations: IAppController;
+  operations: IWeb3Controller;
   snackbar: SnackbarClient;
 }
 

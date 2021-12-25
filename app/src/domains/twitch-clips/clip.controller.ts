@@ -1,9 +1,13 @@
-// TODO consider this import - maybe it should be here in ctrl (find out when wrinting tests)
-import { getSlugFromUrl } from "./twitch-clips.utils";
 import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client"
 import { ClipModel } from "./clip.model";
 import { TwitchClipsErrors } from "./twitch-clips.errors";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
+
+const clipPatterns = [
+  // /^([A-Za-z0-9]+(?:-[A-Za-z0-9_-]{16})?)$/,
+  /^https:\/\/clips.twitch.tv\/([A-Za-z0-9]+(?:-[A-Za-z0-9_-]{16})?)(\?.+)?$/,
+  /^https:\/\/(www.)?twitch.tv\/\w+\/clip\/([A-Za-z0-9]+(?:-[A-Za-z0-9_-]{16})?)(\?.+)?$/,
+];
 
 
 export class ClipController {
@@ -49,13 +53,41 @@ export class ClipController {
   }
 
   validateClipUrl = (url: string) => {
-    const clipId = getSlugFromUrl(url);
+    const clipId = this.getSlugFromUrl(url);
 
     if (!clipId) {
       this.snackbar.sendError(TwitchClipsErrors.INVALID_CLIP_URL);
       return "";
     }
     return clipId;
+  }
+
+  private getSlugFromUrl = (url: string): string | undefined => {
+    let match;
+    for (const pattern of clipPatterns) {
+      const matchArr = url.match(pattern);
+      if (matchArr) {
+        match = matchArr;
+        break;
+      }
+    }
+
+    const pathnameMatch = this.parseClipSlugFromPath(url);
+    const confirmedMatch = match?.find((regexpMatch) => regexpMatch === pathnameMatch);
+
+    return confirmedMatch;
+  }
+
+  private parseClipSlugFromPath = (url: string) => {
+    let slug;
+    try {
+      const u = new URL(url);
+      const paths = u.pathname.split("/");
+      slug = paths[paths.length - 1];
+    } catch (error) {
+      // in case the input is not valid url
+    }
+    return slug;
   }
 
 }

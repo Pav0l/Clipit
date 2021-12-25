@@ -1,7 +1,5 @@
 import { HttpClient } from "../http-client/http-client";
-import { cloudFlareGatewayUri } from "../constants";
 
-// TODO export interface instead?
 export class IpfsClient {
 
   constructor(private httpClient: HttpClient) { }
@@ -30,5 +28,3 @@ interface MetadataAttrs {
   trait_type?: "Game" | "Streamer";
   value?: string;
 }
-
-export const ipfsClient = new IpfsClient(new HttpClient(cloudFlareGatewayUri));

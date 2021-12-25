@@ -25,16 +25,6 @@ export class HttpClient {
     }
   }
 
-  async request(params: { method: 'get' | 'post' | 'put' | 'delete', url: string, qs?: any, body?: any, headers?: any, timeout?: number }): Promise<any> {
-    const response = await this.requestRaw(params);
-
-    if (response.statusOk) {
-      return response.body;
-    }
-
-    throw new Error(`Error connecting to ${params.url}, ${response.statusCode}, ${JSON.stringify(response.body, null, 2)}`);
-  }
-
   async requestRaw<T>(params: { method: 'get' | 'post' | 'put' | 'delete', url: string, qs?: any, body?: any, headers?: any, timeout?: number }): Promise<RawResponse<T>> {
     try {
       const response = await this.client.request<T>({

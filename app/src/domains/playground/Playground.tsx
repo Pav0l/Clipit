@@ -6,13 +6,13 @@ import {
 } from "../../lib/snackbar/snackbar.client";
 import { makeStyles, Theme } from "@material-ui/core";
 import { NftModel } from "../nfts/nft.model";
-import { IAppController } from "../app/app.controller";
+import { IWeb3Controller } from "../app/app.controller";
 
 interface Props {
   model: {
     nft: NftModel;
   };
-  operations: IAppController;
+  operations: IWeb3Controller;
   snackbar: SnackbarClient;
 }
 

@@ -1,4 +1,4 @@
-import { isTwitchError, TwitchApiClient } from "../../lib/twitch-api/twitch-api.client"
+import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client"
 import { GameModel } from "./game.model";
 
 
@@ -10,7 +10,7 @@ export class GameController {
     this.model.meta.setLoading(true);
     const data = await this.twitchApi.getGames(gameId);
 
-    if (data.statusOk && !isTwitchError(data.body)) {
+    if (data.statusOk && !this.twitchApi.isTwitchError(data.body)) {
       this.model.addGame(data.body.data[0]);
     } else {
       // Don't think it's necessary to display these errors

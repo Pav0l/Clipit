@@ -8,11 +8,12 @@ import {
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { IAppController } from "../../domains/app/app.controller";
+import { IWeb3Controller } from "../../domains/app/app.controller";
 import { AppRoute } from "../../lib/constants";
 import { EthereumModel } from "../../lib/ethereum/ethereum.model";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 import LoginWithTwitch from "../../lib/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
+import { OAuthController } from "../../lib/twitch-oauth/oauth.controller";
 import { OAuthModel } from "../../lib/twitch-oauth/oauth.model";
 import ConnectMetamaskButton from "../connectMetamask/ConnectMetamask";
 
@@ -21,7 +22,10 @@ interface Props {
     eth: EthereumModel;
     auth: OAuthModel;
   };
-  operations: IAppController;
+  operations: {
+    web3: IWeb3Controller;
+    auth: OAuthController;
+  };
   snackbar: SnackbarClient;
 }
 
@@ -81,7 +85,7 @@ export default observer(function Navbar({
           />
           <ConnectMetamaskButton
             model={model}
-            operations={operations}
+            operations={operations.web3}
             snackbar={snackbar}
           />
         </div>
