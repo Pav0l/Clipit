@@ -1,8 +1,8 @@
 import { HttpClient } from "../http-client/http-client";
-import { twitchAppClientId, twitchOAuthUri } from "../constants";
+import { twitchAppClientId } from "../constants";
 
 
-class TwitchOAuthApiClient {
+export class TwitchOAuthApiClient {
 
   constructor(private httpClient: HttpClient) { }
 
@@ -30,8 +30,3 @@ class TwitchOAuthApiClient {
     console.log(resp);
   }
 }
-
-/**
- * unused
- */
-export const twitchOauthClient = new TwitchOAuthApiClient(new HttpClient(twitchOAuthUri));

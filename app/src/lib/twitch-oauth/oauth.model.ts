@@ -6,6 +6,7 @@ import { makeAutoObservable } from "mobx"
 export class OAuthModel {
 
   isLoggedIn: boolean = false;
+  referrer?: string;
 
   constructor() {
     makeAutoObservable(this);
@@ -13,5 +14,9 @@ export class OAuthModel {
 
   setLoggedIn(value: boolean) {
     this.isLoggedIn = value;
+  }
+
+  setReferrer(value: string) {
+    this.referrer = value;
   }
 }

@@ -1,4 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
+import { twitchAccessToken } from '../constants';
+import { LocalStorage } from '../local-storage';
 
 export interface RawResponse<T> {
   statusCode: number;
@@ -10,19 +12,17 @@ export class HttpClient {
   private client: AxiosInstance;
 
 
-  constructor(baseURL?: string, interceptors?: { request?: { onFulfilled?: (value: any) => any | Promise<any>, onRejected?: (error: any) => any }; response?: { onFulfilled?: (value: any) => any | Promise<any>, onRejected?: (error: any) => any } }) {
+  constructor(private ls: LocalStorage, baseURL?: string) {
     this.client = axios.create({
       baseURL
     });
+  }
 
-    if (interceptors) {
-      if (interceptors.request) {
-        this.client.interceptors.request.use(interceptors.request.onFulfilled, interceptors.request.onRejected);
-      }
-      if (interceptors.response) {
-        this.client.interceptors.response.use(interceptors.response.onFulfilled, interceptors.response.onRejected);
-      }
+  setCustomHeader(key: string, value: string) {
+    if (!this.client.defaults.headers) {
+      this.client.defaults.headers = {};
     }
+    this.client.defaults.headers[key] = value;
   }
 
   async requestRaw<T>(params: { method: 'get' | 'post' | 'put' | 'delete', url: string, qs?: any, body?: any, headers?: any, timeout?: number }): Promise<RawResponse<T>> {
@@ -54,6 +54,24 @@ export class HttpClient {
       }
     }
   }
-}
 
-export const httpClient = new HttpClient();
+  async authorizedRequest<T>(params: { method: 'get' | 'post' | 'put' | 'delete', url: string, qs?: any, body?: any, headers?: any, timeout?: number }) {
+    const token = this.ls.getItem(twitchAccessToken);
+    if (!token) {
+      return {
+        statusCode: 401,
+        statusOk: false,
+        body: null as any
+      }
+    }
+
+    if (!params.headers) {
+      params.headers = {};
+    }
+
+    params.headers['Authorization'] = `Bearer ${token}`;
+
+    return this.requestRaw<T>(params);
+  }
+
+}

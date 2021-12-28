@@ -10,10 +10,12 @@ export interface TwitchApiClient {
 
 export class TwitchApi implements TwitchApiClient {
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient, clientId: string) {
+    this.httpClient.setCustomHeader('Client-Id', clientId);
+  }
 
   getUsers = async () => {
-    return this.httpClient.requestRaw<{ data: TwitchUserResp[] } | TwitchError>({
+    return this.httpClient.authorizedRequest<{ data: TwitchUserResp[] } | TwitchError>({
       method: 'get',
       url: '/users',
     });
@@ -24,7 +26,7 @@ export class TwitchApi implements TwitchApiClient {
       queryParams.after = cursor
     }
 
-    return this.httpClient.requestRaw<{ data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError>({
+    return this.httpClient.authorizedRequest<{ data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError>({
       method: 'get',
       url: '/clips',
       qs: queryParams
@@ -38,7 +40,7 @@ export class TwitchApi implements TwitchApiClient {
       queryParams.after = cursor
     }
 
-    return this.httpClient.requestRaw<{ data: TwitchGameResp[]; pagination?: TwitchPaginationResp } | TwitchError>({
+    return this.httpClient.authorizedRequest<{ data: TwitchGameResp[]; pagination?: TwitchPaginationResp } | TwitchError>({
       method: 'get',
       url: '/games',
       qs: queryParams

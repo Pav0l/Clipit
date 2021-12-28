@@ -86,13 +86,7 @@ export class Web3Controller implements IWeb3Controller {
       }
 
       if (!this.ethModel.isProviderConnected()) {
-        this.eth = new EthereumController(
-          this.ethModel,
-          window.ethereum as EthereumProvider,
-          this.snackbar
-        );
-
-
+        this.eth = new EthereumController(this.ethModel, window.ethereum as EthereumProvider, this.snackbar);
         await this.eth.requestAccounts();
       }
 
@@ -104,8 +98,8 @@ export class Web3Controller implements IWeb3Controller {
       }
 
       this.createNftCtrlIfNotExist(this.contract);
-
       if (!this.nft) {
+        // TODO track in sentry, this should not happen
         return;
       }
 

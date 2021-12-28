@@ -7,7 +7,8 @@ import {
   AppRoute,
   clipItUri,
   cloudFlareGatewayUri,
-  twitchApiUri
+  twitchApiUri,
+  twitchAppClientId
 } from "./lib/constants";
 import { IpfsClient } from "./lib/ipfs/ipfs.client";
 import { AppModel } from "./domains/app/app.model";
@@ -35,26 +36,37 @@ import { OAuthController } from "./lib/twitch-oauth/oauth.controller";
 import { ClipController } from "./domains/twitch-clips/clip.controller";
 import { GameController } from "./domains/twitch-games/game.controller";
 import { UserController } from "./domains/twitch-user/user.controller";
-import {
-  requestFulfilledInterceptor,
-  responseFulfilledInterceptor
-} from "./lib/twitch-api/twitch-api.utils";
 
 function initSynchronous() {
   const storage = new LocalStorage();
   const model = new AppModel();
 
-  const clipItApi = new ClipItApiClient(new HttpClient(clipItUri));
+  const clipItApi = new ClipItApiClient(new HttpClient(storage, clipItUri));
+  const ipfsApi = new IpfsClient(new HttpClient(storage, cloudFlareGatewayUri));
   const twitchApi = new TwitchApi(
-    new HttpClient(twitchApiUri, {
-      // TODO replace these with async init
-      request: { onFulfilled: requestFulfilledInterceptor },
-      response: { onFulfilled: responseFulfilledInterceptor }
-    })
+    new HttpClient(storage, twitchApiUri),
+    twitchAppClientId
   );
-  const ipfsApi = new IpfsClient(new HttpClient(cloudFlareGatewayUri));
 
   const authController = new OAuthController(model.auth, storage);
+  if (location.pathname.includes(AppRoute.OAUTH_REDIRECT)) {
+    const { access_token, state } = authController.parseDataFromUrl(
+      new URL(location.href)
+    );
+
+    if (access_token) {
+      const { referrer, secret } = authController.parseDataFromState(state);
+
+      model.auth.setReferrer(referrer);
+
+      if (authController.verifyStateSecret(secret)) {
+        authController.storeTokenAndRemoveSecret(access_token);
+      } else {
+        throw new Error("invalid oauth redirect secret");
+      }
+    }
+  }
+
   const clipController = new ClipController(
     model.clip,
     snackbarClient,
@@ -62,6 +74,7 @@ function initSynchronous() {
   );
   const gameController = new GameController(model.game, twitchApi);
   const userController = new UserController(model.user, twitchApi);
+
   const web3Controller = new Web3Controller(
     model.eth,
     model.nft,
@@ -86,14 +99,12 @@ function initSynchronous() {
 
 (async () => {
   try {
-    // initialize config
-    // initialize logger
     const { model, operations } = initSynchronous();
 
     ReactDOM.render(
       <React.StrictMode>
         <ThemeProvider theme={defaultTheme}>
-          <Router basename="/">
+          <Router basename={AppRoute.HOME}>
             <Navbar
               model={{ eth: model.eth, auth: model.auth }}
               operations={{ web3: operations.web3, auth: operations.auth }}
@@ -168,7 +179,7 @@ function initSynchronous() {
                 </ErrorBoundary>
               </OAuthProtectedRoute>
               <Route exact path={AppRoute.OAUTH_REDIRECT}>
-                <OAuth2Redirect operations={operations.auth} />
+                <OAuth2Redirect referrer={model.auth.referrer} />
               </Route>
               <Route exact path={AppRoute.ABOUT}>
                 <Playground

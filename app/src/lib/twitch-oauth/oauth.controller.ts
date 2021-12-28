@@ -24,7 +24,7 @@ export class OAuthController {
     if (!fromUrl) {
       return false;
     }
-    const original = localStorage.getItem(twitchSecretKey);
+    const original = this.storage.getItem(twitchSecretKey);
     return original === fromUrl;
   }
 
@@ -56,10 +56,14 @@ export class OAuthController {
   }
 
   checkTokenInStorage() {
-    const token = this.storage.getItem(twitchAccessToken);
+    const token = this.getAccessToken();
     if (token) {
       this.model.setLoggedIn(true);
     }
+  }
+
+  getAccessToken = () => {
+    return this.storage.getItem(twitchAccessToken);
   }
 
   getTwitchOAuth2AuthorizeUrl = () => {
