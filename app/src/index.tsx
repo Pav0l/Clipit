@@ -50,21 +50,7 @@ function initSynchronous() {
 
   const authController = new OAuthController(model.auth, storage);
   if (location.pathname.includes(AppRoute.OAUTH_REDIRECT)) {
-    const { access_token, state } = authController.parseDataFromUrl(
-      new URL(location.href)
-    );
-
-    if (access_token) {
-      const { referrer, secret } = authController.parseDataFromState(state);
-
-      model.auth.setReferrer(referrer);
-
-      if (authController.verifyStateSecret(secret)) {
-        authController.storeTokenAndRemoveSecret(access_token);
-      } else {
-        throw new Error("invalid oauth redirect secret");
-      }
-    }
+    authController.handleOAuth2Redirect(new URL(location.href));
   }
 
   const clipController = new ClipController(

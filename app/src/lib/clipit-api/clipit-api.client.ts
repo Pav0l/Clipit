@@ -1,24 +1,14 @@
 import { BytesLike } from "ethers";
 import { HttpClient, RawResponse } from "../http-client/http-client";
-// TODO this should not be here
-import { getAccessToken, getTwitchOAuth2AuthorizeUrl } from "../twitch-oauth/twitch-oauth.public.api";
 
 export class ClipItApiClient {
 
   constructor(private httpClient: HttpClient) { }
 
   storeClip = async (clipId: string, streamerAddress: string) => {
-    const token = getAccessToken();
-    if (!token) {
-      location.href = getTwitchOAuth2AuthorizeUrl();
-    }
-
-    const resp = await this.httpClient.requestRaw<StoreClipResp | StoreClipError>({
+    const resp = await this.httpClient.authorizedRequest<StoreClipResp | StoreClipError>({
       method: 'post',
       url: `/clips/${clipId}`,
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
       body: {
         address: streamerAddress
       }

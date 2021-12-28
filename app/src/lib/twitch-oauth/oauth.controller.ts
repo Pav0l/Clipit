@@ -9,49 +9,24 @@ export class OAuthController {
   constructor(private model: OAuthModel, private storage: ILocalStorage) { }
 
   logout = () => {
+    // TODO invalidate access token via Twithc OAuth API
     this.storage.removeItem(twitchAccessToken);
-    // location via props?
     location.reload();
   }
 
-  storeTokenAndRemoveSecret = (token: string) => {
-    this.storage.setItem(twitchAccessToken, token);
-    this.model.setLoggedIn(true);
-    this.storage.removeItem(twitchSecretKey);
-  }
+  handleOAuth2Redirect = (url: URL) => {
+    const { access_token, state } = this.parseDataFromUrl(url);
 
-  verifyStateSecret = (fromUrl: string) => {
-    if (!fromUrl) {
-      return false;
-    }
-    const original = this.storage.getItem(twitchSecretKey);
-    return original === fromUrl;
-  }
+    if (access_token) {
+      const { referrer, secret } = this.parseDataFromState(state);
 
-  parseDataFromUrl = (url: URL): { access_token: string; state: string; } => {
-    if (url.hash.match(/#/g)?.length === 1) {
-      // there is only one # in the string -> #access_token=<...>&scope=<...>&state=<...>&token_type=<...>"
-      const queryParams = new URLSearchParams(url.hash.replace('#', '?'));
-      return {
-        access_token: queryParams.get(OauthQueryParams.ACCESS_TOKEN) ?? "",
-        state: queryParams.get(OauthQueryParams.STATE) ?? "",
+      this.model.setReferrer(referrer);
+
+      if (this.verifyStateSecret(secret)) {
+        this.storeTokenAndRemoveSecret(access_token);
+      } else {
+        throw new Error("invalid oauth redirect secret");
       }
-    }
-
-    return {
-      access_token: "",
-      state: "",
-    }
-  };
-
-  parseDataFromState = (state: string) => {
-    let parsed = { referrer: '', secret: '' };
-    try {
-      parsed = JSON.parse(state);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      return parsed;
     }
   }
 
@@ -78,6 +53,48 @@ export class OAuthController {
     }));
     return url.href;
   }
+
+  private storeTokenAndRemoveSecret = (token: string) => {
+    this.storage.setItem(twitchAccessToken, token);
+    this.model.setLoggedIn(true);
+    this.storage.removeItem(twitchSecretKey);
+  }
+
+  private verifyStateSecret = (fromUrl: string) => {
+    if (!fromUrl) {
+      return false;
+    }
+    const original = this.storage.getItem(twitchSecretKey);
+    return original === fromUrl;
+  }
+
+  private parseDataFromUrl = (url: URL): { access_token: string; state: string; } => {
+    if (url.hash.match(/#/g)?.length === 1) {
+      // there is only one # in the string -> #access_token=<...>&scope=<...>&state=<...>&token_type=<...>"
+      const queryParams = new URLSearchParams(url.hash.replace('#', '?'));
+      return {
+        access_token: queryParams.get(OauthQueryParams.ACCESS_TOKEN) ?? "",
+        state: queryParams.get(OauthQueryParams.STATE) ?? "",
+      }
+    }
+
+    return {
+      access_token: "",
+      state: "",
+    }
+  };
+
+  private parseDataFromState = (state: string) => {
+    let parsed = { referrer: '', secret: '' };
+    try {
+      parsed = JSON.parse(state);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      return parsed;
+    }
+  }
+
 
   private generateRandomString = () => {
     const uintArr = new Uint16Array(10);
