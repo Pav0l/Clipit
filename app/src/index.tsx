@@ -49,10 +49,6 @@ function initSynchronous() {
   );
 
   const authController = new OAuthController(model.auth, storage);
-  if (location.pathname.includes(AppRoute.OAUTH_REDIRECT)) {
-    authController.handleOAuth2Redirect(new URL(location.href));
-  }
-
   const clipController = new ClipController(
     model.clip,
     snackbarClient,
@@ -165,7 +161,10 @@ function initSynchronous() {
                 </ErrorBoundary>
               </OAuthProtectedRoute>
               <Route exact path={AppRoute.OAUTH_REDIRECT}>
-                <OAuth2Redirect referrer={model.auth.referrer} />
+                <OAuth2Redirect
+                  controller={operations.auth}
+                  model={model.auth}
+                />
               </Route>
               <Route exact path={AppRoute.ABOUT}>
                 <Playground
