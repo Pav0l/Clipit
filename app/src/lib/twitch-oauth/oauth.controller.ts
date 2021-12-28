@@ -2,14 +2,22 @@ import { OAuthModel } from "./oauth.model";
 import { ILocalStorage } from "../local-storage";
 import { twitchAccessToken, twitchSecretKey, twitchAppClientId, twitchOAuthUri, twitchScopes } from "../constants";
 import { OauthQueryParams } from "./oauth.types";
+import { TwitchOAuthApiClient } from "./twitch-oauth-api.client";
 
 
 export class OAuthController {
 
-  constructor(private model: OAuthModel, private storage: ILocalStorage) { }
+  constructor(private model: OAuthModel, private oauthApi: TwitchOAuthApiClient, private storage: ILocalStorage) { }
 
-  logout = () => {
-    // TODO invalidate access token via Twithc OAuth API
+  logout = async () => {
+    const token = this.getAccessToken();
+    if (!token) {
+      location.reload();
+      return;
+    }
+
+    await this.oauthApi.revokeAccessToken(token);
+
     this.storage.removeItem(twitchAccessToken);
     location.reload();
   }

@@ -8,7 +8,8 @@ import {
   clipItUri,
   cloudFlareGatewayUri,
   twitchApiUri,
-  twitchAppClientId
+  twitchAppClientId,
+  twitchOAuthUri
 } from "./lib/constants";
 import { IpfsClient } from "./lib/ipfs/ipfs.client";
 import { AppModel } from "./domains/app/app.model";
@@ -36,6 +37,7 @@ import { OAuthController } from "./lib/twitch-oauth/oauth.controller";
 import { ClipController } from "./domains/twitch-clips/clip.controller";
 import { GameController } from "./domains/twitch-games/game.controller";
 import { UserController } from "./domains/twitch-user/user.controller";
+import { TwitchOAuthApiClient } from "./lib/twitch-oauth/twitch-oauth-api.client";
 
 function initSynchronous() {
   const storage = new LocalStorage();
@@ -43,12 +45,19 @@ function initSynchronous() {
 
   const clipItApi = new ClipItApiClient(new HttpClient(storage, clipItUri));
   const ipfsApi = new IpfsClient(new HttpClient(storage, cloudFlareGatewayUri));
+  const twitchOAuthApi = new TwitchOAuthApiClient(
+    new HttpClient(storage, twitchOAuthUri)
+  );
   const twitchApi = new TwitchApi(
     new HttpClient(storage, twitchApiUri),
     twitchAppClientId
   );
 
-  const authController = new OAuthController(model.auth, storage);
+  const authController = new OAuthController(
+    model.auth,
+    twitchOAuthApi,
+    storage
+  );
   const clipController = new ClipController(
     model.clip,
     snackbarClient,
