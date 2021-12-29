@@ -7,6 +7,7 @@ import {
 import { makeStyles, Theme } from "@material-ui/core";
 import { NftModel } from "../nfts/nft.model";
 import { IWeb3Controller } from "../app/app.controller";
+import { getClips } from "../../lib/graphql/subgraph.client";
 
 interface Props {
   model: {
@@ -26,6 +27,7 @@ const Playground = observer(function Playground({
   const onClick = async () => {
     try {
       // DO SOMETHING
+      await getClips();
     } catch (error) {
       snackbar.sendError((error as Error).message);
       return;

@@ -1,0 +1,2123 @@
+directive @entity on OBJECT
+
+directive @derivedFrom(field: String) on FIELD_DEFINITION
+
+directive @subgraphId(id: String) on OBJECT
+
+type _Block_ {
+  """The hash of the block"""
+  hash: Bytes
+
+  """The block number"""
+  number: Int!
+}
+
+"""The type for the top-level _meta field"""
+type _Meta_ {
+  """
+  Information about a specific subgraph block. The hash of the block
+  will be null if the _meta field has a block constraint that asks for
+  a block number. It will be filled if the _meta field has no block constraint
+  and therefore asks for the latest  block
+  
+  """
+  block: _Block_!
+
+  """The deployment ID"""
+  deployment: String!
+
+  """If `true`, the subgraph encountered indexing errors at some past block"""
+  hasIndexingErrors: Boolean!
+}
+
+enum _SubgraphErrorPolicy_ {
+  """Data will be returned even if the subgraph has indexing errors"""
+  allow
+
+  """
+  If the subgraph has indexing errors, data will be omitted. The default.
+  """
+  deny
+}
+
+type Ask {
+  """<tokenId>-<ownerAddress>"""
+  id: ID!
+
+  """The Clip associated with the Ask"""
+  clip: Clip!
+
+  """Transaction hash the ask was created at"""
+  transactionHash: String!
+
+  """The Currency of the Ask"""
+  currency: Currency!
+
+  """The amount of Currency of the Ask"""
+  amount: BigInt!
+
+  """The owner of the Ask"""
+  owner: User!
+
+  """The timestamp of the block the Ask was created in"""
+  createdAtTimestamp: BigInt!
+
+  """The number of the block the Ask created in"""
+  createdAtBlockNumber: BigInt!
+}
+
+input Ask_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  clip: String
+  clip_not: String
+  clip_gt: String
+  clip_lt: String
+  clip_gte: String
+  clip_lte: String
+  clip_in: [String!]
+  clip_not_in: [String!]
+  clip_contains: String
+  clip_not_contains: String
+  clip_starts_with: String
+  clip_not_starts_with: String
+  clip_ends_with: String
+  clip_not_ends_with: String
+  transactionHash: String
+  transactionHash_not: String
+  transactionHash_gt: String
+  transactionHash_lt: String
+  transactionHash_gte: String
+  transactionHash_lte: String
+  transactionHash_in: [String!]
+  transactionHash_not_in: [String!]
+  transactionHash_contains: String
+  transactionHash_not_contains: String
+  transactionHash_starts_with: String
+  transactionHash_not_starts_with: String
+  transactionHash_ends_with: String
+  transactionHash_not_ends_with: String
+  currency: String
+  currency_not: String
+  currency_gt: String
+  currency_lt: String
+  currency_gte: String
+  currency_lte: String
+  currency_in: [String!]
+  currency_not_in: [String!]
+  currency_contains: String
+  currency_not_contains: String
+  currency_starts_with: String
+  currency_not_starts_with: String
+  currency_ends_with: String
+  currency_not_ends_with: String
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+  owner: String
+  owner_not: String
+  owner_gt: String
+  owner_lt: String
+  owner_gte: String
+  owner_lte: String
+  owner_in: [String!]
+  owner_not_in: [String!]
+  owner_contains: String
+  owner_not_contains: String
+  owner_starts_with: String
+  owner_not_starts_with: String
+  owner_ends_with: String
+  owner_not_ends_with: String
+  createdAtTimestamp: BigInt
+  createdAtTimestamp_not: BigInt
+  createdAtTimestamp_gt: BigInt
+  createdAtTimestamp_lt: BigInt
+  createdAtTimestamp_gte: BigInt
+  createdAtTimestamp_lte: BigInt
+  createdAtTimestamp_in: [BigInt!]
+  createdAtTimestamp_not_in: [BigInt!]
+  createdAtBlockNumber: BigInt
+  createdAtBlockNumber_not: BigInt
+  createdAtBlockNumber_gt: BigInt
+  createdAtBlockNumber_lt: BigInt
+  createdAtBlockNumber_gte: BigInt
+  createdAtBlockNumber_lte: BigInt
+  createdAtBlockNumber_in: [BigInt!]
+  createdAtBlockNumber_not_in: [BigInt!]
+}
+
+enum Ask_orderBy {
+  id
+  clip
+  transactionHash
+  currency
+  amount
+  owner
+  createdAtTimestamp
+  createdAtBlockNumber
+}
+
+type Bid {
+  """<token-id>-<bidderAddress>"""
+  id: ID!
+
+  """Transaction hash the bid was created at"""
+  transactionHash: String!
+
+  """The Clip associated with the Bid"""
+  clip: Clip!
+
+  """The Currency of the Bid"""
+  currency: Currency!
+
+  """The amount of Currency of the Bid"""
+  amount: BigInt!
+
+  """The sellOnShare of the Bid"""
+  sellOnShare: BigInt!
+
+  """The bidder of the Bid"""
+  bidder: User!
+
+  """The recipient of Clip if the Bid is accepted"""
+  recipient: User!
+
+  """The timestamp of the block the Bid was created in"""
+  createdAtTimestamp: BigInt!
+
+  """The number of the block the Bid was created in"""
+  createdAtBlockNumber: BigInt!
+}
+
+input Bid_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transactionHash: String
+  transactionHash_not: String
+  transactionHash_gt: String
+  transactionHash_lt: String
+  transactionHash_gte: String
+  transactionHash_lte: String
+  transactionHash_in: [String!]
+  transactionHash_not_in: [String!]
+  transactionHash_contains: String
+  transactionHash_not_contains: String
+  transactionHash_starts_with: String
+  transactionHash_not_starts_with: String
+  transactionHash_ends_with: String
+  transactionHash_not_ends_with: String
+  clip: String
+  clip_not: String
+  clip_gt: String
+  clip_lt: String
+  clip_gte: String
+  clip_lte: String
+  clip_in: [String!]
+  clip_not_in: [String!]
+  clip_contains: String
+  clip_not_contains: String
+  clip_starts_with: String
+  clip_not_starts_with: String
+  clip_ends_with: String
+  clip_not_ends_with: String
+  currency: String
+  currency_not: String
+  currency_gt: String
+  currency_lt: String
+  currency_gte: String
+  currency_lte: String
+  currency_in: [String!]
+  currency_not_in: [String!]
+  currency_contains: String
+  currency_not_contains: String
+  currency_starts_with: String
+  currency_not_starts_with: String
+  currency_ends_with: String
+  currency_not_ends_with: String
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+  sellOnShare: BigInt
+  sellOnShare_not: BigInt
+  sellOnShare_gt: BigInt
+  sellOnShare_lt: BigInt
+  sellOnShare_gte: BigInt
+  sellOnShare_lte: BigInt
+  sellOnShare_in: [BigInt!]
+  sellOnShare_not_in: [BigInt!]
+  bidder: String
+  bidder_not: String
+  bidder_gt: String
+  bidder_lt: String
+  bidder_gte: String
+  bidder_lte: String
+  bidder_in: [String!]
+  bidder_not_in: [String!]
+  bidder_contains: String
+  bidder_not_contains: String
+  bidder_starts_with: String
+  bidder_not_starts_with: String
+  bidder_ends_with: String
+  bidder_not_ends_with: String
+  recipient: String
+  recipient_not: String
+  recipient_gt: String
+  recipient_lt: String
+  recipient_gte: String
+  recipient_lte: String
+  recipient_in: [String!]
+  recipient_not_in: [String!]
+  recipient_contains: String
+  recipient_not_contains: String
+  recipient_starts_with: String
+  recipient_not_starts_with: String
+  recipient_ends_with: String
+  recipient_not_ends_with: String
+  createdAtTimestamp: BigInt
+  createdAtTimestamp_not: BigInt
+  createdAtTimestamp_gt: BigInt
+  createdAtTimestamp_lt: BigInt
+  createdAtTimestamp_gte: BigInt
+  createdAtTimestamp_lte: BigInt
+  createdAtTimestamp_in: [BigInt!]
+  createdAtTimestamp_not_in: [BigInt!]
+  createdAtBlockNumber: BigInt
+  createdAtBlockNumber_not: BigInt
+  createdAtBlockNumber_gt: BigInt
+  createdAtBlockNumber_lt: BigInt
+  createdAtBlockNumber_gte: BigInt
+  createdAtBlockNumber_lte: BigInt
+  createdAtBlockNumber_in: [BigInt!]
+  createdAtBlockNumber_not_in: [BigInt!]
+}
+
+enum Bid_orderBy {
+  id
+  transactionHash
+  clip
+  currency
+  amount
+  sellOnShare
+  bidder
+  recipient
+  createdAtTimestamp
+  createdAtBlockNumber
+}
+
+scalar BigDecimal
+
+scalar BigInt
+
+input Block_height {
+  hash: Bytes
+  number: Int
+  number_gte: Int
+}
+
+scalar Bytes
+
+type Clip {
+  """The tokenId on the ClipIt Contract"""
+  id: ID!
+
+  """The transaction hash the clip was created at"""
+  transactionHash: String!
+
+  """The current owner of the Clip"""
+  owner: User!
+
+  """The creator of the Clip"""
+  creator: User!
+
+  """The previous owner of the ClipIt's Market"""
+  prevOwner: User!
+
+  """The approved user of the Clip"""
+  approved: User
+
+  """The sha256 hash of the clip's content"""
+  contentHash: Bytes!
+
+  """The sha256 hash of the clip's metadata"""
+  metadataHash: Bytes!
+
+  """The uri of the content"""
+  contentURI: String!
+
+  """The uri of the metadata"""
+  metadataURI: String!
+
+  """The bid share for the current owner of the Clip"""
+  ownerBidShare: BigInt!
+
+  """The bid share for the creator of the Clip"""
+  creatorBidShare: BigInt!
+
+  """The bid share for the previous owner of the Clip's market"""
+  prevOwnerBidShare: BigInt!
+
+  """The timestamp of the block the Clip was minted in"""
+  createdAtTimestamp: BigInt!
+
+  """The number of the block the Clip was minted in"""
+  createdAtBlockNumber: BigInt!
+
+  """The timestamp of the block the Clip was burned in"""
+  burnedAtTimeStamp: BigInt
+
+  """The number of the block the Clip was burned in"""
+  burnedAtBlockNumber: BigInt
+
+  """The current Ask of the Clip"""
+  currentAsk: Ask
+
+  """The current Bids on the Clip"""
+  currentBids(skip: Int = 0, first: Int = 100, orderBy: Bid_orderBy, orderDirection: OrderDirection, where: Bid_filter): [Bid!]
+
+  """The InactiveAsks of the Clip"""
+  inactiveAsks(skip: Int = 0, first: Int = 100, orderBy: InactiveAsk_orderBy, orderDirection: OrderDirection, where: InactiveAsk_filter): [InactiveAsk!]
+
+  """The InactiveBids of the Clip"""
+  inactiveBids(skip: Int = 0, first: Int = 100, orderBy: InactiveBid_orderBy, orderDirection: OrderDirection, where: InactiveBid_filter): [InactiveBid!]
+
+  """The transfers of the Clip"""
+  transfers(skip: Int = 0, first: Int = 100, orderBy: Transfer_orderBy, orderDirection: OrderDirection, where: Transfer_filter): [Transfer!]
+}
+
+input Clip_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transactionHash: String
+  transactionHash_not: String
+  transactionHash_gt: String
+  transactionHash_lt: String
+  transactionHash_gte: String
+  transactionHash_lte: String
+  transactionHash_in: [String!]
+  transactionHash_not_in: [String!]
+  transactionHash_contains: String
+  transactionHash_not_contains: String
+  transactionHash_starts_with: String
+  transactionHash_not_starts_with: String
+  transactionHash_ends_with: String
+  transactionHash_not_ends_with: String
+  owner: String
+  owner_not: String
+  owner_gt: String
+  owner_lt: String
+  owner_gte: String
+  owner_lte: String
+  owner_in: [String!]
+  owner_not_in: [String!]
+  owner_contains: String
+  owner_not_contains: String
+  owner_starts_with: String
+  owner_not_starts_with: String
+  owner_ends_with: String
+  owner_not_ends_with: String
+  creator: String
+  creator_not: String
+  creator_gt: String
+  creator_lt: String
+  creator_gte: String
+  creator_lte: String
+  creator_in: [String!]
+  creator_not_in: [String!]
+  creator_contains: String
+  creator_not_contains: String
+  creator_starts_with: String
+  creator_not_starts_with: String
+  creator_ends_with: String
+  creator_not_ends_with: String
+  prevOwner: String
+  prevOwner_not: String
+  prevOwner_gt: String
+  prevOwner_lt: String
+  prevOwner_gte: String
+  prevOwner_lte: String
+  prevOwner_in: [String!]
+  prevOwner_not_in: [String!]
+  prevOwner_contains: String
+  prevOwner_not_contains: String
+  prevOwner_starts_with: String
+  prevOwner_not_starts_with: String
+  prevOwner_ends_with: String
+  prevOwner_not_ends_with: String
+  approved: String
+  approved_not: String
+  approved_gt: String
+  approved_lt: String
+  approved_gte: String
+  approved_lte: String
+  approved_in: [String!]
+  approved_not_in: [String!]
+  approved_contains: String
+  approved_not_contains: String
+  approved_starts_with: String
+  approved_not_starts_with: String
+  approved_ends_with: String
+  approved_not_ends_with: String
+  contentHash: Bytes
+  contentHash_not: Bytes
+  contentHash_in: [Bytes!]
+  contentHash_not_in: [Bytes!]
+  contentHash_contains: Bytes
+  contentHash_not_contains: Bytes
+  metadataHash: Bytes
+  metadataHash_not: Bytes
+  metadataHash_in: [Bytes!]
+  metadataHash_not_in: [Bytes!]
+  metadataHash_contains: Bytes
+  metadataHash_not_contains: Bytes
+  contentURI: String
+  contentURI_not: String
+  contentURI_gt: String
+  contentURI_lt: String
+  contentURI_gte: String
+  contentURI_lte: String
+  contentURI_in: [String!]
+  contentURI_not_in: [String!]
+  contentURI_contains: String
+  contentURI_not_contains: String
+  contentURI_starts_with: String
+  contentURI_not_starts_with: String
+  contentURI_ends_with: String
+  contentURI_not_ends_with: String
+  metadataURI: String
+  metadataURI_not: String
+  metadataURI_gt: String
+  metadataURI_lt: String
+  metadataURI_gte: String
+  metadataURI_lte: String
+  metadataURI_in: [String!]
+  metadataURI_not_in: [String!]
+  metadataURI_contains: String
+  metadataURI_not_contains: String
+  metadataURI_starts_with: String
+  metadataURI_not_starts_with: String
+  metadataURI_ends_with: String
+  metadataURI_not_ends_with: String
+  ownerBidShare: BigInt
+  ownerBidShare_not: BigInt
+  ownerBidShare_gt: BigInt
+  ownerBidShare_lt: BigInt
+  ownerBidShare_gte: BigInt
+  ownerBidShare_lte: BigInt
+  ownerBidShare_in: [BigInt!]
+  ownerBidShare_not_in: [BigInt!]
+  creatorBidShare: BigInt
+  creatorBidShare_not: BigInt
+  creatorBidShare_gt: BigInt
+  creatorBidShare_lt: BigInt
+  creatorBidShare_gte: BigInt
+  creatorBidShare_lte: BigInt
+  creatorBidShare_in: [BigInt!]
+  creatorBidShare_not_in: [BigInt!]
+  prevOwnerBidShare: BigInt
+  prevOwnerBidShare_not: BigInt
+  prevOwnerBidShare_gt: BigInt
+  prevOwnerBidShare_lt: BigInt
+  prevOwnerBidShare_gte: BigInt
+  prevOwnerBidShare_lte: BigInt
+  prevOwnerBidShare_in: [BigInt!]
+  prevOwnerBidShare_not_in: [BigInt!]
+  createdAtTimestamp: BigInt
+  createdAtTimestamp_not: BigInt
+  createdAtTimestamp_gt: BigInt
+  createdAtTimestamp_lt: BigInt
+  createdAtTimestamp_gte: BigInt
+  createdAtTimestamp_lte: BigInt
+  createdAtTimestamp_in: [BigInt!]
+  createdAtTimestamp_not_in: [BigInt!]
+  createdAtBlockNumber: BigInt
+  createdAtBlockNumber_not: BigInt
+  createdAtBlockNumber_gt: BigInt
+  createdAtBlockNumber_lt: BigInt
+  createdAtBlockNumber_gte: BigInt
+  createdAtBlockNumber_lte: BigInt
+  createdAtBlockNumber_in: [BigInt!]
+  createdAtBlockNumber_not_in: [BigInt!]
+  burnedAtTimeStamp: BigInt
+  burnedAtTimeStamp_not: BigInt
+  burnedAtTimeStamp_gt: BigInt
+  burnedAtTimeStamp_lt: BigInt
+  burnedAtTimeStamp_gte: BigInt
+  burnedAtTimeStamp_lte: BigInt
+  burnedAtTimeStamp_in: [BigInt!]
+  burnedAtTimeStamp_not_in: [BigInt!]
+  burnedAtBlockNumber: BigInt
+  burnedAtBlockNumber_not: BigInt
+  burnedAtBlockNumber_gt: BigInt
+  burnedAtBlockNumber_lt: BigInt
+  burnedAtBlockNumber_gte: BigInt
+  burnedAtBlockNumber_lte: BigInt
+  burnedAtBlockNumber_in: [BigInt!]
+  burnedAtBlockNumber_not_in: [BigInt!]
+}
+
+enum Clip_orderBy {
+  id
+  transactionHash
+  owner
+  creator
+  prevOwner
+  approved
+  contentHash
+  metadataHash
+  contentURI
+  metadataURI
+  ownerBidShare
+  creatorBidShare
+  prevOwnerBidShare
+  createdAtTimestamp
+  createdAtBlockNumber
+  burnedAtTimeStamp
+  burnedAtBlockNumber
+  currentAsk
+  currentBids
+  inactiveAsks
+  inactiveBids
+  transfers
+}
+
+type Currency {
+  """The address of the Currency"""
+  id: ID!
+
+  """The name of the Currency"""
+  name: String!
+
+  """The symbol of the Currency"""
+  symbol: String!
+
+  """The decimals of the Currency"""
+  decimals: Int
+
+  """Total Bid Liquidity of the Currency on all ClipIt"""
+  liquidity: BigInt!
+
+  """The active Bids denominated in the Currency"""
+  activeBids(skip: Int = 0, first: Int = 100, orderBy: Bid_orderBy, orderDirection: OrderDirection, where: Bid_filter): [Bid!]
+
+  """The active Asks denominated in the Currency"""
+  activeAsks(skip: Int = 0, first: Int = 100, orderBy: Ask_orderBy, orderDirection: OrderDirection, where: Ask_filter): [Ask!]
+
+  """The InactiveBids denominated in the Currency"""
+  inactiveBids(skip: Int = 0, first: Int = 100, orderBy: InactiveBid_orderBy, orderDirection: OrderDirection, where: InactiveBid_filter): [InactiveBid!]
+
+  """The InactiveAsks denominated in the Currency"""
+  inactiveAsks(skip: Int = 0, first: Int = 100, orderBy: InactiveAsk_orderBy, orderDirection: OrderDirection, where: InactiveAsk_filter): [InactiveAsk!]
+}
+
+input Currency_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  name: String
+  name_not: String
+  name_gt: String
+  name_lt: String
+  name_gte: String
+  name_lte: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  symbol: String
+  symbol_not: String
+  symbol_gt: String
+  symbol_lt: String
+  symbol_gte: String
+  symbol_lte: String
+  symbol_in: [String!]
+  symbol_not_in: [String!]
+  symbol_contains: String
+  symbol_not_contains: String
+  symbol_starts_with: String
+  symbol_not_starts_with: String
+  symbol_ends_with: String
+  symbol_not_ends_with: String
+  decimals: Int
+  decimals_not: Int
+  decimals_gt: Int
+  decimals_lt: Int
+  decimals_gte: Int
+  decimals_lte: Int
+  decimals_in: [Int!]
+  decimals_not_in: [Int!]
+  liquidity: BigInt
+  liquidity_not: BigInt
+  liquidity_gt: BigInt
+  liquidity_lt: BigInt
+  liquidity_gte: BigInt
+  liquidity_lte: BigInt
+  liquidity_in: [BigInt!]
+  liquidity_not_in: [BigInt!]
+}
+
+enum Currency_orderBy {
+  id
+  name
+  symbol
+  decimals
+  liquidity
+  activeBids
+  activeAsks
+  inactiveBids
+  inactiveAsks
+}
+
+type InactiveAsk {
+  """<tokenId>-<transactionHash>-<logIndex>"""
+  id: ID!
+
+  """Transaction hash the ask was created at"""
+  transactionHash: String!
+
+  """The Clip associated with the InactiveAsk"""
+  clip: Clip!
+
+  """The why this Ask is Inactive"""
+  type: MarketEventType!
+
+  """The Currency of the InactiveAsk"""
+  currency: Currency!
+
+  """The amount of Currency of the InactiveAsk"""
+  amount: BigInt!
+
+  """The owner of the InactiveAsk"""
+  owner: User!
+
+  """The timestamp of the block the original Ask was created in"""
+  createdAtTimestamp: BigInt!
+
+  """The number of the block the original Ask was created in"""
+  createdAtBlockNumber: BigInt!
+
+  """The timestamp of the block the original Ask was inactivated in"""
+  inactivatedAtTimestamp: BigInt!
+
+  """The number of the block the original Ask was inactivated in"""
+  inactivatedAtBlockNumber: BigInt!
+}
+
+input InactiveAsk_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transactionHash: String
+  transactionHash_not: String
+  transactionHash_gt: String
+  transactionHash_lt: String
+  transactionHash_gte: String
+  transactionHash_lte: String
+  transactionHash_in: [String!]
+  transactionHash_not_in: [String!]
+  transactionHash_contains: String
+  transactionHash_not_contains: String
+  transactionHash_starts_with: String
+  transactionHash_not_starts_with: String
+  transactionHash_ends_with: String
+  transactionHash_not_ends_with: String
+  clip: String
+  clip_not: String
+  clip_gt: String
+  clip_lt: String
+  clip_gte: String
+  clip_lte: String
+  clip_in: [String!]
+  clip_not_in: [String!]
+  clip_contains: String
+  clip_not_contains: String
+  clip_starts_with: String
+  clip_not_starts_with: String
+  clip_ends_with: String
+  clip_not_ends_with: String
+  type: MarketEventType
+  type_not: MarketEventType
+  type_in: [MarketEventType!]
+  type_not_in: [MarketEventType!]
+  currency: String
+  currency_not: String
+  currency_gt: String
+  currency_lt: String
+  currency_gte: String
+  currency_lte: String
+  currency_in: [String!]
+  currency_not_in: [String!]
+  currency_contains: String
+  currency_not_contains: String
+  currency_starts_with: String
+  currency_not_starts_with: String
+  currency_ends_with: String
+  currency_not_ends_with: String
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+  owner: String
+  owner_not: String
+  owner_gt: String
+  owner_lt: String
+  owner_gte: String
+  owner_lte: String
+  owner_in: [String!]
+  owner_not_in: [String!]
+  owner_contains: String
+  owner_not_contains: String
+  owner_starts_with: String
+  owner_not_starts_with: String
+  owner_ends_with: String
+  owner_not_ends_with: String
+  createdAtTimestamp: BigInt
+  createdAtTimestamp_not: BigInt
+  createdAtTimestamp_gt: BigInt
+  createdAtTimestamp_lt: BigInt
+  createdAtTimestamp_gte: BigInt
+  createdAtTimestamp_lte: BigInt
+  createdAtTimestamp_in: [BigInt!]
+  createdAtTimestamp_not_in: [BigInt!]
+  createdAtBlockNumber: BigInt
+  createdAtBlockNumber_not: BigInt
+  createdAtBlockNumber_gt: BigInt
+  createdAtBlockNumber_lt: BigInt
+  createdAtBlockNumber_gte: BigInt
+  createdAtBlockNumber_lte: BigInt
+  createdAtBlockNumber_in: [BigInt!]
+  createdAtBlockNumber_not_in: [BigInt!]
+  inactivatedAtTimestamp: BigInt
+  inactivatedAtTimestamp_not: BigInt
+  inactivatedAtTimestamp_gt: BigInt
+  inactivatedAtTimestamp_lt: BigInt
+  inactivatedAtTimestamp_gte: BigInt
+  inactivatedAtTimestamp_lte: BigInt
+  inactivatedAtTimestamp_in: [BigInt!]
+  inactivatedAtTimestamp_not_in: [BigInt!]
+  inactivatedAtBlockNumber: BigInt
+  inactivatedAtBlockNumber_not: BigInt
+  inactivatedAtBlockNumber_gt: BigInt
+  inactivatedAtBlockNumber_lt: BigInt
+  inactivatedAtBlockNumber_gte: BigInt
+  inactivatedAtBlockNumber_lte: BigInt
+  inactivatedAtBlockNumber_in: [BigInt!]
+  inactivatedAtBlockNumber_not_in: [BigInt!]
+}
+
+enum InactiveAsk_orderBy {
+  id
+  transactionHash
+  clip
+  type
+  currency
+  amount
+  owner
+  createdAtTimestamp
+  createdAtBlockNumber
+  inactivatedAtTimestamp
+  inactivatedAtBlockNumber
+}
+
+type InactiveBid {
+  """<tokenId>-<transactionHash>-<logIndex>"""
+  id: ID!
+
+  """Transaction hash the bid was created at"""
+  transactionHash: String!
+
+  """The Clip associated with the InactiveBid"""
+  clip: Clip!
+
+  """The reason why this Bid is Inactive"""
+  type: MarketEventType!
+
+  """The Currency of the InactiveBid"""
+  currency: Currency!
+
+  """The amount of Currency of the InactiveBid"""
+  amount: BigInt!
+
+  """The sellOnShare of the InactiveBid"""
+  sellOnShare: BigInt!
+
+  """The bidder of the InactiveBid"""
+  bidder: User!
+
+  """The recipient of the InactiveBid"""
+  recipient: User!
+
+  """The timestamp of the block the original Bid was created in"""
+  createdAtTimestamp: BigInt!
+
+  """The number of the block the original Bid was created in"""
+  createdAtBlockNumber: BigInt!
+
+  """The timestamp of the block the original Bid was inactivated in"""
+  inactivatedAtTimestamp: BigInt!
+
+  """The number of the block the original Bid was inactivated in"""
+  inactivatedAtBlockNumber: BigInt!
+}
+
+input InactiveBid_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transactionHash: String
+  transactionHash_not: String
+  transactionHash_gt: String
+  transactionHash_lt: String
+  transactionHash_gte: String
+  transactionHash_lte: String
+  transactionHash_in: [String!]
+  transactionHash_not_in: [String!]
+  transactionHash_contains: String
+  transactionHash_not_contains: String
+  transactionHash_starts_with: String
+  transactionHash_not_starts_with: String
+  transactionHash_ends_with: String
+  transactionHash_not_ends_with: String
+  clip: String
+  clip_not: String
+  clip_gt: String
+  clip_lt: String
+  clip_gte: String
+  clip_lte: String
+  clip_in: [String!]
+  clip_not_in: [String!]
+  clip_contains: String
+  clip_not_contains: String
+  clip_starts_with: String
+  clip_not_starts_with: String
+  clip_ends_with: String
+  clip_not_ends_with: String
+  type: MarketEventType
+  type_not: MarketEventType
+  type_in: [MarketEventType!]
+  type_not_in: [MarketEventType!]
+  currency: String
+  currency_not: String
+  currency_gt: String
+  currency_lt: String
+  currency_gte: String
+  currency_lte: String
+  currency_in: [String!]
+  currency_not_in: [String!]
+  currency_contains: String
+  currency_not_contains: String
+  currency_starts_with: String
+  currency_not_starts_with: String
+  currency_ends_with: String
+  currency_not_ends_with: String
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+  sellOnShare: BigInt
+  sellOnShare_not: BigInt
+  sellOnShare_gt: BigInt
+  sellOnShare_lt: BigInt
+  sellOnShare_gte: BigInt
+  sellOnShare_lte: BigInt
+  sellOnShare_in: [BigInt!]
+  sellOnShare_not_in: [BigInt!]
+  bidder: String
+  bidder_not: String
+  bidder_gt: String
+  bidder_lt: String
+  bidder_gte: String
+  bidder_lte: String
+  bidder_in: [String!]
+  bidder_not_in: [String!]
+  bidder_contains: String
+  bidder_not_contains: String
+  bidder_starts_with: String
+  bidder_not_starts_with: String
+  bidder_ends_with: String
+  bidder_not_ends_with: String
+  recipient: String
+  recipient_not: String
+  recipient_gt: String
+  recipient_lt: String
+  recipient_gte: String
+  recipient_lte: String
+  recipient_in: [String!]
+  recipient_not_in: [String!]
+  recipient_contains: String
+  recipient_not_contains: String
+  recipient_starts_with: String
+  recipient_not_starts_with: String
+  recipient_ends_with: String
+  recipient_not_ends_with: String
+  createdAtTimestamp: BigInt
+  createdAtTimestamp_not: BigInt
+  createdAtTimestamp_gt: BigInt
+  createdAtTimestamp_lt: BigInt
+  createdAtTimestamp_gte: BigInt
+  createdAtTimestamp_lte: BigInt
+  createdAtTimestamp_in: [BigInt!]
+  createdAtTimestamp_not_in: [BigInt!]
+  createdAtBlockNumber: BigInt
+  createdAtBlockNumber_not: BigInt
+  createdAtBlockNumber_gt: BigInt
+  createdAtBlockNumber_lt: BigInt
+  createdAtBlockNumber_gte: BigInt
+  createdAtBlockNumber_lte: BigInt
+  createdAtBlockNumber_in: [BigInt!]
+  createdAtBlockNumber_not_in: [BigInt!]
+  inactivatedAtTimestamp: BigInt
+  inactivatedAtTimestamp_not: BigInt
+  inactivatedAtTimestamp_gt: BigInt
+  inactivatedAtTimestamp_lt: BigInt
+  inactivatedAtTimestamp_gte: BigInt
+  inactivatedAtTimestamp_lte: BigInt
+  inactivatedAtTimestamp_in: [BigInt!]
+  inactivatedAtTimestamp_not_in: [BigInt!]
+  inactivatedAtBlockNumber: BigInt
+  inactivatedAtBlockNumber_not: BigInt
+  inactivatedAtBlockNumber_gt: BigInt
+  inactivatedAtBlockNumber_lt: BigInt
+  inactivatedAtBlockNumber_gte: BigInt
+  inactivatedAtBlockNumber_lte: BigInt
+  inactivatedAtBlockNumber_in: [BigInt!]
+  inactivatedAtBlockNumber_not_in: [BigInt!]
+}
+
+enum InactiveBid_orderBy {
+  id
+  transactionHash
+  clip
+  type
+  currency
+  amount
+  sellOnShare
+  bidder
+  recipient
+  createdAtTimestamp
+  createdAtBlockNumber
+  inactivatedAtTimestamp
+  inactivatedAtBlockNumber
+}
+
+"""The Types for MarketEvents (Asks, Bids)"""
+enum MarketEventType {
+  Finalized
+  Removed
+}
+
+enum OrderDirection {
+  asc
+  desc
+}
+
+type Query {
+  clip(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Clip
+  clips(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Clip_orderBy
+    orderDirection: OrderDirection
+    where: Clip_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Clip!]!
+  user(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): User
+  users(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: User_orderBy
+    orderDirection: OrderDirection
+    where: User_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [User!]!
+  ask(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Ask
+  asks(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Ask_orderBy
+    orderDirection: OrderDirection
+    where: Ask_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Ask!]!
+  bid(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Bid
+  bids(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Bid_orderBy
+    orderDirection: OrderDirection
+    where: Bid_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Bid!]!
+  inactiveBid(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): InactiveBid
+  inactiveBids(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: InactiveBid_orderBy
+    orderDirection: OrderDirection
+    where: InactiveBid_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [InactiveBid!]!
+  inactiveAsk(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): InactiveAsk
+  inactiveAsks(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: InactiveAsk_orderBy
+    orderDirection: OrderDirection
+    where: InactiveAsk_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [InactiveAsk!]!
+  currency(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Currency
+  currencies(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Currency_orderBy
+    orderDirection: OrderDirection
+    where: Currency_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Currency!]!
+  transfer(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Transfer
+  transfers(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Transfer_orderBy
+    orderDirection: OrderDirection
+    where: Transfer_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Transfer!]!
+  uriupdate(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): URIUpdate
+  uriupdates(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: URIUpdate_orderBy
+    orderDirection: OrderDirection
+    where: URIUpdate_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [URIUpdate!]!
+
+  """Access to subgraph metadata"""
+  _meta(block: Block_height): _Meta_
+}
+
+type Subscription {
+  clip(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Clip
+  clips(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Clip_orderBy
+    orderDirection: OrderDirection
+    where: Clip_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Clip!]!
+  user(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): User
+  users(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: User_orderBy
+    orderDirection: OrderDirection
+    where: User_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [User!]!
+  ask(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Ask
+  asks(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Ask_orderBy
+    orderDirection: OrderDirection
+    where: Ask_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Ask!]!
+  bid(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Bid
+  bids(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Bid_orderBy
+    orderDirection: OrderDirection
+    where: Bid_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Bid!]!
+  inactiveBid(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): InactiveBid
+  inactiveBids(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: InactiveBid_orderBy
+    orderDirection: OrderDirection
+    where: InactiveBid_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [InactiveBid!]!
+  inactiveAsk(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): InactiveAsk
+  inactiveAsks(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: InactiveAsk_orderBy
+    orderDirection: OrderDirection
+    where: InactiveAsk_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [InactiveAsk!]!
+  currency(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Currency
+  currencies(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Currency_orderBy
+    orderDirection: OrderDirection
+    where: Currency_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Currency!]!
+  transfer(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): Transfer
+  transfers(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Transfer_orderBy
+    orderDirection: OrderDirection
+    where: Transfer_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [Transfer!]!
+  uriupdate(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): URIUpdate
+  uriupdates(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: URIUpdate_orderBy
+    orderDirection: OrderDirection
+    where: URIUpdate_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [URIUpdate!]!
+
+  """Access to subgraph metadata"""
+  _meta(block: Block_height): _Meta_
+}
+
+type Transfer {
+  """<tokenId>-<transactionHash>-<logIndex>"""
+  id: ID!
+
+  """Transaction hash for the transfer"""
+  transactionHash: String!
+
+  """The Clip associated with the Transfer"""
+  clip: Clip!
+
+  """The User transferring the Clip"""
+  from: User!
+
+  """The User receiving the Clip"""
+  to: User!
+
+  """The timestamp of the block the Transfer was created in"""
+  createdAtTimestamp: BigInt!
+
+  """The number of the block the Transfer was created in"""
+  createdAtBlockNumber: BigInt!
+}
+
+input Transfer_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transactionHash: String
+  transactionHash_not: String
+  transactionHash_gt: String
+  transactionHash_lt: String
+  transactionHash_gte: String
+  transactionHash_lte: String
+  transactionHash_in: [String!]
+  transactionHash_not_in: [String!]
+  transactionHash_contains: String
+  transactionHash_not_contains: String
+  transactionHash_starts_with: String
+  transactionHash_not_starts_with: String
+  transactionHash_ends_with: String
+  transactionHash_not_ends_with: String
+  clip: String
+  clip_not: String
+  clip_gt: String
+  clip_lt: String
+  clip_gte: String
+  clip_lte: String
+  clip_in: [String!]
+  clip_not_in: [String!]
+  clip_contains: String
+  clip_not_contains: String
+  clip_starts_with: String
+  clip_not_starts_with: String
+  clip_ends_with: String
+  clip_not_ends_with: String
+  from: String
+  from_not: String
+  from_gt: String
+  from_lt: String
+  from_gte: String
+  from_lte: String
+  from_in: [String!]
+  from_not_in: [String!]
+  from_contains: String
+  from_not_contains: String
+  from_starts_with: String
+  from_not_starts_with: String
+  from_ends_with: String
+  from_not_ends_with: String
+  to: String
+  to_not: String
+  to_gt: String
+  to_lt: String
+  to_gte: String
+  to_lte: String
+  to_in: [String!]
+  to_not_in: [String!]
+  to_contains: String
+  to_not_contains: String
+  to_starts_with: String
+  to_not_starts_with: String
+  to_ends_with: String
+  to_not_ends_with: String
+  createdAtTimestamp: BigInt
+  createdAtTimestamp_not: BigInt
+  createdAtTimestamp_gt: BigInt
+  createdAtTimestamp_lt: BigInt
+  createdAtTimestamp_gte: BigInt
+  createdAtTimestamp_lte: BigInt
+  createdAtTimestamp_in: [BigInt!]
+  createdAtTimestamp_not_in: [BigInt!]
+  createdAtBlockNumber: BigInt
+  createdAtBlockNumber_not: BigInt
+  createdAtBlockNumber_gt: BigInt
+  createdAtBlockNumber_lt: BigInt
+  createdAtBlockNumber_gte: BigInt
+  createdAtBlockNumber_lte: BigInt
+  createdAtBlockNumber_in: [BigInt!]
+  createdAtBlockNumber_not_in: [BigInt!]
+}
+
+enum Transfer_orderBy {
+  id
+  transactionHash
+  clip
+  from
+  to
+  createdAtTimestamp
+  createdAtBlockNumber
+}
+
+type URIUpdate {
+  """<tokenId>-<transactionHash>-<logIndex>"""
+  id: ID!
+
+  """The transaction has the uri update happened at"""
+  transactionHash: String!
+
+  """The Type of URIUpdate"""
+  type: URIUpdateType!
+
+  """The previous uri"""
+  from: String!
+
+  """The new uri"""
+  to: String!
+
+  """The Clip associated with the URIUpdate"""
+  clip: Clip!
+
+  """The owner of the Clip"""
+  owner: User!
+
+  """The updater of the Clip's URI"""
+  updater: User!
+
+  """The timestamp of the block the URIUpdate was created in"""
+  createdAtTimestamp: BigInt!
+
+  """The number of the block the URIUpdate was created in"""
+  createdAtBlockNumber: BigInt!
+}
+
+input URIUpdate_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transactionHash: String
+  transactionHash_not: String
+  transactionHash_gt: String
+  transactionHash_lt: String
+  transactionHash_gte: String
+  transactionHash_lte: String
+  transactionHash_in: [String!]
+  transactionHash_not_in: [String!]
+  transactionHash_contains: String
+  transactionHash_not_contains: String
+  transactionHash_starts_with: String
+  transactionHash_not_starts_with: String
+  transactionHash_ends_with: String
+  transactionHash_not_ends_with: String
+  type: URIUpdateType
+  type_not: URIUpdateType
+  type_in: [URIUpdateType!]
+  type_not_in: [URIUpdateType!]
+  from: String
+  from_not: String
+  from_gt: String
+  from_lt: String
+  from_gte: String
+  from_lte: String
+  from_in: [String!]
+  from_not_in: [String!]
+  from_contains: String
+  from_not_contains: String
+  from_starts_with: String
+  from_not_starts_with: String
+  from_ends_with: String
+  from_not_ends_with: String
+  to: String
+  to_not: String
+  to_gt: String
+  to_lt: String
+  to_gte: String
+  to_lte: String
+  to_in: [String!]
+  to_not_in: [String!]
+  to_contains: String
+  to_not_contains: String
+  to_starts_with: String
+  to_not_starts_with: String
+  to_ends_with: String
+  to_not_ends_with: String
+  clip: String
+  clip_not: String
+  clip_gt: String
+  clip_lt: String
+  clip_gte: String
+  clip_lte: String
+  clip_in: [String!]
+  clip_not_in: [String!]
+  clip_contains: String
+  clip_not_contains: String
+  clip_starts_with: String
+  clip_not_starts_with: String
+  clip_ends_with: String
+  clip_not_ends_with: String
+  owner: String
+  owner_not: String
+  owner_gt: String
+  owner_lt: String
+  owner_gte: String
+  owner_lte: String
+  owner_in: [String!]
+  owner_not_in: [String!]
+  owner_contains: String
+  owner_not_contains: String
+  owner_starts_with: String
+  owner_not_starts_with: String
+  owner_ends_with: String
+  owner_not_ends_with: String
+  updater: String
+  updater_not: String
+  updater_gt: String
+  updater_lt: String
+  updater_gte: String
+  updater_lte: String
+  updater_in: [String!]
+  updater_not_in: [String!]
+  updater_contains: String
+  updater_not_contains: String
+  updater_starts_with: String
+  updater_not_starts_with: String
+  updater_ends_with: String
+  updater_not_ends_with: String
+  createdAtTimestamp: BigInt
+  createdAtTimestamp_not: BigInt
+  createdAtTimestamp_gt: BigInt
+  createdAtTimestamp_lt: BigInt
+  createdAtTimestamp_gte: BigInt
+  createdAtTimestamp_lte: BigInt
+  createdAtTimestamp_in: [BigInt!]
+  createdAtTimestamp_not_in: [BigInt!]
+  createdAtBlockNumber: BigInt
+  createdAtBlockNumber_not: BigInt
+  createdAtBlockNumber_gt: BigInt
+  createdAtBlockNumber_lt: BigInt
+  createdAtBlockNumber_gte: BigInt
+  createdAtBlockNumber_lte: BigInt
+  createdAtBlockNumber_in: [BigInt!]
+  createdAtBlockNumber_not_in: [BigInt!]
+}
+
+enum URIUpdate_orderBy {
+  id
+  transactionHash
+  type
+  from
+  to
+  clip
+  owner
+  updater
+  createdAtTimestamp
+  createdAtBlockNumber
+}
+
+"""The Types of URI Updates"""
+enum URIUpdateType {
+  Content
+  Metadata
+}
+
+type User {
+  """Ethereum Address"""
+  id: ID!
+
+  """
+  Users that have been granted `ApprovalForAll` Clip of the User's Collection
+  """
+  authorizedUsers(skip: Int = 0, first: Int = 100, orderBy: User_orderBy, orderDirection: OrderDirection, where: User_filter): [User!]
+
+  """The Clip the User owns"""
+  collection(skip: Int = 0, first: Int = 100, orderBy: Clip_orderBy, orderDirection: OrderDirection, where: Clip_filter): [Clip!]!
+
+  """The Clip the User created"""
+  creations(skip: Int = 0, first: Int = 100, orderBy: Clip_orderBy, orderDirection: OrderDirection, where: Clip_filter): [Clip!]!
+
+  """The active Bids made by the User"""
+  currentBids(skip: Int = 0, first: Int = 100, orderBy: Bid_orderBy, orderDirection: OrderDirection, where: Bid_filter): [Bid!]
+}
+
+input User_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  authorizedUsers: [String!]
+  authorizedUsers_not: [String!]
+  authorizedUsers_contains: [String!]
+  authorizedUsers_not_contains: [String!]
+}
+
+enum User_orderBy {
+  id
+  authorizedUsers
+  collection
+  creations
+  currentBids
+}
+

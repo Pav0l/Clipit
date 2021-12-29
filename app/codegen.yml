@@ -1,0 +1,7 @@
+schema: ./src/lib/graphql/clipit.graphql
+documents: ./src/lib/graphql/clipit.ts
+generates:
+  ./src/lib/graphql/types.ts:
+    plugins:
+      - typescript
+      - typescript-operations
