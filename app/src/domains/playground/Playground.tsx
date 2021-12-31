@@ -7,7 +7,9 @@ import {
 import { makeStyles, Theme } from "@material-ui/core";
 import { NftModel } from "../nfts/nft.model";
 import { IWeb3Controller } from "../app/app.controller";
-import { getClips } from "../../lib/graphql/subgraph.client";
+import { SubgraphClient } from "../../lib/graphql/subgraph.client";
+import { GraphQLClient } from "graphql-request";
+import { subgraphUrl } from "../../lib/constants";
 
 interface Props {
   model: {
@@ -26,8 +28,13 @@ const Playground = observer(function Playground({
 
   const onClick = async () => {
     try {
+      const sub = new SubgraphClient(new GraphQLClient(subgraphUrl));
       // DO SOMETHING
-      await getClips();
+      const u = await sub.fetchUserCached(
+        "0x8C38eEFc38cBda4dEb9D891925d23d63fE05e515".toLowerCase()
+      );
+
+      console.log(u);
     } catch (error) {
       snackbar.sendError((error as Error).message);
       return;

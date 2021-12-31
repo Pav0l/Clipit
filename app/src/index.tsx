@@ -6,7 +6,7 @@ import "./index.css";
 import {
   AppRoute,
   clipItUri,
-  cloudFlareGatewayUri,
+  pinataGatewayUri,
   twitchApiUri,
   twitchAppClientId,
   twitchOAuthUri
@@ -44,7 +44,7 @@ function initSynchronous() {
   const model = new AppModel();
 
   const clipItApi = new ClipItApiClient(new HttpClient(storage, clipItUri));
-  const ipfsApi = new IpfsClient(new HttpClient(storage, cloudFlareGatewayUri));
+  const ipfsApi = new IpfsClient(new HttpClient(storage, pinataGatewayUri));
   const twitchOAuthApi = new TwitchOAuthApiClient(
     new HttpClient(storage, twitchOAuthUri)
   );

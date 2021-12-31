@@ -1800,7 +1800,17 @@ export enum _SubgraphErrorPolicy_ {
   Deny = 'deny'
 }
 
-export type Unnamed_1_QueryVariables = Exact<{ [key: string]: never; }>;
+export type AskPartialFragment = { __typename?: 'Ask', id: string, amount: any, createdAtTimestamp: any, currency: { __typename?: 'Currency', id: string, name: string, symbol: string, decimals?: number | null | undefined } };
+
+export type BidPartialFragment = { __typename?: 'Bid', id: string, amount: any, clip: { __typename?: 'Clip', id: string, contentURI: string, metadataURI: string }, currency: { __typename?: 'Currency', id: string, name: string, symbol: string, decimals?: number | null | undefined } };
+
+export type ClipPartialFragment = { __typename?: 'Clip', id: string, metadataURI: string, contentURI: string, creatorBidShare: any, ownerBidShare: any, createdAtTimestamp: any, currentAsk?: { __typename?: 'Ask', id: string, amount: any, createdAtTimestamp: any, currency: { __typename?: 'Currency', id: string, name: string, symbol: string, decimals?: number | null | undefined } } | null | undefined, currentBids?: Array<{ __typename?: 'Bid', id: string, amount: any, clip: { __typename?: 'Clip', id: string, contentURI: string, metadataURI: string }, currency: { __typename?: 'Currency', id: string, name: string, symbol: string, decimals?: number | null | undefined } }> | null | undefined, owner: { __typename?: 'User', id: string }, creator: { __typename?: 'User', id: string } };
+
+export type CurrencyPartialFragment = { __typename?: 'Currency', id: string, name: string, symbol: string, decimals?: number | null | undefined };
+
+export type GetUserDataQueryVariables = Exact<{
+  ids?: InputMaybe<Array<Scalars['ID']> | Scalars['ID']>;
+}>;
 
 
-export type Unnamed_1_Query = { __typename?: 'Query', clips: Array<{ __typename?: 'Clip', id: string, transactionHash: string, owner: { __typename?: 'User', id: string }, creator: { __typename?: 'User', id: string } }> };
+export type GetUserDataQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, collection: Array<{ __typename?: 'Clip', id: string, metadataURI: string, contentURI: string, creatorBidShare: any, ownerBidShare: any, createdAtTimestamp: any, currentAsk?: { __typename?: 'Ask', id: string, amount: any, createdAtTimestamp: any, currency: { __typename?: 'Currency', id: string, name: string, symbol: string, decimals?: number | null | undefined } } | null | undefined, currentBids?: Array<{ __typename?: 'Bid', id: string, amount: any, clip: { __typename?: 'Clip', id: string, contentURI: string, metadataURI: string }, currency: { __typename?: 'Currency', id: string, name: string, symbol: string, decimals?: number | null | undefined } }> | null | undefined, owner: { __typename?: 'User', id: string }, creator: { __typename?: 'User', id: string } }>, currentBids?: Array<{ __typename?: 'Bid', id: string, amount: any, clip: { __typename?: 'Clip', id: string, contentURI: string, metadataURI: string }, currency: { __typename?: 'Currency', id: string, name: string, symbol: string, decimals?: number | null | undefined } }> | null | undefined }> };
