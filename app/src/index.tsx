@@ -1,12 +1,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { GraphQLClient } from "graphql-request";
 
 import "./index.css";
 import {
   AppRoute,
   clipItUri,
   pinataGatewayUri,
+  subgraphUrl,
   twitchApiUri,
   twitchAppClientId,
   twitchOAuthUri
@@ -38,6 +40,7 @@ import { ClipController } from "./domains/twitch-clips/clip.controller";
 import { GameController } from "./domains/twitch-games/game.controller";
 import { UserController } from "./domains/twitch-user/user.controller";
 import { TwitchOAuthApiClient } from "./lib/twitch-oauth/twitch-oauth-api.client";
+import { SubgraphClient } from "./lib/graphql/subgraph.client";
 
 function initSynchronous() {
   const storage = new LocalStorage();
@@ -52,6 +55,7 @@ function initSynchronous() {
     new HttpClient(storage, twitchApiUri),
     twitchAppClientId
   );
+  const subgraph = new SubgraphClient(new GraphQLClient(subgraphUrl));
 
   const authController = new OAuthController(
     model.auth,
@@ -71,7 +75,8 @@ function initSynchronous() {
     model.nft,
     snackbarClient,
     clipItApi,
-    ipfsApi
+    ipfsApi,
+    subgraph
   );
 
   authController.checkTokenInStorage();
@@ -88,9 +93,30 @@ function initSynchronous() {
   };
 }
 
+async function initAsync({
+  model,
+  user
+}: {
+  model: AppModel;
+  user: UserController;
+}) {
+  if (!model.auth.isLoggedIn) {
+    // user logged out -> nothing to init
+    return;
+  }
+
+  ////////////////////////////
+  // twitch data init
+  ////////////////////////////
+
+  await user.getUser();
+}
+
 (async () => {
   try {
     const { model, operations } = initSynchronous();
+
+    await initAsync({ model, user: operations.user });
 
     ReactDOM.render(
       <React.StrictMode>

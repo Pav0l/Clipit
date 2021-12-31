@@ -17,13 +17,12 @@ interface Props {
 }
 
 function NftContainer({ model, operations }: Props) {
-  // fetch tokenId from URL
   const { tokenId } = useParams<{ tokenId?: string }>();
   if (!tokenId) {
     // TODO SENTRY + how is this handled?
     return <ErrorWithRetry text="Something went wrong" withRetry={true} />;
   }
-  // construct ethereum and contract clients
+  const metadata = model.nft.getTokenMetadata(tokenId);
 
   useEffect(() => {
     operations.requestConnectAndGetTokenMetadata(tokenId);
@@ -35,13 +34,13 @@ function NftContainer({ model, operations }: Props) {
     return <ErrorWithRetry text={model.nft.meta.error} withRetry={false} />;
   }
 
-  if (model.nft.metadata) {
+  if (metadata) {
     return (
       <CenteredContainer>
         <NftCard
-          clipIpfsUri={model.nft.metadata.clipIpfsUri}
-          clipTitle={model.nft.metadata.clipTitle}
-          clipDescription={model.nft.metadata.description}
+          clipIpfsUri={metadata.clipIpfsUri}
+          clipTitle={metadata.clipTitle}
+          clipDescription={metadata.description}
         />
       </CenteredContainer>
     );

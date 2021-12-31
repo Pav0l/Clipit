@@ -19,7 +19,7 @@ export class EthereumModel {
   }
 
   setAccounts(accounts: string[]) {
-    this.accounts = accounts;
+    this.accounts = accounts.map(address => address.toLowerCase());
   }
 
   setChainId(chainId: string) {

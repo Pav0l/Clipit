@@ -20,6 +20,7 @@ export class ClipController {
 
   getClips = async (broadcasterId: string) => {
     this.model.meta.setLoading(true);
+    // TODO implement pagination for clips
     const data = await this.twitchApi.getClips({ broadcaster_id: broadcasterId });
 
     if (data.statusOk && !this.twitchApi.isTwitchError(data.body)) {

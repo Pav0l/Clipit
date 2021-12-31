@@ -20,7 +20,7 @@ interface Props {
 }
 
 function NftsContainer({ model, operations }: Props) {
-  const tokenIds = Object.keys(model.nft.metadataCollection);
+  const metadata = model.nft.metadata;
 
   useEffect(() => {
     operations.requestConnectAndGetTokensMetadata();
@@ -37,7 +37,7 @@ function NftsContainer({ model, operations }: Props) {
     return <FullPageLoader />;
   }
 
-  if (tokenIds.length === 0) {
+  if (metadata.length === 0) {
     return (
       <CenteredContainer>
         <Typography variant="h6" component="h6">
@@ -50,12 +50,12 @@ function NftsContainer({ model, operations }: Props) {
 
   return (
     <VideoList>
-      {tokenIds.map((tokenId, idx) => (
+      {metadata.map((metadata, idx) => (
         <NftCard
           key={idx}
-          clipIpfsUri={model.nft.metadataCollection[tokenId].clipIpfsUri}
-          clipTitle={model.nft.metadataCollection[tokenId].clipTitle}
-          clipDescription={model.nft.metadataCollection[tokenId].description}
+          clipIpfsUri={metadata.clipIpfsUri}
+          clipTitle={metadata.clipTitle}
+          clipDescription={metadata.description}
         />
       ))}
     </VideoList>

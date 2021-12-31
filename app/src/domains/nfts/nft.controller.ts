@@ -8,7 +8,7 @@ import { isStoreClipError } from "../../lib/clipit-api/clipit-api.client";
 import { ContractErrors, isRpcError, NftErrors, RpcErrors } from './nft.errors';
 import { BytesLike } from "ethers";
 import { Decimal } from "../../lib/decimal/decimal";
-
+import { SubgraphClient } from "../../lib/graphql/subgraph.client";
 
 
 export class NftController {
@@ -18,7 +18,8 @@ export class NftController {
     private snackbarClient: SnackbarClient,
     private clipitApi: ClipItApiClient,
     private ipfsClient: IpfsClient,
-    private contractClient: ContractClient
+    private contractClient: ContractClient,
+    private subgraph: SubgraphClient
   ) { }
 
   prepareMetadataAndMintClip = async (clipId: string, address: string) => {
@@ -27,25 +28,32 @@ export class NftController {
     const resp = await this.clipitApi.storeClip(clipId, address);
 
     if (resp.statusOk && !isStoreClipError(resp.body)) {
-      this.model.createMetadata(resp.body.metadata!); // TODO fix !
-
       this.model.stopClipStoreLoaderAndStartMintLoader();
 
-      await this.mintNFT(resp.body.mediadata, clipId, resp.body.signature);
+      const nftClip = await this.mintNFT(resp.body.mediadata, clipId, resp.body.signature);
+      if (nftClip) {
+        this.model.addMetadata({ ...nftClip, tokenId: nftClip.id })
+        this.model.stopMintLoader();
+
+        // TODO ideally we do not want to reload the app here (and also this should prolly be higer in the ctrl)
+        location.replace(location.origin + `/nfts/${nftClip.id}`);
+      }
 
     } else {
       this.snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
     }
   }
 
-  getMetadataFromIpfs = async (cid: string) => {
-    return this.ipfsClient.getMetadata(cid);
-  }
-
   getTokenMetadata = async (tokenId: string) => {
     try {
-      const metadata = await this.fetchTokenMetadata(tokenId)
-      this.model.createMetadata(metadata);
+      const tokenMetadata = this.model.getTokenMetadata(tokenId);
+      if (tokenMetadata) {
+        return tokenMetadata
+      }
+
+      const data = await this.subgraph.fetchClipCached(tokenId);
+      const metadata = await this.fetchTokenMetadata(data.metadataURI);
+      this.model.addMetadata({ ...metadata, tokenId });
     } catch (error) {
       // TODO SENTRY
       this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
@@ -56,31 +64,47 @@ export class NftController {
     try {
       this.model.meta.setLoading(true);
 
-      const events = await this.contractClient.getWalletsClipNFTs(address);
+      const data = await this.subgraph.fetchUserCached(address);
 
-      const tokenIds: string[] = this.getTokenIdsFromEvents(events);
-      console.log("tokenIds", tokenIds);
+      for (const clipData of data.collection) {
+        const metadata = await this.fetchTokenMetadata(clipData.metadataURI);
+        if (!metadata) {
+          // in case the metadata fetch fails
+          continue;
+        }
 
-      const metadataCollection: Record<string, any> = {};
-      for (const tokenId of tokenIds) {
-        const metadata = await this.fetchTokenMetadata(tokenId)
-        metadataCollection[tokenId] = metadata;
+        this.model.addMetadata({ ...metadata, tokenId: clipData.id });
+        // we can stop loading after we have data for first NFT
+        this.model.meta.setLoading(false);
       }
 
-      this.model.setMetadataCollection(metadataCollection);
     } catch (error) {
       // TODO SENTRY
       this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     } finally {
-      this.model.meta.setLoading(false);
+      if (this.model.meta.isLoading) {
+        this.model.meta.setLoading(false);
+      }
     }
   }
 
-  private fetchTokenMetadata = async (tokenId: string) => {
-    const uri = await this.contractClient.getMetadataUri(tokenId);
-    const metadataCid = uri.replace("ipfs://", "").split("/")[0];
+  private fetchTokenMetadata = async (metadataURI: string) => {
+    const metadataCid = metadataURI.replace("ipfs://", "").split("/")[0];
+    if (!metadataCid) {
+      throw new Error("Invalid metadataURI");
+    }
+    return this.getMetadataFromIpfs(metadataCid);
+  }
 
-    return await this.getMetadataFromIpfs(metadataCid);
+  private getMetadataFromIpfs = async (cid: string) => {
+    // TODO refactor this error handling
+    try {
+      return this.ipfsClient.getMetadata(cid);
+    } catch (error) {
+      // TODO sentry
+      console.log('[LOG]:getMetadata err', error);
+      return null;
+    }
   }
 
   private mintNFT = async (data: { tokenURI: string, metadataURI: string, contentHash: BytesLike, metadataHash: BytesLike }, clipId: string, signature: Signature) => {
@@ -99,6 +123,8 @@ export class NftController {
 
       const receipt = await tx.wait();
       console.log("[LOG]:mint:done! gas used to mint:", receipt.gasUsed.toString());
+
+      return this.subgraph.fetchClipByHashCached(tx.hash);
     } catch (error) {
       console.log("[LOG]:mint:error", error);
 
@@ -135,10 +161,5 @@ export class NftController {
         this.model.meta.setError(NftErrors.FAILED_TO_MINT);
       }
     }
-  }
-
-  // TODO fix any
-  private getTokenIdsFromEvents = (transferOrApprovalEvents: any[]) => {
-    return transferOrApprovalEvents?.map(event => event.args.tokenId.toString());
   }
 }

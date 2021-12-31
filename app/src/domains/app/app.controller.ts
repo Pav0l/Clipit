@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { BigNumberish } from "@ethersproject/bignumber";
 
 import type { ClipItApiClient } from "../../lib/clipit-api/clipit-api.client";
 import ContractClient from "../../lib/contract/contract.client";
@@ -11,6 +10,7 @@ import EthereumController from "../../lib/ethereum/ethereum.controller";
 import { EthereumModel, MetaMaskErrors } from "../../lib/ethereum/ethereum.model";
 import { NftErrors } from "../nfts/nft.errors";
 import { NftModel } from "../nfts/nft.model";
+import { SubgraphClient } from "../../lib/graphql/subgraph.client";
 
 
 export interface IWeb3Controller {
@@ -36,6 +36,7 @@ export class Web3Controller implements IWeb3Controller {
     private snackbar: SnackbarClient,
     private clipitApi: ClipItApiClient,
     private ipfsApi: IpfsClient,
+    private subgraph: SubgraphClient
   ) {
 
   }
@@ -54,11 +55,15 @@ export class Web3Controller implements IWeb3Controller {
     }
 
     try {
-      this.eth = new EthereumController(this.ethModel, window.ethereum as EthereumProvider, this.snackbar);
+      this.initEthereumCtrlIfNotExist(this.ethModel, this.snackbar);
+      if (!this.eth) {
+        throw new Error("Failed to init Etheruem Controller");
+      }
       await this.eth.ethAccounts();
     } catch (error) {
       // TODO Sentry - this should not happen
       console.log('[app.controller]:connectMetaMaskIfNecessaryForConnectBtn:error', error);
+      this.snackbar.sendError(NftErrors.SOMETHING_WENT_WRONG);
     }
 
   }
@@ -86,27 +91,25 @@ export class Web3Controller implements IWeb3Controller {
       }
 
       if (!this.ethModel.isProviderConnected()) {
-        this.eth = new EthereumController(this.ethModel, window.ethereum as EthereumProvider, this.snackbar);
+        this.initEthereumCtrlIfNotExist(this.ethModel, this.snackbar);
+        if (!this.eth) {
+          throw new Error("Failed to init Etheruem Controller");
+        }
         await this.eth.requestAccounts();
       }
 
       this.initContractIfNotExist(this.ethModel.signer);
       if (!this.contract) {
-        // TODO track in sentry, this should not happen
-        this.snackbar.sendError(NftErrors.SOMETHING_WENT_WRONG);
-        return;
+        throw new Error("Failed to init Contract");
       }
 
       this.createNftCtrlIfNotExist(this.contract);
       if (!this.nft) {
-        // TODO track in sentry, this should not happen
-        return;
+        throw new Error("Failed to init NFT Controller");
       }
 
       if (!this.ethModel.accounts || !this.ethModel.accounts[0]) {
-        // TODO track in sentry, this should not happen
-        this.snackbar.sendError(NftErrors.SOMETHING_WENT_WRONG);
-        return;
+        throw new Error("Provider not connected???");
       }
 
       await this.nft.prepareMetadataAndMintClip(
@@ -133,10 +136,13 @@ export class Web3Controller implements IWeb3Controller {
     // MM not yet connected
     if (!this.ethModel.isProviderConnected()) {
       try {
-        this.eth = new EthereumController(this.ethModel, window.ethereum as EthereumProvider, this.snackbar);
+        this.initEthereumCtrlIfNotExist(this.ethModel, this.snackbar);
+        if (!this.eth) {
+          throw new Error("Failed to init Etheruem Controller");
+        }
         await this.eth.requestAccounts();
       } catch (error) {
-        // should not happen
+        // TODO track in sentry, this should not happen
         this.snackbar.sendError(MetaMaskErrors.SOMETHING_WENT_WRONG);
         return;
       }
@@ -162,6 +168,12 @@ export class Web3Controller implements IWeb3Controller {
     }
   }
 
+  private initEthereumCtrlIfNotExist(ethModel: EthereumModel, snackbar: SnackbarClient) {
+    if (!this.eth) {
+      this.eth = new EthereumController(ethModel, window.ethereum as EthereumProvider, snackbar);
+    }
+  }
+
   private initContractIfNotExist(signer?: ethers.providers.JsonRpcSigner) {
     if (!signer) {
       return;
@@ -172,50 +184,7 @@ export class Web3Controller implements IWeb3Controller {
     }
 
     try {
-      this.contract = new ContractClient(signer, {
-        handleApproval: (
-          owner?: string | null,
-          approved?: string | null,
-          tokenId?: BigNumberish | null
-        ) => {
-          console.log(
-            `[APPROVAL](initContractIfNotExist) from ${owner} to ${approved} for ${tokenId}`
-          );
-        },
-        handleApprovalAll: (
-          owner?: string | null,
-          operator?: string | null,
-          approved?: any
-        ) => {
-          console.log(
-            `[APPROVAL_ALL](initContractIfNotExist) from ${owner} to ${operator} approval status: ${approved}`
-          );
-        },
-        handleTransfer: (
-          from?: string | null,
-          to?: string | null,
-          tokenId?: BigNumberish | null
-        ) => {
-          console.log(`[TRANSFER](initContractIfNotExist) from ${from} to ${to} for ${tokenId}`);
-
-          // TODO should check if tokenId is different than one in pathname
-          if (location.pathname.includes('/nfts/')) {
-            console.log('multiple TRANSFER handler calls')
-            return;
-          }
-
-          this.nftModel.stopMintLoader();
-
-          const tId = tokenId?.toString()
-
-          this.nftModel.setTokenId(tId);
-          if (tId) {
-            console.log("tokenId from mint -> redirecting", tokenId);
-            this.nftModel.setTokenId(undefined);
-            location.replace(location.origin + `/nfts/${tokenId}`);
-          }
-        }
-      });
+      this.contract = new ContractClient(signer);
     } catch (error) {
       // TODO sentry - probably invalid signer
       this.snackbar.sendError(MetaMaskErrors.SOMETHING_WENT_WRONG);
@@ -234,7 +203,8 @@ export class Web3Controller implements IWeb3Controller {
         this.snackbar,
         this.clipitApi,
         this.ipfsApi,
-        contract
+        contract,
+        this.subgraph
       )
     }
   }

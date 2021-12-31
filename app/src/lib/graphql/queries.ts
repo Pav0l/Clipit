@@ -27,6 +27,7 @@ const CLIP_PARTIALS = gql`
     id
     metadataURI
     contentURI
+    transactionHash
     currentAsk {
       ...AskPartial
     }
@@ -70,6 +71,32 @@ export const GET_USER_TOKENS_QUERY = gql`
       currentBids {
         ...BidPartial
       }
+    }
+  }
+`;
+
+export const GET_TOKENS_QUERY = gql`
+  ${CURRENCY_PARTIAL}
+  ${CLIP_PARTIALS}
+
+  query getClipData($ids: [ID!]) {
+    clips(
+      where: { id_in: $ids }
+    ) {
+      ...ClipPartial
+    }
+  }
+`;
+
+export const GET_TOKEN_BY_TX_HASH = gql`
+  ${CURRENCY_PARTIAL}
+  ${CLIP_PARTIALS}
+
+  query getTokenByTxHash($hashes: [String!]) {
+    clips(
+      where: { transactionHash_in: $hashes }
+    ) {
+      ...ClipPartial
     }
   }
 `;

@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx"
-import { ipfsIoGatewayUri, pinataGatewayUri } from "../../lib/constants";
+import { pinataGatewayUri } from "../../lib/constants";
 import { MetaModel } from "../app/meta.model";
 
 enum MintStatus {
@@ -23,18 +23,23 @@ export class NftModel {
   mintLoad: boolean = false;
   mintStatus?: MintStatus;
 
-  metadata?: Metadata;
-  tokenId?: string;
-  accounts: string[] = [];
-
-  /**
-   * Object that holds {tokenId: metadata} key-value pairs
-   */
-  metadataCollection: Record<string, Metadata> = {};
+  metadata: Metadata[] = [];;
 
   constructor(meta: MetaModel) {
     makeAutoObservable(this);
     this.meta = meta;
+  }
+
+  addMetadata(data: MetadataInput): void {
+    this.metadata.push(new Metadata(data))
+  }
+
+  getMetadata(clipCid: string): Metadata {
+    return this.metadata.filter(metadata => metadata.clipCid === clipCid)[0];
+  }
+
+  getTokenMetadata(tokenId: string): Metadata {
+    return this.metadata.filter(metadata => metadata.tokenId === tokenId)[0];
   }
 
   startClipStoreLoader() {
@@ -48,23 +53,9 @@ export class NftModel {
     this.storeClipTimeoutId = timeoutId;
   }
 
-  private stopClipStoreLoader() {
-    clearTimeout(this.storeClipTimeoutId);
-    this.storeClipTimeoutId = undefined;
-    this.storeClipLoad = false;
-  }
-  private setClipStoreStatus(status: StoreClipStatus) {
-    this.storeClipStatus = status;
-  }
-
   stopClipStoreLoaderAndStartMintLoader() {
     this.stopClipStoreLoader();
     this.startMintLoader()
-  }
-
-  private startMintLoader() {
-    this.mintLoad = true;
-    this.mintStatus = MintStatus.CONFIRM_MINT;
   }
 
   stopMintLoader() {
@@ -77,24 +68,18 @@ export class NftModel {
     this.mintStatus = MintStatus.WAIT_FOR_TX;
   }
 
-  setMetadataCollection(data: Record<string, MetadataInput>, ipfsGatewayUri: string = ipfsIoGatewayUri) {
-    const collection: Record<string, Metadata> = {};
-    Object.keys(data).forEach(key => collection[key] = new Metadata(data[key], ipfsGatewayUri));
-    this.metadataCollection = collection;
+  private startMintLoader() {
+    this.mintLoad = true;
+    this.mintStatus = MintStatus.CONFIRM_MINT;
   }
 
-  setAccounts = (accounts: string[]) => {
-    console.log('[store]:accounts:', accounts)
-    this.accounts = accounts;
+  private stopClipStoreLoader() {
+    clearTimeout(this.storeClipTimeoutId);
+    this.storeClipTimeoutId = undefined;
+    this.storeClipLoad = false;
   }
-
-  createMetadata(data: MetadataInput, ipfsGatewayUri: string = pinataGatewayUri) {
-    this.metadata = new Metadata(data, ipfsGatewayUri);
-  }
-
-  setTokenId(tokenId: string | undefined) {
-    this.tokenId = tokenId;
-    console.log(`[store]:tokenId:`, tokenId);
+  private setClipStoreStatus(status: StoreClipStatus) {
+    this.storeClipStatus = status;
   }
 }
 
@@ -108,6 +93,7 @@ export interface Signature {
 
 // TODO unify these with clipit-api.client
 interface MetadataInput {
+  tokenId?: string;
   name?: string;
   description?: string;
   external_url?: string;
@@ -123,18 +109,19 @@ interface MetadataAttrs {
 
 class Metadata {
   clipTitle: string;
-  // TODO maybe remove - unused?
   clipCid: string;
   description: string;
   clipIpfsUri: string;
+  tokenId: string;
 
-  constructor(data: MetadataInput, private ipfsGatewayUri: string) {
+  constructor(data: MetadataInput, private ipfsGatewayUri: string = pinataGatewayUri) {
     makeAutoObservable(this);
 
     this.clipCid = this.validateField(data.clipCid);
     this.clipTitle = this.validateField(data.name);
     this.description = this.validateField(data.description);
     this.clipIpfsUri = this.createClipIpfsGatewayUri(this.validateField(data.clipCid));
+    this.tokenId = this.validateField(data.tokenId);
   }
 
   private validateField<T>(field: unknown) {
