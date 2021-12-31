@@ -65,7 +65,7 @@ function Home({ model, operations }: Props) {
           className={classes.button}
           onClick={(ev) => buttonHandler(ev)}
         >
-          Create NFT
+          Prepare NFT
         </Button>
       </section>
     </CenteredContainer>
