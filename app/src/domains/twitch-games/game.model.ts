@@ -3,7 +3,7 @@ import { MetaModel } from "../app/meta.model";
 
 
 export class GameModel {
-  games: { [id: string]: string; } = {};
+  games = new Map<string, string>()
   meta: MetaModel;
 
   constructor(meta: MetaModel) {
@@ -13,11 +13,11 @@ export class GameModel {
 
   addGame(game: ITwitchGame) {
     const g = new TwitchGame(game);
-    this.games[g.id] = g.name;
+    this.games.set(g.id, g.name);
   }
 
   getGame(id: string): string | undefined {
-    return this.games[id];
+    return this.games.get(id);
   }
 }
 

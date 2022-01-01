@@ -24,7 +24,7 @@ export class GameController {
     // TODO throttle these, so we don't hit rate limits on users with many "variety" clips
     for (const gameId of gameIds) {
       // do not fetch gameIds for games we already know
-      if (!this.model.games[gameId]) {
+      if (!this.model.games.has(gameId)) {
         await this.getGames(gameId);
       }
     }
