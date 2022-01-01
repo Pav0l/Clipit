@@ -4,30 +4,10 @@ export class IpfsClient {
 
   constructor(private httpClient: HttpClient) { }
 
-  getMetadata = async (cid: string) => {
-    const resp = await this.httpClient.requestRaw<Metadata>({
+  getMetadata = async <V>(cid: string) => {
+    return this.httpClient.requestRaw<V>({
       method: 'get',
       url: `/${cid}/metadata.json`
     });
-
-    // TODO error handling
-    return resp.body;
   }
-}
-
-
-// TODO unify these with nft.model types and validate fields
-interface Metadata {
-  description: string;
-  external_url: string;
-  image: string;
-  name: string;
-  clipCid: string;
-  clipUri: string;
-  attributes: MetadataAttrs[];
-}
-
-interface MetadataAttrs {
-  trait_type: "Game" | "Streamer";
-  value: string;
 }

@@ -1,8 +1,6 @@
 import { ethers } from "ethers";
 
-import type { ClipItApiClient } from "../../lib/clipit-api/clipit-api.client";
 import ContractClient from "../../lib/contract/contract.client";
-import { IpfsClient } from "../../lib/ipfs/ipfs.client";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 import { EthereumProvider } from "../../lib/ethereum/ethereum.types";
 import { NftController } from "../nfts/nft.controller";
@@ -11,6 +9,7 @@ import { EthereumModel, MetaMaskErrors } from "../../lib/ethereum/ethereum.model
 import { NftErrors } from "../nfts/nft.errors";
 import { NftModel } from "../nfts/nft.model";
 import { SubgraphClient } from "../../lib/graphql/subgraph.client";
+import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 
 
 export interface IWeb3Controller {
@@ -34,8 +33,7 @@ export class Web3Controller implements IWeb3Controller {
     private ethModel: EthereumModel,
     private nftModel: NftModel,
     private snackbar: SnackbarClient,
-    private clipitApi: ClipItApiClient,
-    private ipfsApi: IpfsClient,
+    private offChainStorage: OffChainStorage,
     private subgraph: SubgraphClient
   ) {
 
@@ -202,8 +200,7 @@ export class Web3Controller implements IWeb3Controller {
       this.nft = new NftController(
         this.nftModel,
         this.snackbar,
-        this.clipitApi,
-        this.ipfsApi,
+        this.offChainStorage,
         contract,
         this.subgraph
       )

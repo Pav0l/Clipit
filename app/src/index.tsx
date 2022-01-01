@@ -13,7 +13,6 @@ import {
   twitchAppClientId,
   twitchOAuthUri
 } from "./lib/constants";
-import { IpfsClient } from "./lib/ipfs/ipfs.client";
 import { AppModel } from "./domains/app/app.model";
 import { Web3Controller } from "./domains/app/app.controller";
 import NftContainer from "./domains/nfts/NftContainer";
@@ -28,7 +27,6 @@ import Marketplace from "./components/marketplace/Marketplace";
 import Navbar from "./components/navbar/Navbar";
 import ErrorBoundary from "./components/error/ErrorBoundry";
 import Playground from "./domains/playground/Playground";
-import { ClipItApiClient } from "./lib/clipit-api/clipit-api.client";
 import { HttpClient } from "./lib/http-client/http-client";
 import { TwitchApi } from "./lib/twitch-api/twitch-api.client";
 import ThemeProvider from "./components/themeProvider/ThemeProvider";
@@ -41,13 +39,18 @@ import { GameController } from "./domains/twitch-games/game.controller";
 import { UserController } from "./domains/twitch-user/user.controller";
 import { TwitchOAuthApiClient } from "./lib/twitch-oauth/twitch-oauth-api.client";
 import { SubgraphClient } from "./lib/graphql/subgraph.client";
+import { OffChainStorage } from "./lib/off-chain-storage/off-chain-storage.client";
 
 function initSynchronous() {
   const storage = new LocalStorage();
   const model = new AppModel();
 
-  const clipItApi = new ClipItApiClient(new HttpClient(storage, clipItUri));
-  const ipfsApi = new IpfsClient(new HttpClient(storage, pinataGatewayUri));
+  const offChainStorageApi = new OffChainStorage(
+    storage,
+    clipItUri,
+    pinataGatewayUri
+  );
+
   const twitchOAuthApi = new TwitchOAuthApiClient(
     new HttpClient(storage, twitchOAuthUri)
   );
@@ -74,8 +77,7 @@ function initSynchronous() {
     model.eth,
     model.nft,
     snackbarClient,
-    clipItApi,
-    ipfsApi,
+    offChainStorageApi,
     subgraph
   );
 

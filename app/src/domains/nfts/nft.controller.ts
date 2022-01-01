@@ -1,14 +1,11 @@
-import type { ClipItApiClient } from "../../lib/clipit-api/clipit-api.client";
+import { BytesLike } from "ethers";
 import type { NftModel, Signature } from "./nft.model";
 import type ContractClient from '../../lib/contract/contract.client';
-import type { IpfsClient } from '../../lib/ipfs/ipfs.client';
 import type { SnackbarClient } from '../../lib/snackbar/snackbar.client';
-
-import { isStoreClipError } from "../../lib/clipit-api/clipit-api.client";
 import { ContractErrors, isRpcError, NftErrors, RpcErrors } from './nft.errors';
-import { BytesLike } from "ethers";
 import { Decimal } from "../../lib/decimal/decimal";
 import { SubgraphClient } from "../../lib/graphql/subgraph.client";
+import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 
 
 export class NftController {
@@ -16,8 +13,7 @@ export class NftController {
   constructor(
     private model: NftModel,
     private snackbarClient: SnackbarClient,
-    private clipitApi: ClipItApiClient,
-    private ipfsClient: IpfsClient,
+    private offChainStorage: OffChainStorage,
     private contractClient: ContractClient,
     private subgraph: SubgraphClient
   ) { }
@@ -25,9 +21,9 @@ export class NftController {
   prepareMetadataAndMintClip = async (clipId: string, address: string) => {
     this.model.startClipStoreLoader();
 
-    const resp = await this.clipitApi.storeClip(clipId, address);
+    const resp = await this.offChainStorage.saveClipAndCreateMetadata(clipId, address);
 
-    if (resp.statusOk && !isStoreClipError(resp.body)) {
+    if (resp.statusOk && !this.offChainStorage.isStoreClipError(resp.body)) {
       this.model.stopClipStoreLoaderAndStartMintLoader();
 
       const nftClip = await this.mintNFT(resp.body.mediadata, clipId, resp.body.signature);
@@ -120,14 +116,11 @@ export class NftController {
   }
 
   private getMetadataFromIpfs = async (cid: string) => {
-    // TODO refactor this error handling
-    try {
-      return this.ipfsClient.getMetadata(cid);
-    } catch (error) {
-      // TODO sentry
-      console.log('[LOG]:getMetadata err', error);
-      return null;
+    const resp = await this.offChainStorage.getMetadata(cid);
+    if (resp.statusOk) {
+      return resp.body;
     }
+    return null;
   }
 
   private mintNFT = async (data: { tokenURI: string, metadataURI: string, contentHash: BytesLike, metadataHash: BytesLike }, clipId: string, signature: Signature) => {

@@ -90,23 +90,13 @@ export interface Signature {
   s: string
 }
 
-
-// TODO unify these with clipit-api.client AND ipfs.client types
 interface MetadataInput {
-  tokenId: string;
+  clipCid: string;
   name: string;
   description: string;
-  external_url: string;
-  clipUri: string;
-  clipCid: string;
-  attributes: MetadataAttrs[];
   metadataCid: string;
+  tokenId: string;
 }
-interface MetadataAttrs {
-  trait_type: "Game" | "Streamer";
-  value: string;
-}
-
 
 class Metadata {
   clipTitle: string;
@@ -115,7 +105,6 @@ class Metadata {
   clipIpfsUri: string;
   metadataCid: string;
   tokenId: string;
-
 
   constructor(data: MetadataInput, private ipfsGatewayUri: string = pinataGatewayUri) {
     makeAutoObservable(this);

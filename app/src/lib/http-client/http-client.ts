@@ -55,7 +55,7 @@ export class HttpClient {
     }
   }
 
-  async authorizedRequest<T>(params: { method: 'get' | 'post' | 'put' | 'delete', url: string, qs?: any, body?: any, headers?: any, timeout?: number }) {
+  async authorizedRequest<T>(params: { method: 'get' | 'post' | 'put' | 'delete', url: string, qs?: any, body?: any, headers?: any, timeout?: number }): Promise<RawResponse<T>> {
     const token = this.ls.getItem(twitchAccessToken);
     if (!token) {
       return {

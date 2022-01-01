@@ -9,7 +9,10 @@ import { NftModel } from "../nfts/nft.model";
 import { IWeb3Controller } from "../app/app.controller";
 import { SubgraphClient } from "../../lib/graphql/subgraph.client";
 import { GraphQLClient } from "graphql-request";
-import { subgraphUrl } from "../../lib/constants";
+import { pinataGatewayUri, subgraphUrl } from "../../lib/constants";
+import { IpfsClient } from "../../lib/ipfs/ipfs.client";
+import { HttpClient } from "../../lib/http-client/http-client";
+import { LocalStorage } from "../../lib/local-storage";
 
 interface Props {
   model: {
@@ -28,13 +31,27 @@ const Playground = observer(function Playground({
 
   const onClick = async () => {
     try {
-      const sub = new SubgraphClient(new GraphQLClient(subgraphUrl));
-      // DO SOMETHING
-      const u = await sub.fetchUserCached(
-        "0x8C38eEFc38cBda4dEb9D891925d23d63fE05e515".toLowerCase()
+      // const sub = new SubgraphClient(new GraphQLClient(subgraphUrl));
+      // // DO SOMETHING
+      // const u = await sub.fetchUserCached(
+      //   "0x8C38eEFc38cBda4dEb9D891925d23d63fE05e515".toLowerCase()
+      // );
+
+      const ipfs = new IpfsClient(
+        new HttpClient(new LocalStorage(), pinataGatewayUri)
+      );
+      const u = await ipfs.getMetadata(
+        "bafybeie73xd5cppyjrdnb4tb2mhx2fej3ymepdygjd7ejn7abcrwf6eovu"
       );
 
       console.log(u);
+
+      try {
+        const x = await ipfs.getMetadata("nnn");
+        console.log("x", x);
+      } catch (error) {
+        console.log("err", error);
+      }
     } catch (error) {
       snackbar.sendError((error as Error).message);
       return;
