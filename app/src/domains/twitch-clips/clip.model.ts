@@ -41,6 +41,10 @@ export class ClipModel {
   getUsersClips = (userId: string): TwitchClip[] => {
     return this.clips.filter(clip => clip.broadcasterId === userId);
   }
+
+  getClipDescription = (streamerName: string, gameName?: string): string => {
+    return `${streamerName} playing ${gameName ?? "game"}`;
+  }
 }
 
 export class TwitchClip {
