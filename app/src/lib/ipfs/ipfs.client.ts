@@ -15,16 +15,19 @@ export class IpfsClient {
   }
 }
 
+
+// TODO unify these with nft.model types and validate fields
 interface Metadata {
-  description?: string;
-  external_url?: string;
-  image?: string;
-  name?: string;
-  cid?: string;
-  attributes?: MetadataAttrs[];
+  description: string;
+  external_url: string;
+  image: string;
+  name: string;
+  clipCid: string;
+  clipUri: string;
+  attributes: MetadataAttrs[];
 }
 
 interface MetadataAttrs {
-  trait_type?: "Game" | "Streamer";
-  value?: string;
+  trait_type: "Game" | "Streamer";
+  value: string;
 }

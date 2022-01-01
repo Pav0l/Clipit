@@ -53,17 +53,18 @@ interface Signature {
 }
 
 interface Metadata {
-  name?: string;
-  description?: string;
-  external_url?: string;
-  clipUri?: string;
-  clipCid?: string;
-  attributes?: MetadataAttrs[];
+  name: string;
+  description: string;
+  external_url: string;
+  clipUri: string;
+  clipCid: string;
+  clipId: string;
+  attributes: MetadataAttrs[];
 }
 
 interface MetadataAttrs {
-  trait_type?: "Game" | "Streamer";
-  value?: string;
+  trait_type: "Game" | "Streamer";
+  value: string;
 }
 
 // mock data
@@ -83,7 +84,8 @@ const mtdt: Metadata = {
   description: 'Not sure what to put into this description',
   external_url: 'http://localhost:3000/clipId',
   clipUri: 'ipfs://bafkreifeae3yq4kquja275oo64djh5lp7whi7myjeccz4tn4n62xdg2zgu',
-  name: 'clip title'
+  name: 'clip title',
+  clipId: 'clip slug'
 }
 const localResponse: StoreClipResp = {
   address: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266',

@@ -91,19 +91,20 @@ export interface Signature {
 }
 
 
-// TODO unify these with clipit-api.client
+// TODO unify these with clipit-api.client AND ipfs.client types
 interface MetadataInput {
-  tokenId?: string;
-  name?: string;
-  description?: string;
-  external_url?: string;
-  clipUri?: string;
-  clipCid?: string;
-  attributes?: MetadataAttrs[];
+  tokenId: string;
+  name: string;
+  description: string;
+  external_url: string;
+  clipUri: string;
+  clipCid: string;
+  attributes: MetadataAttrs[];
+  metadataCid: string;
 }
 interface MetadataAttrs {
-  trait_type?: "Game" | "Streamer";
-  value?: string;
+  trait_type: "Game" | "Streamer";
+  value: string;
 }
 
 
@@ -112,7 +113,9 @@ class Metadata {
   clipCid: string;
   description: string;
   clipIpfsUri: string;
+  metadataCid: string;
   tokenId: string;
+
 
   constructor(data: MetadataInput, private ipfsGatewayUri: string = pinataGatewayUri) {
     makeAutoObservable(this);
@@ -121,12 +124,13 @@ class Metadata {
     this.clipTitle = this.validateField(data.name);
     this.description = this.validateField(data.description);
     this.clipIpfsUri = this.createClipIpfsGatewayUri(this.validateField(data.clipCid));
+    this.metadataCid = this.validateField(data.metadataCid);
     this.tokenId = this.validateField(data.tokenId);
   }
 
   private validateField<T>(field: unknown) {
     if (typeof field === undefined) {
-      throw new Error(`Invalid metadata field type.`);
+      throw new Error(`Undefined metadata field type: ${field}`);
     }
     return field as T;
   }

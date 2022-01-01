@@ -31,12 +31,19 @@ export class NftController {
       this.model.stopClipStoreLoaderAndStartMintLoader();
 
       const nftClip = await this.mintNFT(resp.body.mediadata, clipId, resp.body.signature);
+      console.log('[LOG]:nftClip', nftClip);
       if (nftClip) {
-        this.model.addMetadata({ ...nftClip, tokenId: nftClip.id })
+        const tokenId = nftClip.id;
+
+        this.model.addMetadata({ ...resp.body.metadata, metadataCid: resp.body.metadataCid, tokenId })
         this.model.stopMintLoader();
 
-        // TODO ideally we do not want to reload the app here (and also this should prolly be higer in the ctrl)
-        location.replace(location.origin + `/nfts/${nftClip.id}`);
+        // TODO ideally we do not want to reload the app here
+        location.replace(location.origin + `/nfts/${tokenId}`);
+      } else {
+        // TODO sentry this should not happen    
+        this.model.meta.setError(NftErrors.FAILED_TO_FETCH_SUBGRAPH_DATA);
+        return;
       }
 
     } else {
@@ -51,11 +58,22 @@ export class NftController {
         return tokenMetadata
       }
 
-      const data = await this.subgraph.fetchClipCached(tokenId);
-      const metadata = await this.fetchTokenMetadata(data.metadataURI);
-      this.model.addMetadata({ ...metadata, tokenId });
+      const metadataURI = await this.contractClient.getTokenMetadataURI(tokenId);
+      const metadataCid = this.parseCidFromURI(metadataURI);
+      if (!metadataCid) {
+        // TODO sentry this should not happen
+        throw new Error("Invalid metadataURI");
+      }
+
+      const metadata = await this.getMetadataFromIpfs(metadataCid);
+      if (!metadata) {
+        throw new Error(`No token metadata? ${metadataURI}`)
+      }
+
+      this.model.addMetadata({ ...metadata, metadataCid, tokenId });
     } catch (error) {
       // TODO SENTRY
+      console.log('[LOG]:getTokenMetadata err', error);
       this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     }
   }
@@ -67,13 +85,19 @@ export class NftController {
       const data = await this.subgraph.fetchUserCached(address);
 
       for (const clipData of data.collection) {
-        const metadata = await this.fetchTokenMetadata(clipData.metadataURI);
+        const metadataCid = this.parseCidFromURI(clipData.metadataURI);
+        if (!metadataCid) {
+          // TODO sentry this should not happen
+          continue;
+        }
+
+        const metadata = await this.getMetadataFromIpfs(metadataCid);
         if (!metadata) {
           // in case the metadata fetch fails
           continue;
         }
 
-        this.model.addMetadata({ ...metadata, tokenId: clipData.id });
+        this.model.addMetadata({ ...metadata, metadataCid, tokenId: clipData.id });
         // we can stop loading after we have data for first NFT
         this.model.meta.setLoading(false);
       }
@@ -88,12 +112,11 @@ export class NftController {
     }
   }
 
-  private fetchTokenMetadata = async (metadataURI: string) => {
-    const metadataCid = metadataURI.replace("ipfs://", "").split("/")[0];
-    if (!metadataCid) {
-      throw new Error("Invalid metadataURI");
+  private parseCidFromURI = (uri: string): string => {
+    if (uri.startsWith("ipfs://")) {
+      return uri.replace("ipfs://", "").split("/")[0];
     }
-    return this.getMetadataFromIpfs(metadataCid);
+    return "";
   }
 
   private getMetadataFromIpfs = async (cid: string) => {

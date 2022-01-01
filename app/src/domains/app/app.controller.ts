@@ -117,6 +117,7 @@ export class Web3Controller implements IWeb3Controller {
         this.ethModel.accounts[0]
       );
     } catch (error) {
+      console.log('[LOG]:requestConnectAndMint:err', error);
       // TODO sentry
       // invalid provider
       // init contract

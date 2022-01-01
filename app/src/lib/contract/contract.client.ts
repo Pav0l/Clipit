@@ -33,4 +33,8 @@ export default class ContractClient {
   async mint(data: MediaData, bidShares: BidShares, signature: Signature) {
     return this.contract.mint(data, bidShares, signature.v, signature.r, signature.s);
   }
+
+  async getTokenMetadataURI(tokenId: string): Promise<string> {
+    return this.contract.tokenMetadataURI(tokenId);
+  }
 }

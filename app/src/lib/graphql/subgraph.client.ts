@@ -24,10 +24,11 @@ export class SubgraphClient {
   }
 
   fetchClipByHashCached = async (txHash: string) => {
-    const clip = await this.clipHashLoader.load(txHash);
+    const clip = this.retryFetch<string, ClipPartialFragment>(this.clipHashLoader, txHash, 3, 5000);
     if (!clip) {
       throw new Error("Unable to find clip");
     }
+
     return clip;
   }
 
@@ -62,6 +63,30 @@ export class SubgraphClient {
 
     return txHashes.map((hash) => transformClipDataFromHash(resp, hash));
   }
+
+  private retryFetch = async <K, V>(loader: DataLoader<K, V>, key: K, retryCount: number, retryDelay: number) => {
+    let delay = retryDelay;
+    for (let i = 0; i < retryCount; i++) {
+      const value = await loader.load(key);
+      if (value) {
+        return value;
+      }
+
+      console.log(`[LOG]:attempt to fetch data: ${i}. missing value for ${key}. retrying in ${delay}`);
+
+      // no value yet. clear cached `undefined` value an try again after delay
+      loader.clear(key);
+      await sleep(delay);
+
+      // keep increasing the delay between unsuccessfull calls
+      delay *= 2;
+    }
+    console.log(`[LOG]:unable to get value from graph after ${retryCount} retries`);
+  }
+}
+
+function sleep(ms: number) {
+  return new Promise(res => setTimeout(res, ms));
 }
 
 function transformUserData(data: GetUserDataQuery, key: string): UserData {
@@ -103,7 +128,8 @@ function transformClipData(data: GetClipDataQuery, key: string): ClipPartialFrag
 function transformClipDataFromHash(data: GetTokenByTxHashQuery, key: string): ClipPartialFragment {
   const clip = data.clips.find((clip) => clip.transactionHash === key);
   if (!clip) {
-    throw new Error("No valid clip in response from Graph");
+    // in this case, we want to return undefined value to try again in the fetch method
+    return undefined as any;
   }
 
   return clip;

@@ -61,7 +61,7 @@ export class HttpClient {
       return {
         statusCode: 401,
         statusOk: false,
-        body: null as any
+        body: null as unknown as T
       }
     }
 
