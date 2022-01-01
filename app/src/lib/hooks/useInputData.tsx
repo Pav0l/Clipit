@@ -1,14 +1,22 @@
 import { useState, ChangeEvent } from "react";
 
-
-export function useInputData()
-  : [string, (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void, () => void] {
-  const [inputData, setInputData] = useState("");
+export function useInputData(
+  defaultValue?: string
+): [
+  string,
+  (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string) => void,
+  () => void
+] {
+  const [inputData, setInputData] = useState(defaultValue ?? "");
 
   const inputHandler = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    input: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string
   ) => {
-    setInputData(event.target.value);
+    if (typeof input === "string") {
+      setInputData(input);
+    } else {
+      setInputData(input.target.value);
+    }
   };
 
   const clearInput = () => setInputData("");
