@@ -1,12 +1,12 @@
 import { useState, ChangeEvent } from "react";
 
-export function useInputData(
-  defaultValue?: string
-): [
+export type useInputReturn = [
   string,
   (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string) => void,
   () => void
-] {
+];
+
+export function useInputData(defaultValue?: string): useInputReturn {
   const [inputData, setInputData] = useState(defaultValue ?? "");
 
   const inputHandler = (

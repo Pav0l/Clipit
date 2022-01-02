@@ -1,5 +1,5 @@
 import { BytesLike } from "ethers";
-import { ClipItApiClient } from "../clipit-api/clipit-api.client";
+import { ClipItApiClient, ClipPayload } from "../clipit-api/clipit-api.client";
 import { HttpClient, RawResponse } from "../http-client/http-client";
 import { IpfsClient } from "../ipfs/ipfs.client";
 import { LocalStorage } from "../local-storage";
@@ -13,8 +13,8 @@ export class OffChainStorage {
     this.reader = new IpfsClient(new HttpClient(storage, readerGateway));
   }
 
-  async saveClipAndCreateMetadata(clipId: string, address: string) {
-    return this.writer.storeClip<StoreClipResp | StoreClipError>(clipId, address);
+  async saveClipAndCreateMetadata(clipId: string, payload: ClipPayload) {
+    return this.writer.storeClip<StoreClipResp | StoreClipError>(clipId, payload);
   }
 
   async getMetadata(cid: string) {

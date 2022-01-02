@@ -63,6 +63,18 @@ export class ClipController {
     return clipId;
   }
 
+  validateCreatorShare = (value: string): boolean => {
+    if (value.includes(".")) return false;
+
+    const num = Number(value);
+
+    if (!Number.isInteger(num)) return false;
+
+    if (num < 0 || num > 99) return false;
+
+    return true;
+  }
+
   private getSlugFromUrl = (url: string): string | undefined => {
     let match;
     for (const pattern of clipPatterns) {

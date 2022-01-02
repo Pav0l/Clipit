@@ -20,7 +20,7 @@ export interface IWeb3Controller {
   connectMetaMaskIfNecessaryForConnectBtn: () => Promise<void>;
   requestConnectAndGetTokensMetadata: () => Promise<void>;
   requestConnectAndGetTokenMetadata: (tokenId: string) => Promise<void>;
-  requestConnectAndMint: (clipId: string) => Promise<void>;
+  requestConnectAndMint: (clipId: string, creatorShare: string, clipTitle: string, clipDescription?: string) => Promise<void>;
 }
 
 
@@ -81,7 +81,7 @@ export class Web3Controller implements IWeb3Controller {
     this.nft!.getTokenMetadata(tokenId);
   }
 
-  async requestConnectAndMint(clipId: string) {
+  async requestConnectAndMint(clipId: string, creatorShare: string, clipTitle: string, clipDescription?: string) {
     try {
       if (!this.ethModel.isMetaMaskInstalled()) {
         this.snackbar.sendInfo(MetaMaskErrors.INSTALL_METAMASK);
@@ -112,7 +112,10 @@ export class Web3Controller implements IWeb3Controller {
 
       await this.nft.prepareMetadataAndMintClip(
         clipId,
-        this.ethModel.accounts[0]
+        this.ethModel.accounts[0],
+        creatorShare,
+        clipTitle,
+        clipDescription
       );
     } catch (error) {
       console.log('[LOG]:requestConnectAndMint:err', error);

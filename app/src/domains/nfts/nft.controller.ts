@@ -18,15 +18,21 @@ export class NftController {
     private subgraph: SubgraphClient
   ) { }
 
-  prepareMetadataAndMintClip = async (clipId: string, address: string) => {
+  prepareMetadataAndMintClip = async (clipId: string, address: string, creatorShare: string, clipTitle: string, clipDescription?: string) => {
+    if (!address || !clipTitle) {
+      // TODO sentry this should not happen
+      this.snackbarClient.sendError(NftErrors.SOMETHING_WENT_WRONG);
+      return;
+    }
+
     this.model.startClipStoreLoader();
 
-    const resp = await this.offChainStorage.saveClipAndCreateMetadata(clipId, address);
+    const resp = await this.offChainStorage.saveClipAndCreateMetadata(clipId, { address, clipTitle, clipDescription });
 
     if (resp.statusOk && !this.offChainStorage.isStoreClipError(resp.body)) {
       this.model.stopClipStoreLoaderAndStartMintLoader();
 
-      const nftClip = await this.mintNFT(resp.body.mediadata, clipId, resp.body.signature);
+      const nftClip = await this.mintNFT(resp.body.mediadata, clipId, resp.body.signature, creatorShare);
       console.log('[LOG]:nftClip', nftClip);
       if (nftClip) {
         const tokenId = nftClip.id;
@@ -123,11 +129,12 @@ export class NftController {
     return null;
   }
 
-  private mintNFT = async (data: { tokenURI: string, metadataURI: string, contentHash: BytesLike, metadataHash: BytesLike }, clipId: string, signature: Signature) => {
-    // TODO for now just set some default bidshares
+  private mintNFT = async (data: { tokenURI: string, metadataURI: string, contentHash: BytesLike, metadataHash: BytesLike }, clipId: string, signature: Signature, creatorShare: string) => {
+    // TODO abstract bidShares creation & calculation away
+    const forCreator = Number(creatorShare); // if creatorShare is '' it's converted to 0 here
     const defaultBidshares = {
-      creator: Decimal.from(5),
-      owner: Decimal.from(95),
+      creator: Decimal.from(forCreator),
+      owner: Decimal.from(100 - forCreator),
       prevOwner: Decimal.from(0),
     }
 

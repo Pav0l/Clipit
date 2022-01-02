@@ -1,16 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Button,
-  Typography,
-  makeStyles
-} from "@material-ui/core";
-import ErrorWithRetry from "../../components/error/Error";
+import { Card, CardMedia, makeStyles } from "@material-ui/core";
 
+import ErrorWithRetry from "../../components/error/Error";
 import { ClipModel } from "./clip.model";
 import { UserModel } from "../twitch-user/user.model";
 import { GameModel } from "../twitch-games/game.model";
@@ -21,6 +14,8 @@ import LinearLoader from "../../components/loader/LinearLoader";
 import { UserController } from "../twitch-user/user.controller";
 import { ClipController } from "./clip.controller";
 import { GameController } from "../twitch-games/game.controller";
+import { useInputData } from "../../lib/hooks/useInputData";
+import ClipCardContent from "./ClipCardContent";
 
 interface Props {
   model: {
@@ -37,29 +32,13 @@ interface Props {
   };
 }
 
-const useStyles = makeStyles(() => ({
-  container: {
-    margin: "2rem auto",
-    borderRadius: "0px"
-  },
-  iframe: {
-    // video aspect ratio is 16:9
-    width: "80vw",
-    height: "45vw",
-    maxHeight: "70vh"
-  },
-  content: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between"
-  }
-}));
-
 function ClipDetailContainer({ model, operations }: Props) {
   const { clipId } = useParams<{ clipId: string }>();
-  const [isDisabled, setDisabled] = useState(false);
-
   const clip = model.clip.getClip(clipId);
+
+  const [titleInput, setTitleInput, clearTitleInput] = useInputData();
+  const [descriptionInput, setDescInput, clearDescInput] = useInputData();
+  const [creatorShare, setShareInput, clearShareInput] = useInputData("0");
 
   const classes = useStyles();
 
@@ -79,8 +58,20 @@ function ClipDetailContainer({ model, operations }: Props) {
     }
   }, [model.clip.clips.length]);
 
+  useEffect(() => {
+    if (clip) {
+      setTitleInput(clip.title);
+
+      setDescInput(
+        model.clip.getClipDescription(
+          clip.broadcasterName,
+          model.game.getGame(clip.gameId)
+        )
+      );
+    }
+  }, [model.game.games.size, model.clip.clips.length]);
+
   const mint = async () => {
-    setDisabled(true);
     // we need to verify that current user is owner of broadcaster of clip,
     // so we do not allow other people minting streamers clips
     if (
@@ -88,9 +79,12 @@ function ClipDetailContainer({ model, operations }: Props) {
       // TODO hardcoded user Id
       (model.user.id === "30094526" || clip.broadcasterId === model.user.id)
     ) {
-      await operations.web3.requestConnectAndMint(clip.id);
-
-      setDisabled(false);
+      await operations.web3.requestConnectAndMint(
+        clip.id,
+        creatorShare,
+        titleInput,
+        descriptionInput
+      );
     }
   };
 
@@ -164,29 +158,28 @@ function ClipDetailContainer({ model, operations }: Props) {
         className={classes.iframe}
       />
 
-      <CardContent className={classes.content}>
-        <div>
-          <Typography variant="subtitle1" component="h6" className="clip-title">
-            {clip.title}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            {clip.broadcasterName} playing{" "}
-            {model.game.getGame(clip.gameId) ?? "game"}
-          </Typography>
-        </div>
-        <Button
-          size="medium"
-          color="primary"
-          variant="contained"
-          disabled={isDisabled}
-          onClick={mint}
-        >
-          {/* Mint */}
-          Create NFT
-        </Button>
-      </CardContent>
+      <ClipCardContent
+        validateCreatorShare={operations.clip.validateCreatorShare}
+        mint={mint}
+        titleInputHook={[titleInput, setTitleInput, clearTitleInput]}
+        descInputHook={[descriptionInput, setDescInput, clearDescInput]}
+        shareInputHook={[creatorShare, setShareInput, clearShareInput]}
+      />
     </Card>
   );
 }
 
 export default observer(ClipDetailContainer);
+
+const useStyles = makeStyles(() => ({
+  container: {
+    margin: "2rem auto",
+    borderRadius: "0px"
+  },
+  iframe: {
+    // video aspect ratio is 16:9
+    width: "80vw",
+    height: "45vw",
+    maxHeight: "70vh"
+  }
+}));
