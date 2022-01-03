@@ -168,8 +168,7 @@ async function initAsync({
                   <ClipsContainer
                     model={{
                       clip: model.clip,
-                      user: model.user,
-                      game: model.game
+                      user: model.user
                     }}
                     operations={{
                       clip: operations.clip,

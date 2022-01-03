@@ -49,38 +49,32 @@ export class ClipModel {
 
 export class TwitchClip {
   id: string;
-  url: string;
   broadcasterId: string;
   broadcasterName: string;
   gameId: string;
   title: string;
   thumbnailUrl: string;
   embedUrl: string;
-  viewCount: number;
 
   constructor(clip: ITwitchClip) {
     makeAutoObservable(this);
 
     this.id = clip.id ?? "";
-    this.url = clip.url ?? "";
     this.broadcasterId = clip.broadcaster_id ?? "";
     this.broadcasterName = clip.broadcaster_name ?? "";
     this.gameId = clip.game_id ?? "";
     this.title = clip.title ?? "";
     this.thumbnailUrl = clip.thumbnail_url ?? "";
     this.embedUrl = `${clip.embed_url}&parent=${location.hostname}` ?? "";
-    this.viewCount = clip.view_count ?? 0;
   }
 }
 
 interface ITwitchClip {
   id?: string;
-  url?: string;
   embed_url?: string;
   broadcaster_id?: string;
   broadcaster_name?: string;
   game_id?: string;
   title?: string;
   thumbnail_url?: string;
-  view_count?: number;
 }

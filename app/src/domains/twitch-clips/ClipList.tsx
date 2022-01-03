@@ -12,11 +12,8 @@ interface Props {
 
 interface Clip {
   id: string;
-  broadcasterName: string;
-  game: string;
   title: string;
   thumbnailUrl: string;
-  viewCount: number;
 }
 
 function EmptyList() {

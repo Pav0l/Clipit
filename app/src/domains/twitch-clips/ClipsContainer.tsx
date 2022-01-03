@@ -5,7 +5,6 @@ import ErrorWithRetry from "../../components/error/Error";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import ClipList from "./ClipList";
 import { UserModel } from "../twitch-user/user.model";
-import { GameModel } from "../twitch-games/game.model";
 import { ClipModel } from "./clip.model";
 import { ClipController } from "./clip.controller";
 import { GameController } from "../twitch-games/game.controller";
@@ -15,7 +14,6 @@ interface Props {
   model: {
     clip: ClipModel;
     user: UserModel;
-    game: GameModel;
   };
   operations: {
     clip: ClipController;
@@ -55,12 +53,8 @@ function ClipsContainer({ model, operations }: Props) {
   const clipList = model.clip.getUsersClips(model.user.id).map((clip) => {
     return {
       id: clip.id,
-      broadcasterName: clip.broadcasterName,
-      // TODO this should be in the game.controller with the default value
-      game: model.game.getGame(clip.gameId) ?? "game",
       title: clip.title,
-      thumbnailUrl: clip.thumbnailUrl,
-      viewCount: clip.viewCount
+      thumbnailUrl: clip.thumbnailUrl
     };
   });
 
