@@ -37,6 +37,7 @@ const CLIP_PARTIALS = gql`
 
     creatorBidShare
     ownerBidShare
+    prevOwnerBidShare
     owner {
       id
     }
@@ -96,6 +97,17 @@ export const GET_TOKEN_BY_TX_HASH = gql`
     clips(
       where: { transactionHash_in: $hashes }
     ) {
+      ...ClipPartial
+    }
+  }
+`;
+
+export const GET_CLIPS = gql`
+  ${CURRENCY_PARTIAL}
+  ${CLIP_PARTIALS}
+
+  query getClips($skip: Int) {
+    clips(first: 20, skip: $skip) {
       ...ClipPartial
     }
   }

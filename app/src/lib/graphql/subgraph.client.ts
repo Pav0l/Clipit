@@ -1,7 +1,7 @@
 import DataLoader from "dataloader";
 import { GraphQLClient } from "graphql-request";
-import { GET_TOKENS_QUERY, GET_TOKEN_BY_TX_HASH, GET_USER_TOKENS_QUERY } from "./queries";
-import { BidPartialFragment, ClipPartialFragment, GetClipDataQuery, GetUserDataQuery, GetTokenByTxHashQuery } from "./types";
+import { GET_CLIPS, GET_TOKENS_QUERY, GET_TOKEN_BY_TX_HASH, GET_USER_TOKENS_QUERY } from "./queries";
+import { BidPartialFragment, ClipPartialFragment, GetClipDataQuery, GetUserDataQuery, GetTokenByTxHashQuery, GetClipsQuery } from "./types";
 
 
 export class SubgraphClient {
@@ -15,6 +15,9 @@ export class SubgraphClient {
     this.clipHashLoader = new DataLoader((keys) => this.getClipByTxHash(keys));
   }
 
+  /**
+   * fetchClipCached fetches Clip (NFT) data from the subgraph based on its id
+   */
   fetchClipCached = async (tokenId: string) => {
     const clip = await this.clipLoader.load(tokenId);
     if (!clip) {
@@ -31,6 +34,12 @@ export class SubgraphClient {
 
     return clip;
   }
+
+  /**
+   * Fetches first 20 Clips (NFTs) from the subgraph
+   * @param skip Used to paginate next 20 results.
+   */
+  fetchClips = async (skip?: number) => this.client.request<GetClipsQuery>(GET_CLIPS, { skip });
 
   fetchUserCached = async (address: string) => {
     const user = await this.userLoader.load(address);
