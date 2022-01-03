@@ -33,7 +33,7 @@ function ClipsContainer({ model, operations }: Props) {
 
   useEffect(() => {
     if (model.user.id) {
-      operations.clip.getClips(model.user.id);
+      operations.clip.getBroadcasterClips(model.user.id);
     }
   }, [model.user.id]);
 

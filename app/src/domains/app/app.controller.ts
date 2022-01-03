@@ -73,12 +73,12 @@ export class Web3Controller implements IWeb3Controller {
       this.ethModel.meta.setError(MetaMaskErrors.CONNECT_METAMASK);
       return;
     }
-    this.nft!.getCurrentSignerTokensMetadata(this.ethModel.accounts[0]);
+    await this.nft!.getCurrentSignerTokensMetadata(this.ethModel.accounts[0]);
   }
 
   async requestConnectAndGetTokenMetadata(tokenId: string) {
     await this.initNftRoutes();
-    this.nft!.getTokenMetadata(tokenId);
+    await this.nft!.getTokenMetadata(tokenId);
   }
 
   async requestConnectAndMint(clipId: string, creatorShare: string, clipTitle: string, clipDescription?: string) {
