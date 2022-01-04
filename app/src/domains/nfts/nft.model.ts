@@ -96,6 +96,7 @@ interface MetadataInput {
   description: string;
   metadataCid: string;
   tokenId: string;
+  thumbnailUri: string;
 }
 
 class Metadata {
@@ -105,6 +106,7 @@ class Metadata {
   clipIpfsUri: string;
   metadataCid: string;
   tokenId: string;
+  thumbnailUri: string;
 
   constructor(data: MetadataInput, private ipfsGatewayUri: string = pinataGatewayUri) {
     makeAutoObservable(this);
@@ -115,6 +117,7 @@ class Metadata {
     this.clipIpfsUri = this.createClipIpfsGatewayUri(this.validateField(data.clipCid));
     this.metadataCid = this.validateField(data.metadataCid);
     this.tokenId = this.validateField(data.tokenId);
+    this.thumbnailUri = this.validateField(data.thumbnailUri);
   }
 
   private validateField<T>(field: unknown) {

@@ -1,16 +1,16 @@
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
+import { makeStyles, Typography } from "@material-ui/core";
+import { Link } from "react-router-dom";
 
 import { NftModel } from "./nft.model";
-import { NftCard } from "../../components/nfts/NftCard";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import { IWeb3Controller } from "../app/app.controller";
-import { Link } from "react-router-dom";
 import { AppRoute } from "../../lib/constants";
 import ErrorWithRetry from "../../components/error/Error";
 import VideoList from "../../components/videoList/VideoList";
 import CenteredContainer from "../../components/container/CenteredContainer";
-import { Typography } from "@material-ui/core";
+import { CardWithThumbnail } from "../../components/nfts/CardWithThumbnail";
 
 interface Props {
   model: {
@@ -21,9 +21,12 @@ interface Props {
 
 function NftsContainer({ model, operations }: Props) {
   const metadata = model.nft.metadata;
+  const classes = useStyles();
 
   useEffect(() => {
-    operations.requestConnectAndGetTokensMetadata();
+    if (metadata.length === 0) {
+      operations.requestConnectAndGetTokensMetadata();
+    }
   }, []);
 
   // TODO MM not installed should be a custom error
@@ -51,15 +54,28 @@ function NftsContainer({ model, operations }: Props) {
   return (
     <VideoList>
       {metadata.map((metadata, idx) => (
-        <NftCard
+        <Link
+          to={`/nfts/${metadata.tokenId}`}
           key={idx}
-          clipIpfsUri={metadata.clipIpfsUri}
-          clipTitle={metadata.clipTitle}
-          clipDescription={metadata.description}
-        />
+          className={classes.link}
+        >
+          <CardWithThumbnail
+            key={idx}
+            thumbnailUrl={metadata.thumbnailUri}
+            title={metadata.clipTitle}
+            description={metadata.description}
+          />
+        </Link>
       ))}
     </VideoList>
   );
 }
 
 export default observer(NftsContainer);
+
+const useStyles = makeStyles(() => ({
+  link: {
+    textDecoration: "none",
+    margin: "1rem"
+  }
+}));

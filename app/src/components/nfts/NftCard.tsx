@@ -10,12 +10,18 @@ interface Props {
   clipIpfsUri: string;
   clipTitle: string;
   clipDescription: string;
+  poster: string;
 }
 
 /**
  * NftCard presentation component displays NFTs metadata as a card with embedded video player
  */
-export function NftCard({ clipIpfsUri, clipTitle, clipDescription }: Props) {
+export function NftCard({
+  clipIpfsUri,
+  clipTitle,
+  clipDescription,
+  poster
+}: Props) {
   const classes = useStyles();
 
   return (
@@ -27,6 +33,7 @@ export function NftCard({ clipIpfsUri, clipTitle, clipDescription }: Props) {
         className={classes.video}
         controls
         controlsList="nodownload"
+        poster={poster}
       />
       <CardContent>
         <Typography variant="subtitle1" component="h6">

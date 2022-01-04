@@ -25,7 +25,9 @@ function NftContainer({ model, operations }: Props) {
   const metadata = model.nft.getTokenMetadata(tokenId);
 
   useEffect(() => {
-    operations.requestConnectAndGetTokenMetadata(tokenId);
+    if (!metadata) {
+      operations.requestConnectAndGetTokenMetadata(tokenId);
+    }
   }, []);
 
   // MetaMask not installed
@@ -41,6 +43,7 @@ function NftContainer({ model, operations }: Props) {
           clipIpfsUri={metadata.clipIpfsUri}
           clipTitle={metadata.clipTitle}
           clipDescription={metadata.description}
+          poster={metadata.thumbnailUri}
         />
       </CenteredContainer>
     );
