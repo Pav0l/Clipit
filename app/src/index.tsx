@@ -14,7 +14,7 @@ import {
   twitchOAuthUri
 } from "./lib/constants";
 import { AppModel } from "./domains/app/app.model";
-import { Web3Controller } from "./domains/app/app.controller";
+import { Web3Controller } from "./domains/app/web3.controller";
 import NftContainer from "./domains/nfts/NftContainer";
 import NftsContainer from "./domains/nfts/NftsContainer";
 import ClipDetailContainer from "./domains/twitch-clips/ClipDetailContainer";

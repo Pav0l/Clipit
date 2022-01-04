@@ -8,7 +8,7 @@ import { ClipModel } from "./clip.model";
 import { UserModel } from "../twitch-user/user.model";
 import { GameModel } from "../twitch-games/game.model";
 import { NftModel } from "../nfts/nft.model";
-import { IWeb3Controller } from "../app/app.controller";
+import { IWeb3Controller } from "../app/web3.controller";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import LinearLoader from "../../components/loader/LinearLoader";
 import { UserController } from "../twitch-user/user.controller";

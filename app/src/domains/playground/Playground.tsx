@@ -6,7 +6,7 @@ import {
 } from "../../lib/snackbar/snackbar.client";
 import { makeStyles, Theme } from "@material-ui/core";
 import { NftModel } from "../nfts/nft.model";
-import { IWeb3Controller } from "../app/app.controller";
+import { IWeb3Controller } from "../app/web3.controller";
 import { SubgraphClient } from "../../lib/graphql/subgraph.client";
 import { GraphQLClient } from "graphql-request";
 import { pinataGatewayUri, subgraphUrl } from "../../lib/constants";

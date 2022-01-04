@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 import { NftModel } from "./nft.model";
 import FullPageLoader from "../../components/loader/FullPageLoader";
-import { IWeb3Controller } from "../app/app.controller";
+import { IWeb3Controller } from "../app/web3.controller";
 import { AppRoute } from "../../lib/constants";
 import ErrorWithRetry from "../../components/error/Error";
 import VideoList from "../../components/videoList/VideoList";
