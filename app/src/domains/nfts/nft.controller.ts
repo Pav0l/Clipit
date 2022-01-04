@@ -6,6 +6,7 @@ import { ContractErrors, isRpcError, NftErrors, RpcErrors } from './nft.errors';
 import { Decimal } from "../../lib/decimal/decimal";
 import { SubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
+import { ClipPartialFragment } from "../../lib/graphql/types";
 
 
 export class NftController {
@@ -60,24 +61,9 @@ export class NftController {
         return tokenMetadata
       }
 
-      const metadataURI = await this.contractClient.getTokenMetadataURI(tokenId);
-      const metadataCid = this.parseCidFromURI(metadataURI);
-      if (!metadataCid) {
-        // TODO sentry this should not happen
-        throw new Error("Invalid metadataURI");
-      }
+      const clip = await this.subgraph.fetchClipCached(tokenId);
 
-      const metadata = await this.getMetadataFromIpfs(metadataCid);
-      if (!metadata) {
-        throw new Error(`No token metadata? ${metadataURI}`)
-      }
-
-      const tokenOwner = await this.contractClient.getTokenOwner(tokenId);
-      if (!tokenOwner) {
-        throw new Error(`No token owner??? ${tokenId}`);
-      }
-
-      this.model.addMetadata({ ...metadata, metadataCid, tokenId, owner: tokenOwner });
+      await this.getMetadataForClipFragmentAndStoreInModel(clip, true);
     } catch (error) {
       // TODO SENTRY
       console.log('[LOG]:getTokenMetadata err', error);
@@ -91,20 +77,8 @@ export class NftController {
 
       const data = await this.subgraph.fetchUserCached(address);
 
-      for (const clipData of data.collection) {
-        const metadataCid = this.parseCidFromURI(clipData.metadataURI);
-        if (!metadataCid) {
-          // TODO sentry this should not happen
-          continue;
-        }
-
-        const metadata = await this.getMetadataFromIpfs(metadataCid);
-        if (!metadata) {
-          // in case the metadata fetch fails
-          continue;
-        }
-
-        this.model.addMetadata({ ...metadata, metadataCid, tokenId: clipData.id, owner: clipData.owner.id });
+      for (const clip of data.collection) {
+        await this.getMetadataForClipFragmentAndStoreInModel(clip);
         // we can stop loading after we have data for first NFT
         this.model.meta.setLoading(false);
       }
@@ -124,6 +98,52 @@ export class NftController {
       return [];
     }
     return this.model.getOwnMetadata(ownerAddress);
+  }
+
+  /**
+   * Fetch a list of clips from subgraph. Use `skip` to paginate more clips
+   * @param skip 
+   */
+  getClips = async (skip?: number) => {
+    try {
+      this.model.meta.setLoading(true);
+
+      const data = await this.subgraph.fetchClips(skip);
+
+      for (const clip of data.clips) {
+        await this.getMetadataForClipFragmentAndStoreInModel(clip);
+        this.model.meta.setLoading(false);
+      }
+    } catch (error) {
+      // TODO SENTRY
+      this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+    } finally {
+      if (this.model.meta.isLoading) {
+        this.model.meta.setLoading(false);
+      }
+    }
+  }
+
+  private getMetadataForClipFragmentAndStoreInModel = async (clip: ClipPartialFragment, shouldThrow?: boolean) => {
+    const metadataCid = this.parseCidFromURI(clip.metadataURI);
+    if (!metadataCid) {
+      // TODO sentry this should not happen
+      if (shouldThrow) {
+        throw new Error(`Invalid metadataURI? ${clip.metadataURI}`);
+      }
+      return;
+    }
+
+    const metadata = await this.getMetadataFromIpfs(metadataCid);
+    if (!metadata) {
+      // TODO sentry - in case the metadata fetch fails
+      if (shouldThrow) {
+        throw new Error(`No token metadata? ${clip.metadataURI}`)
+      }
+      return;
+    }
+
+    this.model.addMetadata({ ...metadata, metadataCid, tokenId: clip.id, owner: clip.owner.id });
   }
 
   private parseCidFromURI = (uri: string): string => {
