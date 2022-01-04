@@ -68,12 +68,13 @@ export class Web3Controller implements IWeb3Controller {
 
   async requestConnectAndGetTokensMetadata() {
     await this.initNftRoutes();
+    const signer = this.ethModel.getAccount();
 
-    if (!this.ethModel.accounts || !this.ethModel.accounts[0]) {
+    if (!signer) {
       this.ethModel.meta.setError(MetaMaskErrors.CONNECT_METAMASK);
       return;
     }
-    await this.nft!.getCurrentSignerTokensMetadata(this.ethModel.accounts[0]);
+    await this.nft!.getCurrentSignerTokensMetadata(signer);
   }
 
   async requestConnectAndGetTokenMetadata(tokenId: string) {
@@ -106,13 +107,14 @@ export class Web3Controller implements IWeb3Controller {
         throw new Error("Failed to init NFT Controller");
       }
 
-      if (!this.ethModel.accounts || !this.ethModel.accounts[0]) {
+      const signer = this.ethModel.getAccount();
+      if (!signer) {
         throw new Error("Provider not connected???");
       }
 
       await this.nft.prepareMetadataAndMintClip(
         clipId,
-        this.ethModel.accounts[0],
+        signer,
         creatorShare,
         clipTitle,
         clipDescription

@@ -42,6 +42,10 @@ export class NftModel {
     return this.metadata.filter(metadata => metadata.tokenId === tokenId)[0];
   }
 
+  getOwnMetadata(userAddress: string | null): Metadata[] {
+    return this.metadata.filter(metadata => metadata.owner === userAddress);
+  }
+
   startClipStoreLoader() {
     this.storeClipLoad = true;
     this.setClipStoreStatus(StoreClipStatus.PREPARING_CLIP);
@@ -97,6 +101,7 @@ interface MetadataInput {
   metadataCid: string;
   tokenId: string;
   thumbnailUri: string;
+  owner: string;
 }
 
 class Metadata {
@@ -107,6 +112,7 @@ class Metadata {
   metadataCid: string;
   tokenId: string;
   thumbnailUri: string;
+  owner: string;
 
   constructor(data: MetadataInput, private ipfsGatewayUri: string = pinataGatewayUri) {
     makeAutoObservable(this);
@@ -118,6 +124,7 @@ class Metadata {
     this.metadataCid = this.validateField(data.metadataCid);
     this.tokenId = this.validateField(data.tokenId);
     this.thumbnailUri = this.validateField(data.thumbnailUri);
+    this.owner = this.validateField(data.owner);
   }
 
   private validateField<T>(field: unknown) {

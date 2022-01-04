@@ -11,20 +11,23 @@ import ErrorWithRetry from "../../components/error/Error";
 import VideoList from "../../components/videoList/VideoList";
 import CenteredContainer from "../../components/container/CenteredContainer";
 import { CardWithThumbnail } from "../../components/nfts/CardWithThumbnail";
+import { EthereumModel } from "../../lib/ethereum/ethereum.model";
 
 interface Props {
   model: {
     nft: NftModel;
+    eth: EthereumModel;
   };
   operations: IWeb3Controller;
 }
 
 function NftsContainer({ model, operations }: Props) {
-  const metadata = model.nft.metadata;
+  const metadata = operations.nft?.getOwnerMetadata(model.eth.getAccount());
   const classes = useStyles();
+  const hasMetadata = metadata && metadata.length > 0;
 
   useEffect(() => {
-    if (metadata.length === 0) {
+    if (!hasMetadata) {
       operations.requestConnectAndGetTokensMetadata();
     }
   }, []);
@@ -40,7 +43,7 @@ function NftsContainer({ model, operations }: Props) {
     return <FullPageLoader />;
   }
 
-  if (metadata.length === 0) {
+  if (!hasMetadata) {
     return (
       <CenteredContainer>
         <Typography variant="h6" component="h6">

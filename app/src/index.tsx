@@ -143,7 +143,7 @@ async function initAsync({
                 operations={{ auth: operations.auth }}
               >
                 <NftsContainer
-                  model={{ nft: model.nft }}
+                  model={{ nft: model.nft, eth: model.eth }}
                   operations={operations.web3}
                 />
               </OAuthProtectedRoute>

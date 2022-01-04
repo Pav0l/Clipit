@@ -37,7 +37,7 @@ export class NftController {
       if (nftClip) {
         const tokenId = nftClip.id;
 
-        this.model.addMetadata({ ...resp.body.metadata, metadataCid: resp.body.metadataCid, tokenId })
+        this.model.addMetadata({ ...resp.body.metadata, metadataCid: resp.body.metadataCid, tokenId, owner: nftClip.owner.id })
         this.model.stopMintLoader();
 
         // TODO ideally we do not want to reload the app here
@@ -72,7 +72,12 @@ export class NftController {
         throw new Error(`No token metadata? ${metadataURI}`)
       }
 
-      this.model.addMetadata({ ...metadata, metadataCid, tokenId });
+      const tokenOwner = await this.contractClient.getTokenOwner(tokenId);
+      if (!tokenOwner) {
+        throw new Error(`No token owner??? ${tokenId}`);
+      }
+
+      this.model.addMetadata({ ...metadata, metadataCid, tokenId, owner: tokenOwner });
     } catch (error) {
       // TODO SENTRY
       console.log('[LOG]:getTokenMetadata err', error);
@@ -99,7 +104,7 @@ export class NftController {
           continue;
         }
 
-        this.model.addMetadata({ ...metadata, metadataCid, tokenId: clipData.id });
+        this.model.addMetadata({ ...metadata, metadataCid, tokenId: clipData.id, owner: clipData.owner.id });
         // we can stop loading after we have data for first NFT
         this.model.meta.setLoading(false);
       }
@@ -112,6 +117,13 @@ export class NftController {
         this.model.meta.setLoading(false);
       }
     }
+  }
+
+  getOwnerMetadata = (ownerAddress: string | null) => {
+    if (!ownerAddress) {
+      return [];
+    }
+    return this.model.getOwnMetadata(ownerAddress);
   }
 
   private parseCidFromURI = (uri: string): string => {

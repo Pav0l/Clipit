@@ -37,4 +37,8 @@ export default class ContractClient {
   async getTokenMetadataURI(tokenId: string): Promise<string> {
     return this.contract.tokenMetadataURI(tokenId);
   }
+
+  async getTokenOwner(tokenId: string): Promise<string> {
+    return this.contract.ownerOf(tokenId);
+  }
 }

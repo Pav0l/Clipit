@@ -26,6 +26,10 @@ export class EthereumModel {
     this.chainId = chainId;
   }
 
+  getAccount() {
+    return this.accounts ? this.accounts[0] : null;
+  }
+
   isProviderConnected(): boolean {
     return Boolean(this.accounts && this.accounts.length > 0);
   }
