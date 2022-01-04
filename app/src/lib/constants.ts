@@ -1,9 +1,9 @@
 
 // TODO configurable variables into config file
 // CONTRACT -> into config
-export const contractAddress = "0x41b5Bcc09815231a16A1253f0215B3c404746848";
+export const contractAddress = "0xBacff2b8579F5BBd6db50f6f3390b0a3a71d7434";
 // localhost: "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-// rinkeby: 0x41b5Bcc09815231a16A1253f0215B3c404746848
+// rinkeby: 0xBacff2b8579F5BBd6db50f6f3390b0a3a71d7434
 
 
 // IPFS -> into config
@@ -26,7 +26,7 @@ export const twitchOAuthUri = "https://id.twitch.tv";
 export const twitchScopes = "user:read:email user:read:follows user:read:subscriptions"; // clips:edit 
 
 // SUBGRAPH
-export const subgraphUrl = "https://api.thegraph.com/subgraphs/name/h0ppx/one";
+export const subgraphUrl = "https://api.thegraph.com/subgraphs/name/h0ppx/two";
 
 // APP
 export enum AppRoute {

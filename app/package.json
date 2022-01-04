@@ -6,7 +6,7 @@
   "scripts": {
     "start": "webpack serve --mode development",
     "build": "webpack --mode production",
-    "gql-schema": "get-graphql-schema https://api.thegraph.com/subgraphs/name/h0ppx/one > src/lib/graphql/clipit.graphql",
+    "gql-schema": "get-graphql-schema https://api.thegraph.com/subgraphs/name/h0ppx/two > src/lib/graphql/clipit.graphql",
     "gql-types": "graphql-codegen",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
