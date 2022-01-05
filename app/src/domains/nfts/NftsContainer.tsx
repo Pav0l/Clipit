@@ -12,11 +12,11 @@ import VideoList from "../../components/videoList/VideoList";
 import CenteredContainer from "../../components/container/CenteredContainer";
 import { CardWithThumbnail } from "../../components/nfts/CardWithThumbnail";
 import { NftController } from "./nft.controller";
-import { EthereumModel, Web3Errors } from "../../lib/ethereum/ethereum.model";
+import { Web3Model, Web3Errors } from "../web3/web3.model";
 
 interface Props {
   model: {
-    eth: EthereumModel;
+    web3: Web3Model;
     nft: NftModel;
   };
   operations: {
@@ -27,12 +27,12 @@ interface Props {
 
 function NftsContainer({ model, operations }: Props) {
   const metadata = model.nft.metadata;
-  const signer = model.eth.getAccount();
+  const signer = model.web3.getAccount();
 
   const classes = useStyles();
 
   useEffect(() => {
-    if (!model.eth.isProviderConnected()) {
+    if (!model.web3.isProviderConnected()) {
       // MM was not connected -> no reason to keep some previous NFTs on state
       model.nft.resetMetadata();
       operations.web3.requestConnect(
@@ -47,7 +47,7 @@ function NftsContainer({ model, operations }: Props) {
 
   // TODO MM not installed should be a custom error
   // MetaMask not installed
-  if (model.eth.meta.hasError) {
+  if (model.web3.meta.hasError) {
     // TODO add onboarding and retry handler button to error msg
     return <ErrorWithRetry text={model.nft.meta.error} withRetry={false} />;
   }
@@ -56,7 +56,7 @@ function NftsContainer({ model, operations }: Props) {
     return <ErrorWithRetry text={model.nft.meta.error} withRetry={true} />;
   }
 
-  if (model.nft.meta.isLoading || model.eth.meta.isLoading) {
+  if (model.nft.meta.isLoading || model.web3.meta.isLoading) {
     return <FullPageLoader />;
   }
 

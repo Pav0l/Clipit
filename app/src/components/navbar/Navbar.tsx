@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { IWeb3Controller } from "../../domains/web3/web3.controller";
 import { AppRoute } from "../../lib/constants";
-import { EthereumModel } from "../../lib/ethereum/ethereum.model";
+import { Web3Model } from "../../domains/web3/web3.model";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 import LoginWithTwitch from "../../lib/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
 import { OAuthController } from "../../lib/twitch-oauth/oauth.controller";
@@ -19,7 +19,7 @@ import ConnectMetamaskButton from "../connectMetamask/ConnectMetamask";
 
 interface Props {
   model: {
-    eth: EthereumModel;
+    web3: Web3Model;
     auth: OAuthModel;
   };
   operations: {

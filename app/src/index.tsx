@@ -80,7 +80,7 @@ function initSynchronous() {
   );
 
   const web3Controller = new Web3Controller(
-    model.eth,
+    model.web3,
     offChainStorageApi,
     subgraph,
     snackbarClient
@@ -131,7 +131,7 @@ async function initAsync({
         <ThemeProvider theme={defaultTheme}>
           <Router basename={AppRoute.HOME}>
             <Navbar
-              model={{ eth: model.eth, auth: model.auth }}
+              model={{ web3: model.web3, auth: model.auth }}
               operations={{ web3: operations.web3, auth: operations.auth }}
               snackbar={snackbarClient}
             />
@@ -149,7 +149,7 @@ async function initAsync({
                 operations={{ auth: operations.auth }}
               >
                 <NftsContainer
-                  model={{ nft: model.nft, eth: model.eth }}
+                  model={{ nft: model.nft, web3: model.web3 }}
                   operations={{ web3: operations.web3, nft: operations.nft }}
                 />
               </OAuthProtectedRoute>
@@ -196,7 +196,7 @@ async function initAsync({
                       clip: model.clip,
                       user: model.user,
                       game: model.game,
-                      eth: model.eth
+                      web3: model.web3
                     }}
                     operations={operations}
                   />

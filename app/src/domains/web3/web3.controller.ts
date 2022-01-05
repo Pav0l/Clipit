@@ -3,7 +3,7 @@ import { BytesLike } from "ethers";
 import ContractClient from "../../lib/contract/contract.client";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
-import { EthereumModel, Web3Errors } from "../../lib/ethereum/ethereum.model";
+import { Web3Model, Web3Errors } from "./web3.model";
 import { SubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { Decimal } from "../../lib/decimal/decimal";
@@ -29,7 +29,7 @@ export interface IWeb3Controller {
 
 export class Web3Controller implements IWeb3Controller {
   constructor(
-    private model: EthereumModel,
+    private model: Web3Model,
     private offChainStorage: OffChainStorage,
     private subgraph: SubgraphClient,
     private snackbar: SnackbarClient,

@@ -3,7 +3,7 @@ import MetaMaskOnboarding from "@metamask/onboarding";
 import { observer } from "mobx-react-lite";
 import { useState, useRef, useEffect } from "react";
 
-import { EthereumModel } from "../../lib/ethereum/ethereum.model";
+import { Web3Model } from "../../domains/web3/web3.model";
 import { IWeb3Controller } from "../../domains/web3/web3.controller";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 
@@ -15,7 +15,7 @@ const CONNECTED_TEXT = "Connected";
 
 interface Props {
   model: {
-    eth: EthereumModel;
+    web3: Web3Model;
   };
   operations: IWeb3Controller;
   snackbar: SnackbarClient;
@@ -37,8 +37,8 @@ function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
   }, []);
 
   useEffect(() => {
-    if (model.eth.isMetaMaskInstalled()) {
-      if (model.eth.isProviderConnected()) {
+    if (model.web3.isMetaMaskInstalled()) {
+      if (model.web3.isProviderConnected()) {
         setButtonText(CONNECTED_TEXT);
         setDisabled(true);
         onboarding.current!.stopOnboarding();
@@ -47,10 +47,10 @@ function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
         setDisabled(false);
       }
     }
-  }, [model.eth.accounts, model.eth.accounts?.length]);
+  }, [model.web3.accounts, model.web3.accounts?.length]);
 
   const onClick = async () => {
-    if (model.eth.isMetaMaskInstalled()) {
+    if (model.web3.isMetaMaskInstalled()) {
       try {
         operations.requestConnect();
       } catch (error) {

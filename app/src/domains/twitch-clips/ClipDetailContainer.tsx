@@ -15,14 +15,14 @@ import { ClipController } from "./clip.controller";
 import { GameController } from "../twitch-games/game.controller";
 import { useInputData } from "../../lib/hooks/useInputData";
 import ClipCardContent from "./ClipCardContent";
-import { EthereumModel } from "../../lib/ethereum/ethereum.model";
+import { Web3Model } from "../web3/web3.model";
 
 interface Props {
   model: {
     clip: ClipModel;
     user: UserModel;
     game: GameModel;
-    eth: EthereumModel;
+    web3: Web3Model;
   };
   operations: {
     web3: IWeb3Controller;
@@ -96,14 +96,14 @@ function ClipDetailContainer({ model, operations }: Props) {
     return <ErrorWithRetry text={model.clip.meta.error}></ErrorWithRetry>;
   }
 
-  if (model.eth.meta.hasError) {
-    return <ErrorWithRetry text={model.eth.meta.error}></ErrorWithRetry>;
+  if (model.web3.meta.hasError) {
+    return <ErrorWithRetry text={model.web3.meta.error}></ErrorWithRetry>;
   }
 
   if (
     model.clip.meta.isLoading ||
     model.user.meta.isLoading ||
-    model.eth.meta.isLoading
+    model.web3.meta.isLoading
   ) {
     return <FullPageLoader />;
   }
@@ -131,14 +131,14 @@ function ClipDetailContainer({ model, operations }: Props) {
     );
   }
 
-  if (model.eth.storeClipLoad && model.eth.storeClipStatus !== undefined) {
-    return <LinearLoader text={model.eth.storeClipStatus}></LinearLoader>;
+  if (model.web3.storeClipLoad && model.web3.storeClipStatus !== undefined) {
+    return <LinearLoader text={model.web3.storeClipStatus}></LinearLoader>;
   }
 
-  if (model.eth.mintLoad && model.eth.mintStatus !== undefined) {
+  if (model.web3.mintLoad && model.web3.mintStatus !== undefined) {
     return (
       <ErrorWithRetry
-        text={model.eth.mintStatus}
+        text={model.web3.mintStatus}
         withRetry={false}
       ></ErrorWithRetry>
     );

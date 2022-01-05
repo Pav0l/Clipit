@@ -1,6 +1,6 @@
-import { ethers } from "ethers";
+import type { ethers } from "ethers";
 import { makeAutoObservable } from "mobx"
-import { MetaModel } from "../../domains/app/meta.model";
+import { MetaModel } from "../app/meta.model";
 
 enum MintStatus {
   CONFIRM_MINT = "Clip ready to be turned into an NFT!\nPlease confirm the transaction in MetaMask",
@@ -12,7 +12,7 @@ enum StoreClipStatus {
   GENERATING_SIG = "Almost there, generating a signature for your clip...",
 }
 
-export class EthereumModel {
+export class Web3Model {
   meta: MetaModel;
 
   accounts: string[] = [];
