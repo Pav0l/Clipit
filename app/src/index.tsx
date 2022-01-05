@@ -81,9 +81,9 @@ function initSynchronous() {
 
   const web3Controller = new Web3Controller(
     model.eth,
-    snackbarClient,
     offChainStorageApi,
-    subgraph
+    subgraph,
+    snackbarClient
   );
 
   authController.checkTokenInStorage();

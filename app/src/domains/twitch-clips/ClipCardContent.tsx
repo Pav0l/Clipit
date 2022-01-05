@@ -32,13 +32,13 @@ function ClipCardContent({
 }: Props) {
   const [isDisabled, setDisabled] = useState(false);
 
-  const [titleInput, setTitleInput, clearTitleInput] = titleInputHook;
+  const [titleInput, setTitleInput] = titleInputHook;
   const [isTitleErr, setTitleErr] = useState(false);
   const [titleLabel, setTitleLabel] = useState(defTitleMsg);
 
-  const [descriptionInput, setDescInput, clearDescInput] = descInputHook;
+  const [descriptionInput, setDescInput] = descInputHook;
 
-  const [creatorShare, setShareInput, clearShareInput] = shareInputHook;
+  const [creatorShare, setShareInput] = shareInputHook;
   const [isShareErr, setShareErr] = useState(false);
   const [helperShareMsg, setHelperShareMsg] = useState(defHelperShareMsg);
 
@@ -90,13 +90,9 @@ function ClipCardContent({
 
     setTitleLabel(defTitleMsg);
     setTitleErr(false);
-    clearTitleInput();
-
-    clearDescInput();
 
     setHelperShareMsg(defHelperShareMsg);
     setShareErr(false);
-    clearShareInput();
 
     setDisabled(false);
   };

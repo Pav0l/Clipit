@@ -1,44 +1,38 @@
-import { BytesLike, ethers } from "ethers";
+import { BytesLike } from "ethers";
 
 import ContractClient from "../../lib/contract/contract.client";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
-import { EthereumProvider } from "../../lib/ethereum/ethereum.types";
-import EthereumController from "../../lib/ethereum/ethereum.controller";
-import { EthereumModel, MetaMaskErrors } from "../../lib/ethereum/ethereum.model";
-import { NftErrors } from "../nfts/nft.errors";
-import { NftModel } from "../nfts/nft.model";
+import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
+import { EthereumModel, Web3Errors } from "../../lib/ethereum/ethereum.model";
 import { SubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { Decimal } from "../../lib/decimal/decimal";
-import { ContractErrors, isRpcError, RpcErrors } from "./web3.errors";
+import { ContractErrors, isEthersJsonRpcError } from "../../lib/contract/contract.errors";
+import { isRpcError, RpcErrors } from "../../lib/ethereum/rpc.errors";
+import EthereumClient from "../../lib/ethereum/ethereum.client";
 
-// TODO clean up
-export interface Signature {
+interface Signature {
   v: number;
   r: string;
   s: string
 }
 
-
 export interface IWeb3Controller {
   // silently try to get ethAccounts
   connectMetaMaskIfNecessaryForConnectBtn: () => Promise<void>;
-  // open MM and call requestAccounts
-  requestConnect: (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => Promise<void>;
   // mint token
   requestConnectAndMint: (clipId: string, creatorShare: string, clipTitle: string, clipDescription?: string) => Promise<void>;
+  // open MM and call requestAccounts
+  requestConnect: (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => Promise<void>;
 }
 
 
 export class Web3Controller implements IWeb3Controller {
-  private eth?: EthereumController;
-  private contract?: ContractClient;
-
   constructor(
     private model: EthereumModel,
-    private snackbar: SnackbarClient,
     private offChainStorage: OffChainStorage,
-    private subgraph: SubgraphClient
+    private subgraph: SubgraphClient,
+    private snackbar: SnackbarClient,
   ) { }
 
   async connectMetaMaskIfNecessaryForConnectBtn() {
@@ -52,86 +46,68 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    try {
-      this.initEthereumCtrlIfNotExist(this.model, this.snackbar);
-      if (!this.eth) {
-        throw new Error("Failed to init Etheruem Controller");
-      }
-      await this.eth.ethAccounts();
-    } catch (error) {
-      // TODO Sentry - this should not happen
-      console.log('[app.controller]:connectMetaMaskIfNecessaryForConnectBtn:error', error);
-      this.snackbar.sendError(NftErrors.SOMETHING_WENT_WRONG);
-    }
-
+    await this.ethAccounts();
   }
 
   async requestConnect(andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) {
+    // can't display this page if MM not installed
+    if (!this.model.isMetaMaskInstalled()) {
+      this.model.meta.setError(Web3Errors.INSTALL_METAMASK);
+      return;
+    }
+
+    // MM connected -> nothing to do
+    if (this.model.isProviderConnected()) {
+      return;
+    }
+
     this.model.meta.setLoading(true);
 
     await this.requestAccounts();
 
-    const signer = this.model.getAccount();
-    if (!signer) {
-      this.model.meta.setError(MetaMaskErrors.CONNECT_METAMASK);
+    const signerAddress = this.model.getAccount();
+    if (!signerAddress) {
+      this.model.meta.setError(Web3Errors.CONNECT_METAMASK);
       return;
     }
 
     if (andThenCallThisWithSignerAddress) {
-      await andThenCallThisWithSignerAddress(signer)
+      await andThenCallThisWithSignerAddress(signerAddress)
     }
 
     this.model.meta.setLoading(false);
   }
 
   async requestConnectAndMint(clipId: string, creatorShare: string, clipTitle: string, clipDescription?: string) {
-    try {
-      if (!this.model.isMetaMaskInstalled()) {
-        this.snackbar.sendInfo(MetaMaskErrors.INSTALL_METAMASK);
-        return;
-      }
-
-      if (!this.model.isProviderConnected()) {
-        this.initEthereumCtrlIfNotExist(this.model, this.snackbar);
-        if (!this.eth) {
-          throw new Error("Failed to init Etheruem Controller");
-        }
-        await this.eth.requestAccounts();
-      }
-
-      this.initContractIfNotExist(this.model.signer);
-      if (!this.contract) {
-        throw new Error("Failed to init Contract");
-      }
-
-      const signer = this.model.getAccount();
-      if (!signer) {
-        throw new Error("Provider not connected???");
-      }
-
-      await this.prepareMetadataAndMintClip(
-        clipId,
-        signer,
-        creatorShare,
-        clipTitle,
-        clipDescription
-      );
-    } catch (error) {
-      console.log('[LOG]:requestConnectAndMint:err', error);
-      // TODO sentry
-      // invalid provider
-      // init contract
-      // prepareMetadataAndMintClip
-      //  - storeClip error
-      this.snackbar.sendError(NftErrors.SOMETHING_WENT_WRONG);
+    if (!this.model.isMetaMaskInstalled()) {
+      this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
+      return;
     }
+
+    if (!this.model.isProviderConnected()) {
+      await this.requestAccounts();
+    }
+    const signerAddress = this.model.getAccount();
+    if (!signerAddress) {
+      // requestAccounts failed (rejected/already opened, etc...) and notification to user was sent
+      // just stop here
+      return;
+    }
+
+    await this.prepareMetadataAndMintClip(
+      clipId,
+      signerAddress,
+      creatorShare,
+      clipTitle,
+      clipDescription
+    );
   }
 
 
   private prepareMetadataAndMintClip = async (clipId: string, address: string, creatorShare: string, clipTitle: string, clipDescription?: string) => {
     if (!address || !clipTitle) {
       // TODO sentry this should not happen
-      this.snackbar.sendError(NftErrors.SOMETHING_WENT_WRONG);
+      this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
       return;
     }
 
@@ -142,21 +118,25 @@ export class Web3Controller implements IWeb3Controller {
     if (resp.statusOk && !this.offChainStorage.isStoreClipError(resp.body)) {
       this.model.stopClipStoreLoaderAndStartMintLoader();
 
-      const nftClip = await this.mintNFT(resp.body.mediadata, clipId, resp.body.signature, creatorShare);
-      console.log('[LOG]:nftClip', nftClip);
-      if (nftClip) {
-        const tokenId = nftClip.id;
-
-        // TODO ideally we do not want to reload the app here and just update state
-        location.replace(location.origin + `/nfts/${tokenId}`);
-      } else {
-        // TODO sentry this should not happen    
-        this.model.meta.setError(NftErrors.FAILED_TO_FETCH_SUBGRAPH_DATA);
+      const txHash = await this.mintNFT(resp.body.mediadata, clipId, resp.body.signature, creatorShare);
+      if (!txHash) {
         return;
       }
 
+      const clip = await this.subgraph.fetchClipByHashCached(txHash);
+      console.log('[LOG]:clip', clip);
+      if (!clip) {
+        // TODO sentry this should not happen    
+        this.model.meta.setError(Web3Errors.FAILED_TO_FETCH_SUBGRAPH_DATA);
+        return;
+      }
+
+      const tokenId = clip.id;
+      // TODO ideally we do not want to reload the app here and just update state
+      location.replace(location.origin + `/nfts/${tokenId}`);
     } else {
-      this.snackbar.sendError(NftErrors.SOMETHING_WENT_WRONG);
+      // TODO improve errors from clipit-api
+      this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
     }
   }
 
@@ -170,7 +150,8 @@ export class Web3Controller implements IWeb3Controller {
     }
 
     try {
-      const tx = await this.contract!.mint(data, defaultBidshares, signature);
+      const contract = new ContractClient(this.initEthClient().signer);
+      const tx = await contract.mint(data, defaultBidshares, signature);
       console.log("[LOG]:minting NFT in tx", tx.hash);
 
       this.model.setWaitForTransaction();
@@ -178,105 +159,105 @@ export class Web3Controller implements IWeb3Controller {
       const receipt = await tx.wait();
       console.log("[LOG]:mint:done! gas used to mint:", receipt.gasUsed.toString());
 
-      return this.subgraph.fetchClipByHashCached(tx.hash);
+      return tx.hash;
     } catch (error) {
+      // TODO sentry
       console.log("[LOG]:mint:error", error);
 
-      if (isRpcError(error)) {
-        // clean the loading screen
-        this.model.stopMintLoader();
+      if (isEthersJsonRpcError(error)) {
+        // take out Rpc error from Ethers error
+        error = error.error;
+      }
 
-        // TODO double check these error codes with spec & errors that we get from contract
+      if (isRpcError(error)) {
         switch (error.code) {
           case RpcErrors.USER_REJECTED_REQUEST:
-            this.snackbar.sendError(NftErrors.MINT_REJECTED);
+            this.snackbar.sendInfo(Web3Errors.MINT_REJECTED);
             // redirect to Clip, since we have the clip metadata, we'd otherwise display the IPFS Clip
             // TODO this can definitely be improved
             location.replace(`${location.origin}/clips/${clipId}`);
 
             break;
           case RpcErrors.INTERNAL_ERROR:
-            // contract errors / reverts
-            if (error.message.includes("token already minted") || error.message.includes("token has already been created with this content hash")) {
+            // contract reverts
+            if (error.message.includes(ContractErrors.ERC721_TOKEN_MINTED) || error.message.includes(ContractErrors.CLIPIT_TOKEN_EXIST)) {
               this.snackbar.sendError(ContractErrors.TOKEN_ALREADY_MINTED);
-            } else if ((error.data?.message as string).includes("not allowed to mint")) {
+            } else if (error.message.includes(ContractErrors.CLIPIT_INVALID_ADDRESS)) {
               this.snackbar.sendError(ContractErrors.ADDRESS_NOT_ALLOWED);
             }
             break;
           default:
             // SENTRY
-            this.snackbar.sendError(NftErrors.SOMETHING_WENT_WRONG);
+            this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
             break;
         }
-        return;
       } else {
         // SENTRY
         // unknown error
-        this.model.meta.setError(NftErrors.FAILED_TO_MINT);
+        this.model.meta.setError(Web3Errors.FAILED_TO_MINT);
+      }
+
+      return null;
+    } finally {
+      // clean the loading screen
+      this.model.stopMintLoader();
+    }
+  }
+
+  private requestAccounts = async () => {
+    try {
+      const accounts = await this.initEthClient().requestAccounts();
+      console.log('[ethereum.controller]:requestAccounts:accounts', accounts);
+
+      this.model.setAccounts(accounts);
+    } catch (error) {
+      console.log("[ethereum.controller]:requestAccounts:error", error);
+
+      if (!isRpcError(error)) {
+        this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
+        return;
+      }
+
+      switch (error.code) {
+        case RpcErrors.REQUEST_ALREADY_PENDING:
+          this.snackbar.sendError(Web3Errors.REQUEST_ALREADY_PENDING);
+          break;
+        case RpcErrors.USER_REJECTED_REQUEST:
+          this.snackbar.sendInfo(Web3Errors.CONNECT_MM_WARNING);
+          break;
+        default:
+          this.snackbar.sendError(Web3Errors.CONNECT_METAMASK);
+          break;
       }
     }
   }
 
-  private async requestAccounts() {
-    // can't display this page if MM not installed
-    if (!this.model.isMetaMaskInstalled()) {
-      this.model.meta.setError(MetaMaskErrors.INSTALL_METAMASK);
-      return;
-    }
-
-    // MM connected -> nothing to do
-    if (this.model.isProviderConnected()) {
-      return;
-    }
-
+  private ethAccounts = async () => {
     try {
-      this.initEthereumCtrlIfNotExist(this.model, this.snackbar);
-      if (!this.eth) {
-        throw new Error("Failed to init Etheruem Controller");
-      }
-      await this.eth.requestAccounts();
+      const accounts = await this.initEthClient().ethAccounts();
+      console.log('[ethereum.controller]:ethAccounts:accounts', accounts);
+
+      this.model.setAccounts(accounts);
     } catch (error) {
-      // TODO track in sentry, this should not happen
-      this.snackbar.sendError(MetaMaskErrors.SOMETHING_WENT_WRONG);
-      return;
-    }
-
-    if (!this.model.signer) {
-      // TODO sentry this should not happen
-      this.model.meta.setError(MetaMaskErrors.SOMETHING_WENT_WRONG);
-      return;
-    }
-
-    this.initContractIfNotExist(this.model.signer);
-    if (!this.contract) {
-      // TODO sentry this should not happen
-      this.model.meta.setError(MetaMaskErrors.SOMETHING_WENT_WRONG);
-      return;
+      console.log("[ethereum.controller]:ethAccounts:error", error);
+      this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
     }
   }
 
-  private initEthereumCtrlIfNotExist(model: EthereumModel, snackbar: SnackbarClient) {
-    if (!this.eth) {
-      // TODO EthController maybe should be just client and not need model and snackbar 
-      // (those could be web3Controller dependencies)
-      this.eth = new EthereumController(model, window.ethereum as EthereumProvider, snackbar);
-    }
+  private initEthClient = () => {
+    const client = new EthereumClient(window.ethereum as EthereumProvider);
+    client.registerEventHandler("chainChanged", this.handleChainChanged);
+    client.registerEventHandler("accountsChanged", this.handleAccountsChange);
+    return client;
+  };
+
+  private handleAccountsChange = (accounts: string[]) => {
+    console.log('[web3.controller]:handleAccountsChange', accounts);
+    this.model.setAccounts(accounts);
   }
 
-  private initContractIfNotExist(signer?: ethers.providers.JsonRpcSigner) {
-    if (this.contract) {
-      return;
-    }
-
-    if (!signer) {
-      return;
-    }
-
-    try {
-      this.contract = new ContractClient(signer);
-    } catch (error) {
-      // TODO sentry - probably invalid signer
-      this.snackbar.sendError(MetaMaskErrors.SOMETHING_WENT_WRONG);
-    }
+  private handleChainChanged(chainId: ChainId) {
+    console.log("[web3.controller]::chainChanged", chainId)
+    window.location.reload();
   }
 }

@@ -1,15 +1,3 @@
-
-// TODO clean up NftErrors, RpcErrors, ContractErrors between nft.errors, web3.errors and ethereum.types
-export enum ContractErrors {
-  TOKEN_ALREADY_MINTED = "This clip is already minted into an NFT",
-  ADDRESS_NOT_ALLOWED = "Address not allowed to mint this token",
-}
-
-export interface ProviderRpcError extends Error {
-  code: number;
-  data?: any;
-}
-
 // https://eips.ethereum.org/EIPS/eip-1193#provider-errors
 export enum RpcErrors {
   USER_REJECTED_REQUEST = 4001, // The user rejected the request.
@@ -22,5 +10,14 @@ export enum RpcErrors {
 }
 
 export function isRpcError(error: ProviderRpcError | unknown): error is ProviderRpcError {
-  return (error as ProviderRpcError).code !== undefined && (error as ProviderRpcError).message !== undefined;
+  return (error as ProviderRpcError).code !== undefined &&
+    typeof (error as ProviderRpcError).code === 'number' &&
+    (error as ProviderRpcError).message !== undefined &&
+    typeof (error as ProviderRpcError).message === 'string';
+}
+
+export interface ProviderRpcError extends Error {
+  message: string;
+  code: number;
+  data?: unknown;
 }

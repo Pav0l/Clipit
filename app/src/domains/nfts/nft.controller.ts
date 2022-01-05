@@ -17,10 +17,14 @@ export class NftController {
     try {
       const tokenMetadata = this.model.getTokenMetadata(tokenId);
       if (tokenMetadata) {
-        return tokenMetadata
+        return tokenMetadata;
       }
 
       const clip = await this.subgraph.fetchClipCached(tokenId);
+      if (!clip) {
+        this.model.meta.setError(NftErrors.CLIP_DOES_NOT_EXIST);
+        return;
+      }
 
       await this.getMetadataForClipFragmentAndStoreInModel(clip, true);
     } catch (error) {
@@ -35,6 +39,10 @@ export class NftController {
       this.model.meta.setLoading(true);
 
       const data = await this.subgraph.fetchUserCached(address);
+      if (!data) {
+        this.model.meta.setLoading(false);
+        return;
+      }
 
       for (const clip of data.collection) {
         await this.getMetadataForClipFragmentAndStoreInModel(clip);
@@ -83,7 +91,11 @@ export class NftController {
     }
   }
 
-  private getMetadataForClipFragmentAndStoreInModel = async (clip: ClipPartialFragment, shouldThrow?: boolean) => {
+  private getMetadataForClipFragmentAndStoreInModel = async (clip?: ClipPartialFragment, shouldThrow?: boolean) => {
+    if (clip == null) {
+      return;
+    }
+
     const metadataCid = this.parseCidFromURI(clip.metadataURI);
     if (!metadataCid) {
       // TODO sentry this should not happen

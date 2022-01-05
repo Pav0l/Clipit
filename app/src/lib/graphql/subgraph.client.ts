@@ -5,9 +5,9 @@ import { BidPartialFragment, ClipPartialFragment, GetClipDataQuery, GetUserDataQ
 
 
 export class SubgraphClient {
-  private userLoader: DataLoader<string, UserData>;
-  private clipLoader: DataLoader<string, ClipPartialFragment>;
-  private clipHashLoader: DataLoader<string, ClipPartialFragment>;
+  private userLoader: DataLoader<string, UserData | null>;
+  private clipLoader: DataLoader<string, ClipPartialFragment | null>;
+  private clipHashLoader: DataLoader<string, ClipPartialFragment | null>;
 
   constructor(private client: GraphQLClient) {
     this.userLoader = new DataLoader((keys) => this.getUser(keys));
@@ -21,7 +21,7 @@ export class SubgraphClient {
   fetchClipCached = async (tokenId: string) => {
     const clip = await this.clipLoader.load(tokenId);
     if (!clip) {
-      throw new Error("Unable to find clip");
+      return null;
     }
     return clip;
   }
@@ -29,7 +29,7 @@ export class SubgraphClient {
   fetchClipByHashCached = async (txHash: string) => {
     const clip = this.retryFetch<string, ClipPartialFragment>(this.clipHashLoader, txHash, 3, 5000);
     if (!clip) {
-      throw new Error("Unable to find clip");
+      return null;
     }
 
     return clip;
@@ -44,7 +44,7 @@ export class SubgraphClient {
   fetchUserCached = async (address: string) => {
     const user = await this.userLoader.load(address);
     if (!user) {
-      throw new Error("Unable to find user");
+      return null;
     }
     return user;
   }
@@ -73,7 +73,7 @@ export class SubgraphClient {
     return txHashes.map((hash) => transformClipDataFromHash(resp, hash));
   }
 
-  private retryFetch = async <K, V>(loader: DataLoader<K, V>, key: K, retryCount: number, retryDelay: number) => {
+  private retryFetch = async <K, V>(loader: DataLoader<K, V | null>, key: K, retryCount: number, retryDelay: number) => {
     let delay = retryDelay;
     for (let i = 0; i < retryCount; i++) {
       const value = await loader.load(key);
@@ -98,10 +98,10 @@ function sleep(ms: number) {
   return new Promise(res => setTimeout(res, ms));
 }
 
-function transformUserData(data: GetUserDataQuery, key: string): UserData {
+function transformUserData(data: GetUserDataQuery, key: string): UserData | null {
   const user = data.users.find((user) => user.id === key);
   if (!user) {
-    throw new Error("No valid user in response from Graph");
+    return null;
   }
 
   return {
@@ -125,20 +125,19 @@ function transformUserData(data: GetUserDataQuery, key: string): UserData {
   }
 }
 
-function transformClipData(data: GetClipDataQuery, key: string): ClipPartialFragment {
+function transformClipData(data: GetClipDataQuery, key: string): ClipPartialFragment | null {
   const clip = data.clips.find((clip) => clip.id === key);
   if (!clip) {
-    throw new Error("No valid clip in response from Graph");
+    return null;
   }
 
   return clip;
 }
 
-function transformClipDataFromHash(data: GetTokenByTxHashQuery, key: string): ClipPartialFragment {
+function transformClipDataFromHash(data: GetTokenByTxHashQuery, key: string): ClipPartialFragment | null {
   const clip = data.clips.find((clip) => clip.transactionHash === key);
   if (!clip) {
-    // in this case, we want to return undefined value to try again in the fetch method
-    return undefined as any;
+    return null;
   }
 
   return clip;

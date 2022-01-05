@@ -18,7 +18,8 @@ export class NftModel {
     if (this.hasMetadata[data.tokenId]) {
       return;
     }
-    this.metadata.push(new Metadata(data))
+    this.metadata.push(new Metadata(data));
+    this.hasMetadata[data.tokenId] = true;
   }
 
   resetMetadata(): void {

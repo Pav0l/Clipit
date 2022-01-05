@@ -12,10 +12,7 @@ import VideoList from "../../components/videoList/VideoList";
 import CenteredContainer from "../../components/container/CenteredContainer";
 import { CardWithThumbnail } from "../../components/nfts/CardWithThumbnail";
 import { NftController } from "./nft.controller";
-import {
-  EthereumModel,
-  MetaMaskErrors
-} from "../../lib/ethereum/ethereum.model";
+import { EthereumModel, Web3Errors } from "../../lib/ethereum/ethereum.model";
 
 interface Props {
   model: {
@@ -65,10 +62,7 @@ function NftsContainer({ model, operations }: Props) {
 
   if (!signer) {
     return (
-      <ErrorWithRetry
-        text={MetaMaskErrors.CONNECT_METAMASK}
-        withRetry={false}
-      />
+      <ErrorWithRetry text={Web3Errors.CONNECT_METAMASK} withRetry={false} />
     );
   }
 
