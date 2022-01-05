@@ -1,47 +1,15 @@
 
-
-export interface EthereumProvider {
-  isMetaMask: boolean;
-
-  isConnected(): boolean;
-  request<T>(args: RequestArguments): Promise<T>;
-
-  on(eventName: EthereumEvents, handler: (data: any) => void): void;
-  off(eventName: EthereumEvents, handler: (data: any) => void): void;
-}
-
-export enum ChainId {
-  MAIN = "0x1",
-  ROPSTEN = "0x3",
-  RINKEBY = "0x4",
-  GOERLI = "0x5",
-  KOVAN = "0x2a",
-  HARDHAT = "31337"
-}
-
-export interface RequestArguments {
-  method: string;
-  params?: unknown[] | object;
+// TODO clean up NftErrors, RpcErrors, ContractErrors between nft.errors, web3.errors and ethereum.types
+export enum ContractErrors {
+  TOKEN_ALREADY_MINTED = "This clip is already minted into an NFT",
+  ADDRESS_NOT_ALLOWED = "Address not allowed to mint this token",
 }
 
 export interface ProviderRpcError extends Error {
-  message: string;
   code: number;
-  data?: unknown;
+  data?: any;
 }
 
-export interface ProviderMessage {
-  type: string;
-  data: unknown;
-}
-
-type EthereumEvents = "connect" | "disconnect" | "accountsChanged" | "chainChanged" | "message";
-
-export interface ConnectInfo {
-  chainId: ChainId;
-}
-
-// TODO clean up NftErrors, RpcErrors, ContractErrors between nft.errors, web3.errors and ethereum.types
 // https://eips.ethereum.org/EIPS/eip-1193#provider-errors
 export enum RpcErrors {
   USER_REJECTED_REQUEST = 4001, // The user rejected the request.

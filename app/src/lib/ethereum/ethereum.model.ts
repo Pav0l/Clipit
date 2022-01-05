@@ -5,8 +5,8 @@ import { MetaModel } from "../../domains/app/meta.model";
 export class EthereumModel {
   meta: MetaModel;
 
+  accounts: string[] = [];
   signer?: ethers.providers.JsonRpcSigner;
-  accounts?: string[];
   chainId?: string;
 
   constructor(meta: MetaModel) {
@@ -26,12 +26,12 @@ export class EthereumModel {
     this.chainId = chainId;
   }
 
-  getAccount() {
-    return this.accounts ? this.accounts[0] : null;
+  getAccount(): string | null {
+    return this.accounts[0] ?? null;
   }
 
   isProviderConnected(): boolean {
-    return Boolean(this.accounts && this.accounts.length > 0);
+    return Boolean(this.accounts.length > 0);
   }
 
   isMetaMaskInstalled(): boolean {
@@ -39,7 +39,7 @@ export class EthereumModel {
   }
 }
 
-
+// TODO clean up NftErrors, RpcErrors, ContractErrors between nft.errors, web3.errors and ethereum.types
 export enum MetaMaskErrors {
   INSTALL_METAMASK = "Please install MetaMask extension and click the Connect button to view or create Clip NFTs",
   CONNECT_METAMASK = "Connect your MetaMask wallet to view or create Clip NFTs",

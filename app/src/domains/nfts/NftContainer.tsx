@@ -6,14 +6,14 @@ import ErrorWithRetry from "../../components/error/Error";
 import { NftModel } from "./nft.model";
 import { NftCard } from "../../components/nfts/NftCard";
 import FullPageLoader from "../../components/loader/FullPageLoader";
-import { IWeb3Controller } from "../app/web3.controller";
 import CenteredContainer from "../../components/container/CenteredContainer";
+import { NftController } from "./nft.controller";
 
 interface Props {
   model: {
     nft: NftModel;
   };
-  operations: IWeb3Controller;
+  operations: NftController;
 }
 
 function NftContainer({ model, operations }: Props) {
@@ -26,7 +26,7 @@ function NftContainer({ model, operations }: Props) {
 
   useEffect(() => {
     if (!metadata) {
-      operations.requestConnectAndGetTokenMetadata(tokenId);
+      operations.getTokenMetadata(tokenId);
     }
   }, []);
 

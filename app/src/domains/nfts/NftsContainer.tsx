@@ -11,39 +11,68 @@ import ErrorWithRetry from "../../components/error/Error";
 import VideoList from "../../components/videoList/VideoList";
 import CenteredContainer from "../../components/container/CenteredContainer";
 import { CardWithThumbnail } from "../../components/nfts/CardWithThumbnail";
-import { EthereumModel } from "../../lib/ethereum/ethereum.model";
+import { NftController } from "./nft.controller";
+import {
+  EthereumModel,
+  MetaMaskErrors
+} from "../../lib/ethereum/ethereum.model";
 
 interface Props {
   model: {
-    nft: NftModel;
     eth: EthereumModel;
+    nft: NftModel;
   };
-  operations: IWeb3Controller;
+  operations: {
+    web3: IWeb3Controller;
+    nft: NftController;
+  };
 }
 
 function NftsContainer({ model, operations }: Props) {
-  const metadata = operations.nft?.getOwnerMetadata(model.eth.getAccount());
+  const metadata = model.nft.metadata;
+  const signer = model.eth.getAccount();
+
   const classes = useStyles();
-  const hasMetadata = metadata && metadata.length > 0;
 
   useEffect(() => {
-    if (!hasMetadata) {
-      operations.requestConnectAndGetTokensMetadata();
+    if (!model.eth.isProviderConnected()) {
+      // MM was not connected -> no reason to keep some previous NFTs on state
+      model.nft.resetMetadata();
+      operations.web3.requestConnect(
+        operations.nft.getCurrentSignerTokensMetadata
+      );
+    }
+
+    if (signer) {
+      operations.nft.getCurrentSignerTokensMetadata(signer);
     }
   }, []);
 
   // TODO MM not installed should be a custom error
   // MetaMask not installed
-  if (model.nft.meta.hasError) {
+  if (model.eth.meta.hasError) {
     // TODO add onboarding and retry handler button to error msg
     return <ErrorWithRetry text={model.nft.meta.error} withRetry={false} />;
   }
 
-  if (model.nft.meta.isLoading) {
+  if (model.nft.meta.hasError) {
+    return <ErrorWithRetry text={model.nft.meta.error} withRetry={true} />;
+  }
+
+  if (model.nft.meta.isLoading || model.eth.meta.isLoading) {
     return <FullPageLoader />;
   }
 
-  if (!hasMetadata) {
+  if (!signer) {
+    return (
+      <ErrorWithRetry
+        text={MetaMaskErrors.CONNECT_METAMASK}
+        withRetry={false}
+      />
+    );
+  }
+
+  if (metadata.length === 0) {
     return (
       <CenteredContainer>
         <Typography variant="h6" component="h6">

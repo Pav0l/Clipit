@@ -23,7 +23,8 @@ export class NftModel {
   mintLoad: boolean = false;
   mintStatus?: MintStatus;
 
-  metadata: Metadata[] = [];;
+  metadata: Metadata[] = [];
+  hasMetadata: { [tokenId: string]: boolean } = {}
 
   constructor(meta: MetaModel) {
     makeAutoObservable(this);
@@ -31,7 +32,15 @@ export class NftModel {
   }
 
   addMetadata(data: MetadataInput): void {
+    if (this.hasMetadata[data.tokenId]) {
+      return;
+    }
     this.metadata.push(new Metadata(data))
+  }
+
+  resetMetadata(): void {
+    this.metadata = [];
+    this.hasMetadata = {};
   }
 
   getMetadata(clipCid: string): Metadata {
@@ -87,12 +96,6 @@ export class NftModel {
   }
 }
 
-
-export interface Signature {
-  v: number;
-  r: string;
-  s: string
-}
 
 interface MetadataInput {
   clipCid: string;

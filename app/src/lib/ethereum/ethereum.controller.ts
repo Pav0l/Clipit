@@ -86,7 +86,7 @@ export default class EthereumController {
 
   private handleAccountsChange = (accounts: string[]) => {
     console.log('[ethereum.controller]: handleAccountsChange', accounts);
-    this.model.setAccounts(accounts)
+    this.model.setAccounts(accounts);
   }
   private handleConnect = (data: ConnectInfo) => console.log("handleConnect", data)
   private handleDisconnect = (data: ProviderRpcError) => console.log("handleDisconnect", data)

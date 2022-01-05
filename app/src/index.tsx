@@ -40,6 +40,7 @@ import { UserController } from "./domains/twitch-user/user.controller";
 import { TwitchOAuthApiClient } from "./lib/twitch-oauth/twitch-oauth-api.client";
 import { SubgraphClient } from "./lib/graphql/subgraph.client";
 import { OffChainStorage } from "./lib/off-chain-storage/off-chain-storage.client";
+import { NftController } from "./domains/nfts/nft.controller";
 
 function initSynchronous() {
   const storage = new LocalStorage();
@@ -72,6 +73,11 @@ function initSynchronous() {
   );
   const gameController = new GameController(model.game, twitchApi);
   const userController = new UserController(model.user, twitchApi);
+  const nftController = new NftController(
+    model.nft,
+    offChainStorageApi,
+    subgraph
+  );
 
   const web3Controller = new Web3Controller(
     model.eth,
@@ -90,7 +96,8 @@ function initSynchronous() {
       clip: clipController,
       user: userController,
       game: gameController,
-      auth: authController
+      auth: authController,
+      nft: nftController
     }
   };
 }
@@ -144,7 +151,7 @@ async function initAsync({
               >
                 <NftsContainer
                   model={{ nft: model.nft, eth: model.eth }}
-                  operations={operations.web3}
+                  operations={{ web3: operations.web3, nft: operations.nft }}
                 />
               </OAuthProtectedRoute>
               <OAuthProtectedRoute
@@ -155,7 +162,7 @@ async function initAsync({
               >
                 <NftContainer
                   model={{ nft: model.nft }}
-                  operations={operations.web3}
+                  operations={operations.nft}
                 />
               </OAuthProtectedRoute>
               <OAuthProtectedRoute
