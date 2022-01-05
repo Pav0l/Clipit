@@ -8,7 +8,7 @@ import {
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { IWeb3Controller } from "../../domains/app/web3.controller";
+import { IWeb3Controller } from "../../domains/web3/web3.controller";
 import { AppRoute } from "../../lib/constants";
 import { EthereumModel } from "../../lib/ethereum/ethereum.model";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";

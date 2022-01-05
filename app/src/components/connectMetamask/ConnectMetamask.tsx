@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { useState, useRef, useEffect } from "react";
 
 import { EthereumModel } from "../../lib/ethereum/ethereum.model";
-import { IWeb3Controller } from "../../domains/app/web3.controller";
+import { IWeb3Controller } from "../../domains/web3/web3.controller";
 import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
 
 import MetamaskIcon from "../../assets/metamask.svg";
