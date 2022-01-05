@@ -2,12 +2,30 @@ import { ethers } from "ethers";
 import { makeAutoObservable } from "mobx"
 import { MetaModel } from "../../domains/app/meta.model";
 
+enum MintStatus {
+  CONFIRM_MINT = "Clip ready to be turned into an NFT!\nPlease confirm the transaction in MetaMask",
+  WAIT_FOR_TX = "Clip minted, waiting for the transaction to confirm..."
+}
+
+enum StoreClipStatus {
+  PREPARING_CLIP = "Preparing your clip, this may take some time. Please do not refresh the page.",
+  GENERATING_SIG = "Almost there, generating a signature for your clip...",
+}
+
 export class EthereumModel {
   meta: MetaModel;
 
   accounts: string[] = [];
   signer?: ethers.providers.JsonRpcSigner;
   chainId?: string;
+
+  // Saving clip & generating signature loader
+  storeClipLoad: boolean = false;
+  storeClipStatus?: StoreClipStatus;
+  storeClipTimeoutId?: number;
+  // Minting NFT loader
+  mintLoad: boolean = false;
+  mintStatus?: MintStatus;
 
   constructor(meta: MetaModel) {
     makeAutoObservable(this);
@@ -37,6 +55,47 @@ export class EthereumModel {
   isMetaMaskInstalled(): boolean {
     return Boolean(window.ethereum && window.ethereum.isMetaMask);
   }
+
+  startClipStoreLoader() {
+    this.storeClipLoad = true;
+    this.setClipStoreStatus(StoreClipStatus.PREPARING_CLIP);
+
+    const timeoutId = window.setTimeout(() => {
+      this.setClipStoreStatus(StoreClipStatus.GENERATING_SIG);
+    }, 20_000);
+
+    this.storeClipTimeoutId = timeoutId;
+  }
+
+  stopClipStoreLoaderAndStartMintLoader() {
+    this.stopClipStoreLoader();
+    this.startMintLoader()
+  }
+
+  stopMintLoader() {
+    this.mintLoad = false;
+    this.mintStatus = undefined;
+  }
+
+  setWaitForTransaction() {
+    this.mintLoad = true;
+    this.mintStatus = MintStatus.WAIT_FOR_TX;
+  }
+
+  private startMintLoader() {
+    this.mintLoad = true;
+    this.mintStatus = MintStatus.CONFIRM_MINT;
+  }
+
+  private stopClipStoreLoader() {
+    clearTimeout(this.storeClipTimeoutId);
+    this.storeClipTimeoutId = undefined;
+    this.storeClipLoad = false;
+  }
+  private setClipStoreStatus(status: StoreClipStatus) {
+    this.storeClipStatus = status;
+  }
+
 }
 
 // TODO clean up NftErrors, RpcErrors, ContractErrors between nft.errors, web3.errors and ethereum.types

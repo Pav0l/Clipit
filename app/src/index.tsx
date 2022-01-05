@@ -81,7 +81,6 @@ function initSynchronous() {
 
   const web3Controller = new Web3Controller(
     model.eth,
-    model.nft,
     snackbarClient,
     offChainStorageApi,
     subgraph
@@ -197,7 +196,7 @@ async function initAsync({
                       clip: model.clip,
                       user: model.user,
                       game: model.game,
-                      nft: model.nft
+                      eth: model.eth
                     }}
                     operations={operations}
                   />

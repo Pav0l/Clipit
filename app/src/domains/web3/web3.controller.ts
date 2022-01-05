@@ -35,26 +35,25 @@ export class Web3Controller implements IWeb3Controller {
   private contract?: ContractClient;
 
   constructor(
-    private ethModel: EthereumModel,
-    private nftModel: NftModel,
+    private model: EthereumModel,
     private snackbar: SnackbarClient,
     private offChainStorage: OffChainStorage,
     private subgraph: SubgraphClient
   ) { }
 
   async connectMetaMaskIfNecessaryForConnectBtn() {
-    if (!this.ethModel.isMetaMaskInstalled()) {
+    if (!this.model.isMetaMaskInstalled()) {
       // if MM is not installed, do nothing. the button will prompt for installation
       return;
     }
 
     // MM connected -> nothing to do
-    if (this.ethModel.isProviderConnected()) {
+    if (this.model.isProviderConnected()) {
       return;
     }
 
     try {
-      this.initEthereumCtrlIfNotExist(this.ethModel, this.snackbar);
+      this.initEthereumCtrlIfNotExist(this.model, this.snackbar);
       if (!this.eth) {
         throw new Error("Failed to init Etheruem Controller");
       }
@@ -68,13 +67,13 @@ export class Web3Controller implements IWeb3Controller {
   }
 
   async requestConnect(andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) {
-    this.ethModel.meta.setLoading(true);
+    this.model.meta.setLoading(true);
 
     await this.requestAccounts();
 
-    const signer = this.ethModel.getAccount();
+    const signer = this.model.getAccount();
     if (!signer) {
-      this.ethModel.meta.setError(MetaMaskErrors.CONNECT_METAMASK);
+      this.model.meta.setError(MetaMaskErrors.CONNECT_METAMASK);
       return;
     }
 
@@ -82,30 +81,30 @@ export class Web3Controller implements IWeb3Controller {
       await andThenCallThisWithSignerAddress(signer)
     }
 
-    this.ethModel.meta.setLoading(false);
+    this.model.meta.setLoading(false);
   }
 
   async requestConnectAndMint(clipId: string, creatorShare: string, clipTitle: string, clipDescription?: string) {
     try {
-      if (!this.ethModel.isMetaMaskInstalled()) {
+      if (!this.model.isMetaMaskInstalled()) {
         this.snackbar.sendInfo(MetaMaskErrors.INSTALL_METAMASK);
         return;
       }
 
-      if (!this.ethModel.isProviderConnected()) {
-        this.initEthereumCtrlIfNotExist(this.ethModel, this.snackbar);
+      if (!this.model.isProviderConnected()) {
+        this.initEthereumCtrlIfNotExist(this.model, this.snackbar);
         if (!this.eth) {
           throw new Error("Failed to init Etheruem Controller");
         }
         await this.eth.requestAccounts();
       }
 
-      this.initContractIfNotExist(this.ethModel.signer);
+      this.initContractIfNotExist(this.model.signer);
       if (!this.contract) {
         throw new Error("Failed to init Contract");
       }
 
-      const signer = this.ethModel.getAccount();
+      const signer = this.model.getAccount();
       if (!signer) {
         throw new Error("Provider not connected???");
       }
@@ -136,12 +135,12 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    this.nftModel.startClipStoreLoader();
+    this.model.startClipStoreLoader();
 
     const resp = await this.offChainStorage.saveClipAndCreateMetadata(clipId, { address, clipTitle, clipDescription });
 
     if (resp.statusOk && !this.offChainStorage.isStoreClipError(resp.body)) {
-      this.nftModel.stopClipStoreLoaderAndStartMintLoader();
+      this.model.stopClipStoreLoaderAndStartMintLoader();
 
       const nftClip = await this.mintNFT(resp.body.mediadata, clipId, resp.body.signature, creatorShare);
       console.log('[LOG]:nftClip', nftClip);
@@ -152,7 +151,7 @@ export class Web3Controller implements IWeb3Controller {
         location.replace(location.origin + `/nfts/${tokenId}`);
       } else {
         // TODO sentry this should not happen    
-        this.nftModel.meta.setError(NftErrors.FAILED_TO_FETCH_SUBGRAPH_DATA);
+        this.model.meta.setError(NftErrors.FAILED_TO_FETCH_SUBGRAPH_DATA);
         return;
       }
 
@@ -174,7 +173,7 @@ export class Web3Controller implements IWeb3Controller {
       const tx = await this.contract!.mint(data, defaultBidshares, signature);
       console.log("[LOG]:minting NFT in tx", tx.hash);
 
-      this.nftModel.setWaitForTransaction();
+      this.model.setWaitForTransaction();
 
       const receipt = await tx.wait();
       console.log("[LOG]:mint:done! gas used to mint:", receipt.gasUsed.toString());
@@ -185,7 +184,7 @@ export class Web3Controller implements IWeb3Controller {
 
       if (isRpcError(error)) {
         // clean the loading screen
-        this.nftModel.stopMintLoader();
+        this.model.stopMintLoader();
 
         // TODO double check these error codes with spec & errors that we get from contract
         switch (error.code) {
@@ -213,25 +212,25 @@ export class Web3Controller implements IWeb3Controller {
       } else {
         // SENTRY
         // unknown error
-        this.nftModel.meta.setError(NftErrors.FAILED_TO_MINT);
+        this.model.meta.setError(NftErrors.FAILED_TO_MINT);
       }
     }
   }
 
   private async requestAccounts() {
     // can't display this page if MM not installed
-    if (!this.ethModel.isMetaMaskInstalled()) {
-      this.ethModel.meta.setError(MetaMaskErrors.INSTALL_METAMASK);
+    if (!this.model.isMetaMaskInstalled()) {
+      this.model.meta.setError(MetaMaskErrors.INSTALL_METAMASK);
       return;
     }
 
     // MM connected -> nothing to do
-    if (this.ethModel.isProviderConnected()) {
+    if (this.model.isProviderConnected()) {
       return;
     }
 
     try {
-      this.initEthereumCtrlIfNotExist(this.ethModel, this.snackbar);
+      this.initEthereumCtrlIfNotExist(this.model, this.snackbar);
       if (!this.eth) {
         throw new Error("Failed to init Etheruem Controller");
       }
@@ -242,25 +241,25 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    if (!this.ethModel.signer) {
+    if (!this.model.signer) {
       // TODO sentry this should not happen
-      this.ethModel.meta.setError(MetaMaskErrors.SOMETHING_WENT_WRONG);
+      this.model.meta.setError(MetaMaskErrors.SOMETHING_WENT_WRONG);
       return;
     }
 
-    this.initContractIfNotExist(this.ethModel.signer);
+    this.initContractIfNotExist(this.model.signer);
     if (!this.contract) {
       // TODO sentry this should not happen
-      this.ethModel.meta.setError(MetaMaskErrors.SOMETHING_WENT_WRONG);
+      this.model.meta.setError(MetaMaskErrors.SOMETHING_WENT_WRONG);
       return;
     }
   }
 
-  private initEthereumCtrlIfNotExist(ethModel: EthereumModel, snackbar: SnackbarClient) {
+  private initEthereumCtrlIfNotExist(model: EthereumModel, snackbar: SnackbarClient) {
     if (!this.eth) {
       // TODO EthController maybe should be just client and not need model and snackbar 
       // (those could be web3Controller dependencies)
-      this.eth = new EthereumController(ethModel, window.ethereum as EthereumProvider, snackbar);
+      this.eth = new EthereumController(model, window.ethereum as EthereumProvider, snackbar);
     }
   }
 

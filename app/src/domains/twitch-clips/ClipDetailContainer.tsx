@@ -7,7 +7,6 @@ import ErrorWithRetry from "../../components/error/Error";
 import { ClipModel } from "./clip.model";
 import { UserModel } from "../twitch-user/user.model";
 import { GameModel } from "../twitch-games/game.model";
-import { NftModel } from "../nfts/nft.model";
 import { IWeb3Controller } from "../web3/web3.controller";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import LinearLoader from "../../components/loader/LinearLoader";
@@ -16,13 +15,14 @@ import { ClipController } from "./clip.controller";
 import { GameController } from "../twitch-games/game.controller";
 import { useInputData } from "../../lib/hooks/useInputData";
 import ClipCardContent from "./ClipCardContent";
+import { EthereumModel } from "../../lib/ethereum/ethereum.model";
 
 interface Props {
   model: {
     clip: ClipModel;
     user: UserModel;
     game: GameModel;
-    nft: NftModel;
+    eth: EthereumModel;
   };
   operations: {
     web3: IWeb3Controller;
@@ -96,14 +96,14 @@ function ClipDetailContainer({ model, operations }: Props) {
     return <ErrorWithRetry text={model.clip.meta.error}></ErrorWithRetry>;
   }
 
-  if (model.nft.meta.hasError) {
-    return <ErrorWithRetry text={model.nft.meta.error}></ErrorWithRetry>;
+  if (model.eth.meta.hasError) {
+    return <ErrorWithRetry text={model.eth.meta.error}></ErrorWithRetry>;
   }
 
   if (
     model.clip.meta.isLoading ||
     model.user.meta.isLoading ||
-    model.nft.meta.isLoading
+    model.eth.meta.isLoading
   ) {
     return <FullPageLoader />;
   }
@@ -131,14 +131,14 @@ function ClipDetailContainer({ model, operations }: Props) {
     );
   }
 
-  if (model.nft.storeClipLoad && model.nft.storeClipStatus !== undefined) {
-    return <LinearLoader text={model.nft.storeClipStatus}></LinearLoader>;
+  if (model.eth.storeClipLoad && model.eth.storeClipStatus !== undefined) {
+    return <LinearLoader text={model.eth.storeClipStatus}></LinearLoader>;
   }
 
-  if (model.nft.mintLoad && model.nft.mintStatus !== undefined) {
+  if (model.eth.mintLoad && model.eth.mintStatus !== undefined) {
     return (
       <ErrorWithRetry
-        text={model.nft.mintStatus}
+        text={model.eth.mintStatus}
         withRetry={false}
       ></ErrorWithRetry>
     );
