@@ -1,8 +1,8 @@
 import { OAuthModel } from "./oauth.model";
-import { ILocalStorage } from "../local-storage";
-import { twitchAccessToken, twitchSecretKey, twitchAppClientId, twitchOAuthUri, twitchScopes } from "../constants";
+import { ILocalStorage } from "../../lib/local-storage";
+import { twitchAccessToken, twitchSecretKey, twitchAppClientId, twitchOAuthUri, twitchScopes } from "../../lib/constants";
 import { OauthQueryParams } from "./oauth.types";
-import { TwitchOAuthApiClient } from "./twitch-oauth-api.client";
+import { TwitchOAuthApiClient } from "../../lib/twitch-oauth/twitch-oauth-api.client";
 
 
 export class OAuthController {

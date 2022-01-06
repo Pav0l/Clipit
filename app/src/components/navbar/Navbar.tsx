@@ -12,9 +12,9 @@ import { IWeb3Controller } from "../../domains/web3/web3.controller";
 import { AppRoute } from "../../lib/constants";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { SnackbarClient } from "../../domains/snackbar/snackbar.controller";
-import LoginWithTwitch from "../../lib/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
-import { OAuthController } from "../../lib/twitch-oauth/oauth.controller";
-import { OAuthModel } from "../../lib/twitch-oauth/oauth.model";
+import LoginWithTwitch from "../../domains/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
+import { OAuthController } from "../../domains/twitch-oauth/oauth.controller";
+import { OAuthModel } from "../../domains/twitch-oauth/oauth.model";
 import ConnectMetamaskButton from "../connectMetamask/ConnectMetamask";
 
 interface Props {

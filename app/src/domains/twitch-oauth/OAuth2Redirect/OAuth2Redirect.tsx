@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import FullPageLoader from "../../../components/loader/FullPageLoader";
-import { AppRoute } from "../../constants";
+import { AppRoute } from "../../../lib/constants";
 import { OAuthController } from "../oauth.controller";
 import { OAuthModel } from "../oauth.model";
 

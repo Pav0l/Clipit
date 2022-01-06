@@ -5,7 +5,7 @@ import { NftModel } from "../nfts/nft.model";
 import { SnackbarModel } from "../snackbar/snackbar.model";
 import { TestStore } from "../playground/playground.store";
 import { UserModel } from "../twitch-user/user.model";
-import { OAuthModel } from "../../lib/twitch-oauth/oauth.model";
+import { OAuthModel } from "../twitch-oauth/oauth.model";
 import { Web3Model } from "../web3/web3.model";
 
 
