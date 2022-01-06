@@ -1,9 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import {
-  SnackbarClient,
-  snackbarClient
-} from "../../lib/snackbar/snackbar.client";
+import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { makeStyles, Theme } from "@material-ui/core";
 import { NftModel } from "../nfts/nft.model";
 import { IWeb3Controller } from "../web3/web3.controller";
@@ -12,22 +9,20 @@ interface Props {
   model: {
     nft: NftModel;
   };
-  operations: IWeb3Controller;
-  snackbar: SnackbarClient;
+  operations: {
+    web3: IWeb3Controller;
+    snackbar: SnackbarClient;
+  };
 }
 
-const Playground = observer(function Playground({
-  model,
-  operations,
-  snackbar
-}: Props) {
+const Playground = observer(function Playground({ model, operations }: Props) {
   const classes = useStyles();
 
   const onClick = async () => {
     try {
       // do something
     } catch (error) {
-      snackbar.sendError((error as Error).message);
+      operations.snackbar.sendError((error as Error).message);
       return;
     }
   };
@@ -37,15 +32,29 @@ const Playground = observer(function Playground({
       <button onClick={onClick}>Do something!</button>
       <button
         className={classes.btn}
-        onClick={() => snackbarClient.sendError("text is here")}
+        onClick={() =>
+          operations.snackbar.sendError(`text is here: ${Math.random() * 1000}`)
+        }
       >
         SET ERROR
       </button>
       <button
         className={classes.btn2}
-        onClick={() => snackbarClient.sendSuccess("yes yes yes")}
+        onClick={() =>
+          operations.snackbar.sendSuccess(
+            `yes yes yes: ${Math.random() * 1000}`
+          )
+        }
       >
         SET SUCCESS
+      </button>
+      <button
+        className={classes.btn}
+        onClick={() =>
+          operations.snackbar.sendInfo(`infoo: ${Math.random() * 1000}`)
+        }
+      >
+        SET INFO
       </button>
     </div>
   );

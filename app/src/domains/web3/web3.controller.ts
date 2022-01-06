@@ -1,7 +1,7 @@
 import { BytesLike } from "ethers";
 
 import ContractClient from "../../lib/contract/contract.client";
-import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
+import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
 import { Web3Model, Web3Errors } from "./web3.model";
 import { SubgraphClient } from "../../lib/graphql/subgraph.client";

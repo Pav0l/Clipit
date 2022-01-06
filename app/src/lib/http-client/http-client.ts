@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 import { twitchAccessToken } from '../constants';
-import { LocalStorage } from '../local-storage';
+import { ILocalStorage } from '../local-storage';
 
 export interface RawResponse<T> {
   statusCode: number;
@@ -12,7 +12,7 @@ export class HttpClient {
   private client: AxiosInstance;
 
 
-  constructor(private ls: LocalStorage, baseURL?: string) {
+  constructor(private ls: ILocalStorage, baseURL?: string) {
     this.client = axios.create({
       baseURL
     });

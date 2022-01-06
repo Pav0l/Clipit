@@ -2,13 +2,13 @@ import { BytesLike } from "ethers";
 import { ClipItApiClient, ClipPayload } from "../clipit-api/clipit-api.client";
 import { HttpClient, RawResponse } from "../http-client/http-client";
 import { IpfsClient } from "../ipfs/ipfs.client";
-import { LocalStorage } from "../local-storage";
+import { ILocalStorage } from "../local-storage";
 
 export class OffChainStorage {
   private writer: ClipItApiClient;
   private reader: IpfsClient;
 
-  constructor(storage: LocalStorage, writerURI: string, readerGateway: string) {
+  constructor(storage: ILocalStorage, writerURI: string, readerGateway: string) {
     this.writer = new ClipItApiClient(new HttpClient(storage, writerURI));
     this.reader = new IpfsClient(new HttpClient(storage, readerGateway));
   }

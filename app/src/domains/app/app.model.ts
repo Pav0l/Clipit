@@ -2,7 +2,7 @@ import { ClipModel } from "../twitch-clips/clip.model";
 import { GameModel } from "../twitch-games/game.model";
 import { MetaModel } from "./meta.model";
 import { NftModel } from "../nfts/nft.model";
-import { SnackbarModel } from "../../lib/snackbar/snackbar.model";
+import { SnackbarModel } from "../snackbar/snackbar.model";
 import { TestStore } from "../playground/playground.store";
 import { UserModel } from "../twitch-user/user.model";
 import { OAuthModel } from "../../lib/twitch-oauth/oauth.model";

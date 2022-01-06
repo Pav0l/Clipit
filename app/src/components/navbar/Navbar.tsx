@@ -11,7 +11,7 @@ import { Link as RouterLink } from "react-router-dom";
 import { IWeb3Controller } from "../../domains/web3/web3.controller";
 import { AppRoute } from "../../lib/constants";
 import { Web3Model } from "../../domains/web3/web3.model";
-import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
+import { SnackbarClient } from "../../domains/snackbar/snackbar.controller";
 import LoginWithTwitch from "../../lib/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
 import { OAuthController } from "../../lib/twitch-oauth/oauth.controller";
 import { OAuthModel } from "../../lib/twitch-oauth/oauth.model";
@@ -25,15 +25,11 @@ interface Props {
   operations: {
     web3: IWeb3Controller;
     auth: OAuthController;
+    snackbar: SnackbarClient;
   };
-  snackbar: SnackbarClient;
 }
 
-export default observer(function Navbar({
-  model,
-  operations,
-  snackbar
-}: Props) {
+export default observer(function Navbar({ model, operations }: Props) {
   const classes = useStyles();
   const [active, setActive] = useState<AppRoute | undefined>(undefined);
 
@@ -85,8 +81,10 @@ export default observer(function Navbar({
           />
           <ConnectMetamaskButton
             model={model}
-            operations={operations.web3}
-            snackbar={snackbar}
+            operations={{
+              web3: operations.web3,
+              snackbar: operations.snackbar
+            }}
           />
         </div>
       </Toolbar>

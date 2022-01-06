@@ -19,8 +19,7 @@ import NftContainer from "./domains/nfts/NftContainer";
 import NftsContainer from "./domains/nfts/NftsContainer";
 import ClipDetailContainer from "./domains/twitch-clips/ClipDetailContainer";
 import ClipsContainer from "./domains/twitch-clips/ClipsContainer";
-import Snackbar from "./lib/snackbar/Snackbar";
-import { snackbarClient } from "./lib/snackbar/snackbar.client";
+import Snackbar from "./domains/snackbar/Snackbar";
 import Home from "./components/home/Home";
 import OAuth2Redirect from "./lib/twitch-oauth/OAuth2Redirect/OAuth2Redirect";
 import Marketplace from "./components/marketplace/Marketplace";
@@ -41,10 +40,13 @@ import { TwitchOAuthApiClient } from "./lib/twitch-oauth/twitch-oauth-api.client
 import { SubgraphClient } from "./lib/graphql/subgraph.client";
 import { OffChainStorage } from "./lib/off-chain-storage/off-chain-storage.client";
 import { NftController } from "./domains/nfts/nft.controller";
+import { SnackbarController } from "./domains/snackbar/snackbar.controller";
 
 function initSynchronous() {
   const storage = new LocalStorage();
   const model = new AppModel();
+
+  const snackbar = new SnackbarController(model.snackbar);
 
   const offChainStorageApi = new OffChainStorage(
     storage,
@@ -66,11 +68,7 @@ function initSynchronous() {
     twitchOAuthApi,
     storage
   );
-  const clipController = new ClipController(
-    model.clip,
-    snackbarClient,
-    twitchApi
-  );
+  const clipController = new ClipController(model.clip, snackbar, twitchApi);
   const gameController = new GameController(model.game, twitchApi);
   const userController = new UserController(model.user, twitchApi);
   const nftController = new NftController(
@@ -83,7 +81,7 @@ function initSynchronous() {
     model.web3,
     offChainStorageApi,
     subgraph,
-    snackbarClient
+    snackbar
   );
 
   authController.checkTokenInStorage();
@@ -96,7 +94,8 @@ function initSynchronous() {
       user: userController,
       game: gameController,
       auth: authController,
-      nft: nftController
+      nft: nftController,
+      snackbar: snackbar
     }
   };
 }
@@ -132,11 +131,17 @@ async function initAsync({
           <Router basename={AppRoute.HOME}>
             <Navbar
               model={{ web3: model.web3, auth: model.auth }}
-              operations={{ web3: operations.web3, auth: operations.auth }}
-              snackbar={snackbarClient}
+              operations={{
+                web3: operations.web3,
+                auth: operations.auth,
+                snackbar: operations.snackbar
+              }}
             />
 
-            <Snackbar model={{ snackbar: model.snackbar }} />
+            <Snackbar
+              model={{ snackbar: model.snackbar }}
+              operations={operations.snackbar}
+            />
 
             <Switch>
               <Route exact path={AppRoute.MARKETPLACE}>
@@ -216,8 +221,10 @@ async function initAsync({
                   model={{
                     nft: model.nft
                   }}
-                  operations={operations.web3}
-                  snackbar={snackbarClient}
+                  operations={{
+                    web3: operations.web3,
+                    snackbar: operations.snackbar
+                  }}
                 />
               </Route>
               <Route path={AppRoute.HOME}>

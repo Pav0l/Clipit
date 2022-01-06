@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 
 import { Web3Model } from "../../domains/web3/web3.model";
 import { IWeb3Controller } from "../../domains/web3/web3.controller";
-import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
+import { SnackbarClient } from "../../domains/snackbar/snackbar.controller";
 
 import MetamaskIcon from "../../assets/metamask.svg";
 
@@ -17,11 +17,13 @@ interface Props {
   model: {
     web3: Web3Model;
   };
-  operations: IWeb3Controller;
-  snackbar: SnackbarClient;
+  operations: {
+    web3: IWeb3Controller;
+    snackbar: SnackbarClient;
+  };
 }
 
-function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
+function ConnectMetamaskButton({ model, operations }: Props) {
   const [buttonText, setButtonText] = useState(ONBOARD_TEXT);
   const [isDisabled, setDisabled] = useState(false);
 
@@ -33,7 +35,7 @@ function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
       onboarding.current = new MetaMaskOnboarding();
     }
 
-    operations.connectMetaMaskIfNecessaryForConnectBtn();
+    operations.web3.connectMetaMaskIfNecessaryForConnectBtn();
   }, []);
 
   useEffect(() => {
@@ -52,9 +54,9 @@ function ConnectMetamaskButton({ model, operations, snackbar }: Props) {
   const onClick = async () => {
     if (model.web3.isMetaMaskInstalled()) {
       try {
-        operations.requestConnect();
+        operations.web3.requestConnect();
       } catch (error) {
-        snackbar.sendError((error as Error).message);
+        operations.snackbar.sendError((error as Error).message);
         return;
       }
     } else {

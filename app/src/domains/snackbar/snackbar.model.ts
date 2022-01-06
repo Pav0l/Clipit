@@ -6,7 +6,9 @@ import { ISnack, SnackSeverity } from "./types";
  */
 export class SnackbarModel {
   open = false;
+  // currently displayed message
   message: ISnack | undefined = undefined;
+  // list (queue) of messages to be displayed after current message is closed/duration elapsed
   messageList: ISnack[] = [];
 
   constructor() {

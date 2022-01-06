@@ -19,6 +19,3 @@ export class LocalStorage implements ILocalStorage {
     window.localStorage.removeItem(key);
   }
 }
-
-
-export const localStorage = new LocalStorage();

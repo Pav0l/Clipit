@@ -1,7 +1,7 @@
 import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client"
 import { ClipModel } from "./clip.model";
 import { TwitchClipsErrors } from "./twitch-clips.errors";
-import { SnackbarClient } from "../../lib/snackbar/snackbar.client";
+import { SnackbarClient } from "../snackbar/snackbar.controller";
 
 const clipPatterns = [
   // /^([A-Za-z0-9]+(?:-[A-Za-z0-9_-]{16})?)$/,
