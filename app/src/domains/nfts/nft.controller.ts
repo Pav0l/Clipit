@@ -119,7 +119,7 @@ export class NftController {
       return;
     }
 
-    this.model.addMetadata({ ...metadata, metadataCid, tokenId: clip.id, owner: clip.owner.id });
+    this.model.addMetadata({ ...metadata, metadataCid, tokenId: clip.id, owner: clip.owner.id, currentBids: clip.currentBids });
   }
 
   private parseCidFromURI = (uri: string): string => {

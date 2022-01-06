@@ -1,5 +1,8 @@
+import { BigNumberish, utils } from "ethers";
 import { makeAutoObservable } from "mobx"
+
 import { pinataGatewayUri } from "../../lib/constants";
+import { BidPartialFragment } from "../../lib/graphql/types";
 import { MetaModel } from "../app/meta.model";
 
 
@@ -49,6 +52,7 @@ interface MetadataInput {
   tokenId: string;
   thumbnailUri: string;
   owner: string;
+  currentBids?: BidPartialFragment[] | null;
 }
 
 class Metadata {
@@ -60,6 +64,7 @@ class Metadata {
   tokenId: string;
   thumbnailUri: string;
   owner: string;
+  currentBids?: ActiveBid[];
 
   constructor(data: MetadataInput, private ipfsGatewayUri: string = pinataGatewayUri) {
     makeAutoObservable(this);
@@ -72,6 +77,15 @@ class Metadata {
     this.tokenId = this.validateField(data.tokenId);
     this.thumbnailUri = this.validateField(data.thumbnailUri);
     this.owner = this.validateField(data.owner);
+    this.currentBids = this.handleBids(data.currentBids);
+  }
+
+  private handleBids(bids?: BidPartialFragment[] | null) {
+    if (!bids || bids.length === 0) {
+      return [];
+    }
+
+    return bids.map(bid => new ActiveBid({ symbol: bid.currency.symbol, amount: bid.amount, decimals: bid.currency.decimals }))
   }
 
   private validateField<T>(field: unknown) {
@@ -83,5 +97,33 @@ class Metadata {
 
   private createClipIpfsGatewayUri = (cid: string) => {
     return `${this.ipfsGatewayUri}/${cid}`;
+  }
+}
+
+class ActiveBid {
+  symbol: string;
+  amount: BigNumberish;
+  displayAmount: string;
+
+  constructor(data: { symbol: string; amount: BigNumberish; decimals?: number | null }) {
+    this.symbol = data.symbol;
+    this.amount = data.amount;
+    this.displayAmount = this.toDisplayAmount(this.amount, data.decimals);
+  }
+
+  private toDisplayAmount(amount: BigNumberish, decimals?: number | null): string {
+    if (decimals === null) {
+      decimals = undefined;
+    }
+
+    const formatedAmount = utils.formatUnits(amount, decimals);
+    // handle float amounts
+    const idxOfDot = formatedAmount.indexOf(".")
+    // no dot -> no float -> just return
+    if (idxOfDot === -1) return formatedAmount;
+    // number has more than 6 digits, just return it without decimals
+    if (idxOfDot > 6) return formatedAmount.substring(0, idxOfDot)
+    // return up to 4 deimals
+    return formatedAmount.substring(0, idxOfDot + 5)
   }
 }

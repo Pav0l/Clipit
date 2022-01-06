@@ -72,9 +72,13 @@ function Marketplace({ model, operations }: Props) {
               key={idx}
               title={metadata.clipTitle}
               // TODO - add Game & Streamer name? (are they not on the clip itself?
-              // TODO - add current bid
               thumbnailUrl={metadata.thumbnailUri}
               description={metadata.description}
+              bid={
+                metadata.currentBids && metadata.currentBids.length > 0
+                  ? metadata.currentBids[0]
+                  : undefined
+              }
             />
           </Link>
         ))}

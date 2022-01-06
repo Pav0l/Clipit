@@ -11,6 +11,10 @@ interface Props {
   title: string;
   description: string;
   thumbnailUrl: string;
+  bid?: {
+    symbol: string;
+    displayAmount: string;
+  };
 }
 
 export function CardWithThumbnail(props: Props) {
@@ -24,23 +28,39 @@ export function CardWithThumbnail(props: Props) {
           alt="Card with thumbnail"
           src={props.thumbnailUrl}
         />
-        <CardContent>
-          <Typography
-            variant="subtitle1"
-            component="h6"
-            noWrap
-            className={classes.title}
-          >
-            {props.title}
-          </Typography>
-          <Typography
-            variant="subtitle2"
-            component="p"
-            color="textSecondary"
-            noWrap
-          >
-            {props.description}
-          </Typography>
+        <CardContent className={classes.content}>
+          <div>
+            <Typography
+              variant="subtitle1"
+              component="h6"
+              noWrap
+              className={classes.title}
+            >
+              {props.title}
+            </Typography>
+            <Typography
+              variant="subtitle2"
+              component="p"
+              color="textSecondary"
+              noWrap
+            >
+              {props.description}
+            </Typography>
+          </div>
+          {props.bid ? (
+            <div>
+              <Typography variant="subtitle2" component="p">
+                Current Bid
+              </Typography>
+              <Typography
+                variant="subtitle2"
+                component="p"
+                className={`${classes.title} ${classes.glow}`}
+              >
+                {`${props.bid.displayAmount} ${props.bid.symbol}`}
+              </Typography>
+            </div>
+          ) : null}
         </CardContent>
       </CardActionArea>
     </Card>
@@ -56,5 +76,13 @@ const useStyles = makeStyles(() => ({
     fontWeight: 600,
     color: "#31393C",
     fontSize: "1rem"
+  },
+  content: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between"
+  },
+  glow: {
+    color: "#2176FF"
   }
 }));
