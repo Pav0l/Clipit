@@ -140,7 +140,10 @@ async function initAsync({
 
             <Switch>
               <Route exact path={AppRoute.MARKETPLACE}>
-                <Marketplace />
+                <Marketplace
+                  model={{ nft: model.nft, web3: model.web3 }}
+                  operations={operations.nft}
+                />
               </Route>
               <OAuthProtectedRoute
                 exact

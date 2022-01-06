@@ -45,7 +45,7 @@ export class Web3Model {
   }
 
   getAccount(): string | null {
-    return this.accounts[0] ?? null;
+    return this.accounts.length > 0 ? this.accounts[0] : null;
   }
 
   isProviderConnected(): boolean {

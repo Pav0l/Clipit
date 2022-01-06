@@ -2,7 +2,7 @@ import DataLoader from "dataloader";
 import { GraphQLClient } from "graphql-request";
 import { GET_CLIPS, GET_TOKENS_QUERY, GET_TOKEN_BY_TX_HASH, GET_USER_TOKENS_QUERY } from "./queries";
 import { BidPartialFragment, ClipPartialFragment, GetClipDataQuery, GetUserDataQuery, GetTokenByTxHashQuery, GetClipsQuery } from "./types";
-
+import { CLIPS_PAGINATION_SKIP_VALUE } from '../constants';
 
 export class SubgraphClient {
   private userLoader: DataLoader<string, UserData | null>;
@@ -36,10 +36,10 @@ export class SubgraphClient {
   }
 
   /**
-   * Fetches first 20 Clips (NFTs) from the subgraph
-   * @param skip Used to paginate next 20 results.
+   * Fetches first CLIPS_PAGINATION_SKIP_VALUE Clips (NFTs) from the subgraph
+   * @param skip Used to paginate next CLIPS_PAGINATION_SKIP_VALUE results.
    */
-  fetchClips = async (skip?: number) => this.client.request<GetClipsQuery>(GET_CLIPS, { skip });
+  fetchClips = async (skip?: number) => this.client.request<GetClipsQuery>(GET_CLIPS, { first: CLIPS_PAGINATION_SKIP_VALUE, skip });
 
   fetchUserCached = async (address: string) => {
     const user = await this.userLoader.load(address);

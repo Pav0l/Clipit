@@ -96,6 +96,11 @@ export class NftController {
       return;
     }
 
+    if (this.model.hasMetadata[clip.id]) {
+      // we already have metadata for this clip
+      return;
+    }
+
     const metadataCid = this.parseCidFromURI(clip.metadataURI);
     if (!metadataCid) {
       // TODO sentry this should not happen

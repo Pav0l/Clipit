@@ -26,8 +26,8 @@ interface Props {
 }
 
 function NftsContainer({ model, operations }: Props) {
-  const metadata = model.nft.metadata;
   const signer = model.web3.getAccount();
+  const metadata = operations.nft.getOwnerMetadata(signer);
 
   const classes = useStyles();
 

@@ -50,7 +50,7 @@ export function CardWithThumbnail(props: Props) {
 const useStyles = makeStyles(() => ({
   card: {
     width: "25vw",
-    maxWidth: "350px"
+    maxWidth: "480px"
   },
   title: {
     fontWeight: 600,

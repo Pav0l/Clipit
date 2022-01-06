@@ -1830,6 +1830,7 @@ export type GetTokenByTxHashQueryVariables = Exact<{
 export type GetTokenByTxHashQuery = { __typename?: 'Query', clips: Array<{ __typename?: 'Clip', id: string, metadataURI: string, contentURI: string, transactionHash: string, creatorBidShare: any, ownerBidShare: any, prevOwnerBidShare: any, createdAtTimestamp: any, currentAsk?: { __typename?: 'Ask', id: string, amount: any, createdAtTimestamp: any, currency: { __typename?: 'Currency', id: string, name: string, symbol: string, decimals?: number | null | undefined } } | null | undefined, currentBids?: Array<{ __typename?: 'Bid', id: string, amount: any, clip: { __typename?: 'Clip', id: string, contentURI: string, metadataURI: string }, currency: { __typename?: 'Currency', id: string, name: string, symbol: string, decimals?: number | null | undefined } }> | null | undefined, owner: { __typename?: 'User', id: string }, creator: { __typename?: 'User', id: string } }> };
 
 export type GetClipsQueryVariables = Exact<{
+  first: Scalars['Int'];
   skip?: InputMaybe<Scalars['Int']>;
 }>;
 

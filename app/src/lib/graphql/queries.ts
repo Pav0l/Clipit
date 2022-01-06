@@ -106,8 +106,8 @@ export const GET_CLIPS = gql`
   ${CURRENCY_PARTIAL}
   ${CLIP_PARTIALS}
 
-  query getClips($skip: Int) {
-    clips(first: 20, skip: $skip) {
+  query getClips($first: Int!, $skip: Int) {
+    clips(first: $first, skip: $skip) {
       ...ClipPartial
     }
   }

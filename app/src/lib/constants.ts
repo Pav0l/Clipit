@@ -27,6 +27,7 @@ export const twitchScopes = "user:read:email user:read:follows user:read:subscri
 
 // SUBGRAPH
 export const subgraphUrl = "https://api.thegraph.com/subgraphs/name/h0ppx/two";
+export const CLIPS_PAGINATION_SKIP_VALUE = 20;
 
 // APP
 export enum AppRoute {
