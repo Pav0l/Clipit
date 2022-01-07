@@ -150,7 +150,7 @@ export class Web3Controller implements IWeb3Controller {
     }
 
     try {
-      const contract = new ContractClient(this.initEthClient().signer);
+      const contract = new ContractClient(window.ethereum as EthereumProvider);
       const tx = await contract.mint(data, defaultBidshares, signature);
       console.log("[LOG]:minting NFT in tx", tx.hash);
 

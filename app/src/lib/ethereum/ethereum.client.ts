@@ -1,20 +1,14 @@
-import { ethers } from "ethers"
 import { EthereumProvider, EthereumEvents, EthereumEventData } from "./ethereum.types";
 
+export interface IEthClient {
+  requestAccounts: () => Promise<string[]>;
+  ethAccounts: () => Promise<string[]>;
+  chainId: () => Promise<string>;
+  registerEventHandler: (event: EthereumEvents, handler: (data: EthereumEventData) => void) => void;
+}
 
-export default class EthereumClient {
-  signer: ethers.providers.JsonRpcSigner;
-
-  constructor(private provider: EthereumProvider) {
-    try {
-      const ethersProvider = new ethers.providers.Web3Provider(provider);
-      this.signer = ethersProvider.getSigner();
-    } catch (error) {
-      // TODO sentry
-      console.log("[ethereum.client]:chainId:error", error);
-      throw new Error('Invalid ethereum provider');
-    }
-  }
+export default class EthereumClient implements IEthClient {
+  constructor(private provider: EthereumProvider) { }
 
   /**
    * requestAccounts opens MetaMask and asks user to connect wallet to app

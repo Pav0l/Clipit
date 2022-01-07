@@ -3,6 +3,7 @@ import { ethers, BigNumberish, BytesLike } from "ethers";
 import ContractBuild from "./ClipIt.json";
 import { ClipIt } from "./ClipIt";
 import { contractAddress } from "../constants";
+import { EthereumProvider } from "../ethereum/ethereum.types";
 
 
 interface MediaData {
@@ -26,8 +27,16 @@ interface Signature {
 export default class ContractClient {
   private contract: ClipIt;
 
-  constructor(signer: ethers.providers.JsonRpcSigner) {
-    this.contract = (new ethers.Contract(contractAddress, ContractBuild.abi, signer)) as ClipIt;
+  constructor(provider: EthereumProvider) {
+    try {
+      const ethersProvider = new ethers.providers.Web3Provider(provider);
+      const jsonRpcSigner = ethersProvider.getSigner();
+      this.contract = (new ethers.Contract(contractAddress, ContractBuild.abi, jsonRpcSigner)) as ClipIt;
+    } catch (error) {
+      // TODO sentry
+      console.log("[contract.client]:construct:error", error);
+      throw new Error('Invalid ethereum provider');
+    }
   }
 
   async mint(data: MediaData, bidShares: BidShares, signature: Signature) {
