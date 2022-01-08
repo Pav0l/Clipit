@@ -42,7 +42,7 @@ export class ClipModel {
     return this.clips.filter(clip => clip.broadcasterId === userId);
   }
 
-  getClipDescription = (streamerName: string, gameName?: string): string => {
+  createDefaultClipDescription = (streamerName: string, gameName?: string): string => {
     return `${streamerName} playing ${gameName ?? "game"}`;
   }
 }
@@ -65,7 +65,7 @@ export class TwitchClip {
     this.gameId = clip.game_id ?? "";
     this.title = clip.title ?? "";
     this.thumbnailUrl = clip.thumbnail_url ?? "";
-    this.embedUrl = `${clip.embed_url}&parent=${location.hostname}` ?? "";
+    this.embedUrl = clip.embed_url ? `${clip.embed_url}&parent=${location.hostname}` : "";
   }
 }
 

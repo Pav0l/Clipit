@@ -63,7 +63,7 @@ function ClipDetailContainer({ model, operations }: Props) {
       setTitleInput(clip.title);
 
       setDescInput(
-        model.clip.getClipDescription(
+        model.clip.createDefaultClipDescription(
           clip.broadcasterName,
           model.game.getGame(clip.gameId)
         )
