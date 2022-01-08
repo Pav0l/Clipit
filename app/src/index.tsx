@@ -30,7 +30,7 @@ import { HttpClient } from "./lib/http-client/http-client";
 import { TwitchApi } from "./lib/twitch-api/twitch-api.client";
 import ThemeProvider from "./components/themeProvider/ThemeProvider";
 import { defaultTheme } from "./components/themeProvider/theme";
-import { LocalStorage } from "./lib/local-storage";
+import { LocalStorageClient } from "./lib/local-storage/local-storage.client";
 import OAuthProtectedRoute from "./domains/twitch-oauth/OAuthProtected/OAuthProtectedRoute";
 import { OAuthController } from "./domains/twitch-oauth/oauth.controller";
 import { ClipController } from "./domains/twitch-clips/clip.controller";
@@ -43,7 +43,7 @@ import { NftController } from "./domains/nfts/nft.controller";
 import { SnackbarController } from "./domains/snackbar/snackbar.controller";
 
 function initSynchronous() {
-  const storage = new LocalStorage();
+  const storage = new LocalStorageClient();
   const model = new AppModel();
 
   const snackbar = new SnackbarController(model.snackbar);

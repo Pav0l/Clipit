@@ -2,7 +2,7 @@ import { BytesLike } from "ethers";
 import { ClipItApiClient, ClipPayload } from "../clipit-api/clipit-api.client";
 import { HttpClient, RawResponse } from "../http-client/http-client";
 import { IpfsClient } from "../ipfs/ipfs.client";
-import { ILocalStorage } from "../local-storage";
+import { ILocalStorage } from "../local-storage/local-storage.client";
 
 export class OffChainStorage {
   private writer: ClipItApiClient;

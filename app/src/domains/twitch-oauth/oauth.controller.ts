@@ -1,5 +1,5 @@
 import { OAuthModel } from "./oauth.model";
-import { ILocalStorage } from "../../lib/local-storage";
+import { ILocalStorage } from "../../lib/local-storage/local-storage.client";
 import { twitchAccessToken, twitchSecretKey, twitchAppClientId, twitchOAuthUri, twitchScopes } from "../../lib/constants";
 import { OauthQueryParams } from "./oauth.types";
 import { TwitchOAuthApiClient } from "../../lib/twitch-oauth/twitch-oauth-api.client";

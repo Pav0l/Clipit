@@ -5,7 +5,7 @@ export interface ILocalStorage {
   removeItem: (key: string) => void;
 }
 
-export class LocalStorage implements ILocalStorage {
+export class LocalStorageClient implements ILocalStorage {
 
   setItem(key: string, value: string): void {
     window.localStorage.setItem(key, value);

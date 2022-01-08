@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios'
 import { twitchAccessToken } from '../constants';
-import { ILocalStorage } from '../local-storage';
+import { ILocalStorage } from '../local-storage/local-storage.client';
 
 export interface RawResponse<T> {
   statusCode: number;
