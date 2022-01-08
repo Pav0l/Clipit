@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import Snackbar from "@material-ui/core/Snackbar";
 import Grow from "@material-ui/core/Grow";
@@ -24,14 +23,6 @@ interface Props {
 function TransitionSnackbar({ model, operations }: Props) {
   const { message, open } = model.snackbar;
 
-  useEffect(() => {
-    window.addEventListener("message", operations.handleMessage);
-
-    return () => {
-      window.removeEventListener("message", operations.handleMessage);
-    };
-  }, []);
-
   if (!message) {
     return null;
   }
@@ -40,7 +31,7 @@ function TransitionSnackbar({ model, operations }: Props) {
     <Snackbar
       open={open}
       onClose={operations.handleSnackClose}
-      autoHideDuration={message.duration ? message.duration : 6000}
+      autoHideDuration={message.duration}
       anchorOrigin={{
         vertical: "bottom",
         horizontal: "left"

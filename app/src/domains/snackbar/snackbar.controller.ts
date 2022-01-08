@@ -1,6 +1,5 @@
 import { SyntheticEvent } from "react";
 import { SnackbarModel } from "./snackbar.model";
-import { ISnack, SnackSeverity } from "./types";
 
 export interface SnackbarClient {
   sendError: (text: string) => void;
@@ -21,45 +20,22 @@ export class SnackbarController implements SnackbarClient {
     this.showNextMessageFromQue();
   };
 
-  handleMessage = (ev: MessageEvent<ISnack>) => {
-    if (ev.origin !== window.origin) {
-      return;
-    }
-
-    if (ev.data && ev.data.text && ev.data.severity) {
-      switch (ev.data.severity) {
-        case "error":
-          this.model.addErrorToSnackbarQue(ev.data.text, ev.data.duration);
-          break;
-        case "success":
-          this.model.addSuccessToSnackbarQue(
-            ev.data.text,
-            ev.data.duration
-          );
-          break;
-        case "info":
-          this.model.addInfoToSnackbarQue(ev.data.text, ev.data.duration);
-          break;
-      }
-
-      this.showNextMessageFromQue();
-    }
-  };
-
-  sendError(text: string) {
-    this.send(text, "error");
+  sendError(text: string, duration?: number) {
+    this.model.addErrorToSnackbarQue(text, duration);
+    this.showNextMessageFromQue();
   }
 
-  sendInfo(text: string) {
-    this.send(text, "info");
+  sendInfo(text: string, duration?: number) {
+    this.model.addInfoToSnackbarQue(text, duration);
+    this.showNextMessageFromQue();
   }
 
-  sendSuccess(text: string) {
-    this.send(text, "success");
-  }
-
-  private send(text: string, severity: SnackSeverity) {
-    window.postMessage({ text, severity }, window.origin);
+  sendSuccess(text: string, duration?: number) {
+    this.model.addSuccessToSnackbarQue(
+      text,
+      duration
+    );
+    this.showNextMessageFromQue();
   }
 
   private showNextMessageFromQue() {

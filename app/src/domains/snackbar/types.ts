@@ -6,5 +6,5 @@ export interface ISnack {
   /**
    * Duration in ms after which the snackbar is hidden
    */
-  duration?: number;
+  duration: number;
 }

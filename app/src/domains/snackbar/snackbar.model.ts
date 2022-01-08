@@ -1,6 +1,8 @@
 import { makeAutoObservable } from "mobx"
 import { ISnack, SnackSeverity } from "./types";
 
+const DEFAULT_SNACKBAR_DURATION = 5000;
+
 /**
  * SnackbarModel handles messages that should be displayed to user via Snackbar
  */
@@ -41,7 +43,7 @@ export class SnackbarModel {
     this.open = false;
   }
 
-  private pushSnackMessage(text: string, severity: SnackSeverity, duration?: number) {
-    this.messageList.push({ text, severity })
+  private pushSnackMessage(text: string, severity: SnackSeverity, duration: number = DEFAULT_SNACKBAR_DURATION) {
+    this.messageList.push({ text, severity, duration });
   }
 }
