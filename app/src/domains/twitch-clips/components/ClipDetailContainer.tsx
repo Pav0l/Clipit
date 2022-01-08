@@ -3,19 +3,19 @@ import { useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { Card, CardMedia, makeStyles } from "@material-ui/core";
 
-import ErrorWithRetry from "../../components/error/Error";
-import { ClipModel } from "./clip.model";
-import { UserModel } from "../twitch-user/user.model";
-import { GameModel } from "../twitch-games/game.model";
-import { IWeb3Controller } from "../web3/web3.controller";
-import FullPageLoader from "../../components/loader/FullPageLoader";
-import LinearLoader from "../../components/loader/LinearLoader";
-import { UserController } from "../twitch-user/user.controller";
-import { ClipController } from "./clip.controller";
-import { GameController } from "../twitch-games/game.controller";
-import { useInputData } from "../../lib/hooks/useInputData";
+import ErrorWithRetry from "../../../components/error/Error";
+import { ClipModel } from "../clip.model";
+import { UserModel } from "../../twitch-user/user.model";
+import { GameModel } from "../../twitch-games/game.model";
+import { IWeb3Controller } from "../../web3/web3.controller";
+import FullPageLoader from "../../../components/loader/FullPageLoader";
+import LinearLoader from "../../../components/loader/LinearLoader";
+import { UserController } from "../../twitch-user/user.controller";
+import { ClipController } from "../clip.controller";
+import { GameController } from "../../twitch-games/game.controller";
+import { useInputData } from "../../../lib/hooks/useInputData";
+import { Web3Model } from "../../web3/web3.model";
 import ClipCardContent from "./ClipCardContent";
-import { Web3Model } from "../web3/web3.model";
 
 interface Props {
   model: {

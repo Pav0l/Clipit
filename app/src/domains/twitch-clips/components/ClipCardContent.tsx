@@ -8,7 +8,7 @@ import {
   InputAdornment
 } from "@material-ui/core";
 
-import type { useInputReturn } from "../../lib/hooks/useInputData";
+import type { useInputReturn } from "../../../lib/hooks/useInputData";
 
 interface Props {
   mint: () => Promise<void>;

@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { makeStyles, Typography } from "@material-ui/core";
 
 import { ClipCard } from "./ClipCard";
-import VideoList from "../../components/videoList/VideoList";
-import CenteredContainer from "../../components/container/CenteredContainer";
+import VideoList from "../../../components/videoList/VideoList";
+import CenteredContainer from "../../../components/container/CenteredContainer";
 
 interface Props {
   clipList: Clip[];

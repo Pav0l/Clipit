@@ -1,6 +1,6 @@
 import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client"
 import { ClipModel } from "./clip.model";
-import { TwitchClipsErrors } from "./twitch-clips.errors";
+import { TwitchClipsErrors } from "./clip.errors";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 
 const clipPatterns = [

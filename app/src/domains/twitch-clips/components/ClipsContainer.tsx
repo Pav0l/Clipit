@@ -1,14 +1,14 @@
 import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 
-import ErrorWithRetry from "../../components/error/Error";
-import FullPageLoader from "../../components/loader/FullPageLoader";
+import ErrorWithRetry from "../../../components/error/Error";
+import FullPageLoader from "../../../components/loader/FullPageLoader";
+import { UserModel } from "../../twitch-user/user.model";
+import { ClipModel } from "../clip.model";
+import { ClipController } from "../clip.controller";
+import { GameController } from "../../twitch-games/game.controller";
+import { UserController } from "../../twitch-user/user.controller";
 import ClipList from "./ClipList";
-import { UserModel } from "../twitch-user/user.model";
-import { ClipModel } from "./clip.model";
-import { ClipController } from "./clip.controller";
-import { GameController } from "../twitch-games/game.controller";
-import { UserController } from "../twitch-user/user.controller";
 
 interface Props {
   model: {
