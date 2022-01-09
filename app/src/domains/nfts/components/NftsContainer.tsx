@@ -3,16 +3,16 @@ import { useEffect } from "react";
 import { makeStyles, Typography } from "@material-ui/core";
 import { Link } from "react-router-dom";
 
-import { NftModel } from "./nft.model";
-import FullPageLoader from "../../components/loader/FullPageLoader";
-import { IWeb3Controller } from "../web3/web3.controller";
-import { AppRoute } from "../../lib/constants";
-import ErrorWithRetry from "../../components/error/Error";
-import VideoList from "../../components/videoList/VideoList";
-import CenteredContainer from "../../components/container/CenteredContainer";
-import { CardWithThumbnail } from "../../components/nfts/CardWithThumbnail";
-import { NftController } from "./nft.controller";
-import { Web3Model, Web3Errors } from "../web3/web3.model";
+import FullPageLoader from "../../../components/loader/FullPageLoader";
+import { IWeb3Controller } from "../../web3/web3.controller";
+import { AppRoute } from "../../../lib/constants";
+import ErrorWithRetry from "../../../components/error/Error";
+import VideoList from "../../../components/videoList/VideoList";
+import CenteredContainer from "../../../components/container/CenteredContainer";
+import { CardWithThumbnail } from "../../../components/nfts/CardWithThumbnail";
+import { Web3Model, Web3Errors } from "../../web3/web3.model";
+import { NftController } from "../nft.controller";
+import { NftModel } from "../nft.model";
 
 interface Props {
   model: {

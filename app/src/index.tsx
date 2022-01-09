@@ -15,8 +15,8 @@ import {
 } from "./lib/constants";
 import { AppModel } from "./domains/app/app.model";
 import { Web3Controller } from "./domains/web3/web3.controller";
-import NftContainer from "./domains/nfts/NftContainer";
-import NftsContainer from "./domains/nfts/NftsContainer";
+import NftContainer from "./domains/nfts/components/NftContainer";
+import NftsContainer from "./domains/nfts/components/NftsContainer";
 import ClipDetailContainer from "./domains/twitch-clips/components/ClipDetailContainer";
 import ClipsContainer from "./domains/twitch-clips/components/ClipsContainer";
 import Snackbar from "./domains/snackbar/Snackbar";

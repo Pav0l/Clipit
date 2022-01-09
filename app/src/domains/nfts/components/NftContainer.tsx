@@ -2,12 +2,12 @@ import { observer } from "mobx-react-lite";
 import { useParams } from "react-router";
 import { useEffect } from "react";
 
-import ErrorWithRetry from "../../components/error/Error";
-import { NftModel } from "./nft.model";
-import { NftCard } from "../../components/nfts/NftCard";
-import FullPageLoader from "../../components/loader/FullPageLoader";
-import CenteredContainer from "../../components/container/CenteredContainer";
-import { NftController } from "./nft.controller";
+import ErrorWithRetry from "../../../components/error/Error";
+import { NftCard } from "../../../components/nfts/NftCard";
+import FullPageLoader from "../../../components/loader/FullPageLoader";
+import CenteredContainer from "../../../components/container/CenteredContainer";
+import { NftModel } from "../nft.model";
+import { NftController } from "../nft.controller";
 
 interface Props {
   model: {
