@@ -1,16 +1,14 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { Button, makeStyles } from "@material-ui/core";
-import { Link } from "react-router-dom";
 
 import { NftModel } from "../../domains/nfts/nft.model";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import ErrorWithRetry from "../../components/error/Error";
-import VideoList from "../../components/videoList/VideoList";
-import { CardWithThumbnail } from "../../components/nfts/CardWithThumbnail";
 import { NftController } from "../../domains/nfts/nft.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { CLIPS_PAGINATION_SKIP_VALUE } from "../../lib/constants";
+import ListOfCardsWithThumbnail from "../nfts/ListOfCardsWithThumbnail";
 
 interface Props {
   model: {
@@ -61,28 +59,7 @@ function Marketplace({ model, operations }: Props) {
         More!
       </Button>
 
-      <VideoList>
-        {metadata.map((metadata, idx) => (
-          <Link
-            to={`/nfts/${metadata.tokenId}`}
-            key={idx}
-            className={classes.link}
-          >
-            <CardWithThumbnail
-              key={idx}
-              title={metadata.clipTitle}
-              // TODO - add Game & Streamer name? (are they not on the clip itself?
-              thumbnailUrl={metadata.thumbnailUri}
-              description={metadata.description}
-              bid={
-                metadata.currentBids && metadata.currentBids.length > 0
-                  ? metadata.currentBids[0]
-                  : undefined
-              }
-            />
-          </Link>
-        ))}
-      </VideoList>
+      <ListOfCardsWithThumbnail metadata={metadata} />
     </>
   );
 }

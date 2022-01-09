@@ -7,9 +7,8 @@ import FullPageLoader from "../../../components/loader/FullPageLoader";
 import { IWeb3Controller } from "../../web3/web3.controller";
 import { AppRoute } from "../../../lib/constants";
 import ErrorWithRetry from "../../../components/error/Error";
-import VideoList from "../../../components/videoList/VideoList";
 import CenteredContainer from "../../../components/container/CenteredContainer";
-import { CardWithThumbnail } from "../../../components/nfts/CardWithThumbnail";
+import ListOfCardsWithThumbnail from "../../../components/nfts/ListOfCardsWithThumbnail";
 import { Web3Model, Web3Errors } from "../../web3/web3.model";
 import { NftController } from "../nft.controller";
 import { NftModel } from "../nft.model";
@@ -77,24 +76,7 @@ function NftsContainer({ model, operations }: Props) {
     );
   }
 
-  return (
-    <VideoList>
-      {metadata.map((metadata, idx) => (
-        <Link
-          to={`/nfts/${metadata.tokenId}`}
-          key={idx}
-          className={classes.link}
-        >
-          <CardWithThumbnail
-            key={idx}
-            thumbnailUrl={metadata.thumbnailUri}
-            title={metadata.clipTitle}
-            description={metadata.description}
-          />
-        </Link>
-      ))}
-    </VideoList>
-  );
+  return <ListOfCardsWithThumbnail metadata={metadata} />;
 }
 
 export default observer(NftsContainer);
