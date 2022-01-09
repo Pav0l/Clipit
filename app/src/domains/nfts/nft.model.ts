@@ -55,7 +55,7 @@ interface MetadataInput {
   currentBids?: BidPartialFragment[] | null;
 }
 
-class Metadata {
+export class Metadata {
   clipTitle: string;
   clipCid: string;
   description: string;
@@ -72,7 +72,7 @@ class Metadata {
     this.clipCid = this.validateField(data.clipCid);
     this.clipTitle = this.validateField(data.name);
     this.description = this.validateField(data.description);
-    this.clipIpfsUri = this.createClipIpfsGatewayUri(this.validateField(data.clipCid));
+    this.clipIpfsUri = this.createClipIpfsGatewayUri(this.clipCid);
     this.metadataCid = this.validateField(data.metadataCid);
     this.tokenId = this.validateField(data.tokenId);
     this.thumbnailUri = this.validateField(data.thumbnailUri);
@@ -89,7 +89,7 @@ class Metadata {
   }
 
   private validateField<T>(field: unknown) {
-    if (typeof field === undefined) {
+    if (typeof field === 'undefined') {
       throw new Error(`Undefined metadata field type: ${field}`);
     }
     return field as T;
@@ -100,7 +100,7 @@ class Metadata {
   }
 }
 
-class ActiveBid {
+export class ActiveBid {
   symbol: string;
   amount: BigNumberish;
   displayAmount: string;
