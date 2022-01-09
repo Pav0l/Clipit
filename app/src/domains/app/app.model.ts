@@ -41,9 +41,9 @@ export class AppModel implements IAppModel {
     this.game = new GameModel(new MetaModel());
     this.nft = new NftModel(new MetaModel());
     this.web3 = new Web3Model(new MetaModel());
+    this.auth = new OAuthModel(new MetaModel());
 
     this.snackbar = new SnackbarModel();
-    this.auth = new OAuthModel();
 
     this.testStore = new TestStore();
   }

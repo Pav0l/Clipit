@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import FullPageLoader from "../../../components/loader/FullPageLoader";
+import ErrorWithRetry from "../../../components/error/Error";
 import { AppRoute } from "../../../lib/constants";
 import { OAuthController } from "../oauth.controller";
 import { OAuthModel } from "../oauth.model";
@@ -24,6 +25,10 @@ const OAuth2Redirect = observer(({ controller, model }: Props) => {
     }
     history.push(referrer);
   }, []);
+
+  if (model.meta.hasError) {
+    return <ErrorWithRetry text={model.meta.error} withRetry={false} />;
+  }
 
   return <FullPageLoader />;
 });

@@ -1,13 +1,13 @@
 import { OAuthModel } from "./oauth.model";
 import { ILocalStorage } from "../../lib/local-storage/local-storage.client";
 import { twitchAccessToken, twitchSecretKey, twitchAppClientId, twitchOAuthUri, twitchScopes } from "../../lib/constants";
-import { OauthQueryParams } from "./oauth.types";
-import { TwitchOAuthApiClient } from "../../lib/twitch-oauth/twitch-oauth-api.client";
+import { OAuthErrors, OauthQueryParams } from "./oauth.types";
+import { IOauthApiClient } from "../../lib/twitch-oauth/twitch-oauth-api.client";
 
 
 export class OAuthController {
 
-  constructor(private model: OAuthModel, private oauthApi: TwitchOAuthApiClient, private storage: ILocalStorage) { }
+  constructor(private model: OAuthModel, private oauthApi: IOauthApiClient, private storage: ILocalStorage) { }
 
   logout = async () => {
     const token = this.getAccessToken();
@@ -28,12 +28,12 @@ export class OAuthController {
     if (access_token) {
       const { referrer, secret } = this.parseDataFromState(state);
 
-      this.model.setReferrer(referrer);
-
       if (this.verifyStateSecret(secret)) {
+        this.model.setReferrer(referrer);
         this.storeTokenAndRemoveSecret(access_token);
       } else {
-        throw new Error("invalid oauth redirect secret");
+        // TODO sentry this should not happen
+        this.model.meta.setError(OAuthErrors.INVALID_SECRET);
       }
     }
   }

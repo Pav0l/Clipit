@@ -6,3 +6,7 @@ export enum OauthQueryParams {
   RESPONSE_TYPE = "response_type",
   SCOPE = "scope"
 }
+
+export enum OAuthErrors {
+  INVALID_SECRET = "Something went wrong."
+}

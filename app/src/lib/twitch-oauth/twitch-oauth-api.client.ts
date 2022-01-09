@@ -2,7 +2,11 @@ import { HttpClient } from "../http-client/http-client";
 import { twitchAppClientId } from "../constants";
 
 
-export class TwitchOAuthApiClient {
+export interface IOauthApiClient {
+  revokeAccessToken: (token: string) => Promise<void>;
+}
+
+export class TwitchOAuthApiClient implements IOauthApiClient {
 
   constructor(private httpClient: HttpClient) { }
 
