@@ -1,17 +1,10 @@
 import { BytesLike } from "ethers";
-import { ClipItApiClient, ClipPayload } from "../clipit-api/clipit-api.client";
-import { HttpClient, RawResponse } from "../http-client/http-client";
-import { IpfsClient } from "../ipfs/ipfs.client";
-import { ILocalStorage } from "../local-storage/local-storage.client";
+import { ClipPayload, IClipItApiClient } from "../clipit-api/clipit-api.client";
+import { RawResponse } from "../http-client/http-client";
+import { IIpfsClient } from "../ipfs/ipfs.client";
 
 export class OffChainStorage {
-  private writer: ClipItApiClient;
-  private reader: IpfsClient;
-
-  constructor(storage: ILocalStorage, writerURI: string, readerGateway: string) {
-    this.writer = new ClipItApiClient(new HttpClient(storage, writerURI));
-    this.reader = new IpfsClient(new HttpClient(storage, readerGateway));
-  }
+  constructor(private writer: IClipItApiClient, private reader: IIpfsClient) { }
 
   async saveClipAndCreateMetadata(clipId: string, payload: ClipPayload) {
     return this.writer.storeClip<StoreClipResp | StoreClipError>(clipId, payload);

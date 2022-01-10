@@ -1,7 +1,10 @@
-import { HttpClient } from "../http-client/http-client";
+import { HttpClient, RawResponse } from "../http-client/http-client";
 
-export class ClipItApiClient {
+export interface IClipItApiClient {
+  storeClip: <V>(clipId: string, payload: ClipPayload) => Promise<RawResponse<V>>;
+}
 
+export class ClipItApiClient implements IClipItApiClient {
   constructor(private httpClient: HttpClient) { }
 
   storeClip = async <V>(clipId: string, payload: ClipPayload) => {

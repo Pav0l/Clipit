@@ -1,6 +1,6 @@
 import type { NftModel } from "./nft.model";
 import { NftErrors } from './nft.errors';
-import { SubgraphClient } from "../../lib/graphql/subgraph.client";
+import { ISubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { ClipPartialFragment } from "../../lib/graphql/types";
 
@@ -10,7 +10,7 @@ export class NftController {
   constructor(
     private model: NftModel,
     private offChainStorage: OffChainStorage,
-    private subgraph: SubgraphClient
+    private subgraph: ISubgraphClient
   ) { }
 
   getTokenMetadata = async (tokenId: string) => {
@@ -40,7 +40,6 @@ export class NftController {
 
       const data = await this.subgraph.fetchUserCached(address);
       if (!data) {
-        this.model.meta.setLoading(false);
         return;
       }
 
@@ -76,6 +75,10 @@ export class NftController {
       this.model.meta.setLoading(true);
 
       const data = await this.subgraph.fetchClips(skip);
+
+      if (data === null) {
+        return;
+      }
 
       for (const clip of data.clips) {
         await this.getMetadataForClipFragmentAndStoreInModel(clip);

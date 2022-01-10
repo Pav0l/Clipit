@@ -4,7 +4,14 @@ import { GET_CLIPS, GET_TOKENS_QUERY, GET_TOKEN_BY_TX_HASH, GET_USER_TOKENS_QUER
 import { BidPartialFragment, ClipPartialFragment, GetClipDataQuery, GetUserDataQuery, GetTokenByTxHashQuery, GetClipsQuery } from "./types";
 import { CLIPS_PAGINATION_SKIP_VALUE } from '../constants';
 
-export class SubgraphClient {
+export interface ISubgraphClient {
+  fetchClipCached: (tokenId: string) => Promise<ClipPartialFragment | null>;
+  fetchClipByHashCached: (txHash: string) => Promise<ClipPartialFragment | null>;
+  fetchClips: (skip?: number) => Promise<GetClipsQuery | null>;
+  fetchUserCached: (address: string) => Promise<UserData | null>;
+}
+
+export class SubgraphClient implements ISubgraphClient {
   private userLoader: DataLoader<string, UserData | null>;
   private clipLoader: DataLoader<string, ClipPartialFragment | null>;
   private clipHashLoader: DataLoader<string, ClipPartialFragment | null>;
@@ -91,6 +98,7 @@ export class SubgraphClient {
       delay *= 2;
     }
     console.log(`[LOG]:unable to get value from graph after ${retryCount} retries`);
+    return null;
   }
 }
 
@@ -144,7 +152,7 @@ function transformClipDataFromHash(data: GetTokenByTxHashQuery, key: string): Cl
 }
 
 
-interface UserData {
+export interface UserData {
   currentBids?: BidPartialFragment[];
   id: string;
   collection: ClipPartialFragment[]

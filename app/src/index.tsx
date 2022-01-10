@@ -41,6 +41,8 @@ import { SubgraphClient } from "./lib/graphql/subgraph.client";
 import { OffChainStorage } from "./lib/off-chain-storage/off-chain-storage.client";
 import { NftController } from "./domains/nfts/nft.controller";
 import { SnackbarController } from "./domains/snackbar/snackbar.controller";
+import { ClipItApiClient } from "./lib/clipit-api/clipit-api.client";
+import { IpfsClient } from "./lib/ipfs/ipfs.client";
 
 function initSynchronous() {
   const storage = new LocalStorageClient();
@@ -49,9 +51,8 @@ function initSynchronous() {
   const snackbar = new SnackbarController(model.snackbar);
 
   const offChainStorageApi = new OffChainStorage(
-    storage,
-    clipItUri,
-    pinataGatewayUri
+    new ClipItApiClient(new HttpClient(storage, clipItUri)),
+    new IpfsClient(new HttpClient(storage, pinataGatewayUri))
   );
 
   const twitchOAuthApi = new TwitchOAuthApiClient(

@@ -1,7 +1,10 @@
-import { HttpClient } from "../http-client/http-client";
+import { HttpClient, RawResponse } from "../http-client/http-client";
 
-export class IpfsClient {
+export interface IIpfsClient {
+  getMetadata: <V>(cid: string) => Promise<RawResponse<V>>;
+}
 
+export class IpfsClient implements IIpfsClient {
   constructor(private httpClient: HttpClient) { }
 
   getMetadata = async <V>(cid: string) => {

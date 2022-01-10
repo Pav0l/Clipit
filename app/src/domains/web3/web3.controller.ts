@@ -4,7 +4,7 @@ import ContractClient from "../../lib/contract/contract.client";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
 import { Web3Model, Web3Errors } from "./web3.model";
-import { SubgraphClient } from "../../lib/graphql/subgraph.client";
+import { ISubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { Decimal } from "../../lib/decimal/decimal";
 import { ContractErrors, isEthersJsonRpcError } from "../../lib/contract/contract.errors";
@@ -31,7 +31,7 @@ export class Web3Controller implements IWeb3Controller {
   constructor(
     private model: Web3Model,
     private offChainStorage: OffChainStorage,
-    private subgraph: SubgraphClient,
+    private subgraph: ISubgraphClient,
     private snackbar: SnackbarClient,
   ) { }
 
