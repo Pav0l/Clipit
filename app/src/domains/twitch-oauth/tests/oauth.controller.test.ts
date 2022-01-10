@@ -39,6 +39,11 @@ describe("oauth controller", () => {
     expect(window.location.reload).toHaveBeenCalled();
   });
 
+  it("logout: token does not exist -> just reload", async () => {
+    await ctrl.logout();
+    expect(window.location.reload).toHaveBeenCalled();
+  });
+
   it("checkTokenInStorage: set auth flag in app state if token exist", async () => {
     // user logged in -> token in storage
     ls.setItem(twitchAccessToken, 'secret');

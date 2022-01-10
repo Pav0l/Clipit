@@ -53,7 +53,7 @@ export class TwitchApi implements TwitchApiClient {
 }
 
 
-interface TwitchError {
+export interface TwitchError {
   error: string;
   status: number;
   message: string;
@@ -61,7 +61,7 @@ interface TwitchError {
 
 
 // https://dev.twitch.tv/docs/api/reference#get-clips
-interface TwitchClipResp {
+export interface TwitchClipResp {
   id?: string;
   url?: string;
   embed_url?: string;
@@ -79,22 +79,22 @@ interface TwitchClipResp {
   duration?: number;
 }
 
-interface TwitchPaginationResp {
+export interface TwitchPaginationResp {
   cursor: string;
 }
 
-interface TwitchPaginationQuery {
+export interface TwitchPaginationQuery {
   // forward pagination query
   after?: string;
 }
 
-interface TwitchClipQuery extends TwitchPaginationQuery {
+export interface TwitchClipQuery extends TwitchPaginationQuery {
   broadcaster_id?: string;
   id?: string;
 }
 
 // https://dev.twitch.tv/docs/api/reference#get-users
-interface TwitchUserResp {
+export interface TwitchUserResp {
   // TODO these should be optional
   broadcaster_type: string;
   description: string;
@@ -109,47 +109,12 @@ interface TwitchUserResp {
   created_at: string;
 }
 
-interface TwitchGameResp {
+export interface TwitchGameResp {
   box_art_url?: string;
   id?: string;
   name?: string;
 }
 
-interface TwitchGameQuery extends TwitchPaginationQuery {
+export interface TwitchGameQuery extends TwitchPaginationQuery {
   id: string;
 }
-
-
-
-const clip = {
-  id: "VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW",
-  url: "https://clips.twitch.tv/VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW",
-  embed_url: `https://clips.twitch.tv/embed?clip=VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW`,
-  broadcaster_id: "30094526",
-  broadcaster_name: "h0pp",
-  game_id: "493057",
-  title: "I SAP ROGUE",
-  thumbnail_url: "https://clips-media-assets2.twitch.tv/AT-cm%7C1300029032-preview-260x147.jpg",
-  view_count: 20000
-};
-const clip1 = {
-  id: "VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW",
-  url: "https://clips.twitch.tv/VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW",
-  embed_url: `https://clips.twitch.tv/embed?clip=VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW`,
-  broadcaster_id: "30094526",
-  broadcaster_name: "h0pp",
-  game_id: "493057",
-  title: "Hi there! Hi there! Hi there! Hi there! Hi there! Hi there! Hi there! Hi there! Hi there! Hi there! ",
-  thumbnail_url: "https://clips-media-assets2.twitch.tv/AT-cm%7C1300029032-preview-260x147.jpg",
-  view_count: 20000
-};
-
-const clipResp = {
-  data: [clip1, clip, clip1, clip, clip1, clip1, clip, clip, clip, clip, clip, clip, clip, clip, clip]
-};
-
-const res = {
-  statusCode: 200,
-  statusOk: true,
-  body: clipResp
-};
