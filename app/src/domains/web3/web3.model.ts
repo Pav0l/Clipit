@@ -49,7 +49,7 @@ export class Web3Model {
   }
 
   isProviderConnected(): boolean {
-    return Boolean(this.accounts.length > 0);
+    return this.accounts.length > 0;
   }
 
   isMetaMaskInstalled(): boolean {

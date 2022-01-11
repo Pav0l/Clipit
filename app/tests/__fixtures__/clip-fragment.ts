@@ -1,4 +1,4 @@
-import { clipitApiResponse } from "./clipit-api-data";
+import { signerAddress } from "./ethereum";
 import { clipCid, metadataCid } from "./metadata";
 
 
@@ -6,7 +6,7 @@ export const clipPartialFragment = {
   contentURI: `ipfs://${clipCid}`,
   createdAtTimestamp: "1641363676",
   creator: {
-    id: clipitApiResponse.address
+    id: signerAddress
   },
   creatorBidShare: "5000000000000000000",
   currentAsk: null,
@@ -30,7 +30,7 @@ export const clipPartialFragment = {
   id: "1",
   metadataURI: `ipfs://${metadataCid}`,
   owner: {
-    id: clipitApiResponse.address
+    id: signerAddress
   },
   ownerBidShare: "95000000000000000000",
   prevOwnerBidShare: "0",

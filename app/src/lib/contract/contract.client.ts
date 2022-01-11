@@ -6,25 +6,32 @@ import { contractAddress } from "../constants";
 import { EthereumProvider } from "../ethereum/ethereum.types";
 
 
-interface MediaData {
+export interface MediaData {
   tokenURI: string;
   metadataURI: string;
   contentHash: BytesLike;
   metadataHash: BytesLike;
 }
 
-interface BidShares {
+export interface BidShares {
   prevOwner: { value: BigNumberish };
   creator: { value: BigNumberish };
   owner: { value: BigNumberish };
 }
 
-interface Signature {
+export interface Signature {
   v: BigNumberish,
   r: BytesLike,
   s: BytesLike,
 }
-export default class ContractClient {
+
+export interface IContractClient {
+  mint: (data: MediaData, bidShares: BidShares, signature: Signature) => Promise<ethers.ContractTransaction>;
+  getTokenMetadataURI: (tokenId: string) => Promise<string>
+  getTokenOwner: (tokenId: string) => Promise<string>
+}
+
+class ContractClient implements IContractClient {
   private contract: ClipIt;
 
   constructor(provider: EthereumProvider) {
@@ -50,4 +57,8 @@ export default class ContractClient {
   async getTokenOwner(tokenId: string): Promise<string> {
     return this.contract.ownerOf(tokenId);
   }
+}
+
+export function ClipItContractCreator(provider: EthereumProvider): IContractClient {
+  return new ContractClient(provider);
 }

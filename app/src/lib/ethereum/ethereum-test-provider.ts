@@ -1,3 +1,5 @@
+import { signerAddress, chainId } from "../../../tests/__fixtures__/ethereum";
+
 import { EthereumProvider, EthereumEvents, EthereumEventData, RequestArguments } from "./ethereum.types";
 
 export class EthereumTestProvider implements EthereumProvider {
@@ -27,11 +29,11 @@ export class EthereumTestProvider implements EthereumProvider {
 
   async request(args: RequestArguments): Promise<any> {
     switch (args.method) {
-      case 'eth_requestAccounts':
-      case 'eth_accounts':
-        return ['address']
-      case 'eth_chainid':
-        return '0x04';
+      case "eth_requestAccounts":
+      case "eth_accounts":
+        return [signerAddress]
+      case "eth_chainid":
+        return chainId;
       default:
         throw new Error("uninmplemented method. please fix");
     }

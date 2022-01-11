@@ -1,4 +1,4 @@
-import { clipitApiResponse } from "../../../../tests/__fixtures__/clipit-api-data";
+import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
 import { ClipItApiTestClient } from "../../../lib/clipit-api/clipit-api-test.client";
 import { SubgraphTestClient } from "../../../lib/graphql/subgraph-test.client";
 import { IpfsTestClient } from "../../../lib/ipfs/ipfs-test.client";
@@ -55,12 +55,12 @@ describe("nft controller", () => {
     expect(m).toEqual([]);
 
     // still no owner metadata
-    m = ctrl.getOwnerMetadata(clipitApiResponse.address);
+    m = ctrl.getOwnerMetadata(signerAddress);
     expect(m).toEqual([]);
 
     // set some metadata
-    await ctrl.getCurrentSignerTokensMetadata(clipitApiResponse.address);
-    m = ctrl.getOwnerMetadata(clipitApiResponse.address);
+    await ctrl.getCurrentSignerTokensMetadata(signerAddress);
+    m = ctrl.getOwnerMetadata(signerAddress);
     expect(m[0].tokenId).toEqual("1");
   });
 });

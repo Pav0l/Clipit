@@ -1,6 +1,6 @@
 import { BytesLike } from "ethers";
 
-import ContractClient from "../../lib/contract/contract.client";
+import { IContractClient } from "../../lib/contract/contract.client";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
 import { Web3Model, Web3Errors } from "./web3.model";
@@ -33,15 +33,18 @@ export class Web3Controller implements IWeb3Controller {
     private offChainStorage: OffChainStorage,
     private subgraph: ISubgraphClient,
     private snackbar: SnackbarClient,
+    private contractCreator: (provider: EthereumProvider) => IContractClient
   ) { }
 
   async connectMetaMaskIfNecessaryForConnectBtn() {
     if (!this.model.isMetaMaskInstalled()) {
+      // TODO maybe the button text handling should live somewhere here
+      // so this controller does not have to rely on the button logic
       // if MM is not installed, do nothing. the button will prompt for installation
       return;
     }
 
-    // MM connected -> nothing to do
+    // MM connected already -> nothing to do
     if (this.model.isProviderConnected()) {
       return;
     }
@@ -56,7 +59,7 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    // MM connected -> nothing to do
+    // MM connected already -> nothing to do
     if (this.model.isProviderConnected()) {
       return;
     }
@@ -105,7 +108,7 @@ export class Web3Controller implements IWeb3Controller {
 
 
   private prepareMetadataAndMintClip = async (clipId: string, address: string, creatorShare: string, clipTitle: string, clipDescription?: string) => {
-    if (!address || !clipTitle) {
+    if (!clipId || !address || !clipTitle) {
       // TODO sentry this should not happen
       this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
       return;
@@ -150,7 +153,7 @@ export class Web3Controller implements IWeb3Controller {
     }
 
     try {
-      const contract = new ContractClient(window.ethereum as EthereumProvider);
+      const contract = this.contractCreator(window.ethereum as EthereumProvider);
       const tx = await contract.mint(data, defaultBidshares, signature);
       console.log("[LOG]:minting NFT in tx", tx.hash);
 

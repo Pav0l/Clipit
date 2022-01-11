@@ -11,6 +11,7 @@ describe("oauth controller", () => {
   let ls: LocalStorageTestClient;
 
 
+  // TODO replace this
   const { location } = window;
   beforeAll(() => {
     // @ts-ignore
