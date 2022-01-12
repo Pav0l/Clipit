@@ -62,7 +62,7 @@ describe("web3 controller", () => {
       // @ts-ignore
       delete window.location;
       // @ts-ignore
-      window.location = { replace: jest.fn(), origin: 'http://localhost' };
+      window.location = { assign: jest.fn(), origin: 'http://localhost' };
     });
     afterAll(() => {
       window.location = location;
@@ -139,7 +139,7 @@ describe("web3 controller", () => {
 
     it("requestConnectAndMint: creates the NFT and redirects to it", async () => {
       await ctrl.requestConnectAndMint(twitchClip.id, "5", twitchClip.title, "");
-      expect(window.location.replace).toHaveBeenCalledWith('http://localhost/nfts/1');
+      expect(window.location.assign).toHaveBeenCalledWith('http://localhost/nfts/1');
     });
   });
 });

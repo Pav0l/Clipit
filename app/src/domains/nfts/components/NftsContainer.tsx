@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { Link } from "react-router-dom";
 
 import FullPageLoader from "../../../components/loader/FullPageLoader";
@@ -27,8 +27,6 @@ interface Props {
 function NftsContainer({ model, operations }: Props) {
   const signer = model.web3.getAccount();
   const metadata = operations.nft.getOwnerMetadata(signer);
-
-  const classes = useStyles();
 
   useEffect(() => {
     if (!model.web3.isProviderConnected()) {
@@ -80,10 +78,3 @@ function NftsContainer({ model, operations }: Props) {
 }
 
 export default observer(NftsContainer);
-
-const useStyles = makeStyles(() => ({
-  link: {
-    textDecoration: "none",
-    margin: "1rem"
-  }
-}));

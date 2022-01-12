@@ -16,7 +16,7 @@ interface Props extends RouteProps {
 function OAuthProtectedRoute(props: Props) {
   useEffect(() => {
     if (!props.model.auth.isLoggedIn) {
-      location.href = props.operations.auth.getTwitchOAuth2AuthorizeUrl();
+      location.assign(props.operations.auth.getTwitchOAuth2AuthorizeUrl());
     }
   }, []);
 

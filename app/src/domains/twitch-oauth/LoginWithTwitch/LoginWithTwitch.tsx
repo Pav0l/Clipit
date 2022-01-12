@@ -20,7 +20,7 @@ function LoginWithTwitch({ model, operations }: Props) {
       onClick={
         isLoggedIn
           ? operations.logout
-          : () => (location.href = operations.getTwitchOAuth2AuthorizeUrl())
+          : () => location.assign(operations.getTwitchOAuth2AuthorizeUrl())
       }
     >
       {isLoggedIn ? "Log out" : "Login with Twitch"}

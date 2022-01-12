@@ -136,7 +136,7 @@ export class Web3Controller implements IWeb3Controller {
 
       const tokenId = clip.id;
       // TODO ideally we do not want to reload the app here and just update state
-      location.replace(location.origin + `/nfts/${tokenId}`);
+      location.assign(location.origin + `/nfts/${tokenId}`);
     } else {
       // TODO improve errors from clipit-api
       this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
@@ -176,10 +176,6 @@ export class Web3Controller implements IWeb3Controller {
         switch (error.code) {
           case RpcErrors.USER_REJECTED_REQUEST:
             this.snackbar.sendInfo(Web3Errors.MINT_REJECTED);
-            // redirect to Clip, since we have the clip metadata, we'd otherwise display the IPFS Clip
-            // TODO this can definitely be improved
-            location.replace(`${location.origin}/clips/${clipId}`);
-
             break;
           case RpcErrors.INTERNAL_ERROR:
             // contract reverts
