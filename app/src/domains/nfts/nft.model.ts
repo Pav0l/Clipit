@@ -64,7 +64,7 @@ export class Metadata {
   tokenId: string;
   thumbnailUri: string;
   owner: string;
-  currentBids?: ActiveBid[];
+  currentBids: ActiveBid[];
 
   constructor(data: MetadataInput, private ipfsGatewayUri: string = pinataGatewayUri) {
     makeAutoObservable(this);

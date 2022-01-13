@@ -26,6 +26,10 @@ export default class EthereumClient implements IEthClient {
     return this.provider.request<Promise<string[]>>({ method: 'eth_accounts' });
   }
 
+  getBalance = async (address: string) => {
+    return this.provider.request<Promise<string>>({ method: 'eth_getBalance', params: [address, 'latest'] });
+  }
+
   chainId = async () => {
     return this.provider.request<Promise<string>>({ method: 'eth_chainid' });
   }

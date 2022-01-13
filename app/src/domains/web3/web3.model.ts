@@ -1,4 +1,4 @@
-import type { ethers } from "ethers";
+import { BigNumber, utils } from "ethers";
 import { makeAutoObservable } from "mobx"
 import { MetaModel } from "../app/meta.model";
 
@@ -16,7 +16,8 @@ export class Web3Model {
   meta: MetaModel;
 
   accounts: string[] = [];
-  signer?: ethers.providers.JsonRpcSigner;
+  balance?: BigNumber;
+  displayBalance?: string;
   chainId?: string;
 
   // Saving clip & generating signature loader
@@ -32,16 +33,30 @@ export class Web3Model {
     this.meta = meta;
   }
 
-  setSigner(signer: ethers.providers.JsonRpcSigner) {
-    this.signer = signer;
-  }
-
   setAccounts(accounts: string[]) {
     this.accounts = accounts.map(address => address.toLowerCase());
   }
 
   setChainId(chainId: string) {
     this.chainId = chainId;
+  }
+
+  setEthBalance(value: BigNumber) {
+    this.balance = value;
+    // TODO clean up this duplicate of ActiveBid.toDisplayAmount
+    const formatedAmount = utils.formatUnits(value, 18)
+    const idxOfDot = formatedAmount.indexOf(".")
+    // no dot -> no float -> just return
+    if (idxOfDot === -1) return formatedAmount;
+    // number has more than 6 digits, just return it without decimals
+    if (idxOfDot > 6) return formatedAmount.substring(0, idxOfDot)
+    // return up to 4 deimals
+    this.displayBalance = formatedAmount.substring(0, idxOfDot + 5)
+  }
+
+  resetEthBalance() {
+    this.balance = undefined;
+    this.displayBalance = undefined;
   }
 
   getAccount(): string | null {

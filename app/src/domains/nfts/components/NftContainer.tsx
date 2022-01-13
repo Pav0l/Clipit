@@ -5,15 +5,22 @@ import { useEffect } from "react";
 import ErrorWithRetry from "../../../components/error/Error";
 import { NftCard } from "../../../components/nfts/NftCard";
 import FullPageLoader from "../../../components/loader/FullPageLoader";
-import CenteredContainer from "../../../components/container/CenteredContainer";
+import SplitContainer from "../../../components/container/SplitContainer";
 import { NftModel } from "../nft.model";
 import { NftController } from "../nft.controller";
+import { BidForm } from "../../../components/bidForm/BidForm";
+import { Web3Model } from "../../web3/web3.model";
+import { Web3Controller } from "../../web3/web3.controller";
 
 interface Props {
   model: {
     nft: NftModel;
+    web3: Web3Model;
   };
-  operations: NftController;
+  operations: {
+    nft: NftController;
+    web3: Web3Controller;
+  };
 }
 
 function NftContainer({ model, operations }: Props) {
@@ -26,7 +33,7 @@ function NftContainer({ model, operations }: Props) {
 
   useEffect(() => {
     if (!metadata) {
-      operations.getTokenMetadata(tokenId);
+      operations.nft.getTokenMetadata(tokenId);
     }
   }, []);
 
@@ -37,15 +44,31 @@ function NftContainer({ model, operations }: Props) {
   }
 
   if (metadata) {
+    const minBid =
+      metadata.currentBids.length > 0
+        ? Number(metadata.currentBids[0].displayAmount) * 1.05
+        : "0";
+
+    const isNftOwn = metadata.owner === model.web3.getAccount();
+
     return (
-      <CenteredContainer>
+      <SplitContainer>
         <NftCard
           clipIpfsUri={metadata.clipIpfsUri}
           clipTitle={metadata.clipTitle}
           clipDescription={metadata.description}
           poster={metadata.thumbnailUri}
         />
-      </CenteredContainer>
+        {isNftOwn ? (
+          <BidForm
+            minimalBid={minBid.toString()}
+            operations={{ web3: operations.web3 }}
+            model={{ web3: model.web3 }}
+          />
+        ) : (
+          <></>
+        )}
+      </SplitContainer>
     );
   }
 

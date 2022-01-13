@@ -1,4 +1,4 @@
-import { BytesLike } from "ethers";
+import { BigNumber, BytesLike } from "ethers";
 
 import { IContractClient } from "../../lib/contract/contract.client";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
@@ -24,6 +24,8 @@ export interface IWeb3Controller {
   requestConnectAndMint: (clipId: string, creatorShare: string, clipTitle: string, clipDescription?: string) => Promise<void>;
   // open MM and call requestAccounts
   requestConnect: (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => Promise<void>;
+  // get current users balance
+  getBalance: (address: string) => Promise<void>;
 }
 
 
@@ -104,6 +106,15 @@ export class Web3Controller implements IWeb3Controller {
       clipTitle,
       clipDescription
     );
+  }
+
+  getBalance = async (address: string) => {
+    try {
+      const balance = await this.initEthClient().getBalance(address);
+      this.model.setEthBalance(BigNumber.from(balance));
+    } catch (error) {
+      // TODO sentry
+    }
   }
 
 
@@ -253,6 +264,7 @@ export class Web3Controller implements IWeb3Controller {
   private handleAccountsChange = (accounts: string[]) => {
     console.log('[web3.controller]:handleAccountsChange', accounts);
     this.model.setAccounts(accounts);
+    this.model.resetEthBalance();
   }
 
   private handleChainChanged(chainId: ChainId) {
