@@ -2,7 +2,7 @@ import { ethers, BigNumberish, BytesLike } from "ethers";
 
 import ContractBuild from "./ClipIt.json";
 import { ClipIt } from "./ClipIt";
-import { contractAddress } from "../../constants";
+import { clipitContractAddress } from "../../constants";
 import { EthereumProvider } from "../../ethereum/ethereum.types";
 
 
@@ -25,20 +25,20 @@ export interface Signature {
   s: BytesLike,
 }
 
-export interface IContractClient {
+export interface IClipItContractClient {
   mint: (data: MediaData, bidShares: BidShares, signature: Signature) => Promise<ethers.ContractTransaction>;
   getTokenMetadataURI: (tokenId: string) => Promise<string>
   getTokenOwner: (tokenId: string) => Promise<string>
 }
 
-class ContractClient implements IContractClient {
+class ClipItContractClient implements IClipItContractClient {
   private contract: ClipIt;
 
   constructor(provider: EthereumProvider) {
     try {
       const ethersProvider = new ethers.providers.Web3Provider(provider);
       const jsonRpcSigner = ethersProvider.getSigner();
-      this.contract = (new ethers.Contract(contractAddress, ContractBuild.abi, jsonRpcSigner)) as ClipIt;
+      this.contract = (new ethers.Contract(clipitContractAddress, ContractBuild.abi, jsonRpcSigner)) as ClipIt;
     } catch (error) {
       // TODO sentry
       console.log("[contract.client]:construct:error", error);
@@ -59,6 +59,6 @@ class ContractClient implements IContractClient {
   }
 }
 
-export function ClipItContractCreator(provider: EthereumProvider): IContractClient {
-  return new ContractClient(provider);
+export function ClipItContractCreator(provider: EthereumProvider): IClipItContractClient {
+  return new ClipItContractClient(provider);
 }

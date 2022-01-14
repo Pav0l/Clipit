@@ -2,18 +2,17 @@ import { metadataCid } from "../../../../tests/__fixtures__/metadata";
 import { chainId, signerAddress } from "../../../../tests/__fixtures__/ethereum";
 
 import { EthereumProvider } from "../../ethereum/ethereum.types";
-import { BidShares, IContractClient, MediaData, Signature } from "./clipit-contract.client";
+import { BidShares, IClipItContractClient, MediaData, Signature } from "./clipit-contract.client";
 import { BigNumber, ContractReceipt, ethers } from "ethers";
-import { contractAddress } from "../../constants";
+import { clipitContractAddress } from "../../constants";
 
 
-
-class ContractTestClient implements IContractClient {
+class ClipItContractTestClient implements IClipItContractClient {
   async mint(_data: MediaData, _bidShares: BidShares, _signature: Signature): Promise<ethers.ContractTransaction> {
     return {
       chainId: BigNumber.from(chainId).toNumber(),
       confirmations: 1,
-      from: contractAddress,
+      from: clipitContractAddress,
       data: '',
       gasLimit: BigNumber.from('100000'),
       hash: 'hash',
@@ -22,8 +21,8 @@ class ContractTestClient implements IContractClient {
       wait: (confirmations?: number): Promise<ContractReceipt> => {
         return new Promise(res => res({
           to: signerAddress,
-          from: contractAddress,
-          contractAddress: contractAddress,
+          from: clipitContractAddress,
+          contractAddress: clipitContractAddress,
           transactionIndex: 1,
           gasUsed: BigNumber.from('500'),
           logsBloom: 'logsBloom',
@@ -60,6 +59,6 @@ class ContractTestClient implements IContractClient {
   }
 }
 
-export function ClipItTestContractCreator(_provider: EthereumProvider): IContractClient {
-  return new ContractTestClient();
+export function ClipItTestContractCreator(_provider: EthereumProvider): IClipItContractClient {
+  return new ClipItContractTestClient();
 }

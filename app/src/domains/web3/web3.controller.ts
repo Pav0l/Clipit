@@ -1,13 +1,13 @@
 import { BigNumber, BytesLike } from "ethers";
 
-import { IContractClient } from "../../lib/contracts/ClipIt/clipit-contract.client";
+import { IClipItContractClient } from "../../lib/contracts/ClipIt/clipit-contract.client";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
 import { Web3Model, Web3Errors } from "./web3.model";
 import { ISubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { Decimal } from "../../lib/decimal/decimal";
-import { ContractErrors, isEthersJsonRpcError } from "../../lib/contracts/ClipIt/clipit-contract.errors";
+import { ClipItContractErrors, isEthersJsonRpcError } from "../../lib/contracts/ClipIt/clipit-contract.errors";
 import { isRpcError, RpcErrors } from "../../lib/ethereum/rpc.errors";
 import EthereumClient from "../../lib/ethereum/ethereum.client";
 
@@ -35,7 +35,7 @@ export class Web3Controller implements IWeb3Controller {
     private offChainStorage: OffChainStorage,
     private subgraph: ISubgraphClient,
     private snackbar: SnackbarClient,
-    private contractCreator: (provider: EthereumProvider) => IContractClient
+    private clipitContractCreator: (provider: EthereumProvider) => IClipItContractClient
   ) { }
 
   async connectMetaMaskIfNecessaryForConnectBtn() {
@@ -164,7 +164,7 @@ export class Web3Controller implements IWeb3Controller {
     }
 
     try {
-      const contract = this.contractCreator(window.ethereum as EthereumProvider);
+      const contract = this.clipitContractCreator(window.ethereum as EthereumProvider);
       const tx = await contract.mint(data, defaultBidshares, signature);
       console.log("[LOG]:minting NFT in tx", tx.hash);
 
@@ -190,10 +190,10 @@ export class Web3Controller implements IWeb3Controller {
             break;
           case RpcErrors.INTERNAL_ERROR:
             // contract reverts
-            if (error.message.includes(ContractErrors.ERC721_TOKEN_MINTED) || error.message.includes(ContractErrors.CLIPIT_TOKEN_EXIST)) {
-              this.snackbar.sendError(ContractErrors.TOKEN_ALREADY_MINTED);
-            } else if (error.message.includes(ContractErrors.CLIPIT_INVALID_ADDRESS)) {
-              this.snackbar.sendError(ContractErrors.ADDRESS_NOT_ALLOWED);
+            if (error.message.includes(ClipItContractErrors.ERC721_TOKEN_MINTED) || error.message.includes(ClipItContractErrors.CLIPIT_TOKEN_EXIST)) {
+              this.snackbar.sendError(ClipItContractErrors.TOKEN_ALREADY_MINTED);
+            } else if (error.message.includes(ClipItContractErrors.CLIPIT_INVALID_ADDRESS)) {
+              this.snackbar.sendError(ClipItContractErrors.ADDRESS_NOT_ALLOWED);
             }
             break;
           default:
