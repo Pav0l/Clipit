@@ -5,6 +5,9 @@ export const contractAddress = "0xBacff2b8579F5BBd6db50f6f3390b0a3a71d7434";
 // localhost: "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 // rinkeby: 0xBacff2b8579F5BBd6db50f6f3390b0a3a71d7434
 
+// TODO update
+export const auctionContractAddress = "";
+
 
 // IPFS -> into config
 export const ipfsBaseUri = `http://127.0.0.1:8080/ipfs`;

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "ClipIt project repo",
   "scripts": {
-    "update-clipit-abi": "cp hardhat/artifacts/contracts/ClipIt.sol/ClipIt.json app/src/lib/contracts/ClipIt/ && cp hardhat/typechain/ClipIt.d.ts app/src/lib/contracts/ClipIt/"
+    "update-clipit-abi": "cp hardhat/artifacts/contracts/ClipIt.sol/ClipIt.json app/src/lib/contracts/ClipIt/ && cp hardhat/typechain/ClipIt.d.ts app/src/lib/contracts/ClipIt/ && cp hardhat/typechain/commons.ts app/src/lib/contracts/ClipIt/",
+    "update-auction-abi": "cp hardhat/artifacts/contracts/AuctionHouse.sol/AuctionHouse.json app/src/lib/contracts/AuctionHouse && cp hardhat/typechain/AuctionHouse.d.ts app/src/lib/contracts/AuctionHouse/&& cp hardhat/typechain/commons.ts app/src/lib/contracts/AuctionHouse/"
   },
   "author": "h0ppx",
   "license": "GPL-3.0"
