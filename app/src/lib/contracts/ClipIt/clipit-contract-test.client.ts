@@ -1,10 +1,10 @@
-import { metadataCid } from "../../../tests/__fixtures__/metadata";
-import { chainId, signerAddress } from "../../../tests/__fixtures__/ethereum";
+import { metadataCid } from "../../../../tests/__fixtures__/metadata";
+import { chainId, signerAddress } from "../../../../tests/__fixtures__/ethereum";
 
-import { EthereumProvider } from "../ethereum/ethereum.types";
-import { BidShares, IContractClient, MediaData, Signature } from "./contract.client";
+import { EthereumProvider } from "../../ethereum/ethereum.types";
+import { BidShares, IContractClient, MediaData, Signature } from "./clipit-contract.client";
 import { BigNumber, ContractReceipt, ethers } from "ethers";
-import { contractAddress } from "../constants";
+import { contractAddress } from "../../constants";
 
 
 

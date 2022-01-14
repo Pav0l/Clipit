@@ -1,4 +1,4 @@
-import { ProviderRpcError } from "../ethereum/rpc.errors";
+import { ProviderRpcError } from "../../ethereum/rpc.errors";
 
 export enum ContractErrors {
   TOKEN_ALREADY_MINTED = "This clip is already minted into an NFT",

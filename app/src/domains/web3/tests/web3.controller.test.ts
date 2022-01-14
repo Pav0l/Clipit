@@ -1,7 +1,7 @@
 import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
 import { twitchClip } from "../../../../tests/__fixtures__/twitch-api-data";
 import { ClipItApiTestClient } from "../../../lib/clipit-api/clipit-api-test.client";
-import { ClipItTestContractCreator } from "../../../lib/contract/contract-test.client";
+import { ClipItTestContractCreator } from "../../../lib/contracts/ClipIt/clipit-contract-test.client";
 import { EthereumTestProvider } from "../../../lib/ethereum/ethereum-test-provider";
 import { SubgraphTestClient } from "../../../lib/graphql/subgraph-test.client";
 import { IpfsTestClient } from "../../../lib/ipfs/ipfs-test.client";

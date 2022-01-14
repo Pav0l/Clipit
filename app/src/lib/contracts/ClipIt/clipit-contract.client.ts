@@ -2,8 +2,8 @@ import { ethers, BigNumberish, BytesLike } from "ethers";
 
 import ContractBuild from "./ClipIt.json";
 import { ClipIt } from "./ClipIt";
-import { contractAddress } from "../constants";
-import { EthereumProvider } from "../ethereum/ethereum.types";
+import { contractAddress } from "../../constants";
+import { EthereumProvider } from "../../ethereum/ethereum.types";
 
 
 export interface MediaData {

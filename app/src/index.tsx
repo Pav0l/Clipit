@@ -43,7 +43,7 @@ import { NftController } from "./domains/nfts/nft.controller";
 import { SnackbarController } from "./domains/snackbar/snackbar.controller";
 import { ClipItApiClient } from "./lib/clipit-api/clipit-api.client";
 import { IpfsClient } from "./lib/ipfs/ipfs.client";
-import { ClipItContractCreator } from "./lib/contract/contract.client";
+import { ClipItContractCreator } from "./lib/contracts/ClipIt/clipit-contract.client";
 
 function initSynchronous() {
   const storage = new LocalStorageClient();

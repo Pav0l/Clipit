@@ -1,13 +1,13 @@
 import { BigNumber, BytesLike } from "ethers";
 
-import { IContractClient } from "../../lib/contract/contract.client";
+import { IContractClient } from "../../lib/contracts/ClipIt/clipit-contract.client";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
 import { Web3Model, Web3Errors } from "./web3.model";
 import { ISubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { Decimal } from "../../lib/decimal/decimal";
-import { ContractErrors, isEthersJsonRpcError } from "../../lib/contract/contract.errors";
+import { ContractErrors, isEthersJsonRpcError } from "../../lib/contracts/ClipIt/clipit-contract.errors";
 import { isRpcError, RpcErrors } from "../../lib/ethereum/rpc.errors";
 import EthereumClient from "../../lib/ethereum/ethereum.client";
 
