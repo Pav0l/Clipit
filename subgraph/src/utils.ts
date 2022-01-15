@@ -1,7 +1,7 @@
-import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
-import { User, URIUpdate, Transfer, Ask, Bid, InactiveAsk, InactiveBid, Currency, Clip } from "../generated/schema";
+import { Address, BigInt, Bytes, log, store } from "@graphprotocol/graph-ts";
+import { User, URIUpdate, Transfer, Ask, Bid, InactiveAsk, InactiveBid, Currency, Clip, ReserveAuction, ReserveAuctionBid, InactiveReserveAuctionBid } from "../generated/schema";
 import { ClipIt } from "../generated/ClipIt/ClipIt";
-import { AskCreatedAskStruct, AskRemovedAskStruct, BidCreatedBidStruct, BidFinalizedBidStruct, BidRemovedBidStruct, Market } from "../generated/Market/Market";
+import { Market } from "../generated/Market/Market";
 import { ERC20 } from "../generated/Market/ERC20";
 import { ERC20NameBytes } from "../generated/Market/ERC20NameBytes";
 import { ERC20SymbolBytes } from "../generated/Market/ERC20SymbolBytes";
@@ -349,5 +349,130 @@ function isNullEthValue(value: string): boolean {
   return value == '0x0000000000000000000000000000000000000000000000000000000000000001'
 }
 
+export function createReserveAuction(
+  id: string,
+  transactionHash: string,
+  tokenId: BigInt,
+  tokenContract: string,
+  clip: Clip | null,
+  duration: BigInt,
+  reservePrice: BigInt,
+  curatorFeePercentage: i32,
+  auctionCurrency: Currency,
+  createdAtTimestamp: BigInt,
+  createdAtBlockNumber: BigInt,
+  tokenOwner: User,
+  curator: User
+): ReserveAuction {
+  let reserveAuction = new ReserveAuction(id)
+
+  reserveAuction.tokenId = tokenId
+  reserveAuction.transactionHash = transactionHash
+  reserveAuction.tokenContract = tokenContract
+  reserveAuction.token = tokenContract.concat('-').concat(tokenId.toString())
+  reserveAuction.clip = clip ? clip.id : null
+  reserveAuction.approved = false
+  reserveAuction.duration = duration
+  reserveAuction.firstBidTime = BigInt.fromI32(0)
+  reserveAuction.approvedTimestamp = null
+  reserveAuction.reservePrice = reservePrice
+  reserveAuction.curatorFeePercentage = curatorFeePercentage
+  reserveAuction.tokenOwner = tokenOwner.id
+  reserveAuction.curator = curator.id
+  reserveAuction.auctionCurrency = auctionCurrency.id
+  reserveAuction.status = 'Pending'
+  reserveAuction.createdAtTimestamp = createdAtTimestamp
+  reserveAuction.createdAtBlockNumber = createdAtBlockNumber
+
+  reserveAuction.save()
+
+  return reserveAuction
+}
 
 
+export function setReserveAuctionFirstBidTime(auction: ReserveAuction, time: BigInt): void {
+  auction.firstBidTime = time
+  auction.expectedEndTimestamp = auction.duration.plus(time)
+  auction.save()
+}
+
+export function handleReserveAuctionExtended(auction: ReserveAuction, duration: BigInt): void {
+  auction.duration = duration
+
+  let firstBidTime = auction.firstBidTime
+  if (firstBidTime === null) {
+    log.error('[handleReserveAuctionExtended] missing auction firstBidTime for auction {}', [auction.id.toString()])
+    return
+  }
+  auction.expectedEndTimestamp = firstBidTime.plus(duration)
+  auction.save()
+}
+
+export function createReserveAuctionBid(
+  id: string,
+  transactionHash: string,
+  auction: ReserveAuction,
+  amount: BigInt,
+  createdAtTimestamp: BigInt,
+  createdAtBlockNumber: BigInt,
+  bidder: User
+): ReserveAuctionBid {
+  let bid = new ReserveAuctionBid(id)
+
+  log.info('[createReserveAuctionBid] creating active bid with id {}', [id])
+
+  bid.reserveAuction = auction.id
+  bid.transactionHash = transactionHash
+  bid.amount = amount
+  bid.bidder = bidder.id
+  bid.bidType = 'Active'
+  bid.createdAtTimestamp = createdAtTimestamp
+  bid.createdAtBlockNumber = createdAtBlockNumber
+
+  bid.save()
+
+  auction.currentBid = bid.id
+  auction.save()
+
+  return bid
+}
+
+// Create an inactive bid based off of the current highest bid, and delete the active bid
+export function handleBidReplaced(auctionCurrentBidId: string, timestamp: BigInt, blockNumber: BigInt, winningBid: boolean = false): void {
+  let activeBid = ReserveAuctionBid.load(auctionCurrentBidId)
+  if (!activeBid) {
+    log.error('[handleBidReplaced] missing active bid for reserve auction bid id {}', [auctionCurrentBidId])
+    return
+  }
+
+  let inactiveBid = new InactiveReserveAuctionBid(activeBid.id)
+
+  log.info('setting reserve auction', [])
+  inactiveBid.reserveAuction = activeBid.reserveAuction
+  inactiveBid.transactionHash = activeBid.transactionHash
+  log.info('setting amount: {}', [activeBid.amount.toString()])
+  inactiveBid.amount = activeBid.amount
+  log.info('setting bidder', [])
+  inactiveBid.bidder = activeBid.bidder
+  log.info('setting bid type', [])
+  inactiveBid.bidType = winningBid ? 'Final' : 'Refunded'
+  log.info('setting bid IAT', [])
+  inactiveBid.bidInactivatedAtTimestamp = timestamp
+  log.info('setting bid IABN', [])
+  inactiveBid.bidInactivatedAtBlockNumber = blockNumber
+  log.info('setting bid CAT', [])
+  inactiveBid.createdAtTimestamp = activeBid.createdAtTimestamp
+  log.info('setting bid CABN', [])
+  inactiveBid.createdAtBlockNumber = activeBid.createdAtBlockNumber
+
+  inactiveBid.save()
+
+  store.remove('ReserveAuctionBid', activeBid.id)
+}
+
+export function handleFinishedAuction(auction: ReserveAuction, timestamp: BigInt, blockNumber: BigInt, canceledAuction: boolean = false): void {
+  auction.finalizedAtTimestamp = timestamp
+  auction.finalizedAtBlockNumber = blockNumber
+  auction.status = canceledAuction ? 'Canceled' : 'Finished'
+  auction.save()
+}

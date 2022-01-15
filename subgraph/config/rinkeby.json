@@ -4,6 +4,6 @@
   "clipItAddress": "0xBacff2b8579F5BBd6db50f6f3390b0a3a71d7434",
   "clipItStartBlock": 9931945,
   "network": "rinkeby",
-  "auctionHouseAddress": "",
-  "auctionHouseStartBlock": 0
+  "auctionHouseAddress": "0xcCeB966Ea756C8316ebB69da9800Efa869d08907",
+  "auctionHouseStartBlock": 9931946
 }

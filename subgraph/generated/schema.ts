@@ -309,6 +309,23 @@ export class Clip extends Entity {
       this.set("transfers", Value.fromStringArray(<Array<string>>value));
     }
   }
+
+  get reserveAuctions(): Array<string> | null {
+    let value = this.get("reserveAuctions");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set reserveAuctions(value: Array<string> | null) {
+    if (!value) {
+      this.unset("reserveAuctions");
+    } else {
+      this.set("reserveAuctions", Value.fromStringArray(<Array<string>>value));
+    }
+  }
 }
 
 export class User extends Entity {
@@ -1269,5 +1286,567 @@ export class URIUpdate extends Entity {
 
   set createdAtBlockNumber(value: BigInt) {
     this.set("createdAtBlockNumber", Value.fromBigInt(value));
+  }
+}
+
+export class ReserveAuctionBid extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("transactionHash", Value.fromString(""));
+    this.set("reserveAuction", Value.fromString(""));
+    this.set("amount", Value.fromBigInt(BigInt.zero()));
+    this.set("bidder", Value.fromString(""));
+    this.set("bidType", Value.fromString(""));
+    this.set("createdAtTimestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("createdAtBlockNumber", Value.fromBigInt(BigInt.zero()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save ReserveAuctionBid entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save ReserveAuctionBid entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("ReserveAuctionBid", id.toString(), this);
+    }
+  }
+
+  static load(id: string): ReserveAuctionBid | null {
+    return changetype<ReserveAuctionBid | null>(
+      store.get("ReserveAuctionBid", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get transactionHash(): string {
+    let value = this.get("transactionHash");
+    return value!.toString();
+  }
+
+  set transactionHash(value: string) {
+    this.set("transactionHash", Value.fromString(value));
+  }
+
+  get reserveAuction(): string {
+    let value = this.get("reserveAuction");
+    return value!.toString();
+  }
+
+  set reserveAuction(value: string) {
+    this.set("reserveAuction", Value.fromString(value));
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value!.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
+
+  get bidder(): string {
+    let value = this.get("bidder");
+    return value!.toString();
+  }
+
+  set bidder(value: string) {
+    this.set("bidder", Value.fromString(value));
+  }
+
+  get bidType(): string {
+    let value = this.get("bidType");
+    return value!.toString();
+  }
+
+  set bidType(value: string) {
+    this.set("bidType", Value.fromString(value));
+  }
+
+  get createdAtTimestamp(): BigInt {
+    let value = this.get("createdAtTimestamp");
+    return value!.toBigInt();
+  }
+
+  set createdAtTimestamp(value: BigInt) {
+    this.set("createdAtTimestamp", Value.fromBigInt(value));
+  }
+
+  get createdAtBlockNumber(): BigInt {
+    let value = this.get("createdAtBlockNumber");
+    return value!.toBigInt();
+  }
+
+  set createdAtBlockNumber(value: BigInt) {
+    this.set("createdAtBlockNumber", Value.fromBigInt(value));
+  }
+}
+
+export class InactiveReserveAuctionBid extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("transactionHash", Value.fromString(""));
+    this.set("reserveAuction", Value.fromString(""));
+    this.set("amount", Value.fromBigInt(BigInt.zero()));
+    this.set("bidder", Value.fromString(""));
+    this.set("bidType", Value.fromString(""));
+    this.set("bidInactivatedAtTimestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("bidInactivatedAtBlockNumber", Value.fromBigInt(BigInt.zero()));
+    this.set("createdAtTimestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("createdAtBlockNumber", Value.fromBigInt(BigInt.zero()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save InactiveReserveAuctionBid entity without an ID"
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save InactiveReserveAuctionBid entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("InactiveReserveAuctionBid", id.toString(), this);
+    }
+  }
+
+  static load(id: string): InactiveReserveAuctionBid | null {
+    return changetype<InactiveReserveAuctionBid | null>(
+      store.get("InactiveReserveAuctionBid", id)
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get transactionHash(): string {
+    let value = this.get("transactionHash");
+    return value!.toString();
+  }
+
+  set transactionHash(value: string) {
+    this.set("transactionHash", Value.fromString(value));
+  }
+
+  get reserveAuction(): string {
+    let value = this.get("reserveAuction");
+    return value!.toString();
+  }
+
+  set reserveAuction(value: string) {
+    this.set("reserveAuction", Value.fromString(value));
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value!.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
+
+  get bidder(): string {
+    let value = this.get("bidder");
+    return value!.toString();
+  }
+
+  set bidder(value: string) {
+    this.set("bidder", Value.fromString(value));
+  }
+
+  get bidType(): string {
+    let value = this.get("bidType");
+    return value!.toString();
+  }
+
+  set bidType(value: string) {
+    this.set("bidType", Value.fromString(value));
+  }
+
+  get bidInactivatedAtTimestamp(): BigInt {
+    let value = this.get("bidInactivatedAtTimestamp");
+    return value!.toBigInt();
+  }
+
+  set bidInactivatedAtTimestamp(value: BigInt) {
+    this.set("bidInactivatedAtTimestamp", Value.fromBigInt(value));
+  }
+
+  get bidInactivatedAtBlockNumber(): BigInt {
+    let value = this.get("bidInactivatedAtBlockNumber");
+    return value!.toBigInt();
+  }
+
+  set bidInactivatedAtBlockNumber(value: BigInt) {
+    this.set("bidInactivatedAtBlockNumber", Value.fromBigInt(value));
+  }
+
+  get createdAtTimestamp(): BigInt {
+    let value = this.get("createdAtTimestamp");
+    return value!.toBigInt();
+  }
+
+  set createdAtTimestamp(value: BigInt) {
+    this.set("createdAtTimestamp", Value.fromBigInt(value));
+  }
+
+  get createdAtBlockNumber(): BigInt {
+    let value = this.get("createdAtBlockNumber");
+    return value!.toBigInt();
+  }
+
+  set createdAtBlockNumber(value: BigInt) {
+    this.set("createdAtBlockNumber", Value.fromBigInt(value));
+  }
+}
+
+export class ReserveAuction extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("transactionHash", Value.fromString(""));
+    this.set("tokenContract", Value.fromString(""));
+    this.set("tokenId", Value.fromBigInt(BigInt.zero()));
+    this.set("token", Value.fromString(""));
+    this.set("approved", Value.fromBoolean(false));
+    this.set("duration", Value.fromBigInt(BigInt.zero()));
+    this.set("reservePrice", Value.fromBigInt(BigInt.zero()));
+    this.set("curatorFeePercentage", Value.fromI32(0));
+    this.set("tokenOwner", Value.fromString(""));
+    this.set("curator", Value.fromString(""));
+    this.set("auctionCurrency", Value.fromString(""));
+    this.set("status", Value.fromString(""));
+    this.set("createdAtTimestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("createdAtBlockNumber", Value.fromBigInt(BigInt.zero()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save ReserveAuction entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save ReserveAuction entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("ReserveAuction", id.toString(), this);
+    }
+  }
+
+  static load(id: string): ReserveAuction | null {
+    return changetype<ReserveAuction | null>(store.get("ReserveAuction", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get transactionHash(): string {
+    let value = this.get("transactionHash");
+    return value!.toString();
+  }
+
+  set transactionHash(value: string) {
+    this.set("transactionHash", Value.fromString(value));
+  }
+
+  get tokenContract(): string {
+    let value = this.get("tokenContract");
+    return value!.toString();
+  }
+
+  set tokenContract(value: string) {
+    this.set("tokenContract", Value.fromString(value));
+  }
+
+  get tokenId(): BigInt {
+    let value = this.get("tokenId");
+    return value!.toBigInt();
+  }
+
+  set tokenId(value: BigInt) {
+    this.set("tokenId", Value.fromBigInt(value));
+  }
+
+  get token(): string {
+    let value = this.get("token");
+    return value!.toString();
+  }
+
+  set token(value: string) {
+    this.set("token", Value.fromString(value));
+  }
+
+  get clip(): string | null {
+    let value = this.get("clip");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set clip(value: string | null) {
+    if (!value) {
+      this.unset("clip");
+    } else {
+      this.set("clip", Value.fromString(<string>value));
+    }
+  }
+
+  get approved(): boolean {
+    let value = this.get("approved");
+    return value!.toBoolean();
+  }
+
+  set approved(value: boolean) {
+    this.set("approved", Value.fromBoolean(value));
+  }
+
+  get duration(): BigInt {
+    let value = this.get("duration");
+    return value!.toBigInt();
+  }
+
+  set duration(value: BigInt) {
+    this.set("duration", Value.fromBigInt(value));
+  }
+
+  get expectedEndTimestamp(): BigInt | null {
+    let value = this.get("expectedEndTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set expectedEndTimestamp(value: BigInt | null) {
+    if (!value) {
+      this.unset("expectedEndTimestamp");
+    } else {
+      this.set("expectedEndTimestamp", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get firstBidTime(): BigInt | null {
+    let value = this.get("firstBidTime");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set firstBidTime(value: BigInt | null) {
+    if (!value) {
+      this.unset("firstBidTime");
+    } else {
+      this.set("firstBidTime", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get reservePrice(): BigInt {
+    let value = this.get("reservePrice");
+    return value!.toBigInt();
+  }
+
+  set reservePrice(value: BigInt) {
+    this.set("reservePrice", Value.fromBigInt(value));
+  }
+
+  get curatorFeePercentage(): i32 {
+    let value = this.get("curatorFeePercentage");
+    return value!.toI32();
+  }
+
+  set curatorFeePercentage(value: i32) {
+    this.set("curatorFeePercentage", Value.fromI32(value));
+  }
+
+  get tokenOwner(): string {
+    let value = this.get("tokenOwner");
+    return value!.toString();
+  }
+
+  set tokenOwner(value: string) {
+    this.set("tokenOwner", Value.fromString(value));
+  }
+
+  get curator(): string {
+    let value = this.get("curator");
+    return value!.toString();
+  }
+
+  set curator(value: string) {
+    this.set("curator", Value.fromString(value));
+  }
+
+  get auctionCurrency(): string {
+    let value = this.get("auctionCurrency");
+    return value!.toString();
+  }
+
+  set auctionCurrency(value: string) {
+    this.set("auctionCurrency", Value.fromString(value));
+  }
+
+  get status(): string {
+    let value = this.get("status");
+    return value!.toString();
+  }
+
+  set status(value: string) {
+    this.set("status", Value.fromString(value));
+  }
+
+  get currentBid(): string | null {
+    let value = this.get("currentBid");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set currentBid(value: string | null) {
+    if (!value) {
+      this.unset("currentBid");
+    } else {
+      this.set("currentBid", Value.fromString(<string>value));
+    }
+  }
+
+  get previousBids(): Array<string> | null {
+    let value = this.get("previousBids");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toStringArray();
+    }
+  }
+
+  set previousBids(value: Array<string> | null) {
+    if (!value) {
+      this.unset("previousBids");
+    } else {
+      this.set("previousBids", Value.fromStringArray(<Array<string>>value));
+    }
+  }
+
+  get approvedTimestamp(): BigInt | null {
+    let value = this.get("approvedTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set approvedTimestamp(value: BigInt | null) {
+    if (!value) {
+      this.unset("approvedTimestamp");
+    } else {
+      this.set("approvedTimestamp", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get approvedBlockNumber(): BigInt | null {
+    let value = this.get("approvedBlockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set approvedBlockNumber(value: BigInt | null) {
+    if (!value) {
+      this.unset("approvedBlockNumber");
+    } else {
+      this.set("approvedBlockNumber", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get createdAtTimestamp(): BigInt {
+    let value = this.get("createdAtTimestamp");
+    return value!.toBigInt();
+  }
+
+  set createdAtTimestamp(value: BigInt) {
+    this.set("createdAtTimestamp", Value.fromBigInt(value));
+  }
+
+  get createdAtBlockNumber(): BigInt {
+    let value = this.get("createdAtBlockNumber");
+    return value!.toBigInt();
+  }
+
+  set createdAtBlockNumber(value: BigInt) {
+    this.set("createdAtBlockNumber", Value.fromBigInt(value));
+  }
+
+  get finalizedAtTimestamp(): BigInt | null {
+    let value = this.get("finalizedAtTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set finalizedAtTimestamp(value: BigInt | null) {
+    if (!value) {
+      this.unset("finalizedAtTimestamp");
+    } else {
+      this.set("finalizedAtTimestamp", Value.fromBigInt(<BigInt>value));
+    }
+  }
+
+  get finalizedAtBlockNumber(): BigInt | null {
+    let value = this.get("finalizedAtBlockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set finalizedAtBlockNumber(value: BigInt | null) {
+    if (!value) {
+      this.unset("finalizedAtBlockNumber");
+    } else {
+      this.set("finalizedAtBlockNumber", Value.fromBigInt(<BigInt>value));
+    }
   }
 }
