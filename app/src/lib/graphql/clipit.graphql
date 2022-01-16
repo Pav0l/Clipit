@@ -404,6 +404,9 @@ type Clip {
 
   """The transfers of the Clip"""
   transfers(skip: Int = 0, first: Int = 100, orderBy: Transfer_orderBy, orderDirection: OrderDirection, where: Transfer_filter): [Transfer!]
+
+  """The ReserveAuctions of the Clip"""
+  reserveAuctions(skip: Int = 0, first: Int = 100, orderBy: ReserveAuction_orderBy, orderDirection: OrderDirection, where: ReserveAuction_filter): [ReserveAuction!]
 }
 
 input Clip_filter {
@@ -606,6 +609,7 @@ enum Clip_orderBy {
   inactiveAsks
   inactiveBids
   transfers
+  reserveAuctions
 }
 
 type Currency {
@@ -1054,6 +1058,152 @@ enum InactiveBid_orderBy {
   inactivatedAtBlockNumber
 }
 
+type InactiveReserveAuctionBid {
+  """<auctionId>-<txHash>-<logIndex>"""
+  id: ID!
+
+  """The transaction hash the reserve auction big was created at"""
+  transactionHash: String!
+
+  """The Reserve auction associated with the Bid"""
+  reserveAuction: ReserveAuction!
+
+  """The amount of the Bid"""
+  amount: BigInt!
+
+  """The bidder of the Bid"""
+  bidder: User!
+
+  """The type of bid (active, refunded, final)"""
+  bidType: ReserveAuctionBidType!
+
+  """
+  The timestamp of the block the bid was inactivated at (via outbid, cancellation, winning bid)
+  """
+  bidInactivatedAtTimestamp: BigInt!
+
+  """
+  The number of the block the bid was inactivated at (via outbid, cancellation, winning bid)
+  """
+  bidInactivatedAtBlockNumber: BigInt!
+
+  """The timestamp of the block the Bid was created in"""
+  createdAtTimestamp: BigInt!
+
+  """The number of the block the Bid was created in"""
+  createdAtBlockNumber: BigInt!
+}
+
+input InactiveReserveAuctionBid_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transactionHash: String
+  transactionHash_not: String
+  transactionHash_gt: String
+  transactionHash_lt: String
+  transactionHash_gte: String
+  transactionHash_lte: String
+  transactionHash_in: [String!]
+  transactionHash_not_in: [String!]
+  transactionHash_contains: String
+  transactionHash_not_contains: String
+  transactionHash_starts_with: String
+  transactionHash_not_starts_with: String
+  transactionHash_ends_with: String
+  transactionHash_not_ends_with: String
+  reserveAuction: String
+  reserveAuction_not: String
+  reserveAuction_gt: String
+  reserveAuction_lt: String
+  reserveAuction_gte: String
+  reserveAuction_lte: String
+  reserveAuction_in: [String!]
+  reserveAuction_not_in: [String!]
+  reserveAuction_contains: String
+  reserveAuction_not_contains: String
+  reserveAuction_starts_with: String
+  reserveAuction_not_starts_with: String
+  reserveAuction_ends_with: String
+  reserveAuction_not_ends_with: String
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+  bidder: String
+  bidder_not: String
+  bidder_gt: String
+  bidder_lt: String
+  bidder_gte: String
+  bidder_lte: String
+  bidder_in: [String!]
+  bidder_not_in: [String!]
+  bidder_contains: String
+  bidder_not_contains: String
+  bidder_starts_with: String
+  bidder_not_starts_with: String
+  bidder_ends_with: String
+  bidder_not_ends_with: String
+  bidType: ReserveAuctionBidType
+  bidType_not: ReserveAuctionBidType
+  bidType_in: [ReserveAuctionBidType!]
+  bidType_not_in: [ReserveAuctionBidType!]
+  bidInactivatedAtTimestamp: BigInt
+  bidInactivatedAtTimestamp_not: BigInt
+  bidInactivatedAtTimestamp_gt: BigInt
+  bidInactivatedAtTimestamp_lt: BigInt
+  bidInactivatedAtTimestamp_gte: BigInt
+  bidInactivatedAtTimestamp_lte: BigInt
+  bidInactivatedAtTimestamp_in: [BigInt!]
+  bidInactivatedAtTimestamp_not_in: [BigInt!]
+  bidInactivatedAtBlockNumber: BigInt
+  bidInactivatedAtBlockNumber_not: BigInt
+  bidInactivatedAtBlockNumber_gt: BigInt
+  bidInactivatedAtBlockNumber_lt: BigInt
+  bidInactivatedAtBlockNumber_gte: BigInt
+  bidInactivatedAtBlockNumber_lte: BigInt
+  bidInactivatedAtBlockNumber_in: [BigInt!]
+  bidInactivatedAtBlockNumber_not_in: [BigInt!]
+  createdAtTimestamp: BigInt
+  createdAtTimestamp_not: BigInt
+  createdAtTimestamp_gt: BigInt
+  createdAtTimestamp_lt: BigInt
+  createdAtTimestamp_gte: BigInt
+  createdAtTimestamp_lte: BigInt
+  createdAtTimestamp_in: [BigInt!]
+  createdAtTimestamp_not_in: [BigInt!]
+  createdAtBlockNumber: BigInt
+  createdAtBlockNumber_not: BigInt
+  createdAtBlockNumber_gt: BigInt
+  createdAtBlockNumber_lt: BigInt
+  createdAtBlockNumber_gte: BigInt
+  createdAtBlockNumber_lte: BigInt
+  createdAtBlockNumber_in: [BigInt!]
+  createdAtBlockNumber_not_in: [BigInt!]
+}
+
+enum InactiveReserveAuctionBid_orderBy {
+  id
+  transactionHash
+  reserveAuction
+  amount
+  bidder
+  bidType
+  bidInactivatedAtTimestamp
+  bidInactivatedAtBlockNumber
+  createdAtTimestamp
+  createdAtBlockNumber
+}
+
 """The Types for MarketEvents (Asks, Bids)"""
 enum MarketEventType {
   Finalized
@@ -1426,9 +1576,593 @@ type Query {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [URIUpdate!]!
+  reserveAuctionBid(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ReserveAuctionBid
+  reserveAuctionBids(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ReserveAuctionBid_orderBy
+    orderDirection: OrderDirection
+    where: ReserveAuctionBid_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ReserveAuctionBid!]!
+  inactiveReserveAuctionBid(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): InactiveReserveAuctionBid
+  inactiveReserveAuctionBids(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: InactiveReserveAuctionBid_orderBy
+    orderDirection: OrderDirection
+    where: InactiveReserveAuctionBid_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [InactiveReserveAuctionBid!]!
+  reserveAuction(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ReserveAuction
+  reserveAuctions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ReserveAuction_orderBy
+    orderDirection: OrderDirection
+    where: ReserveAuction_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ReserveAuction!]!
 
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_
+}
+
+type ReserveAuction {
+  """ID of the auction from contract, autoincrementing int"""
+  id: ID!
+
+  """Transaction hash where the reserve auction was created"""
+  transactionHash: String!
+
+  """The originating token contract for this auction"""
+  tokenContract: String!
+
+  """The token ID for this auction"""
+  tokenId: BigInt!
+
+  """<tokenContract>-<tokenId>"""
+  token: String!
+
+  """The clip for the auction"""
+  clip: Clip
+
+  """Whether or not the auction has been approved by the curator"""
+  approved: Boolean!
+
+  """
+  The length of time the auction is intended to run for, after the first bid is made
+  """
+  duration: BigInt!
+
+  """
+  The expected end of auction timestamp, which can change if bids were placed
+  within the last 15 minutes, and is not set until the first bid is placed
+  """
+  expectedEndTimestamp: BigInt
+
+  """The time the first bid was placed"""
+  firstBidTime: BigInt
+
+  """The minimum price of the first bid"""
+  reservePrice: BigInt!
+
+  """The sale percentage to send to the curator"""
+  curatorFeePercentage: Int!
+
+  """The address that should receive the funds once the NFT is sold"""
+  tokenOwner: User!
+
+  """The address of the auction's curator"""
+  curator: User!
+
+  """
+  The address of the ERC-20 currency to run the auction with, or 0x0 for ETH
+  """
+  auctionCurrency: Currency!
+  status: ReserveAuctionStatus!
+
+  """The current bid on this auction"""
+  currentBid: ReserveAuctionBid
+
+  """The previous bids on this auction"""
+  previousBids(skip: Int = 0, first: Int = 100, orderBy: InactiveReserveAuctionBid_orderBy, orderDirection: OrderDirection, where: InactiveReserveAuctionBid_filter): [InactiveReserveAuctionBid!]
+
+  """The time the auction was approved"""
+  approvedTimestamp: BigInt
+
+  """The number of the block the auction was Approved"""
+  approvedBlockNumber: BigInt
+
+  """The timestamp of the block the Transfer was created in"""
+  createdAtTimestamp: BigInt!
+
+  """The number of the block the Transfer was created in"""
+  createdAtBlockNumber: BigInt!
+
+  """The timestamp at which the auction end function was called"""
+  finalizedAtTimestamp: BigInt
+
+  """The block number at which the auction end function was called"""
+  finalizedAtBlockNumber: BigInt
+}
+
+input ReserveAuction_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transactionHash: String
+  transactionHash_not: String
+  transactionHash_gt: String
+  transactionHash_lt: String
+  transactionHash_gte: String
+  transactionHash_lte: String
+  transactionHash_in: [String!]
+  transactionHash_not_in: [String!]
+  transactionHash_contains: String
+  transactionHash_not_contains: String
+  transactionHash_starts_with: String
+  transactionHash_not_starts_with: String
+  transactionHash_ends_with: String
+  transactionHash_not_ends_with: String
+  tokenContract: String
+  tokenContract_not: String
+  tokenContract_gt: String
+  tokenContract_lt: String
+  tokenContract_gte: String
+  tokenContract_lte: String
+  tokenContract_in: [String!]
+  tokenContract_not_in: [String!]
+  tokenContract_contains: String
+  tokenContract_not_contains: String
+  tokenContract_starts_with: String
+  tokenContract_not_starts_with: String
+  tokenContract_ends_with: String
+  tokenContract_not_ends_with: String
+  tokenId: BigInt
+  tokenId_not: BigInt
+  tokenId_gt: BigInt
+  tokenId_lt: BigInt
+  tokenId_gte: BigInt
+  tokenId_lte: BigInt
+  tokenId_in: [BigInt!]
+  tokenId_not_in: [BigInt!]
+  token: String
+  token_not: String
+  token_gt: String
+  token_lt: String
+  token_gte: String
+  token_lte: String
+  token_in: [String!]
+  token_not_in: [String!]
+  token_contains: String
+  token_not_contains: String
+  token_starts_with: String
+  token_not_starts_with: String
+  token_ends_with: String
+  token_not_ends_with: String
+  clip: String
+  clip_not: String
+  clip_gt: String
+  clip_lt: String
+  clip_gte: String
+  clip_lte: String
+  clip_in: [String!]
+  clip_not_in: [String!]
+  clip_contains: String
+  clip_not_contains: String
+  clip_starts_with: String
+  clip_not_starts_with: String
+  clip_ends_with: String
+  clip_not_ends_with: String
+  approved: Boolean
+  approved_not: Boolean
+  approved_in: [Boolean!]
+  approved_not_in: [Boolean!]
+  duration: BigInt
+  duration_not: BigInt
+  duration_gt: BigInt
+  duration_lt: BigInt
+  duration_gte: BigInt
+  duration_lte: BigInt
+  duration_in: [BigInt!]
+  duration_not_in: [BigInt!]
+  expectedEndTimestamp: BigInt
+  expectedEndTimestamp_not: BigInt
+  expectedEndTimestamp_gt: BigInt
+  expectedEndTimestamp_lt: BigInt
+  expectedEndTimestamp_gte: BigInt
+  expectedEndTimestamp_lte: BigInt
+  expectedEndTimestamp_in: [BigInt!]
+  expectedEndTimestamp_not_in: [BigInt!]
+  firstBidTime: BigInt
+  firstBidTime_not: BigInt
+  firstBidTime_gt: BigInt
+  firstBidTime_lt: BigInt
+  firstBidTime_gte: BigInt
+  firstBidTime_lte: BigInt
+  firstBidTime_in: [BigInt!]
+  firstBidTime_not_in: [BigInt!]
+  reservePrice: BigInt
+  reservePrice_not: BigInt
+  reservePrice_gt: BigInt
+  reservePrice_lt: BigInt
+  reservePrice_gte: BigInt
+  reservePrice_lte: BigInt
+  reservePrice_in: [BigInt!]
+  reservePrice_not_in: [BigInt!]
+  curatorFeePercentage: Int
+  curatorFeePercentage_not: Int
+  curatorFeePercentage_gt: Int
+  curatorFeePercentage_lt: Int
+  curatorFeePercentage_gte: Int
+  curatorFeePercentage_lte: Int
+  curatorFeePercentage_in: [Int!]
+  curatorFeePercentage_not_in: [Int!]
+  tokenOwner: String
+  tokenOwner_not: String
+  tokenOwner_gt: String
+  tokenOwner_lt: String
+  tokenOwner_gte: String
+  tokenOwner_lte: String
+  tokenOwner_in: [String!]
+  tokenOwner_not_in: [String!]
+  tokenOwner_contains: String
+  tokenOwner_not_contains: String
+  tokenOwner_starts_with: String
+  tokenOwner_not_starts_with: String
+  tokenOwner_ends_with: String
+  tokenOwner_not_ends_with: String
+  curator: String
+  curator_not: String
+  curator_gt: String
+  curator_lt: String
+  curator_gte: String
+  curator_lte: String
+  curator_in: [String!]
+  curator_not_in: [String!]
+  curator_contains: String
+  curator_not_contains: String
+  curator_starts_with: String
+  curator_not_starts_with: String
+  curator_ends_with: String
+  curator_not_ends_with: String
+  auctionCurrency: String
+  auctionCurrency_not: String
+  auctionCurrency_gt: String
+  auctionCurrency_lt: String
+  auctionCurrency_gte: String
+  auctionCurrency_lte: String
+  auctionCurrency_in: [String!]
+  auctionCurrency_not_in: [String!]
+  auctionCurrency_contains: String
+  auctionCurrency_not_contains: String
+  auctionCurrency_starts_with: String
+  auctionCurrency_not_starts_with: String
+  auctionCurrency_ends_with: String
+  auctionCurrency_not_ends_with: String
+  status: ReserveAuctionStatus
+  status_not: ReserveAuctionStatus
+  status_in: [ReserveAuctionStatus!]
+  status_not_in: [ReserveAuctionStatus!]
+  currentBid: String
+  currentBid_not: String
+  currentBid_gt: String
+  currentBid_lt: String
+  currentBid_gte: String
+  currentBid_lte: String
+  currentBid_in: [String!]
+  currentBid_not_in: [String!]
+  currentBid_contains: String
+  currentBid_not_contains: String
+  currentBid_starts_with: String
+  currentBid_not_starts_with: String
+  currentBid_ends_with: String
+  currentBid_not_ends_with: String
+  approvedTimestamp: BigInt
+  approvedTimestamp_not: BigInt
+  approvedTimestamp_gt: BigInt
+  approvedTimestamp_lt: BigInt
+  approvedTimestamp_gte: BigInt
+  approvedTimestamp_lte: BigInt
+  approvedTimestamp_in: [BigInt!]
+  approvedTimestamp_not_in: [BigInt!]
+  approvedBlockNumber: BigInt
+  approvedBlockNumber_not: BigInt
+  approvedBlockNumber_gt: BigInt
+  approvedBlockNumber_lt: BigInt
+  approvedBlockNumber_gte: BigInt
+  approvedBlockNumber_lte: BigInt
+  approvedBlockNumber_in: [BigInt!]
+  approvedBlockNumber_not_in: [BigInt!]
+  createdAtTimestamp: BigInt
+  createdAtTimestamp_not: BigInt
+  createdAtTimestamp_gt: BigInt
+  createdAtTimestamp_lt: BigInt
+  createdAtTimestamp_gte: BigInt
+  createdAtTimestamp_lte: BigInt
+  createdAtTimestamp_in: [BigInt!]
+  createdAtTimestamp_not_in: [BigInt!]
+  createdAtBlockNumber: BigInt
+  createdAtBlockNumber_not: BigInt
+  createdAtBlockNumber_gt: BigInt
+  createdAtBlockNumber_lt: BigInt
+  createdAtBlockNumber_gte: BigInt
+  createdAtBlockNumber_lte: BigInt
+  createdAtBlockNumber_in: [BigInt!]
+  createdAtBlockNumber_not_in: [BigInt!]
+  finalizedAtTimestamp: BigInt
+  finalizedAtTimestamp_not: BigInt
+  finalizedAtTimestamp_gt: BigInt
+  finalizedAtTimestamp_lt: BigInt
+  finalizedAtTimestamp_gte: BigInt
+  finalizedAtTimestamp_lte: BigInt
+  finalizedAtTimestamp_in: [BigInt!]
+  finalizedAtTimestamp_not_in: [BigInt!]
+  finalizedAtBlockNumber: BigInt
+  finalizedAtBlockNumber_not: BigInt
+  finalizedAtBlockNumber_gt: BigInt
+  finalizedAtBlockNumber_lt: BigInt
+  finalizedAtBlockNumber_gte: BigInt
+  finalizedAtBlockNumber_lte: BigInt
+  finalizedAtBlockNumber_in: [BigInt!]
+  finalizedAtBlockNumber_not_in: [BigInt!]
+}
+
+enum ReserveAuction_orderBy {
+  id
+  transactionHash
+  tokenContract
+  tokenId
+  token
+  clip
+  approved
+  duration
+  expectedEndTimestamp
+  firstBidTime
+  reservePrice
+  curatorFeePercentage
+  tokenOwner
+  curator
+  auctionCurrency
+  status
+  currentBid
+  previousBids
+  approvedTimestamp
+  approvedBlockNumber
+  createdAtTimestamp
+  createdAtBlockNumber
+  finalizedAtTimestamp
+  finalizedAtBlockNumber
+}
+
+type ReserveAuctionBid {
+  """<auctionId>-<txHash>-<logIndex>"""
+  id: ID!
+
+  """The transaction hash the reserve auction big was created at"""
+  transactionHash: String!
+
+  """The Reserve auction associated with the Bid"""
+  reserveAuction: ReserveAuction!
+
+  """The amount of the Bid"""
+  amount: BigInt!
+
+  """The bidder of the Bid"""
+  bidder: User!
+
+  """The type of bid (active, refunded, final)"""
+  bidType: ReserveAuctionBidType!
+
+  """The timestamp of the block the Bid was created in"""
+  createdAtTimestamp: BigInt!
+
+  """The number of the block the Bid was created in"""
+  createdAtBlockNumber: BigInt!
+}
+
+input ReserveAuctionBid_filter {
+  id: ID
+  id_not: ID
+  id_gt: ID
+  id_lt: ID
+  id_gte: ID
+  id_lte: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  transactionHash: String
+  transactionHash_not: String
+  transactionHash_gt: String
+  transactionHash_lt: String
+  transactionHash_gte: String
+  transactionHash_lte: String
+  transactionHash_in: [String!]
+  transactionHash_not_in: [String!]
+  transactionHash_contains: String
+  transactionHash_not_contains: String
+  transactionHash_starts_with: String
+  transactionHash_not_starts_with: String
+  transactionHash_ends_with: String
+  transactionHash_not_ends_with: String
+  reserveAuction: String
+  reserveAuction_not: String
+  reserveAuction_gt: String
+  reserveAuction_lt: String
+  reserveAuction_gte: String
+  reserveAuction_lte: String
+  reserveAuction_in: [String!]
+  reserveAuction_not_in: [String!]
+  reserveAuction_contains: String
+  reserveAuction_not_contains: String
+  reserveAuction_starts_with: String
+  reserveAuction_not_starts_with: String
+  reserveAuction_ends_with: String
+  reserveAuction_not_ends_with: String
+  amount: BigInt
+  amount_not: BigInt
+  amount_gt: BigInt
+  amount_lt: BigInt
+  amount_gte: BigInt
+  amount_lte: BigInt
+  amount_in: [BigInt!]
+  amount_not_in: [BigInt!]
+  bidder: String
+  bidder_not: String
+  bidder_gt: String
+  bidder_lt: String
+  bidder_gte: String
+  bidder_lte: String
+  bidder_in: [String!]
+  bidder_not_in: [String!]
+  bidder_contains: String
+  bidder_not_contains: String
+  bidder_starts_with: String
+  bidder_not_starts_with: String
+  bidder_ends_with: String
+  bidder_not_ends_with: String
+  bidType: ReserveAuctionBidType
+  bidType_not: ReserveAuctionBidType
+  bidType_in: [ReserveAuctionBidType!]
+  bidType_not_in: [ReserveAuctionBidType!]
+  createdAtTimestamp: BigInt
+  createdAtTimestamp_not: BigInt
+  createdAtTimestamp_gt: BigInt
+  createdAtTimestamp_lt: BigInt
+  createdAtTimestamp_gte: BigInt
+  createdAtTimestamp_lte: BigInt
+  createdAtTimestamp_in: [BigInt!]
+  createdAtTimestamp_not_in: [BigInt!]
+  createdAtBlockNumber: BigInt
+  createdAtBlockNumber_not: BigInt
+  createdAtBlockNumber_gt: BigInt
+  createdAtBlockNumber_lt: BigInt
+  createdAtBlockNumber_gte: BigInt
+  createdAtBlockNumber_lte: BigInt
+  createdAtBlockNumber_in: [BigInt!]
+  createdAtBlockNumber_not_in: [BigInt!]
+}
+
+enum ReserveAuctionBid_orderBy {
+  id
+  transactionHash
+  reserveAuction
+  amount
+  bidder
+  bidType
+  createdAtTimestamp
+  createdAtBlockNumber
+}
+
+enum ReserveAuctionBidType {
+  Active
+  Refunded
+  Final
+}
+
+enum ReserveAuctionStatus {
+  Pending
+  Active
+  Canceled
+  Finished
 }
 
 type Subscription {
@@ -1792,6 +2526,126 @@ type Subscription {
     """
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [URIUpdate!]!
+  reserveAuctionBid(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ReserveAuctionBid
+  reserveAuctionBids(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ReserveAuctionBid_orderBy
+    orderDirection: OrderDirection
+    where: ReserveAuctionBid_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ReserveAuctionBid!]!
+  inactiveReserveAuctionBid(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): InactiveReserveAuctionBid
+  inactiveReserveAuctionBids(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: InactiveReserveAuctionBid_orderBy
+    orderDirection: OrderDirection
+    where: InactiveReserveAuctionBid_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [InactiveReserveAuctionBid!]!
+  reserveAuction(
+    id: ID!
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): ReserveAuction
+  reserveAuctions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ReserveAuction_orderBy
+    orderDirection: OrderDirection
+    where: ReserveAuction_filter
+
+    """
+    The block at which the query should be executed. Can either be a `{ hash:
+    Bytes }` value containing a block hash, a `{ number: Int }` containing the
+    block number, or a `{ number_gte: Int }` containing the minimum block
+    number. In the case of `number_gte`, the query will be executed on the
+    latest block only if the subgraph has progressed to or past the minimum
+    block number. Defaults to the latest block when omitted.
+    """
+    block: Block_height
+
+    """
+    Set to `allow` to receive data even if the subgraph has skipped over errors while syncing.
+    """
+    subgraphError: _SubgraphErrorPolicy_! = deny
+  ): [ReserveAuction!]!
 
   """Access to subgraph metadata"""
   _meta(block: Block_height): _Meta_

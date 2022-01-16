@@ -335,6 +335,8 @@ export type Clip = {
   prevOwner: User;
   /** The bid share for the previous owner of the Clip's market */
   prevOwnerBidShare: Scalars['BigInt'];
+  /** The ReserveAuctions of the Clip */
+  reserveAuctions?: Maybe<Array<ReserveAuction>>;
   /** The transaction hash the clip was created at */
   transactionHash: Scalars['String'];
   /** The transfers of the Clip */
@@ -366,6 +368,15 @@ export type ClipInactiveBidsArgs = {
   orderDirection?: InputMaybe<OrderDirection>;
   skip?: InputMaybe<Scalars['Int']>;
   where?: InputMaybe<InactiveBid_Filter>;
+};
+
+
+export type ClipReserveAuctionsArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<ReserveAuction_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<ReserveAuction_Filter>;
 };
 
 
@@ -575,6 +586,7 @@ export enum Clip_OrderBy {
   OwnerBidShare = 'ownerBidShare',
   PrevOwner = 'prevOwner',
   PrevOwnerBidShare = 'prevOwnerBidShare',
+  ReserveAuctions = 'reserveAuctions',
   TransactionHash = 'transactionHash',
   Transfers = 'transfers'
 }
@@ -1034,6 +1046,140 @@ export enum InactiveBid_OrderBy {
   Type = 'type'
 }
 
+export type InactiveReserveAuctionBid = {
+  __typename?: 'InactiveReserveAuctionBid';
+  /** The amount of the Bid */
+  amount: Scalars['BigInt'];
+  /** The number of the block the bid was inactivated at (via outbid, cancellation, winning bid) */
+  bidInactivatedAtBlockNumber: Scalars['BigInt'];
+  /** The timestamp of the block the bid was inactivated at (via outbid, cancellation, winning bid) */
+  bidInactivatedAtTimestamp: Scalars['BigInt'];
+  /** The type of bid (active, refunded, final) */
+  bidType: ReserveAuctionBidType;
+  /** The bidder of the Bid */
+  bidder: User;
+  /** The number of the block the Bid was created in */
+  createdAtBlockNumber: Scalars['BigInt'];
+  /** The timestamp of the block the Bid was created in */
+  createdAtTimestamp: Scalars['BigInt'];
+  /** <auctionId>-<txHash>-<logIndex> */
+  id: Scalars['ID'];
+  /** The Reserve auction associated with the Bid */
+  reserveAuction: ReserveAuction;
+  /** The transaction hash the reserve auction big was created at */
+  transactionHash: Scalars['String'];
+};
+
+export type InactiveReserveAuctionBid_Filter = {
+  amount?: InputMaybe<Scalars['BigInt']>;
+  amount_gt?: InputMaybe<Scalars['BigInt']>;
+  amount_gte?: InputMaybe<Scalars['BigInt']>;
+  amount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amount_lt?: InputMaybe<Scalars['BigInt']>;
+  amount_lte?: InputMaybe<Scalars['BigInt']>;
+  amount_not?: InputMaybe<Scalars['BigInt']>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  bidInactivatedAtBlockNumber?: InputMaybe<Scalars['BigInt']>;
+  bidInactivatedAtBlockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  bidInactivatedAtBlockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  bidInactivatedAtBlockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  bidInactivatedAtBlockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  bidInactivatedAtBlockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  bidInactivatedAtBlockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  bidInactivatedAtBlockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  bidInactivatedAtTimestamp?: InputMaybe<Scalars['BigInt']>;
+  bidInactivatedAtTimestamp_gt?: InputMaybe<Scalars['BigInt']>;
+  bidInactivatedAtTimestamp_gte?: InputMaybe<Scalars['BigInt']>;
+  bidInactivatedAtTimestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  bidInactivatedAtTimestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  bidInactivatedAtTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
+  bidInactivatedAtTimestamp_not?: InputMaybe<Scalars['BigInt']>;
+  bidInactivatedAtTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  bidType?: InputMaybe<ReserveAuctionBidType>;
+  bidType_in?: InputMaybe<Array<ReserveAuctionBidType>>;
+  bidType_not?: InputMaybe<ReserveAuctionBidType>;
+  bidType_not_in?: InputMaybe<Array<ReserveAuctionBidType>>;
+  bidder?: InputMaybe<Scalars['String']>;
+  bidder_contains?: InputMaybe<Scalars['String']>;
+  bidder_ends_with?: InputMaybe<Scalars['String']>;
+  bidder_gt?: InputMaybe<Scalars['String']>;
+  bidder_gte?: InputMaybe<Scalars['String']>;
+  bidder_in?: InputMaybe<Array<Scalars['String']>>;
+  bidder_lt?: InputMaybe<Scalars['String']>;
+  bidder_lte?: InputMaybe<Scalars['String']>;
+  bidder_not?: InputMaybe<Scalars['String']>;
+  bidder_not_contains?: InputMaybe<Scalars['String']>;
+  bidder_not_ends_with?: InputMaybe<Scalars['String']>;
+  bidder_not_in?: InputMaybe<Array<Scalars['String']>>;
+  bidder_not_starts_with?: InputMaybe<Scalars['String']>;
+  bidder_starts_with?: InputMaybe<Scalars['String']>;
+  createdAtBlockNumber?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAtBlockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAtTimestamp?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAtTimestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_not?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  reserveAuction?: InputMaybe<Scalars['String']>;
+  reserveAuction_contains?: InputMaybe<Scalars['String']>;
+  reserveAuction_ends_with?: InputMaybe<Scalars['String']>;
+  reserveAuction_gt?: InputMaybe<Scalars['String']>;
+  reserveAuction_gte?: InputMaybe<Scalars['String']>;
+  reserveAuction_in?: InputMaybe<Array<Scalars['String']>>;
+  reserveAuction_lt?: InputMaybe<Scalars['String']>;
+  reserveAuction_lte?: InputMaybe<Scalars['String']>;
+  reserveAuction_not?: InputMaybe<Scalars['String']>;
+  reserveAuction_not_contains?: InputMaybe<Scalars['String']>;
+  reserveAuction_not_ends_with?: InputMaybe<Scalars['String']>;
+  reserveAuction_not_in?: InputMaybe<Array<Scalars['String']>>;
+  reserveAuction_not_starts_with?: InputMaybe<Scalars['String']>;
+  reserveAuction_starts_with?: InputMaybe<Scalars['String']>;
+  transactionHash?: InputMaybe<Scalars['String']>;
+  transactionHash_contains?: InputMaybe<Scalars['String']>;
+  transactionHash_ends_with?: InputMaybe<Scalars['String']>;
+  transactionHash_gt?: InputMaybe<Scalars['String']>;
+  transactionHash_gte?: InputMaybe<Scalars['String']>;
+  transactionHash_in?: InputMaybe<Array<Scalars['String']>>;
+  transactionHash_lt?: InputMaybe<Scalars['String']>;
+  transactionHash_lte?: InputMaybe<Scalars['String']>;
+  transactionHash_not?: InputMaybe<Scalars['String']>;
+  transactionHash_not_contains?: InputMaybe<Scalars['String']>;
+  transactionHash_not_ends_with?: InputMaybe<Scalars['String']>;
+  transactionHash_not_in?: InputMaybe<Array<Scalars['String']>>;
+  transactionHash_not_starts_with?: InputMaybe<Scalars['String']>;
+  transactionHash_starts_with?: InputMaybe<Scalars['String']>;
+};
+
+export enum InactiveReserveAuctionBid_OrderBy {
+  Amount = 'amount',
+  BidInactivatedAtBlockNumber = 'bidInactivatedAtBlockNumber',
+  BidInactivatedAtTimestamp = 'bidInactivatedAtTimestamp',
+  BidType = 'bidType',
+  Bidder = 'bidder',
+  CreatedAtBlockNumber = 'createdAtBlockNumber',
+  CreatedAtTimestamp = 'createdAtTimestamp',
+  Id = 'id',
+  ReserveAuction = 'reserveAuction',
+  TransactionHash = 'transactionHash'
+}
+
 /** The Types for MarketEvents (Asks, Bids) */
 export enum MarketEventType {
   Finalized = 'Finalized',
@@ -1061,6 +1207,12 @@ export type Query = {
   inactiveAsks: Array<InactiveAsk>;
   inactiveBid?: Maybe<InactiveBid>;
   inactiveBids: Array<InactiveBid>;
+  inactiveReserveAuctionBid?: Maybe<InactiveReserveAuctionBid>;
+  inactiveReserveAuctionBids: Array<InactiveReserveAuctionBid>;
+  reserveAuction?: Maybe<ReserveAuction>;
+  reserveAuctionBid?: Maybe<ReserveAuctionBid>;
+  reserveAuctionBids: Array<ReserveAuctionBid>;
+  reserveAuctions: Array<ReserveAuction>;
   transfer?: Maybe<Transfer>;
   transfers: Array<Transfer>;
   uriupdate?: Maybe<UriUpdate>;
@@ -1183,6 +1335,60 @@ export type QueryInactiveBidsArgs = {
 };
 
 
+export type QueryInactiveReserveAuctionBidArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryInactiveReserveAuctionBidsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<InactiveReserveAuctionBid_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<InactiveReserveAuctionBid_Filter>;
+};
+
+
+export type QueryReserveAuctionArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryReserveAuctionBidArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type QueryReserveAuctionBidsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<ReserveAuctionBid_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<ReserveAuctionBid_Filter>;
+};
+
+
+export type QueryReserveAuctionsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<ReserveAuction_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<ReserveAuction_Filter>;
+};
+
+
 export type QueryTransferArgs = {
   block?: InputMaybe<Block_Height>;
   id: Scalars['ID'];
@@ -1236,6 +1442,448 @@ export type QueryUsersArgs = {
   where?: InputMaybe<User_Filter>;
 };
 
+export type ReserveAuction = {
+  __typename?: 'ReserveAuction';
+  /** Whether or not the auction has been approved by the curator */
+  approved: Scalars['Boolean'];
+  /** The number of the block the auction was Approved */
+  approvedBlockNumber?: Maybe<Scalars['BigInt']>;
+  /** The time the auction was approved */
+  approvedTimestamp?: Maybe<Scalars['BigInt']>;
+  /** The address of the ERC-20 currency to run the auction with, or 0x0 for ETH */
+  auctionCurrency: Currency;
+  /** The clip for the auction */
+  clip?: Maybe<Clip>;
+  /** The number of the block the Transfer was created in */
+  createdAtBlockNumber: Scalars['BigInt'];
+  /** The timestamp of the block the Transfer was created in */
+  createdAtTimestamp: Scalars['BigInt'];
+  /** The address of the auction's curator */
+  curator: User;
+  /** The sale percentage to send to the curator */
+  curatorFeePercentage: Scalars['Int'];
+  /** The current bid on this auction */
+  currentBid?: Maybe<ReserveAuctionBid>;
+  /** The length of time the auction is intended to run for, after the first bid is made */
+  duration: Scalars['BigInt'];
+  /**
+   * The expected end of auction timestamp, which can change if bids were placed
+   * within the last 15 minutes, and is not set until the first bid is placed
+   */
+  expectedEndTimestamp?: Maybe<Scalars['BigInt']>;
+  /** The block number at which the auction end function was called */
+  finalizedAtBlockNumber?: Maybe<Scalars['BigInt']>;
+  /** The timestamp at which the auction end function was called */
+  finalizedAtTimestamp?: Maybe<Scalars['BigInt']>;
+  /** The time the first bid was placed */
+  firstBidTime?: Maybe<Scalars['BigInt']>;
+  /** ID of the auction from contract, autoincrementing int */
+  id: Scalars['ID'];
+  /** The previous bids on this auction */
+  previousBids?: Maybe<Array<InactiveReserveAuctionBid>>;
+  /** The minimum price of the first bid */
+  reservePrice: Scalars['BigInt'];
+  status: ReserveAuctionStatus;
+  /** <tokenContract>-<tokenId> */
+  token: Scalars['String'];
+  /** The originating token contract for this auction */
+  tokenContract: Scalars['String'];
+  /** The token ID for this auction */
+  tokenId: Scalars['BigInt'];
+  /** The address that should receive the funds once the NFT is sold */
+  tokenOwner: User;
+  /** Transaction hash where the reserve auction was created */
+  transactionHash: Scalars['String'];
+};
+
+
+export type ReserveAuctionPreviousBidsArgs = {
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<InactiveReserveAuctionBid_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  where?: InputMaybe<InactiveReserveAuctionBid_Filter>;
+};
+
+export type ReserveAuctionBid = {
+  __typename?: 'ReserveAuctionBid';
+  /** The amount of the Bid */
+  amount: Scalars['BigInt'];
+  /** The type of bid (active, refunded, final) */
+  bidType: ReserveAuctionBidType;
+  /** The bidder of the Bid */
+  bidder: User;
+  /** The number of the block the Bid was created in */
+  createdAtBlockNumber: Scalars['BigInt'];
+  /** The timestamp of the block the Bid was created in */
+  createdAtTimestamp: Scalars['BigInt'];
+  /** <auctionId>-<txHash>-<logIndex> */
+  id: Scalars['ID'];
+  /** The Reserve auction associated with the Bid */
+  reserveAuction: ReserveAuction;
+  /** The transaction hash the reserve auction big was created at */
+  transactionHash: Scalars['String'];
+};
+
+export enum ReserveAuctionBidType {
+  Active = 'Active',
+  Final = 'Final',
+  Refunded = 'Refunded'
+}
+
+export type ReserveAuctionBid_Filter = {
+  amount?: InputMaybe<Scalars['BigInt']>;
+  amount_gt?: InputMaybe<Scalars['BigInt']>;
+  amount_gte?: InputMaybe<Scalars['BigInt']>;
+  amount_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  amount_lt?: InputMaybe<Scalars['BigInt']>;
+  amount_lte?: InputMaybe<Scalars['BigInt']>;
+  amount_not?: InputMaybe<Scalars['BigInt']>;
+  amount_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  bidType?: InputMaybe<ReserveAuctionBidType>;
+  bidType_in?: InputMaybe<Array<ReserveAuctionBidType>>;
+  bidType_not?: InputMaybe<ReserveAuctionBidType>;
+  bidType_not_in?: InputMaybe<Array<ReserveAuctionBidType>>;
+  bidder?: InputMaybe<Scalars['String']>;
+  bidder_contains?: InputMaybe<Scalars['String']>;
+  bidder_ends_with?: InputMaybe<Scalars['String']>;
+  bidder_gt?: InputMaybe<Scalars['String']>;
+  bidder_gte?: InputMaybe<Scalars['String']>;
+  bidder_in?: InputMaybe<Array<Scalars['String']>>;
+  bidder_lt?: InputMaybe<Scalars['String']>;
+  bidder_lte?: InputMaybe<Scalars['String']>;
+  bidder_not?: InputMaybe<Scalars['String']>;
+  bidder_not_contains?: InputMaybe<Scalars['String']>;
+  bidder_not_ends_with?: InputMaybe<Scalars['String']>;
+  bidder_not_in?: InputMaybe<Array<Scalars['String']>>;
+  bidder_not_starts_with?: InputMaybe<Scalars['String']>;
+  bidder_starts_with?: InputMaybe<Scalars['String']>;
+  createdAtBlockNumber?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAtBlockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAtTimestamp?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAtTimestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_not?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  reserveAuction?: InputMaybe<Scalars['String']>;
+  reserveAuction_contains?: InputMaybe<Scalars['String']>;
+  reserveAuction_ends_with?: InputMaybe<Scalars['String']>;
+  reserveAuction_gt?: InputMaybe<Scalars['String']>;
+  reserveAuction_gte?: InputMaybe<Scalars['String']>;
+  reserveAuction_in?: InputMaybe<Array<Scalars['String']>>;
+  reserveAuction_lt?: InputMaybe<Scalars['String']>;
+  reserveAuction_lte?: InputMaybe<Scalars['String']>;
+  reserveAuction_not?: InputMaybe<Scalars['String']>;
+  reserveAuction_not_contains?: InputMaybe<Scalars['String']>;
+  reserveAuction_not_ends_with?: InputMaybe<Scalars['String']>;
+  reserveAuction_not_in?: InputMaybe<Array<Scalars['String']>>;
+  reserveAuction_not_starts_with?: InputMaybe<Scalars['String']>;
+  reserveAuction_starts_with?: InputMaybe<Scalars['String']>;
+  transactionHash?: InputMaybe<Scalars['String']>;
+  transactionHash_contains?: InputMaybe<Scalars['String']>;
+  transactionHash_ends_with?: InputMaybe<Scalars['String']>;
+  transactionHash_gt?: InputMaybe<Scalars['String']>;
+  transactionHash_gte?: InputMaybe<Scalars['String']>;
+  transactionHash_in?: InputMaybe<Array<Scalars['String']>>;
+  transactionHash_lt?: InputMaybe<Scalars['String']>;
+  transactionHash_lte?: InputMaybe<Scalars['String']>;
+  transactionHash_not?: InputMaybe<Scalars['String']>;
+  transactionHash_not_contains?: InputMaybe<Scalars['String']>;
+  transactionHash_not_ends_with?: InputMaybe<Scalars['String']>;
+  transactionHash_not_in?: InputMaybe<Array<Scalars['String']>>;
+  transactionHash_not_starts_with?: InputMaybe<Scalars['String']>;
+  transactionHash_starts_with?: InputMaybe<Scalars['String']>;
+};
+
+export enum ReserveAuctionBid_OrderBy {
+  Amount = 'amount',
+  BidType = 'bidType',
+  Bidder = 'bidder',
+  CreatedAtBlockNumber = 'createdAtBlockNumber',
+  CreatedAtTimestamp = 'createdAtTimestamp',
+  Id = 'id',
+  ReserveAuction = 'reserveAuction',
+  TransactionHash = 'transactionHash'
+}
+
+export enum ReserveAuctionStatus {
+  Active = 'Active',
+  Canceled = 'Canceled',
+  Finished = 'Finished',
+  Pending = 'Pending'
+}
+
+export type ReserveAuction_Filter = {
+  approved?: InputMaybe<Scalars['Boolean']>;
+  approvedBlockNumber?: InputMaybe<Scalars['BigInt']>;
+  approvedBlockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  approvedBlockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  approvedBlockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  approvedBlockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  approvedBlockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  approvedBlockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  approvedBlockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  approvedTimestamp?: InputMaybe<Scalars['BigInt']>;
+  approvedTimestamp_gt?: InputMaybe<Scalars['BigInt']>;
+  approvedTimestamp_gte?: InputMaybe<Scalars['BigInt']>;
+  approvedTimestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  approvedTimestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  approvedTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
+  approvedTimestamp_not?: InputMaybe<Scalars['BigInt']>;
+  approvedTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  approved_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  approved_not?: InputMaybe<Scalars['Boolean']>;
+  approved_not_in?: InputMaybe<Array<Scalars['Boolean']>>;
+  auctionCurrency?: InputMaybe<Scalars['String']>;
+  auctionCurrency_contains?: InputMaybe<Scalars['String']>;
+  auctionCurrency_ends_with?: InputMaybe<Scalars['String']>;
+  auctionCurrency_gt?: InputMaybe<Scalars['String']>;
+  auctionCurrency_gte?: InputMaybe<Scalars['String']>;
+  auctionCurrency_in?: InputMaybe<Array<Scalars['String']>>;
+  auctionCurrency_lt?: InputMaybe<Scalars['String']>;
+  auctionCurrency_lte?: InputMaybe<Scalars['String']>;
+  auctionCurrency_not?: InputMaybe<Scalars['String']>;
+  auctionCurrency_not_contains?: InputMaybe<Scalars['String']>;
+  auctionCurrency_not_ends_with?: InputMaybe<Scalars['String']>;
+  auctionCurrency_not_in?: InputMaybe<Array<Scalars['String']>>;
+  auctionCurrency_not_starts_with?: InputMaybe<Scalars['String']>;
+  auctionCurrency_starts_with?: InputMaybe<Scalars['String']>;
+  clip?: InputMaybe<Scalars['String']>;
+  clip_contains?: InputMaybe<Scalars['String']>;
+  clip_ends_with?: InputMaybe<Scalars['String']>;
+  clip_gt?: InputMaybe<Scalars['String']>;
+  clip_gte?: InputMaybe<Scalars['String']>;
+  clip_in?: InputMaybe<Array<Scalars['String']>>;
+  clip_lt?: InputMaybe<Scalars['String']>;
+  clip_lte?: InputMaybe<Scalars['String']>;
+  clip_not?: InputMaybe<Scalars['String']>;
+  clip_not_contains?: InputMaybe<Scalars['String']>;
+  clip_not_ends_with?: InputMaybe<Scalars['String']>;
+  clip_not_in?: InputMaybe<Array<Scalars['String']>>;
+  clip_not_starts_with?: InputMaybe<Scalars['String']>;
+  clip_starts_with?: InputMaybe<Scalars['String']>;
+  createdAtBlockNumber?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAtBlockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  createdAtBlockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAtTimestamp?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_gt?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_gte?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  createdAtTimestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_not?: InputMaybe<Scalars['BigInt']>;
+  createdAtTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  curator?: InputMaybe<Scalars['String']>;
+  curatorFeePercentage?: InputMaybe<Scalars['Int']>;
+  curatorFeePercentage_gt?: InputMaybe<Scalars['Int']>;
+  curatorFeePercentage_gte?: InputMaybe<Scalars['Int']>;
+  curatorFeePercentage_in?: InputMaybe<Array<Scalars['Int']>>;
+  curatorFeePercentage_lt?: InputMaybe<Scalars['Int']>;
+  curatorFeePercentage_lte?: InputMaybe<Scalars['Int']>;
+  curatorFeePercentage_not?: InputMaybe<Scalars['Int']>;
+  curatorFeePercentage_not_in?: InputMaybe<Array<Scalars['Int']>>;
+  curator_contains?: InputMaybe<Scalars['String']>;
+  curator_ends_with?: InputMaybe<Scalars['String']>;
+  curator_gt?: InputMaybe<Scalars['String']>;
+  curator_gte?: InputMaybe<Scalars['String']>;
+  curator_in?: InputMaybe<Array<Scalars['String']>>;
+  curator_lt?: InputMaybe<Scalars['String']>;
+  curator_lte?: InputMaybe<Scalars['String']>;
+  curator_not?: InputMaybe<Scalars['String']>;
+  curator_not_contains?: InputMaybe<Scalars['String']>;
+  curator_not_ends_with?: InputMaybe<Scalars['String']>;
+  curator_not_in?: InputMaybe<Array<Scalars['String']>>;
+  curator_not_starts_with?: InputMaybe<Scalars['String']>;
+  curator_starts_with?: InputMaybe<Scalars['String']>;
+  currentBid?: InputMaybe<Scalars['String']>;
+  currentBid_contains?: InputMaybe<Scalars['String']>;
+  currentBid_ends_with?: InputMaybe<Scalars['String']>;
+  currentBid_gt?: InputMaybe<Scalars['String']>;
+  currentBid_gte?: InputMaybe<Scalars['String']>;
+  currentBid_in?: InputMaybe<Array<Scalars['String']>>;
+  currentBid_lt?: InputMaybe<Scalars['String']>;
+  currentBid_lte?: InputMaybe<Scalars['String']>;
+  currentBid_not?: InputMaybe<Scalars['String']>;
+  currentBid_not_contains?: InputMaybe<Scalars['String']>;
+  currentBid_not_ends_with?: InputMaybe<Scalars['String']>;
+  currentBid_not_in?: InputMaybe<Array<Scalars['String']>>;
+  currentBid_not_starts_with?: InputMaybe<Scalars['String']>;
+  currentBid_starts_with?: InputMaybe<Scalars['String']>;
+  duration?: InputMaybe<Scalars['BigInt']>;
+  duration_gt?: InputMaybe<Scalars['BigInt']>;
+  duration_gte?: InputMaybe<Scalars['BigInt']>;
+  duration_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  duration_lt?: InputMaybe<Scalars['BigInt']>;
+  duration_lte?: InputMaybe<Scalars['BigInt']>;
+  duration_not?: InputMaybe<Scalars['BigInt']>;
+  duration_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  expectedEndTimestamp?: InputMaybe<Scalars['BigInt']>;
+  expectedEndTimestamp_gt?: InputMaybe<Scalars['BigInt']>;
+  expectedEndTimestamp_gte?: InputMaybe<Scalars['BigInt']>;
+  expectedEndTimestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  expectedEndTimestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  expectedEndTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
+  expectedEndTimestamp_not?: InputMaybe<Scalars['BigInt']>;
+  expectedEndTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  finalizedAtBlockNumber?: InputMaybe<Scalars['BigInt']>;
+  finalizedAtBlockNumber_gt?: InputMaybe<Scalars['BigInt']>;
+  finalizedAtBlockNumber_gte?: InputMaybe<Scalars['BigInt']>;
+  finalizedAtBlockNumber_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  finalizedAtBlockNumber_lt?: InputMaybe<Scalars['BigInt']>;
+  finalizedAtBlockNumber_lte?: InputMaybe<Scalars['BigInt']>;
+  finalizedAtBlockNumber_not?: InputMaybe<Scalars['BigInt']>;
+  finalizedAtBlockNumber_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  finalizedAtTimestamp?: InputMaybe<Scalars['BigInt']>;
+  finalizedAtTimestamp_gt?: InputMaybe<Scalars['BigInt']>;
+  finalizedAtTimestamp_gte?: InputMaybe<Scalars['BigInt']>;
+  finalizedAtTimestamp_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  finalizedAtTimestamp_lt?: InputMaybe<Scalars['BigInt']>;
+  finalizedAtTimestamp_lte?: InputMaybe<Scalars['BigInt']>;
+  finalizedAtTimestamp_not?: InputMaybe<Scalars['BigInt']>;
+  finalizedAtTimestamp_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  firstBidTime?: InputMaybe<Scalars['BigInt']>;
+  firstBidTime_gt?: InputMaybe<Scalars['BigInt']>;
+  firstBidTime_gte?: InputMaybe<Scalars['BigInt']>;
+  firstBidTime_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  firstBidTime_lt?: InputMaybe<Scalars['BigInt']>;
+  firstBidTime_lte?: InputMaybe<Scalars['BigInt']>;
+  firstBidTime_not?: InputMaybe<Scalars['BigInt']>;
+  firstBidTime_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  id?: InputMaybe<Scalars['ID']>;
+  id_gt?: InputMaybe<Scalars['ID']>;
+  id_gte?: InputMaybe<Scalars['ID']>;
+  id_in?: InputMaybe<Array<Scalars['ID']>>;
+  id_lt?: InputMaybe<Scalars['ID']>;
+  id_lte?: InputMaybe<Scalars['ID']>;
+  id_not?: InputMaybe<Scalars['ID']>;
+  id_not_in?: InputMaybe<Array<Scalars['ID']>>;
+  reservePrice?: InputMaybe<Scalars['BigInt']>;
+  reservePrice_gt?: InputMaybe<Scalars['BigInt']>;
+  reservePrice_gte?: InputMaybe<Scalars['BigInt']>;
+  reservePrice_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  reservePrice_lt?: InputMaybe<Scalars['BigInt']>;
+  reservePrice_lte?: InputMaybe<Scalars['BigInt']>;
+  reservePrice_not?: InputMaybe<Scalars['BigInt']>;
+  reservePrice_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  status?: InputMaybe<ReserveAuctionStatus>;
+  status_in?: InputMaybe<Array<ReserveAuctionStatus>>;
+  status_not?: InputMaybe<ReserveAuctionStatus>;
+  status_not_in?: InputMaybe<Array<ReserveAuctionStatus>>;
+  token?: InputMaybe<Scalars['String']>;
+  tokenContract?: InputMaybe<Scalars['String']>;
+  tokenContract_contains?: InputMaybe<Scalars['String']>;
+  tokenContract_ends_with?: InputMaybe<Scalars['String']>;
+  tokenContract_gt?: InputMaybe<Scalars['String']>;
+  tokenContract_gte?: InputMaybe<Scalars['String']>;
+  tokenContract_in?: InputMaybe<Array<Scalars['String']>>;
+  tokenContract_lt?: InputMaybe<Scalars['String']>;
+  tokenContract_lte?: InputMaybe<Scalars['String']>;
+  tokenContract_not?: InputMaybe<Scalars['String']>;
+  tokenContract_not_contains?: InputMaybe<Scalars['String']>;
+  tokenContract_not_ends_with?: InputMaybe<Scalars['String']>;
+  tokenContract_not_in?: InputMaybe<Array<Scalars['String']>>;
+  tokenContract_not_starts_with?: InputMaybe<Scalars['String']>;
+  tokenContract_starts_with?: InputMaybe<Scalars['String']>;
+  tokenId?: InputMaybe<Scalars['BigInt']>;
+  tokenId_gt?: InputMaybe<Scalars['BigInt']>;
+  tokenId_gte?: InputMaybe<Scalars['BigInt']>;
+  tokenId_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  tokenId_lt?: InputMaybe<Scalars['BigInt']>;
+  tokenId_lte?: InputMaybe<Scalars['BigInt']>;
+  tokenId_not?: InputMaybe<Scalars['BigInt']>;
+  tokenId_not_in?: InputMaybe<Array<Scalars['BigInt']>>;
+  tokenOwner?: InputMaybe<Scalars['String']>;
+  tokenOwner_contains?: InputMaybe<Scalars['String']>;
+  tokenOwner_ends_with?: InputMaybe<Scalars['String']>;
+  tokenOwner_gt?: InputMaybe<Scalars['String']>;
+  tokenOwner_gte?: InputMaybe<Scalars['String']>;
+  tokenOwner_in?: InputMaybe<Array<Scalars['String']>>;
+  tokenOwner_lt?: InputMaybe<Scalars['String']>;
+  tokenOwner_lte?: InputMaybe<Scalars['String']>;
+  tokenOwner_not?: InputMaybe<Scalars['String']>;
+  tokenOwner_not_contains?: InputMaybe<Scalars['String']>;
+  tokenOwner_not_ends_with?: InputMaybe<Scalars['String']>;
+  tokenOwner_not_in?: InputMaybe<Array<Scalars['String']>>;
+  tokenOwner_not_starts_with?: InputMaybe<Scalars['String']>;
+  tokenOwner_starts_with?: InputMaybe<Scalars['String']>;
+  token_contains?: InputMaybe<Scalars['String']>;
+  token_ends_with?: InputMaybe<Scalars['String']>;
+  token_gt?: InputMaybe<Scalars['String']>;
+  token_gte?: InputMaybe<Scalars['String']>;
+  token_in?: InputMaybe<Array<Scalars['String']>>;
+  token_lt?: InputMaybe<Scalars['String']>;
+  token_lte?: InputMaybe<Scalars['String']>;
+  token_not?: InputMaybe<Scalars['String']>;
+  token_not_contains?: InputMaybe<Scalars['String']>;
+  token_not_ends_with?: InputMaybe<Scalars['String']>;
+  token_not_in?: InputMaybe<Array<Scalars['String']>>;
+  token_not_starts_with?: InputMaybe<Scalars['String']>;
+  token_starts_with?: InputMaybe<Scalars['String']>;
+  transactionHash?: InputMaybe<Scalars['String']>;
+  transactionHash_contains?: InputMaybe<Scalars['String']>;
+  transactionHash_ends_with?: InputMaybe<Scalars['String']>;
+  transactionHash_gt?: InputMaybe<Scalars['String']>;
+  transactionHash_gte?: InputMaybe<Scalars['String']>;
+  transactionHash_in?: InputMaybe<Array<Scalars['String']>>;
+  transactionHash_lt?: InputMaybe<Scalars['String']>;
+  transactionHash_lte?: InputMaybe<Scalars['String']>;
+  transactionHash_not?: InputMaybe<Scalars['String']>;
+  transactionHash_not_contains?: InputMaybe<Scalars['String']>;
+  transactionHash_not_ends_with?: InputMaybe<Scalars['String']>;
+  transactionHash_not_in?: InputMaybe<Array<Scalars['String']>>;
+  transactionHash_not_starts_with?: InputMaybe<Scalars['String']>;
+  transactionHash_starts_with?: InputMaybe<Scalars['String']>;
+};
+
+export enum ReserveAuction_OrderBy {
+  Approved = 'approved',
+  ApprovedBlockNumber = 'approvedBlockNumber',
+  ApprovedTimestamp = 'approvedTimestamp',
+  AuctionCurrency = 'auctionCurrency',
+  Clip = 'clip',
+  CreatedAtBlockNumber = 'createdAtBlockNumber',
+  CreatedAtTimestamp = 'createdAtTimestamp',
+  Curator = 'curator',
+  CuratorFeePercentage = 'curatorFeePercentage',
+  CurrentBid = 'currentBid',
+  Duration = 'duration',
+  ExpectedEndTimestamp = 'expectedEndTimestamp',
+  FinalizedAtBlockNumber = 'finalizedAtBlockNumber',
+  FinalizedAtTimestamp = 'finalizedAtTimestamp',
+  FirstBidTime = 'firstBidTime',
+  Id = 'id',
+  PreviousBids = 'previousBids',
+  ReservePrice = 'reservePrice',
+  Status = 'status',
+  Token = 'token',
+  TokenContract = 'tokenContract',
+  TokenId = 'tokenId',
+  TokenOwner = 'tokenOwner',
+  TransactionHash = 'transactionHash'
+}
+
 export type Subscription = {
   __typename?: 'Subscription';
   /** Access to subgraph metadata */
@@ -1252,6 +1900,12 @@ export type Subscription = {
   inactiveAsks: Array<InactiveAsk>;
   inactiveBid?: Maybe<InactiveBid>;
   inactiveBids: Array<InactiveBid>;
+  inactiveReserveAuctionBid?: Maybe<InactiveReserveAuctionBid>;
+  inactiveReserveAuctionBids: Array<InactiveReserveAuctionBid>;
+  reserveAuction?: Maybe<ReserveAuction>;
+  reserveAuctionBid?: Maybe<ReserveAuctionBid>;
+  reserveAuctionBids: Array<ReserveAuctionBid>;
+  reserveAuctions: Array<ReserveAuction>;
   transfer?: Maybe<Transfer>;
   transfers: Array<Transfer>;
   uriupdate?: Maybe<UriUpdate>;
@@ -1371,6 +2025,60 @@ export type SubscriptionInactiveBidsArgs = {
   skip?: InputMaybe<Scalars['Int']>;
   subgraphError?: _SubgraphErrorPolicy_;
   where?: InputMaybe<InactiveBid_Filter>;
+};
+
+
+export type SubscriptionInactiveReserveAuctionBidArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionInactiveReserveAuctionBidsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<InactiveReserveAuctionBid_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<InactiveReserveAuctionBid_Filter>;
+};
+
+
+export type SubscriptionReserveAuctionArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionReserveAuctionBidArgs = {
+  block?: InputMaybe<Block_Height>;
+  id: Scalars['ID'];
+  subgraphError?: _SubgraphErrorPolicy_;
+};
+
+
+export type SubscriptionReserveAuctionBidsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<ReserveAuctionBid_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<ReserveAuctionBid_Filter>;
+};
+
+
+export type SubscriptionReserveAuctionsArgs = {
+  block?: InputMaybe<Block_Height>;
+  first?: InputMaybe<Scalars['Int']>;
+  orderBy?: InputMaybe<ReserveAuction_OrderBy>;
+  orderDirection?: InputMaybe<OrderDirection>;
+  skip?: InputMaybe<Scalars['Int']>;
+  subgraphError?: _SubgraphErrorPolicy_;
+  where?: InputMaybe<ReserveAuction_Filter>;
 };
 
 
