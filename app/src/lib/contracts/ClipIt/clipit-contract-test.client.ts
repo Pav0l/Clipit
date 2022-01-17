@@ -8,6 +8,14 @@ import { clipitContractAddress } from "../../constants";
 
 
 class ClipItContractTestClient implements IClipItContractClient {
+  getApproved(tokenId: string): Promise<string> {
+    throw new Error('method not implemented')
+  };
+
+  approve(to: string, tokenId: string): Promise<ethers.ContractTransaction> {
+    throw new Error('method not implemented')
+  };
+
   async mint(_data: MediaData, _bidShares: BidShares, _signature: Signature): Promise<ethers.ContractTransaction> {
     return {
       chainId: BigNumber.from(chainId).toNumber(),

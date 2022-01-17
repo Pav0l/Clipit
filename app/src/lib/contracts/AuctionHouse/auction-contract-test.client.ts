@@ -27,6 +27,6 @@ class AuctionContractTestClient implements IAuctionContractClient {
   }
 }
 
-export function AuctionContractCreator(_provider: EthereumProvider): IAuctionContractClient {
+export function AuctionTestContractCreator(_provider: EthereumProvider): IAuctionContractClient {
   return new AuctionContractTestClient();
 }

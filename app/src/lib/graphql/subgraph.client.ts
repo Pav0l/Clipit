@@ -1,7 +1,7 @@
 import DataLoader from "dataloader";
 import { GraphQLClient } from "graphql-request";
-import { GET_CLIPS, GET_TOKENS_QUERY, GET_TOKEN_BY_TX_HASH, GET_USER_TOKENS_QUERY } from "./queries";
-import { BidPartialFragment, ClipPartialFragment, GetClipDataQuery, GetUserDataQuery, GetTokenByTxHashQuery, GetClipsQuery } from "./types";
+import { GET_AUCTION_QUERY, GET_CLIPS, GET_TOKENS_QUERY, GET_TOKEN_BY_TX_HASH, GET_USER_TOKENS_QUERY } from "./queries";
+import { BidPartialFragment, ClipPartialFragment, GetClipDataQuery, GetUserDataQuery, GetTokenByTxHashQuery, GetClipsQuery, AuctionPartialFragment, GetAuctionForTokenQuery } from "./types";
 import { CLIPS_PAGINATION_SKIP_VALUE } from '../constants';
 
 export interface ISubgraphClient {
@@ -9,17 +9,20 @@ export interface ISubgraphClient {
   fetchClipByHashCached: (txHash: string) => Promise<ClipPartialFragment | null>;
   fetchClips: (skip?: number) => Promise<GetClipsQuery | null>;
   fetchUserCached: (address: string) => Promise<UserData | null>;
+  fetchAuctionCached: (tokenId: string) => Promise<AuctionPartialFragment | null>;
 }
 
 export class SubgraphClient implements ISubgraphClient {
   private userLoader: DataLoader<string, UserData | null>;
   private clipLoader: DataLoader<string, ClipPartialFragment | null>;
   private clipHashLoader: DataLoader<string, ClipPartialFragment | null>;
+  private auctionLoader: DataLoader<string, AuctionPartialFragment | null>;
 
   constructor(private client: GraphQLClient) {
     this.userLoader = new DataLoader((keys) => this.getUser(keys));
     this.clipLoader = new DataLoader((keys) => this.getClip(keys));
     this.clipHashLoader = new DataLoader((keys) => this.getClipByTxHash(keys));
+    this.auctionLoader = new DataLoader((keys) => this.getAuctionForToken(keys));
   }
 
   /**
@@ -56,6 +59,15 @@ export class SubgraphClient implements ISubgraphClient {
     return user;
   }
 
+  fetchAuctionCached = async (tokenId: string) => {
+    const auction = this.retryFetch<string, AuctionPartialFragment>(this.auctionLoader, tokenId, 3, 3000);
+    if (!auction) {
+      return null;
+    }
+
+    return auction;
+  }
+
   private getUser = async (addresses: readonly string[]) => {
     const resp = await this.client.request<GetUserDataQuery>(GET_USER_TOKENS_QUERY, {
       ids: addresses
@@ -78,6 +90,17 @@ export class SubgraphClient implements ISubgraphClient {
     });
 
     return txHashes.map((hash) => transformClipDataFromHash(resp, hash));
+  }
+
+  private getAuctionForToken = async (tokenIds: readonly string[]) => {
+    const resp = await this.client.request<GetAuctionForTokenQuery>(GET_AUCTION_QUERY, {
+      tokenIds: tokenIds
+    });
+
+    return tokenIds.map(tokenId => {
+      const auction = resp.reserveAuctions.find(a => a.tokenId === tokenId);
+      return auction ? auction : null;
+    })
   }
 
   private retryFetch = async <K, V>(loader: DataLoader<K, V | null>, key: K, retryCount: number, retryDelay: number) => {

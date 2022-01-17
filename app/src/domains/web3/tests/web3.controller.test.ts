@@ -1,6 +1,7 @@
 import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
 import { twitchClip } from "../../../../tests/__fixtures__/twitch-api-data";
 import { ClipItApiTestClient } from "../../../lib/clipit-api/clipit-api-test.client";
+import { AuctionTestContractCreator } from "../../../lib/contracts/AuctionHouse/auction-contract-test.client";
 import { ClipItTestContractCreator } from "../../../lib/contracts/ClipIt/clipit-contract-test.client";
 import { EthereumTestProvider } from "../../../lib/ethereum/ethereum-test-provider";
 import { SubgraphTestClient } from "../../../lib/graphql/subgraph-test.client";
@@ -27,7 +28,8 @@ describe("web3 controller", () => {
       new OffChainStorage(new ClipItApiTestClient(), new IpfsTestClient()),
       new SubgraphTestClient(),
       snackbar,
-      ClipItTestContractCreator
+      ClipItTestContractCreator,
+      AuctionTestContractCreator
     )
   });
 

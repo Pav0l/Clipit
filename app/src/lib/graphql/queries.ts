@@ -23,6 +23,41 @@ const CLIP_PARTIALS = gql`
     }
   }
 
+  fragment AuctionBidPartial on ReserveAuctionBid {
+    id
+    reserveAuction {
+      id
+    }
+    amount
+    bidder {
+      id
+    }
+    bidType
+
+  }
+
+  fragment AuctionPartial on ReserveAuction {
+    id
+    tokenId
+    clip {
+      id
+    }
+    approved
+    duration
+    expectedEndTimestamp
+    reservePrice
+    tokenOwner {
+      id
+    }
+    auctionCurrency {
+      ...CurrencyPartial
+    }
+    status
+    currentBid {
+      ...AuctionBidPartial
+    }
+  }
+
   fragment ClipPartial on Clip {
     id
     metadataURI
@@ -34,7 +69,9 @@ const CLIP_PARTIALS = gql`
     currentBids {
       ...BidPartial
     }
-
+    reserveAuctions {
+      ...AuctionPartial
+    }
     creatorBidShare
     ownerBidShare
     prevOwnerBidShare
@@ -109,6 +146,19 @@ export const GET_CLIPS = gql`
   query getClips($first: Int!, $skip: Int) {
     clips(first: $first, skip: $skip) {
       ...ClipPartial
+    }
+  }
+`;
+
+export const GET_AUCTION_QUERY = gql`
+  ${CURRENCY_PARTIAL}
+  ${CLIP_PARTIALS}
+
+  query getAuctionForToken($tokenIds: [BigInt!]) {
+    reserveAuctions(
+      where: { tokenId_in: $tokenIds }
+    ) {
+      ...AuctionPartial
     }
   }
 `;

@@ -94,6 +94,29 @@ export class NftController {
     }
   }
 
+  getAuctionForToken = async (tokenId: string) => {
+    try {
+      this.model.meta.setLoading(true);
+
+      const data = await this.subgraph.fetchAuctionCached(tokenId);
+
+      if (data === null) {
+        return;
+      }
+
+      // update reserveAuction for token
+      this.model.updateTokenAuction(tokenId, data);
+
+    } catch (error) {
+      // TODO SENTRY
+      this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+    } finally {
+      if (this.model.meta.isLoading) {
+        this.model.meta.setLoading(false);
+      }
+    }
+  }
+
   private getMetadataForClipFragmentAndStoreInModel = async (clip?: ClipPartialFragment, shouldThrow?: boolean) => {
     if (clip == null) {
       return;
@@ -122,7 +145,14 @@ export class NftController {
       return;
     }
 
-    this.model.addMetadata({ ...metadata, metadataCid, tokenId: clip.id, owner: clip.owner.id, currentBids: clip.currentBids });
+    this.model.addMetadata({
+      ...metadata,
+      metadataCid,
+      tokenId: clip.id,
+      owner: clip.owner.id,
+      currentBids: clip.currentBids,
+      reserveAuction: clip.reserveAuctions,
+    });
   }
 
   private parseCidFromURI = (uri: string): string => {

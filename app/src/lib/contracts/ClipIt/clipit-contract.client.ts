@@ -27,8 +27,10 @@ export interface Signature {
 
 export interface IClipItContractClient {
   mint: (data: MediaData, bidShares: BidShares, signature: Signature) => Promise<ethers.ContractTransaction>;
-  getTokenMetadataURI: (tokenId: string) => Promise<string>
-  getTokenOwner: (tokenId: string) => Promise<string>
+  getTokenMetadataURI: (tokenId: string) => Promise<string>;
+  getTokenOwner: (tokenId: string) => Promise<string>;
+  getApproved: (tokenId: string) => Promise<string>;
+  approve: (to: string, tokenId: string) => Promise<ethers.ContractTransaction>;
 }
 
 class ClipItContractClient implements IClipItContractClient {
@@ -45,6 +47,15 @@ class ClipItContractClient implements IClipItContractClient {
       throw new Error('Invalid ethereum provider');
     }
   }
+
+  async approve(to: string, tokenId: string): Promise<ethers.ContractTransaction> {
+    return this.contract.approve(to, tokenId);
+  };
+
+
+  async getApproved(tokenId: string): Promise<string> {
+    return this.contract.getApproved(tokenId);
+  };
 
   async mint(data: MediaData, bidShares: BidShares, signature: Signature) {
     return this.contract.mint(data, bidShares, signature.v, signature.r, signature.s);

@@ -2,7 +2,7 @@ import { BigNumberish, utils } from "ethers";
 import { makeAutoObservable } from "mobx"
 
 import { pinataGatewayUri } from "../../lib/constants";
-import { BidPartialFragment } from "../../lib/graphql/types";
+import { AuctionPartialFragment, BidPartialFragment, ReserveAuctionStatus } from "../../lib/graphql/types";
 import { MetaModel } from "../app/meta.model";
 
 
@@ -23,6 +23,11 @@ export class NftModel {
     }
     this.metadata.push(new Metadata(data));
     this.hasMetadata[data.tokenId] = true;
+  }
+
+  updateTokenAuction(tokenId: string, auction: AuctionPartialFragment): void {
+    const metadata = this.getTokenMetadata(tokenId);
+    metadata.auction = new Auction(auction);
   }
 
   resetMetadata(): void {
@@ -53,6 +58,7 @@ interface MetadataInput {
   thumbnailUri: string;
   owner: string;
   currentBids?: BidPartialFragment[] | null;
+  reserveAuction?: AuctionPartialFragment[] | null;
 }
 
 export class Metadata {
@@ -65,6 +71,7 @@ export class Metadata {
   thumbnailUri: string;
   owner: string;
   currentBids: ActiveBid[];
+  auction: Auction | null;
 
   constructor(data: MetadataInput, private ipfsGatewayUri: string = pinataGatewayUri) {
     makeAutoObservable(this);
@@ -78,6 +85,7 @@ export class Metadata {
     this.thumbnailUri = this.validateField(data.thumbnailUri);
     this.owner = this.validateField(data.owner);
     this.currentBids = this.handleBids(data.currentBids);
+    this.auction = this.handleAuction(this.tokenId, data.reserveAuction);
   }
 
   private handleBids(bids?: BidPartialFragment[] | null) {
@@ -97,6 +105,15 @@ export class Metadata {
 
   private createClipIpfsGatewayUri = (cid: string) => {
     return `${this.ipfsGatewayUri}/${cid}`;
+  }
+
+  private handleAuction(tokenId: string, auction?: AuctionPartialFragment[] | null) {
+    if (!auction || auction.length === 0) {
+      return null;
+    }
+
+    const a = auction.filter(ah => ah.tokenId === tokenId)[0];
+    return new Auction(a)
   }
 }
 
@@ -125,5 +142,32 @@ export class ActiveBid {
     if (idxOfDot > 6) return formatedAmount.substring(0, idxOfDot)
     // return up to 4 deimals
     return formatedAmount.substring(0, idxOfDot + 5)
+  }
+}
+
+class Auction {
+  id?: string;
+  tokenId?: string;
+  approved?: boolean;
+  status?: ReserveAuctionStatus;
+  tokenOwnerId?: string;
+  duration?: string;
+  reservePrice?: string;
+  expectedEndTimestamp?: string | null | undefined;
+  auctionCurrency?: { id: string, name: string, symbol: string, decimals?: number | null | undefined }
+
+
+  constructor(input?: AuctionPartialFragment) {
+    makeAutoObservable(this);
+
+    this.id = input?.id;
+    this.tokenId = input?.tokenId;
+    this.approved = input?.approved;
+    this.duration = input?.duration;
+    this.expectedEndTimestamp = input?.expectedEndTimestamp;
+    this.reservePrice = input?.reservePrice;
+    this.status = input?.status;
+    this.tokenOwnerId = input?.tokenOwner.id;
+    this.auctionCurrency = input?.auctionCurrency;
   }
 }

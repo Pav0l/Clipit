@@ -1,9 +1,12 @@
 import { clipPartialFragment } from "../../../tests/__fixtures__/clip-fragment";
 
-import { ClipPartialFragment, GetClipsQuery } from "./types";
+import { AuctionPartialFragment, ClipPartialFragment, GetClipsQuery } from "./types";
 import { ISubgraphClient, UserData } from "./subgraph.client";
 
 export class SubgraphTestClient implements ISubgraphClient {
+  fetchAuctionCached = (tokenId: string): Promise<AuctionPartialFragment | null> => {
+    throw new Error('method not implemented');
+  };
   fetchClipCached = async (_tokenId: string): Promise<ClipPartialFragment | null> => {
     return clipPartialFragment;
   }

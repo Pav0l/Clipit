@@ -1,6 +1,5 @@
 import { BytesLike } from "ethers";
 import { ClipPayload, IClipItApiClient } from "../clipit-api/clipit-api.client";
-import { RawResponse } from "../http-client/http-client";
 import { IIpfsClient } from "../ipfs/ipfs.client";
 
 export class OffChainStorage {
@@ -11,7 +10,7 @@ export class OffChainStorage {
   }
 
   async getMetadata(cid: string) {
-    return await this.reader.getMetadata<Metadata | null>(cid);
+    return await this.reader.getMetadata<IpfsMetadata | null>(cid);
   }
 
   isStoreClipError(body: StoreClipError | unknown): body is StoreClipError {
@@ -23,7 +22,7 @@ interface StoreClipError {
   error: string;
 }
 
-interface Metadata {
+interface IpfsMetadata {
   description: string;
   external_url: string;
   name: string;
@@ -44,7 +43,7 @@ interface StoreClipResp {
   id: string; // clip id
   address: string; //compare with current user address to double check if it didn't change in the meantime
   signature: Signature;
-  metadata: Metadata;
+  metadata: IpfsMetadata;
   mediadata: MediaData;
 }
 
