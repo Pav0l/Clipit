@@ -2,7 +2,7 @@ import { BigNumberish, utils } from "ethers";
 import { makeAutoObservable } from "mobx"
 
 import { pinataGatewayUri } from "../../lib/constants";
-import { AuctionPartialFragment, BidPartialFragment, ReserveAuctionStatus } from "../../lib/graphql/types";
+import { AuctionBidPartialFragment, AuctionPartialFragment, BidPartialFragment, CurrencyPartialFragment, ReserveAuctionStatus } from "../../lib/graphql/types";
 import { MetaModel } from "../app/meta.model";
 
 
@@ -152,10 +152,12 @@ class Auction {
   status?: ReserveAuctionStatus;
   tokenOwnerId?: string;
   duration?: string;
+  firstBidTime?: string;
+  approvedTimestamp?: string;
   reservePrice?: string;
   expectedEndTimestamp?: string | null | undefined;
-  auctionCurrency?: { id: string, name: string, symbol: string, decimals?: number | null | undefined }
-
+  auctionCurrency?: CurrencyPartialFragment;
+  highestBid?: ActiveBid | null;
 
   constructor(input?: AuctionPartialFragment) {
     makeAutoObservable(this);
@@ -164,10 +166,24 @@ class Auction {
     this.tokenId = input?.tokenId;
     this.approved = input?.approved;
     this.duration = input?.duration;
+    this.firstBidTime = input?.firstBidTime;
+    this.approvedTimestamp = input?.approvedTimestamp;
     this.expectedEndTimestamp = input?.expectedEndTimestamp;
     this.reservePrice = input?.reservePrice;
     this.status = input?.status;
     this.tokenOwnerId = input?.tokenOwner.id;
     this.auctionCurrency = input?.auctionCurrency;
+    this.highestBid = this.handleHighestBid(this.auctionCurrency, input?.currentBid);
+  }
+
+  private handleHighestBid(c?: CurrencyPartialFragment, bid?: AuctionBidPartialFragment | null) {
+    if (!c?.symbol) {
+      return null;
+    }
+    if (!bid?.amount) {
+      return null;
+    }
+
+    return new ActiveBid({ symbol: c.symbol, amount: bid.amount, decimals: c.decimals });
   }
 }

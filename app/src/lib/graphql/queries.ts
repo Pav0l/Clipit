@@ -23,41 +23,6 @@ const CLIP_PARTIALS = gql`
     }
   }
 
-  fragment AuctionBidPartial on ReserveAuctionBid {
-    id
-    reserveAuction {
-      id
-    }
-    amount
-    bidder {
-      id
-    }
-    bidType
-
-  }
-
-  fragment AuctionPartial on ReserveAuction {
-    id
-    tokenId
-    clip {
-      id
-    }
-    approved
-    duration
-    expectedEndTimestamp
-    reservePrice
-    tokenOwner {
-      id
-    }
-    auctionCurrency {
-      ...CurrencyPartial
-    }
-    status
-    currentBid {
-      ...AuctionBidPartial
-    }
-  }
-
   fragment ClipPartial on Clip {
     id
     metadataURI
@@ -85,6 +50,46 @@ const CLIP_PARTIALS = gql`
   }
 `;
 
+const AUCTION_PARTIALS = gql`
+  fragment AuctionBidPartial on ReserveAuctionBid {
+    id
+    reserveAuction {
+      id
+    }
+    amount
+    bidder {
+      id
+    }
+    bidType
+    createdAtTimestamp
+  }
+
+  fragment AuctionPartial on ReserveAuction {
+    id
+    tokenId
+    clip {
+      id
+    }
+    approved
+    duration
+    expectedEndTimestamp
+    firstBidTime
+    approvedTimestamp
+    reservePrice
+    tokenOwner {
+      id
+    }
+    auctionCurrency {
+      ...CurrencyPartial
+    }
+    status
+    currentBid {
+      ...AuctionBidPartial
+    }
+  }
+
+`;
+
 const CURRENCY_PARTIAL = gql`
   fragment CurrencyPartial on Currency {
     id
@@ -97,6 +102,7 @@ const CURRENCY_PARTIAL = gql`
 export const GET_USER_TOKENS_QUERY = gql`
   ${CURRENCY_PARTIAL}
   ${CLIP_PARTIALS}
+  ${AUCTION_PARTIALS}
 
   query getUserData($ids: [ID!]) {
     users(
@@ -116,6 +122,7 @@ export const GET_USER_TOKENS_QUERY = gql`
 export const GET_TOKENS_QUERY = gql`
   ${CURRENCY_PARTIAL}
   ${CLIP_PARTIALS}
+  ${AUCTION_PARTIALS}
 
   query getClipData($ids: [ID!]) {
     clips(
@@ -129,6 +136,7 @@ export const GET_TOKENS_QUERY = gql`
 export const GET_TOKEN_BY_TX_HASH = gql`
   ${CURRENCY_PARTIAL}
   ${CLIP_PARTIALS}
+  ${AUCTION_PARTIALS}
 
   query getTokenByTxHash($hashes: [String!]) {
     clips(
@@ -142,6 +150,7 @@ export const GET_TOKEN_BY_TX_HASH = gql`
 export const GET_CLIPS = gql`
   ${CURRENCY_PARTIAL}
   ${CLIP_PARTIALS}
+  ${AUCTION_PARTIALS}
 
   query getClips($first: Int!, $skip: Int) {
     clips(first: $first, skip: $skip) {
@@ -153,6 +162,7 @@ export const GET_CLIPS = gql`
 export const GET_AUCTION_QUERY = gql`
   ${CURRENCY_PARTIAL}
   ${CLIP_PARTIALS}
+  ${AUCTION_PARTIALS}
 
   query getAuctionForToken($tokenIds: [BigInt!]) {
     reserveAuctions(
