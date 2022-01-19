@@ -8,9 +8,9 @@ import FullPageLoader from "../../../components/loader/FullPageLoader";
 import SplitContainer from "../../../components/container/SplitContainer";
 import { NftModel } from "../nft.model";
 import { NftController } from "../nft.controller";
-import { BidForm } from "../../../components/bidForm/BidForm";
 import { Web3Model } from "../../web3/web3.model";
 import { Web3Controller } from "../../web3/web3.controller";
+import { NftDetails } from "../../../components/nfts/NftDetails";
 
 interface Props {
   model: {
@@ -44,13 +44,6 @@ function NftContainer({ model, operations }: Props) {
   }
 
   if (metadata) {
-    const minBid =
-      metadata.currentBids.length > 0
-        ? Number(metadata.currentBids[0].displayAmount) * 1.05
-        : "0";
-
-    const isNftOwn = metadata.owner === model.web3.getAccount();
-
     return (
       <SplitContainer>
         <NftCard
@@ -59,15 +52,12 @@ function NftContainer({ model, operations }: Props) {
           clipDescription={metadata.description}
           poster={metadata.thumbnailUri}
         />
-        {isNftOwn ? (
-          <BidForm
-            minimalBid={minBid.toString()}
-            operations={{ web3: operations.web3 }}
-            model={{ web3: model.web3 }}
-          />
-        ) : (
-          <></>
-        )}
+        <NftDetails
+          metadata={metadata}
+          tokenId={tokenId}
+          operations={operations}
+          model={model}
+        />
       </SplitContainer>
     );
   }

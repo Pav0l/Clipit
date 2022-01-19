@@ -1,15 +1,19 @@
-import { BigNumber, BytesLike } from "ethers";
+import { BigNumber, BigNumberish, BytesLike, constants } from "ethers";
 
 import { IClipItContractClient } from "../../lib/contracts/ClipIt/clipit-contract.client";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
-import { Web3Model, Web3Errors } from "./web3.model";
+import { Web3Model, Web3Errors, AuctionLoadStatus } from "./web3.model";
 import { ISubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { Decimal } from "../../lib/decimal/decimal";
-import { ClipItContractErrors, isEthersJsonRpcError } from "../../lib/contracts/ClipIt/clipit-contract.errors";
+import { ClipItContractErrors } from "../../lib/contracts/ClipIt/clipit-contract.errors";
+import { isEthersJsonRpcError } from "../../lib/contracts/jsonRpc.errors";
 import { isRpcError, RpcErrors } from "../../lib/ethereum/rpc.errors";
 import EthereumClient from "../../lib/ethereum/ethereum.client";
+import { IAuctionContractClient } from "../../lib/contracts/AuctionHouse/auction-contract.client";
+import { auctionContractAddress, clipitContractAddress } from "../../lib/constants";
+import { AuctionContractErrors } from "../../lib/contracts/AuctionHouse/auction-contract.errors";
 
 interface Signature {
   v: number;
@@ -26,6 +30,7 @@ export interface IWeb3Controller {
   requestConnect: (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => Promise<void>;
   // get current users balance
   getBalance: (address: string) => Promise<void>;
+  requestConnectAndCreateAuction: (tokenId: string, duration: BigNumberish, minPrice: BigNumberish,) => Promise<void>;
 }
 
 
@@ -35,7 +40,9 @@ export class Web3Controller implements IWeb3Controller {
     private offChainStorage: OffChainStorage,
     private subgraph: ISubgraphClient,
     private snackbar: SnackbarClient,
-    private clipitContractCreator: (provider: EthereumProvider) => IClipItContractClient
+    private clipitContractCreator: (provider: EthereumProvider) => IClipItContractClient,
+    private auctionContractCreator: (provider: EthereumProvider) => IAuctionContractClient
+
   ) { }
 
   async connectMetaMaskIfNecessaryForConnectBtn() {
@@ -117,6 +124,26 @@ export class Web3Controller implements IWeb3Controller {
     }
   }
 
+  requestConnectAndCreateAuction = async (tokenId: string, duration: BigNumberish, minPrice: BigNumberish,) => {
+    if (!this.model.isMetaMaskInstalled()) {
+      this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
+      return;
+    }
+
+    if (!this.model.isProviderConnected()) {
+      await this.requestAccounts();
+    }
+
+    const signerAddress = this.model.getAccount();
+    if (!signerAddress) {
+      // requestAccounts failed (rejected/already opened, etc...) and notification to user was sent
+      // just stop here
+      return;
+    }
+
+    await this.createAuction(tokenId, duration, minPrice);
+  }
+
 
   private prepareMetadataAndMintClip = async (clipId: string, address: string, creatorShare: string, clipTitle: string, clipDescription?: string) => {
     if (!clipId || !address || !clipTitle) {
@@ -137,6 +164,7 @@ export class Web3Controller implements IWeb3Controller {
         return;
       }
 
+      // TODO we fetch all clip data here and then only utilize ID before redirecting, where we fetch data again
       const clip = await this.subgraph.fetchClipByHashCached(txHash);
       console.log('[LOG]:clip', clip);
       if (!clip) {
@@ -168,7 +196,7 @@ export class Web3Controller implements IWeb3Controller {
       const tx = await contract.mint(data, defaultBidshares, signature);
       console.log("[LOG]:minting NFT in tx", tx.hash);
 
-      this.model.setWaitForTransaction();
+      this.model.setWaitForMintTx();
 
       const receipt = await tx.wait();
       console.log("[LOG]:mint:done! gas used to mint:", receipt.gasUsed.toString());
@@ -251,6 +279,81 @@ export class Web3Controller implements IWeb3Controller {
     } catch (error) {
       console.log("[ethereum.controller]:ethAccounts:error", error);
       this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
+    }
+  }
+
+  private createAuction = async (tokenId: string, duration: BigNumberish, minPrice: BigNumberish,) => {
+    try {
+      const auction = this.auctionContractCreator(window.ethereum as EthereumProvider);
+      const token = this.clipitContractCreator(window.ethereum as EthereumProvider);
+
+      const approved = await token.getApproved(tokenId);
+      console.log('[LOG]:token approved', approved);
+      if (!approved || approved === constants.AddressZero) {
+        this.model.setAuctionApproveTokenLoader();
+
+        // TODO consider using approveAll
+        const tx = await token.approve(auctionContractAddress, tokenId);
+
+        this.model.setWaitForApproveTxLoader();
+        console.log('[LOG]:approve auction tx hash', tx.hash);
+        await tx.wait();
+      }
+
+      this.model.setAuctionCreateLoader();
+
+      const tx = await auction.createAuction(
+        tokenId,
+        clipitContractAddress,
+        duration,
+        minPrice,
+        // TODO - support currators
+        constants.AddressZero,
+        0,
+        // TODO - support other currencies
+        constants.AddressZero
+      );
+
+      this.model.setWaitForAuctionCreateTxLoader();
+
+      console.log('[LOG]:auction create tx hash', tx.hash);
+
+      await tx.wait();
+
+      this.model.clearAuctionLoader();
+      this.snackbar.sendSuccess(AuctionLoadStatus.CREATE_AUCTION_SUCCESS);
+    } catch (error) {
+      // TODO sentry
+      console.log("[LOG]:createAuction:error", error);
+
+      if (isEthersJsonRpcError(error)) {
+        // take out Rpc error from Ethers error
+        error = error.error;
+      }
+
+      if (isRpcError(error)) {
+        switch (error.code) {
+          case RpcErrors.USER_REJECTED_REQUEST:
+            this.snackbar.sendInfo(Web3Errors.AUCTION_CREATE_REJECTED);
+            break;
+          case RpcErrors.INTERNAL_ERROR:
+            // contract reverts
+            if (error.message.includes(AuctionContractErrors.INVALID_CURATOR_FEE)) {
+              this.snackbar.sendError(AuctionContractErrors.INVALID_CURATOR_FEE_USER_ERR);
+            }
+            break;
+          default:
+            // SENTRY
+            this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
+            break;
+        }
+      } else {
+        // SENTRY
+        // unknown error
+        this.model.meta.setError(Web3Errors.AUCTION_CREATE_FAILED);
+      }
+
+      return null;
     }
   }
 

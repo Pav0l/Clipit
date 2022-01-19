@@ -3,24 +3,25 @@ import { ActiveBid, Metadata } from "../nft.model";
 describe("nft model", () => {
   describe("active bids", () => {
     it("sets proper bid attributes", () => {
-      const bid = new ActiveBid({ symbol: "WETH", amount: "1000000000000000000" });
+      const bid = new ActiveBid({ bidder: "0x123", symbol: "WETH", amount: "1000000000000000000" });
       expect(bid.symbol).toEqual("WETH");
       expect(bid.amount).toEqual("1000000000000000000");
       expect(bid.displayAmount).toEqual("1.0");
+      expect(bid.bidderAddress).toEqual("0x123");
     });
 
     it("displayAmount is max 4 decimal digits", () => {
-      const bid = new ActiveBid({ symbol: "WETH", amount: "123451234567890", decimals: 10 });
+      const bid = new ActiveBid({ bidder: "0x123", symbol: "WETH", amount: "123451234567890", decimals: 10 });
       expect(bid.displayAmount).toEqual("12345.1234");
     });
 
     it("numbers higher than 6 digits do not have nums after the decimal dot", () => {
-      const bid = new ActiveBid({ symbol: "WETH", amount: "123451234567890", decimals: 3 });
+      const bid = new ActiveBid({ bidder: "0x123", symbol: "WETH", amount: "123451234567890", decimals: 3 });
       expect(bid.displayAmount).toEqual("123451234567");
     });
 
     it("values without decimal are returned in full length", () => {
-      const bid = new ActiveBid({ symbol: "WETH", amount: "123451234567890", decimals: 0 });
+      const bid = new ActiveBid({ bidder: "0x123", symbol: "WETH", amount: "123451234567890", decimals: 0 });
       expect(bid.displayAmount).toEqual("123451234567890");
     });
   });

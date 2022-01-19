@@ -1,5 +1,5 @@
-import { EthereumTestProvider } from "./ethereum-test-provider";
-import EthereumClient, { IEthClient } from "./ethereum.client";
+import { EthereumTestProvider } from "../ethereum-test-provider";
+import EthereumClient, { IEthClient } from "../ethereum.client";
 
 describe("ethereum.client", () => {
   let client: IEthClient;

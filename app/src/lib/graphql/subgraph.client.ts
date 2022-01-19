@@ -151,6 +151,9 @@ function transformUserData(data: GetUserDataQuery, key: string): UserData | null
         symbol: bid.currency.symbol,
         decimals: bid.currency.decimals,
       },
+      bidder: {
+        id: bid.bidder.id
+      }
     })),
     collection: user.collection
   }

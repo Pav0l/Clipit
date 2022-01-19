@@ -21,6 +21,9 @@ const CLIP_PARTIALS = gql`
     currency {
       ...CurrencyPartial
     }
+    bidder {
+      id
+    }
   }
 
   fragment ClipPartial on Clip {

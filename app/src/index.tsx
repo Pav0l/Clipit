@@ -44,6 +44,7 @@ import { SnackbarController } from "./domains/snackbar/snackbar.controller";
 import { ClipItApiClient } from "./lib/clipit-api/clipit-api.client";
 import { IpfsClient } from "./lib/ipfs/ipfs.client";
 import { ClipItContractCreator } from "./lib/contracts/ClipIt/clipit-contract.client";
+import { AuctionContractCreator } from "./lib/contracts/AuctionHouse/auction-contract.client";
 
 function initSynchronous() {
   const storage = new LocalStorageClient();
@@ -84,7 +85,8 @@ function initSynchronous() {
     offChainStorageApi,
     subgraph,
     snackbar,
-    ClipItContractCreator
+    ClipItContractCreator,
+    AuctionContractCreator
   );
 
   authController.checkTokenInStorage();

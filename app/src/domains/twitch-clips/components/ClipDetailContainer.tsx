@@ -131,11 +131,11 @@ function ClipDetailContainer({ model, operations }: Props) {
     );
   }
 
-  if (model.web3.storeClipLoad && model.web3.storeClipStatus !== undefined) {
+  if (model.web3.storeClipStatus !== undefined) {
     return <LinearLoader text={model.web3.storeClipStatus}></LinearLoader>;
   }
 
-  if (model.web3.mintLoad && model.web3.mintStatus !== undefined) {
+  if (model.web3.mintStatus !== undefined) {
     return (
       <ErrorWithRetry
         text={model.web3.mintStatus}

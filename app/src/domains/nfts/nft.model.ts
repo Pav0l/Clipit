@@ -1,7 +1,8 @@
-import { BigNumberish, utils } from "ethers";
+import { BigNumberish } from "ethers";
 import { makeAutoObservable } from "mobx"
 
 import { pinataGatewayUri } from "../../lib/constants";
+import { formatCurrencyAmountToDisplayAmount } from "../../lib/ethereum/currency";
 import { AuctionBidPartialFragment, AuctionPartialFragment, BidPartialFragment, CurrencyPartialFragment, ReserveAuctionStatus } from "../../lib/graphql/types";
 import { MetaModel } from "../app/meta.model";
 
@@ -44,7 +45,7 @@ export class NftModel {
   }
 
   getOwnMetadata(userAddress: string | null): Metadata[] {
-    return this.metadata.filter(metadata => metadata.owner === userAddress);
+    return this.metadata.filter(metadata => metadata.owner === userAddress || metadata.auction?.tokenOwnerId === userAddress);
   }
 }
 
@@ -93,7 +94,7 @@ export class Metadata {
       return [];
     }
 
-    return bids.map(bid => new ActiveBid({ symbol: bid.currency.symbol, amount: bid.amount, decimals: bid.currency.decimals }))
+    return bids.map(bid => new ActiveBid({ symbol: bid.currency.symbol, amount: bid.amount, decimals: bid.currency.decimals, bidder: bid.bidder.id }))
   }
 
   private validateField<T>(field: unknown) {
@@ -121,27 +122,13 @@ export class ActiveBid {
   symbol: string;
   amount: BigNumberish;
   displayAmount: string;
+  bidderAddress: string;
 
-  constructor(data: { symbol: string; amount: BigNumberish; decimals?: number | null }) {
+  constructor(data: { symbol: string; amount: BigNumberish; decimals?: number | null; bidder: string }) {
     this.symbol = data.symbol;
     this.amount = data.amount;
-    this.displayAmount = this.toDisplayAmount(this.amount, data.decimals);
-  }
-
-  private toDisplayAmount(amount: BigNumberish, decimals?: number | null): string {
-    if (decimals === null) {
-      decimals = undefined;
-    }
-
-    const formatedAmount = utils.formatUnits(amount, decimals);
-    // handle float amounts
-    const idxOfDot = formatedAmount.indexOf(".")
-    // no dot -> no float -> just return
-    if (idxOfDot === -1) return formatedAmount;
-    // number has more than 6 digits, just return it without decimals
-    if (idxOfDot > 6) return formatedAmount.substring(0, idxOfDot)
-    // return up to 4 deimals
-    return formatedAmount.substring(0, idxOfDot + 5)
+    this.displayAmount = formatCurrencyAmountToDisplayAmount(this.amount, data.decimals);
+    this.bidderAddress = data.bidder;
   }
 }
 
@@ -155,6 +142,7 @@ class Auction {
   firstBidTime?: string;
   approvedTimestamp?: string;
   reservePrice?: string;
+  displayReservePrice?: string;
   expectedEndTimestamp?: string | null | undefined;
   auctionCurrency?: CurrencyPartialFragment;
   highestBid?: ActiveBid | null;
@@ -170,6 +158,7 @@ class Auction {
     this.approvedTimestamp = input?.approvedTimestamp;
     this.expectedEndTimestamp = input?.expectedEndTimestamp;
     this.reservePrice = input?.reservePrice;
+    this.displayReservePrice = formatCurrencyAmountToDisplayAmount(input?.reservePrice ?? 0, input?.auctionCurrency.decimals);
     this.status = input?.status;
     this.tokenOwnerId = input?.tokenOwner.id;
     this.auctionCurrency = input?.auctionCurrency;
@@ -184,6 +173,6 @@ class Auction {
       return null;
     }
 
-    return new ActiveBid({ symbol: c.symbol, amount: bid.amount, decimals: c.decimals });
+    return new ActiveBid({ symbol: c.symbol, amount: bid.amount, decimals: c.decimals, bidder: bid.bidder.id });
   }
 }

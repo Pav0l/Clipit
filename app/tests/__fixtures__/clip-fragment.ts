@@ -24,7 +24,10 @@ export const clipPartialFragment = {
         name: "Wrapped Ether",
         symbol: "WETH"
       },
-      id: "1-0xbidderbidderbidderbidderbidderbidder0000"
+      id: "1-0xbidderbidderbidderbidderbidderbidder0000",
+      bidder: {
+        id: "0xbidderbidderbidderbidderbidderbidder0000"
+      }
     }
   ],
   id: "1",

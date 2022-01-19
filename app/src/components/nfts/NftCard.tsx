@@ -50,7 +50,7 @@ export function NftCard({
 const useStyles = makeStyles(() => ({
   card: {
     margin: "1rem",
-    maxWidth: "85vw"
+    maxWidth: "50vw"
   },
   video: {
     maxHeight: "70vh"
