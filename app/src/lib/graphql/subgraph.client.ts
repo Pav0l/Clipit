@@ -70,7 +70,8 @@ export class SubgraphClient implements ISubgraphClient {
 
   private getUser = async (addresses: readonly string[]) => {
     const resp = await this.client.request<GetUserDataQuery>(GET_USER_TOKENS_QUERY, {
-      ids: addresses
+      ids: addresses,
+      ownerIds: addresses
     });
 
     return addresses.map((addr) => transformUserData(resp, addr));
@@ -134,6 +135,12 @@ function transformUserData(data: GetUserDataQuery, key: string): UserData | null
   if (!user) {
     return null;
   }
+  const clipsOnAuction: ClipPartialFragment[] = [];
+  data.reserveAuctions.forEach((auction) => {
+    if (auction.tokenOwner.id === key && auction.clip != null) {
+      clipsOnAuction.push(auction.clip)
+    }
+  });
 
   return {
     id: user.id,
@@ -155,7 +162,7 @@ function transformUserData(data: GetUserDataQuery, key: string): UserData | null
         id: bid.bidder.id
       }
     })),
-    collection: user.collection
+    collection: [...user.collection, ...clipsOnAuction]
   }
 }
 

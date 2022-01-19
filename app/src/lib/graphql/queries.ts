@@ -107,7 +107,7 @@ export const GET_USER_TOKENS_QUERY = gql`
   ${CLIP_PARTIALS}
   ${AUCTION_PARTIALS}
 
-  query getUserData($ids: [ID!]) {
+  query getUserData($ids: [ID!], $ownerIds: [String!]) {
     users(
       where: { id_in: $ids }
     ) {
@@ -117,6 +117,14 @@ export const GET_USER_TOKENS_QUERY = gql`
       }
       currentBids {
         ...BidPartial
+      }
+    }
+    reserveAuctions(where: { tokenOwner_in: $ownerIds }) {
+      tokenOwner {
+        id
+      }
+      clip {
+        ...ClipPartial
       }
     }
   }
