@@ -30,6 +30,7 @@ export default function ListOfCardsWithThumbnail({ metadata }: Props) {
                 ? metadata.currentBids[0]
                 : undefined
             }
+            auction={metadata.auction}
           />
         </Link>
       ))}

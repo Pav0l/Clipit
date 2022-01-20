@@ -1,9 +1,8 @@
 import { makeStyles, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
 import { NftErrors } from "../../domains/nfts/nft.errors";
 import { Metadata } from "../../domains/nfts/nft.model";
-import { formatTimestampToCountdown } from "../../lib/time/time";
+import { useExpectedEndOfAuction } from "../../lib/hooks/useExpectedEndOfAuction";
 import ErrorWithRetry from "../error/Error";
 
 interface Props {
@@ -13,44 +12,15 @@ interface Props {
 export const AuctionDetails = observer(function AuctionDetails({
   metadata
 }: Props) {
-  const [endOfAuction, setEnd] = useState<number>(0);
+  const auction = metadata.auction;
+  const [endOfAuction] = useExpectedEndOfAuction(auction);
 
   const classes = useStyles();
-  const auction = metadata.auction;
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      calcExpectedEndOfAuction(
-        auction?.approvedTimestamp,
-        auction?.duration,
-        auction?.expectedEndTimestamp
-      );
-    }, 1000);
-
-    return () => {
-      clearInterval(id);
-    };
-  }, []);
 
   if (!auction) {
     return (
       <ErrorWithRetry text={NftErrors.SOMETHING_WENT_WRONG} withRetry={true} />
     );
-  }
-
-  // TODO test this
-  function calcExpectedEndOfAuction(
-    start?: string,
-    duration?: string,
-    expectedEnd?: string | null
-  ) {
-    const now = Math.floor(Date.now() / 1000);
-    if (expectedEnd) {
-      setEnd(Number(expectedEnd) - now);
-    } else {
-      const end = Number(start) + Number(duration);
-      setEnd(end - now);
-    }
   }
 
   return (
@@ -66,7 +36,7 @@ export const AuctionDetails = observer(function AuctionDetails({
         <></>
       )}
       <Typography className={classes.timer}>
-        Auction ends in: {formatTimestampToCountdown(endOfAuction)}
+        Auction ends in: {endOfAuction}
       </Typography>
       <Typography>Owner: {auction.tokenOwnerId}</Typography>
     </div>

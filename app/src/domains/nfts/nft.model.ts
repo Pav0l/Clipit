@@ -145,7 +145,7 @@ class Auction {
   displayReservePrice?: string;
   expectedEndTimestamp?: string | null | undefined;
   auctionCurrency?: CurrencyPartialFragment;
-  highestBid?: ActiveBid | null;
+  highestBid: ActiveBid | null;
 
   constructor(input?: AuctionPartialFragment) {
     makeAutoObservable(this);

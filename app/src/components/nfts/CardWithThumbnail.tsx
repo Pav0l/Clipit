@@ -6,6 +6,9 @@ import {
   CardMedia,
   Typography
 } from "@material-ui/core";
+import { ActiveBid } from "../../domains/nfts/nft.model";
+import { CurrencyPartialFragment } from "../../lib/graphql/types";
+import { useExpectedEndOfAuction } from "../../lib/hooks/useExpectedEndOfAuction";
 
 interface Props {
   title: string;
@@ -15,10 +18,45 @@ interface Props {
     symbol: string;
     displayAmount: string;
   };
+  auction: {
+    approvedTimestamp?: string;
+    duration?: string;
+    expectedEndTimestamp?: string | null;
+    highestBid: ActiveBid | null;
+    displayReservePrice?: string;
+    auctionCurrency?: CurrencyPartialFragment;
+  } | null;
+}
+
+function figureOutWhichBidToDisplay({ bid, auction }: Props): {
+  symbol: string;
+  displayAmount: string;
+} | null {
+  // Bid display priority: active auction bid > active auction reserve price > basic bid > nothing
+  if (auction) {
+    if (auction.highestBid) {
+      return auction.highestBid;
+    } else if (auction.displayReservePrice) {
+      return {
+        symbol: auction.auctionCurrency?.symbol ?? "",
+        displayAmount: auction.displayReservePrice
+      };
+    }
+  }
+
+  if (bid) {
+    return bid;
+  }
+
+  return null;
 }
 
 export function CardWithThumbnail(props: Props) {
   const classes = useStyles();
+  const [expectedEndCountdown] = useExpectedEndOfAuction(props.auction);
+
+  // display auction bid OR basic bid OR nothing
+  const bid = figureOutWhichBidToDisplay(props);
 
   return (
     <Card className={classes.card}>
@@ -47,7 +85,7 @@ export function CardWithThumbnail(props: Props) {
               {props.description}
             </Typography>
           </div>
-          {props.bid ? (
+          {bid ? (
             <div>
               <Typography variant="subtitle2" component="p">
                 Current Bid
@@ -57,11 +95,19 @@ export function CardWithThumbnail(props: Props) {
                 component="p"
                 className={`${classes.title} ${classes.glow}`}
               >
-                {`${props.bid.displayAmount} ${props.bid.symbol}`}
+                {`${bid.displayAmount} ${bid.symbol}`}
               </Typography>
             </div>
           ) : null}
         </CardContent>
+        <div className={`${classes.content} ${classes.fixedHeight}`}>
+          <div className={`${classes.auctionEnds}`}>
+            {props.auction ? "Auction ends in:" : ""}
+          </div>
+          <div className={`${classes.auctionEnds} ${classes.glow}`}>
+            {props.auction ? expectedEndCountdown : ""}
+          </div>
+        </div>
       </CardActionArea>
     </Card>
   );
@@ -84,5 +130,12 @@ const useStyles = makeStyles(() => ({
   },
   glow: {
     color: "#2176FF"
+  },
+  auctionEnds: {
+    margin: "0 1rem 0.5rem",
+    fontWeight: 600
+  },
+  fixedHeight: {
+    minHeight: "24px"
   }
 }));
