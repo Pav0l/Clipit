@@ -1,6 +1,22 @@
+/**
+ * @dev - can return `NaN` if start and/or duration are undefined
+ */
+export function calcExpectedEndOfAuction(
+  start?: string,
+  duration?: string,
+  expectedEnd?: string | null
+) {
+  const now = Math.floor(Date.now() / 1000);
+  if (expectedEnd) {
+    return (Number(expectedEnd) - now);
+  } else {
+    const end = Number(start) + Number(duration);
+    return (end - now);
+  }
+}
 
 export function formatTimestampToCountdown(ts: number): string {
-  if (ts <= 0) {
+  if (ts <= 0 || isNaN(ts)) {
     return "ENDED";
   }
   const d = Math.floor(ts / (24 * 60 * 60));

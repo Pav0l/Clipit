@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import { formatTimestampToCountdown } from "../time/time";
+import {
+  calcExpectedEndOfAuction,
+  formatTimestampToCountdown
+} from "../time/time";
 
 export function useExpectedEndOfAuction(
   auction: {
@@ -12,10 +15,12 @@ export function useExpectedEndOfAuction(
 
   useEffect(() => {
     const id = setInterval(() => {
-      calcExpectedEndOfAuction(
-        auction?.approvedTimestamp,
-        auction?.duration,
-        auction?.expectedEndTimestamp
+      setEnd(
+        calcExpectedEndOfAuction(
+          auction?.approvedTimestamp,
+          auction?.duration,
+          auction?.expectedEndTimestamp
+        )
       );
     }, 1000);
 
@@ -23,20 +28,6 @@ export function useExpectedEndOfAuction(
       clearInterval(id);
     };
   }, []);
-
-  function calcExpectedEndOfAuction(
-    start?: string,
-    duration?: string,
-    expectedEnd?: string | null
-  ) {
-    const now = Math.floor(Date.now() / 1000);
-    if (expectedEnd) {
-      setEnd(Number(expectedEnd) - now);
-    } else {
-      const end = Number(start) + Number(duration);
-      setEnd(end - now);
-    }
-  }
 
   return [formatTimestampToCountdown(endOfAuction)];
 }

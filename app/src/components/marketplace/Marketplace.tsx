@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { Button, makeStyles } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 
 import { NftModel } from "../../domains/nfts/nft.model";
 import FullPageLoader from "../../components/loader/FullPageLoader";
@@ -23,7 +23,6 @@ function Marketplace({ model, operations }: Props) {
 
   // TODO - consider filtering only "not owned" tokens
   const metadata = model.nft.metadata;
-  const classes = useStyles();
 
   function fetchNextBatchOfClips() {
     setSkipCount(skipCount + 1);
@@ -64,19 +63,4 @@ function Marketplace({ model, operations }: Props) {
   );
 }
 
-/**
- * Marketplace card should contain:
- * - Clip title
- * - Game
- * - Streamer name
- * - Current Bid
- */
-
 export default observer(Marketplace);
-
-const useStyles = makeStyles(() => ({
-  link: {
-    textDecoration: "none",
-    margin: "1rem"
-  }
-}));

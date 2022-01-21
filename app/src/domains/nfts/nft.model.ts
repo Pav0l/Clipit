@@ -4,6 +4,7 @@ import { makeAutoObservable } from "mobx"
 import { pinataGatewayUri } from "../../lib/constants";
 import { formatCurrencyAmountToDisplayAmount } from "../../lib/ethereum/currency";
 import { AuctionBidPartialFragment, AuctionPartialFragment, BidPartialFragment, CurrencyPartialFragment, ReserveAuctionStatus } from "../../lib/graphql/types";
+import { calcExpectedEndOfAuction } from "../../lib/time/time";
 import { MetaModel } from "../app/meta.model";
 
 
@@ -133,36 +134,59 @@ export class ActiveBid {
 }
 
 class Auction {
-  id?: string;
-  tokenId?: string;
-  approved?: boolean;
-  status?: ReserveAuctionStatus;
-  tokenOwnerId?: string;
-  duration?: string;
+  id: string;
+  tokenId: string;
+  approved: boolean;
+  private xstatus: CustomAuctionStatus;
+  tokenOwnerId: string;
+  duration: string;
   firstBidTime?: string;
   approvedTimestamp?: string;
-  reservePrice?: string;
-  displayReservePrice?: string;
-  expectedEndTimestamp?: string | null | undefined;
-  auctionCurrency?: CurrencyPartialFragment;
+  reservePrice: string;
+  displayReservePrice: string;
+  expectedEndTimestamp?: string | null;
+  auctionCurrency: CurrencyPartialFragment;
   highestBid: ActiveBid | null;
 
-  constructor(input?: AuctionPartialFragment) {
+  constructor(input: AuctionPartialFragment) {
     makeAutoObservable(this);
 
-    this.id = input?.id;
-    this.tokenId = input?.tokenId;
-    this.approved = input?.approved;
-    this.duration = input?.duration;
-    this.firstBidTime = input?.firstBidTime;
-    this.approvedTimestamp = input?.approvedTimestamp;
-    this.expectedEndTimestamp = input?.expectedEndTimestamp;
-    this.reservePrice = input?.reservePrice;
-    this.displayReservePrice = formatCurrencyAmountToDisplayAmount(input?.reservePrice ?? 0, input?.auctionCurrency.decimals);
-    this.status = input?.status;
-    this.tokenOwnerId = input?.tokenOwner.id;
-    this.auctionCurrency = input?.auctionCurrency;
-    this.highestBid = this.handleHighestBid(this.auctionCurrency, input?.currentBid);
+    this.id = input.id;
+    this.tokenId = input.tokenId;
+    this.approved = input.approved;
+    this.duration = input.duration;
+    this.firstBidTime = input.firstBidTime;
+    this.approvedTimestamp = input.approvedTimestamp;
+    this.expectedEndTimestamp = input.expectedEndTimestamp;
+    this.reservePrice = input.reservePrice;
+    this.displayReservePrice = formatCurrencyAmountToDisplayAmount(input.reservePrice ?? 0, input.auctionCurrency.decimals);
+    this.xstatus = this.mapAuctionStatus(input.status);
+    this.tokenOwnerId = input.tokenOwner.id;
+    this.auctionCurrency = input.auctionCurrency;
+    this.highestBid = this.handleHighestBid(this.auctionCurrency, input.currentBid);
+  }
+
+  get isActive(): boolean {
+    return this.status === CustomAuctionStatus.Active;
+  }
+
+  get status(): CustomAuctionStatus | undefined {
+    const isActiveStatus = this.xstatus === CustomAuctionStatus.Active;
+    if (!isActiveStatus) {
+      return this.xstatus;
+    }
+
+    // status can be active, but auction could have timed out already
+    const timeToEnd = calcExpectedEndOfAuction(this.approvedTimestamp, this.duration, this.expectedEndTimestamp);
+    if (isNaN(timeToEnd)) {
+      return CustomAuctionStatus.Pending;
+    }
+
+    if (timeToEnd <= 0) {
+      return CustomAuctionStatus.Timeout;
+    }
+
+    return CustomAuctionStatus.Active;
   }
 
   private handleHighestBid(c?: CurrencyPartialFragment, bid?: AuctionBidPartialFragment | null) {
@@ -175,4 +199,27 @@ class Auction {
 
     return new ActiveBid({ symbol: c.symbol, amount: bid.amount, decimals: c.decimals, bidder: bid.bidder.id });
   }
+
+  private mapAuctionStatus(status: ReserveAuctionStatus): CustomAuctionStatus {
+    switch (status) {
+      case ReserveAuctionStatus.Active:
+        return CustomAuctionStatus.Active;
+      case ReserveAuctionStatus.Canceled:
+        return CustomAuctionStatus.Canceled;
+      case ReserveAuctionStatus.Finished:
+        return CustomAuctionStatus.Finished;
+      case ReserveAuctionStatus.Pending:
+        return CustomAuctionStatus.Pending;
+    }
+  }
+}
+
+// same as ReserveAuctionStatus, but includes Timeout status
+// which happens when Active auctions duration ran out, but the contract doesn't know about it yet
+export enum CustomAuctionStatus {
+  Active = 'Active',
+  Canceled = 'Canceled',
+  Finished = 'Finished',
+  Pending = 'Pending',
+  Timeout = 'Timeout'
 }
