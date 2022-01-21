@@ -7,15 +7,19 @@ import {
 } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
+import { NftController } from "../../domains/nfts/nft.controller";
+import { Metadata } from "../../domains/nfts/nft.model";
 import { Web3Controller } from "../../domains/web3/web3.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { useInputData } from "../../lib/hooks/useInputData";
+import LinearLoader from "../loader/LinearLoader";
 
 interface Props {
-  minimalBid: string;
+  metadata: Metadata;
 
   operations: {
     web3: Web3Controller;
+    nft: NftController;
   };
 
   model: {
@@ -23,13 +27,28 @@ interface Props {
   };
 }
 
+const calcMinBid = (metadata: Metadata) => {
+  const auction = metadata.auction;
+  if (!auction) {
+    return "0";
+  }
+
+  if (auction.highestBid) {
+    return `${Number(auction.highestBid.displayAmount) * 1.05}`;
+  }
+
+  return auction.displayReservePrice ? auction.displayReservePrice : "0";
+};
+
 export const BidForm = observer(function BidForm({
-  minimalBid,
+  metadata,
   operations,
   model
 }: Props) {
   const [isDisabled, setDisabled] = useState(false);
   const [isInputErr, setInputErr] = useState(false);
+
+  const minimalBid = calcMinBid(metadata);
 
   const [input, setInput] = useInputData(minimalBid);
 
@@ -49,8 +68,22 @@ export const BidForm = observer(function BidForm({
     }
   }, []);
 
-  const handleBid = () => {
-    // TODO
+  const handleBid = async () => {
+    // bid input must be higher than minimalBid
+    if (input < minimalBid) {
+      setInputErr(true);
+      setDisabled(true);
+      return;
+    }
+
+    if (!metadata.auction || !metadata.auction.id) {
+      setInputErr(true);
+      setDisabled(true);
+      return;
+    }
+
+    await operations.web3.requestConnectAndBid(metadata.auction?.id, input);
+    await operations.nft.getAuctionForToken(metadata.tokenId);
   };
 
   const handleBidChange = (
@@ -66,6 +99,10 @@ export const BidForm = observer(function BidForm({
 
     setInput(ev.target.value);
   };
+
+  if (model.web3.auctionBidLoadStatus) {
+    return <LinearLoader text={model.web3.auctionBidLoadStatus} />;
+  }
 
   return (
     <div className={classes.container}>

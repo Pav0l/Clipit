@@ -6,11 +6,13 @@ import { useExpectedEndOfAuction } from "../../lib/hooks/useExpectedEndOfAuction
 import ErrorWithRetry from "../error/Error";
 
 interface Props {
+  userAddress: string;
   metadata: Metadata;
 }
 
 export const AuctionDetails = observer(function AuctionDetails({
-  metadata
+  metadata,
+  userAddress
 }: Props) {
   const auction = metadata.auction;
   const [endOfAuction] = useExpectedEndOfAuction(auction);
@@ -31,7 +33,12 @@ export const AuctionDetails = observer(function AuctionDetails({
         {auction.auctionCurrency?.symbol}
       </Typography>
       {auction.highestBid ? (
-        <Typography>by: {auction.highestBid?.bidderAddress}</Typography>
+        <Typography>
+          by:{" "}
+          {auction.highestBid?.bidderAddress === userAddress
+            ? "you"
+            : auction.highestBid?.bidderAddress}
+        </Typography>
       ) : (
         <></>
       )}

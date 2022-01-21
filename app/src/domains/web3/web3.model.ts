@@ -1,4 +1,4 @@
-import { BigNumber, utils } from "ethers";
+import { BigNumber } from "ethers";
 import { makeAutoObservable } from "mobx"
 import { formatCurrencyAmountToDisplayAmount } from "../../lib/ethereum/currency";
 import { MetaModel } from "../app/meta.model";
@@ -21,6 +21,12 @@ export enum AuctionLoadStatus {
   CREATE_AUCTION_SUCCESS = "Auction created successfully"
 }
 
+export enum AuctionBidLoadStatus {
+  CONFIRM_AUCTION_BID = "Bid ready to be created.\nPlease confirm the transaction in Metamask",
+  WAIT_FOR_AUCTION_BID_TX = "Bid created, waiting for the transaction to confirm...",
+  AUCTION_BID_SUCCESS = "Bid created successfully"
+}
+
 export class Web3Model {
   meta: MetaModel;
 
@@ -36,6 +42,8 @@ export class Web3Model {
   mintStatus?: TokenLoadStatus;
   // Auction loader
   auctionLoadStatus?: AuctionLoadStatus;
+  // Bid on auction loader
+  auctionBidLoadStatus?: AuctionBidLoadStatus;
 
 
   constructor(meta: MetaModel) {
@@ -116,6 +124,18 @@ export class Web3Model {
     this.setAuctionLoadStatus(undefined);
   }
 
+  setAuctionBidLoader() {
+    this.setAuctionBidLoadStatus(AuctionBidLoadStatus.CONFIRM_AUCTION_BID);
+  }
+
+  setWaitForAuctionBidTxLoader() {
+    this.setAuctionBidLoadStatus(AuctionBidLoadStatus.WAIT_FOR_AUCTION_BID_TX);
+  }
+
+  clearAuctionBidLoader() {
+    this.setAuctionBidLoadStatus(undefined);
+  }
+
   private startMintLoader() {
     this.mintStatus = TokenLoadStatus.CONFIRM_MINT;
   }
@@ -132,6 +152,10 @@ export class Web3Model {
   private setAuctionLoadStatus(status: AuctionLoadStatus | undefined) {
     this.auctionLoadStatus = status;
   }
+
+  private setAuctionBidLoadStatus(status: AuctionBidLoadStatus | undefined) {
+    this.auctionBidLoadStatus = status;
+  }
 }
 
 export enum Web3Errors {
@@ -144,6 +168,9 @@ export enum Web3Errors {
 
   AUCTION_CREATE_REJECTED = "Transaction to create auction rejected",
   AUCTION_CREATE_FAILED = "Failed to create auction",
+
+  AUCTION_BID_REJECTED = "Transaction to create auction bid rejected",
+  AUCTION_BID_FAILED = "Failed to bid on auction",
 
   FAILED_TO_FETCH_SUBGRAPH_DATA = "There was an issue fetching your NFT data. The NFT was minted, however it may take some time to update the data. Please check your list of NFTs in couple of minutes",
 

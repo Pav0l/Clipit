@@ -1,4 +1,4 @@
-import { BigNumberish, ContractTransaction, ethers } from "ethers";
+import { BigNumber, BigNumberish, ContractTransaction, ethers } from "ethers";
 
 import AuctionHouseAbi from "./AuctionHouse.json";
 import { AuctionHouse } from "./AuctionHouse";
@@ -17,7 +17,7 @@ export interface IAuctionContractClient {
     curatorFeePercentage: BigNumberish,
     auctionCurrency: string,
   ): Promise<ContractTransaction>;
-  createBid(auctionId: BigNumberish, amount: BigNumberish): Promise<ContractTransaction>;
+  createBid(auctionId: BigNumberish, amount: BigNumber): Promise<ContractTransaction>;
   endAuction(auctionId: BigNumberish): Promise<ContractTransaction>;
   minBidIncrementPercentage(): Promise<number>;
   setAuctionApproval(auctionId: BigNumberish, approved: boolean): Promise<ContractTransaction>;
@@ -71,8 +71,8 @@ class AuctionContractClient implements IAuctionContractClient {
     return this.contract.createAuction(tokenId, tokenContract, duration, reservePrice, curator, curatorFeePercentage, auctionCurrency);
   }
 
-  createBid = async (auctionId: BigNumberish, amount: BigNumberish): Promise<ContractTransaction> => {
-    return this.contract.createBid(auctionId, amount);
+  createBid = async (auctionId: BigNumberish, amount: BigNumber): Promise<ContractTransaction> => {
+    return this.contract.createBid(auctionId, amount, { value: amount });
   }
 }
 

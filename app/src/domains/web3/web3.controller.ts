@@ -1,9 +1,9 @@
-import { BigNumber, BigNumberish, BytesLike, constants } from "ethers";
+import { BigNumber, BigNumberish, BytesLike, constants, utils } from "ethers";
 
 import { IClipItContractClient } from "../../lib/contracts/ClipIt/clipit-contract.client";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
-import { Web3Model, Web3Errors, AuctionLoadStatus } from "./web3.model";
+import { Web3Model, Web3Errors, AuctionLoadStatus, AuctionBidLoadStatus } from "./web3.model";
 import { ISubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { Decimal } from "../../lib/decimal/decimal";
@@ -31,6 +31,8 @@ export interface IWeb3Controller {
   // get current users balance
   getBalance: (address: string) => Promise<void>;
   requestConnectAndCreateAuction: (tokenId: string, duration: BigNumberish, minPrice: BigNumberish,) => Promise<void>;
+  // Bid on token in auction
+  requestConnectAndBid: (auctionId: string, amount: string) => Promise<void>;
 }
 
 
@@ -144,6 +146,26 @@ export class Web3Controller implements IWeb3Controller {
     await this.createAuction(tokenId, duration, minPrice);
   }
 
+  requestConnectAndBid = async (auctionId: string, amount: string) => {
+    if (!this.model.isMetaMaskInstalled()) {
+      this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
+      return;
+    }
+
+    if (!this.model.isProviderConnected()) {
+      await this.requestAccounts();
+    }
+
+    const signerAddress = this.model.getAccount();
+    if (!signerAddress) {
+      // requestAccounts failed (rejected/already opened, etc...) and notification to user was sent
+      // just stop here
+      return;
+    }
+
+    await this.bidOnAuction(auctionId, amount);
+  }
+
 
   private prepareMetadataAndMintClip = async (clipId: string, address: string, creatorShare: string, clipTitle: string, clipDescription?: string) => {
     if (!clipId || !address || !clipTitle) {
@@ -208,7 +230,9 @@ export class Web3Controller implements IWeb3Controller {
 
       if (isEthersJsonRpcError(error)) {
         // take out Rpc error from Ethers error
-        error = error.error;
+        if (error.error) {
+          error = error.error;
+        }
       }
 
       if (isRpcError(error)) {
@@ -328,7 +352,9 @@ export class Web3Controller implements IWeb3Controller {
 
       if (isEthersJsonRpcError(error)) {
         // take out Rpc error from Ethers error
-        error = error.error;
+        if (error.error) {
+          error = error.error;
+        }
       }
 
       if (isRpcError(error)) {
@@ -351,6 +377,71 @@ export class Web3Controller implements IWeb3Controller {
         // SENTRY
         // unknown error
         this.model.meta.setError(Web3Errors.AUCTION_CREATE_FAILED);
+      }
+
+      return null;
+    }
+  }
+
+  private bidOnAuction = async (auctionId: string, amount: string) => {
+    try {
+      const auction = this.auctionContractCreator(window.ethereum as EthereumProvider);
+
+      this.model.setAuctionBidLoader();
+
+      const etherAmount = utils.parseEther(amount);
+      const tx = await auction.createBid(auctionId, etherAmount);
+
+      this.model.setWaitForAuctionBidTxLoader();
+
+      console.log('[LOG]:auction bid tx hash', tx.hash);
+
+      await tx.wait();
+
+      this.model.clearAuctionBidLoader();
+      this.snackbar.sendSuccess(AuctionBidLoadStatus.AUCTION_BID_SUCCESS);
+    } catch (error) {
+      // TODO sentry
+      console.log("[LOG]:bid auction:error", error);
+
+      if (isEthersJsonRpcError(error)) {
+        // take out Rpc error from Ethers error
+        if (error.error) {
+          error = error.error;
+        }
+      }
+
+      if (isRpcError(error)) {
+        switch (error.code) {
+          case RpcErrors.USER_REJECTED_REQUEST:
+            this.snackbar.sendInfo(Web3Errors.AUCTION_BID_REJECTED);
+            break;
+          case RpcErrors.INTERNAL_ERROR:
+            // contract reverts
+            if (error.message.includes(AuctionContractErrors.AUCTION_DOES_NOT_EXIST)) {
+              this.snackbar.sendError(AuctionContractErrors.AUCTION_DOES_NOT_EXIST);
+            } else if (error.message.includes(AuctionContractErrors.AUCTION_NOT_APPROVED)) {
+              this.snackbar.sendError(AuctionContractErrors.AUCTION_NOT_STARTED);
+            } else if (error.message.includes(AuctionContractErrors.AUCTION_EXPIRED)) {
+              this.snackbar.sendError(AuctionContractErrors.AUCTION_EXPIRED);
+            } else if (error.message.includes(AuctionContractErrors.AUCTION_BID_LOWER_THAN_RESERVE_PRICE)) {
+              // TODO send displayReservePrice here as well
+              this.snackbar.sendError(AuctionContractErrors.BID_NOT_HIGH_ENOUGH);
+            } else if (error.message.includes(AuctionContractErrors.AUCTION_BID_LOWER_THAN_PREVIOUS_BID)) {
+              // TODO send minBidIncrementPercentage here as well
+              this.snackbar.sendError(AuctionContractErrors.BID_NOT_HIGH_ENOUGH);
+            }
+            // TODO handle AUCTION_BID_INVALID_FOR_SHARE_SPLITTING
+            break;
+          default:
+            // SENTRY
+            this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
+            break;
+        }
+      } else {
+        // SENTRY
+        // unknown error
+        this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
       }
 
       return null;

@@ -1,6 +1,10 @@
 import { observer } from "mobx-react-lite";
 import { NftController } from "../../domains/nfts/nft.controller";
-import { Metadata, NftModel } from "../../domains/nfts/nft.model";
+import {
+  Metadata,
+  NftModel,
+  CustomAuctionStatus
+} from "../../domains/nfts/nft.model";
 import { Web3Controller } from "../../domains/web3/web3.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { AuctionCreateForm } from "../auctions/AuctionCreateForm";
@@ -28,33 +32,60 @@ export const NftDetails = observer(function NftDetails({
   operations
 }: Props) {
   const userAddress = model.web3.getAccount();
-  const isNftOwn = metadata.owner === userAddress;
-  const isNftOwnerWithAuction = metadata.auction?.tokenOwnerId === userAddress;
 
-  const nftNotOwn = !isNftOwn && !isNftOwnerWithAuction;
+  // TODO how does this work on cancelled/finished auctions? it seems the auction.tokenOwnerId does not change
+  let isUserOwner;
+  if (!metadata.auction) {
+    // token not in auction, just check owner
+    isUserOwner = metadata.owner === userAddress;
+  } else {
+    // token is in auction
+    isUserOwner = metadata.auction.tokenOwnerId === userAddress;
+  }
 
-  const minBid =
-    metadata.currentBids.length > 0
-      ? Number(metadata.currentBids[0].displayAmount) * 1.05
-      : "0";
+  const isHighestBidder =
+    userAddress === metadata.auction?.highestBid?.bidderAddress;
+  const hasActiveAuction = metadata.auction?.isActive;
 
-  return (
-    <>
-      {nftNotOwn ? (
-        <BidForm
-          minimalBid={minBid.toString()}
-          operations={{ web3: operations.web3 }}
-          model={{ web3: model.web3 }}
-        />
-      ) : isNftOwnerWithAuction ? (
-        <AuctionDetails metadata={metadata} />
-      ) : (
-        <AuctionCreateForm
-          tokenId={tokenId}
-          operations={operations}
-          model={model}
-        />
-      )}
-    </>
-  );
+  if (hasActiveAuction && (isUserOwner || isHighestBidder)) {
+    // tokenOwner OR highest bidder and active auction - SEE DETAILS!
+    return (
+      <AuctionDetails metadata={metadata} userAddress={userAddress ?? ""} />
+    );
+  }
+
+  if (isUserOwner && metadata.auction?.status === CustomAuctionStatus.Timeout) {
+    // TODO owner with expired auction -> cancel / prolong duration
+    return (
+      <div>
+        <div>{metadata.clipTitle}</div>
+        <div>Auction expired. Cancel or increase duration of the auction</div>
+      </div>
+    );
+  }
+
+  if (!isUserOwner && hasActiveAuction) {
+    // not owner and running active auction - BID!
+    return (
+      <BidForm
+        metadata={metadata}
+        operations={operations}
+        model={{ web3: model.web3 }}
+      />
+    );
+  }
+
+  if (isUserOwner && !hasActiveAuction) {
+    // owner without auction - CREATE AUCTION
+    return (
+      <AuctionCreateForm
+        tokenId={tokenId}
+        operations={operations}
+        model={model}
+      />
+    );
+  }
+
+  // not owner of token and also no auction active
+  return null;
 });
