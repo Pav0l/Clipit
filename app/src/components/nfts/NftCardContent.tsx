@@ -24,21 +24,23 @@ interface Props {
 function figureOutWhichBidToDisplay({ bid, auction }: Props): {
   symbol: string;
   displayAmount: string;
+  onlyDisplayReservePrice: boolean;
 } | null {
   // Bid display priority: active auction bid > active auction reserve price > basic bid > nothing
   if (auction) {
     if (auction.highestBid) {
-      return auction.highestBid;
+      return { ...auction.highestBid, onlyDisplayReservePrice: false };
     } else if (auction.displayReservePrice) {
       return {
         symbol: auction.auctionCurrency?.symbol ?? "",
-        displayAmount: auction.displayReservePrice
+        displayAmount: auction.displayReservePrice,
+        onlyDisplayReservePrice: true
       };
     }
   }
 
   if (bid) {
-    return bid;
+    return { ...bid, onlyDisplayReservePrice: false };
   }
 
   return null;
@@ -70,7 +72,7 @@ export function NftCardContent(props: Props) {
               component="h6"
               className={classes.bidTitle}
             >
-              Current Bid
+              {bid.onlyDisplayReservePrice ? "Reserve price:" : "Current Bid:"}
             </Typography>
           ) : null}
         </div>
@@ -133,7 +135,7 @@ const useStyles = makeStyles(() => ({
     minHeight: "24px"
   },
   bidTitle: {
-    minWidth: "83px"
+    minWidth: "90px"
   },
   bidValue: {
     minWidth: "80px"
