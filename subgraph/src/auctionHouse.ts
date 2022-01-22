@@ -213,7 +213,8 @@ export function handleReserveAuctionCanceled(event: AuctionCanceled): void {
   handleFinishedAuction(
     auction,
     event.block.timestamp,
-    event.block.number
+    event.block.number,
+    true
   )
 
   log.info(`[handleReserveAuctionCanceled] done auction {}`, [auctionId])
