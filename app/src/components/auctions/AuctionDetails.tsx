@@ -28,7 +28,7 @@ export const AuctionDetails = observer(function AuctionDetails({
   return (
     <div className={classes.container}>
       <Typography component="h5" variant="h5">
-        Highest bid:{" "}
+        {auction.highestBid?.displayAmount ? "Highest bid:" : "Reserve price:"}{" "}
         {auction.highestBid?.displayAmount ?? auction.displayReservePrice}{" "}
         {auction.auctionCurrency?.symbol}
       </Typography>

@@ -62,7 +62,7 @@ export function NftCardContent(props: Props) {
             <Typography
               variant="subtitle1"
               component="h6"
-              className={classes.bidTitle}
+              className={`${classes.bidTitle} ${classes.alignRight}`}
             >
               {bid.onlyDisplayReservePrice ? "Reserve price:" : "Current Bid:"}
             </Typography>
@@ -127,7 +127,7 @@ const useStyles = makeStyles(() => ({
     minHeight: "24px"
   },
   bidTitle: {
-    minWidth: "90px"
+    minWidth: "106px"
   },
   bidValue: {
     minWidth: "80px"
