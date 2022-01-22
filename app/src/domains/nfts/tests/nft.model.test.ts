@@ -1,4 +1,6 @@
-import { ActiveBid, Metadata } from "../nft.model";
+import { ReserveAuctionStatus } from "../../../lib/graphql/types";
+import { MetaModel } from "../../app/meta.model";
+import { ActiveBid, Metadata, NftModel } from "../nft.model";
 
 describe("nft model", () => {
   describe("active bids", () => {
@@ -53,6 +55,35 @@ describe("nft model", () => {
       expect(metadata.thumbnailUri).toEqual("thumbnailUri");
       expect(metadata.owner).toEqual("owner");
       expect(metadata.clipIpfsUri).toEqual("gateway.foo.com/clipCid");
+    });
+
+    it("marketplace metadata", () => {
+      const model = new NftModel(new MetaModel());
+      model.addMetadata({
+        clipCid: "clipCid",
+        name: "name",
+        description: "description",
+        metadataCid: "metadataCid",
+        tokenId: "tokenId",
+        thumbnailUri: "thumbnailUri",
+        owner: "owner",
+        reserveAuction: [{
+          id: 'id',
+          tokenId: 'tokenId',
+          status: ReserveAuctionStatus.Pending,
+          approved: false,
+          duration: '3600',
+          reservePrice: '0',
+          tokenOwner: { id: 'owner' },
+          auctionCurrency: {
+            id: 'id',
+            name: 'money',
+            symbol: 'M'
+          }
+        }]
+      });
+
+      expect(model.metadataForMarketplace.length).toEqual(0);
     });
   });
 });

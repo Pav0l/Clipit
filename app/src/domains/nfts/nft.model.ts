@@ -48,6 +48,15 @@ export class NftModel {
   getOwnMetadata(userAddress: string | null): Metadata[] {
     return this.metadata.filter(metadata => metadata.owner === userAddress || metadata.auction?.tokenOwnerId === userAddress);
   }
+
+  get metadataForMarketplace(): Metadata[] {
+    return this.metadata.filter(metadata => {
+      if (metadata.auction) {
+        return metadata.auction.approved;
+      }
+      return true;
+    })
+  }
 }
 
 

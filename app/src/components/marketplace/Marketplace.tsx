@@ -22,7 +22,7 @@ function Marketplace({ model, operations }: Props) {
   const [skipCount, setSkipCount] = useState(0);
 
   // TODO - consider filtering only "not owned" tokens
-  const metadata = model.nft.metadata;
+  const metadata = model.nft.metadataForMarketplace;
 
   function fetchNextBatchOfClips() {
     setSkipCount(skipCount + 1);
