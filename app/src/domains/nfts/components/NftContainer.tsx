@@ -46,12 +46,7 @@ function NftContainer({ model, operations }: Props) {
   if (metadata) {
     return (
       <SplitContainer>
-        <NftCard
-          clipIpfsUri={metadata.clipIpfsUri}
-          clipTitle={metadata.clipTitle}
-          clipDescription={metadata.description}
-          poster={metadata.thumbnailUri}
-        />
+        <NftCard metadata={metadata} />
         <NftDetails
           metadata={metadata}
           tokenId={tokenId}

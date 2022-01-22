@@ -1,48 +1,36 @@
-import {
-  CardMedia,
-  Card,
-  CardContent,
-  Typography,
-  makeStyles
-} from "@material-ui/core";
+import { CardMedia, Card, makeStyles, CardActionArea } from "@material-ui/core";
+import { Metadata } from "../../domains/nfts/nft.model";
+import { NftCardContent } from "./NftCardContent";
 
 interface Props {
-  clipIpfsUri: string;
-  clipTitle: string;
-  clipDescription: string;
-  poster: string;
+  metadata: Metadata;
 }
 
 /**
  * NftCard presentation component displays NFTs metadata as a card with embedded video player
  */
-export function NftCard({
-  clipIpfsUri,
-  clipTitle,
-  clipDescription,
-  poster
-}: Props) {
+export function NftCard({ metadata }: Props) {
   const classes = useStyles();
 
   return (
     <Card className={classes.card}>
-      <CardMedia
-        component="video"
-        src={clipIpfsUri}
-        title={`CLIP NFT video: ${clipTitle}`}
-        className={classes.video}
-        controls
-        controlsList="nodownload"
-        poster={poster}
-      />
-      <CardContent>
-        <Typography variant="subtitle1" component="h6">
-          {clipTitle}
-        </Typography>
-        <Typography variant="body2" color="textSecondary" component="p">
-          {clipDescription}
-        </Typography>
-      </CardContent>
+      <CardActionArea>
+        <CardMedia
+          component="video"
+          src={metadata.clipIpfsUri}
+          title={`CLIP NFT video: ${metadata.clipTitle}`}
+          className={classes.video}
+          controls
+          controlsList="nodownload"
+          poster={metadata.thumbnailUri}
+        />
+        <NftCardContent
+          title={metadata.clipTitle}
+          description={metadata.description}
+          auction={metadata.auction}
+          bid={metadata.currentBid}
+        />
+      </CardActionArea>
     </Card>
   );
 }

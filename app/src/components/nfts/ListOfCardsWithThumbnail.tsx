@@ -19,19 +19,7 @@ export default function ListOfCardsWithThumbnail({ metadata }: Props) {
           key={idx}
           className={classes.link}
         >
-          <CardWithThumbnail
-            key={idx}
-            title={metadata.clipTitle}
-            // TODO - add Game & Streamer name? (are they not on the clip itself?
-            thumbnailUrl={metadata.thumbnailUri}
-            description={metadata.description}
-            bid={
-              metadata.currentBids && metadata.currentBids.length > 0
-                ? metadata.currentBids[0]
-                : undefined
-            }
-            auction={metadata.auction}
-          />
+          <CardWithThumbnail key={idx} metadata={metadata} />
         </Link>
       ))}
     </VideoList>
