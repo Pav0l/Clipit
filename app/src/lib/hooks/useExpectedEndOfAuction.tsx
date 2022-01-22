@@ -7,7 +7,7 @@ import {
 export function useExpectedEndOfAuction(
   auction: {
     duration?: string;
-    approvedTimestamp?: string;
+    firstBidTime?: string;
     expectedEndTimestamp?: string | null;
   } | null
 ) {
@@ -17,7 +17,7 @@ export function useExpectedEndOfAuction(
     const id = setInterval(() => {
       setEnd(
         calcExpectedEndOfAuction(
-          auction?.approvedTimestamp,
+          auction?.firstBidTime,
           auction?.duration,
           auction?.expectedEndTimestamp
         )

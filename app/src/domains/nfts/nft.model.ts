@@ -127,7 +127,7 @@ class Auction {
   id: string;
   tokenId: string;
   approved: boolean;
-  private xstatus: CustomAuctionStatus;
+  status: ReserveAuctionStatus;
   tokenOwnerId: string;
   duration: string;
   firstBidTime?: string;
@@ -150,33 +150,26 @@ class Auction {
     this.expectedEndTimestamp = input.expectedEndTimestamp;
     this.reservePrice = input.reservePrice;
     this.displayReservePrice = formatCurrencyAmountToDisplayAmount(input.reservePrice ?? 0, input.auctionCurrency.decimals);
-    this.xstatus = this.mapAuctionStatus(input.status);
+    this.status = input.status;
     this.tokenOwnerId = input.tokenOwner.id;
     this.auctionCurrency = input.auctionCurrency;
     this.highestBid = this.handleHighestBid(this.auctionCurrency, input.currentBid);
   }
 
   get isActive(): boolean {
-    return this.status === CustomAuctionStatus.Active;
+    return this.status === ReserveAuctionStatus.Active;
   }
 
-  get status(): CustomAuctionStatus | undefined {
-    const isActiveStatus = this.xstatus === CustomAuctionStatus.Active;
-    if (!isActiveStatus) {
-      return this.xstatus;
-    }
+  get isPending(): boolean {
+    return this.status === ReserveAuctionStatus.Pending;
+  }
 
-    // status can be active, but auction could have timed out already
-    const timeToEnd = calcExpectedEndOfAuction(this.approvedTimestamp, this.duration, this.expectedEndTimestamp);
-    if (isNaN(timeToEnd)) {
-      return CustomAuctionStatus.Pending;
-    }
+  get isCanceled(): boolean {
+    return this.status === ReserveAuctionStatus.Canceled;
+  }
 
-    if (timeToEnd <= 0) {
-      return CustomAuctionStatus.Timeout;
-    }
-
-    return CustomAuctionStatus.Active;
+  get isFinished(): boolean {
+    return this.status === ReserveAuctionStatus.Finished;
   }
 
   private handleHighestBid(c?: CurrencyPartialFragment, bid?: AuctionBidPartialFragment | null) {
@@ -189,27 +182,4 @@ class Auction {
 
     return new ActiveBid({ symbol: c.symbol, amount: bid.amount, decimals: c.decimals, bidder: bid.bidder.id });
   }
-
-  private mapAuctionStatus(status: ReserveAuctionStatus): CustomAuctionStatus {
-    switch (status) {
-      case ReserveAuctionStatus.Active:
-        return CustomAuctionStatus.Active;
-      case ReserveAuctionStatus.Canceled:
-        return CustomAuctionStatus.Canceled;
-      case ReserveAuctionStatus.Finished:
-        return CustomAuctionStatus.Finished;
-      case ReserveAuctionStatus.Pending:
-        return CustomAuctionStatus.Pending;
-    }
-  }
-}
-
-// same as ReserveAuctionStatus, but includes Timeout status
-// which happens when Active auctions duration ran out, but the contract doesn't know about it yet
-export enum CustomAuctionStatus {
-  Active = 'Active',
-  Canceled = 'Canceled',
-  Finished = 'Finished',
-  Pending = 'Pending',
-  Timeout = 'Timeout'
 }

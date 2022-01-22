@@ -1,10 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { NftController } from "../../domains/nfts/nft.controller";
-import {
-  Metadata,
-  NftModel,
-  CustomAuctionStatus
-} from "../../domains/nfts/nft.model";
+import { Metadata, NftModel } from "../../domains/nfts/nft.model";
 import { Web3Controller } from "../../domains/web3/web3.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { AuctionCreateForm } from "../auctions/AuctionCreateForm";
@@ -46,21 +42,26 @@ export const NftDetails = observer(function NftDetails({
   const isHighestBidder =
     userAddress === metadata.auction?.highestBid?.bidderAddress;
   const hasActiveAuction = metadata.auction?.isActive;
+  /**
+   * TODO this should be probably splitted into two types of details:
+   * - owner details
+   *  - not existing auction => create auction
+   *  - auction pending => approve
+   *  - auction active => show details / end auction
+   *  - auction finished => show details
+   *  - auction active & no bids => cancel auction
+   * - bidder details
+   *  - highest bidder => show details?
+   *  - other bidders => bid on aucton
+   */
 
-  if (hasActiveAuction && (isUserOwner || isHighestBidder)) {
-    // tokenOwner OR highest bidder and active auction - SEE DETAILS!
+  if (
+    (hasActiveAuction || metadata.auction?.isFinished) &&
+    (isUserOwner || isHighestBidder)
+  ) {
+    // tokenOwner OR highest bidder and active/finished auction - SEE DETAILS!
     return (
       <AuctionDetails metadata={metadata} userAddress={userAddress ?? ""} />
-    );
-  }
-
-  if (isUserOwner && metadata.auction?.status === CustomAuctionStatus.Timeout) {
-    // TODO owner with expired auction -> cancel / prolong duration
-    return (
-      <div>
-        <div>{metadata.clipTitle}</div>
-        <div>Auction expired. Cancel or increase duration of the auction</div>
-      </div>
     );
   }
 
@@ -76,7 +77,7 @@ export const NftDetails = observer(function NftDetails({
   }
 
   if (isUserOwner && !hasActiveAuction) {
-    // owner without auction - CREATE AUCTION
+    // owner without auction (not started / canceled) - CREATE AUCTION
     return (
       <AuctionCreateForm
         tokenId={tokenId}
