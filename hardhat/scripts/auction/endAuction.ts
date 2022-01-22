@@ -3,8 +3,6 @@ import { getAuctionAddress } from "../../lib";
 import { AuctionHouse } from "../../typechain";
 const AuctionContract = require("../../artifacts/contracts/AuctionHouse.sol/AuctionHouse.json");
 
-const auctionId = "0x0000000000000000000000000000000000000000000000000000000000000001";
-
 
 async function main() {
   const auctionAddress = await getAuctionAddress();
@@ -13,12 +11,13 @@ async function main() {
   const creator = wallets[1];
   const auction = (new ethers.Contract(auctionAddress, AuctionContract.abi, creator)) as AuctionHouse;
 
+  const auctionId = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
-  const auctionData = await auction.auctions(auctionId);
-  console.log(auctionData);
+  const tx = await auction.endAuction(auctionId);
+  console.log('waiting for tx: ', tx.hash);
+  await tx.wait();
 
-  console.log('firstBidTime:', auctionData.firstBidTime.toString())
-  console.log('duration:', auctionData.duration.toString())
+  console.log("Auction ended!");
 }
 
 main()
