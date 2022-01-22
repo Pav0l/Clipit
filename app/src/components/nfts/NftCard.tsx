@@ -28,7 +28,6 @@ export function NftCard({ metadata }: Props) {
           title={metadata.clipTitle}
           description={metadata.description}
           auction={metadata.auction}
-          bid={metadata.currentBid}
         />
       </CardActionArea>
     </Card>

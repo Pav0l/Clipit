@@ -6,11 +6,7 @@ import { useExpectedEndOfAuction } from "../../lib/hooks/useExpectedEndOfAuction
 interface Props {
   title: string;
   description: string;
-  // TODO this needs to change so it doesnt show DONE auction or 0.0 ETH bid
-  bid?: {
-    symbol: string;
-    displayAmount: string;
-  };
+  // TODO this needs to change so it doesnt show DONE auction when its timedout
   auction: {
     approvedTimestamp?: string;
     duration?: string;
@@ -21,7 +17,7 @@ interface Props {
   } | null;
 }
 
-function figureOutWhichBidToDisplay({ bid, auction }: Props): {
+function figureOutWhichBidToDisplay({ auction }: Props): {
   symbol: string;
   displayAmount: string;
   onlyDisplayReservePrice: boolean;
@@ -37,10 +33,6 @@ function figureOutWhichBidToDisplay({ bid, auction }: Props): {
         onlyDisplayReservePrice: true
       };
     }
-  }
-
-  if (bid) {
-    return { ...bid, onlyDisplayReservePrice: false };
   }
 
   return null;

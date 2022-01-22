@@ -53,7 +53,6 @@ describe("nft model", () => {
       expect(metadata.thumbnailUri).toEqual("thumbnailUri");
       expect(metadata.owner).toEqual("owner");
       expect(metadata.clipIpfsUri).toEqual("gateway.foo.com/clipCid");
-      expect(metadata.currentBids).toEqual([]);
     });
   });
 });

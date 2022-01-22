@@ -72,8 +72,6 @@ export class Metadata {
   tokenId: string;
   thumbnailUri: string;
   owner: string;
-  currentBids: ActiveBid[];
-  currentBid?: ActiveBid;
   auction: Auction | null;
 
   constructor(data: MetadataInput, private ipfsGatewayUri: string = pinataGatewayUri) {
@@ -87,19 +85,7 @@ export class Metadata {
     this.tokenId = this.validateField(data.tokenId);
     this.thumbnailUri = this.validateField(data.thumbnailUri);
     this.owner = this.validateField(data.owner);
-    this.currentBids = this.handleBids(data.currentBids);
-    this.currentBid = this.currentBids && this.currentBids.length > 0
-      ? this.currentBids[0]
-      : undefined
     this.auction = this.handleAuction(this.tokenId, data.reserveAuction);
-  }
-
-  private handleBids(bids?: BidPartialFragment[] | null) {
-    if (!bids || bids.length === 0) {
-      return [];
-    }
-
-    return bids.map(bid => new ActiveBid({ symbol: bid.currency.symbol, amount: bid.amount, decimals: bid.currency.decimals, bidder: bid.bidder.id }))
   }
 
   private validateField<T>(field: unknown) {
