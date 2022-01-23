@@ -52,9 +52,11 @@ function Marketplace({ model, operations }: Props) {
 
       {/* Temporary button to load more clips
           TODO - make this load more on scroll  */}
-      <Button variant="outlined" onClick={fetchNextBatchOfClips}>
-        Load more
-      </Button>
+      {metadata.length >= CLIPS_PAGINATION_SKIP_VALUE ? (
+        <Button variant="outlined" onClick={fetchNextBatchOfClips}>
+          Load more
+        </Button>
+      ) : null}
     </>
   );
 }
