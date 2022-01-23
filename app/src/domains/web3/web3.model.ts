@@ -136,15 +136,15 @@ export class Web3Model {
     this.setAuctionBidLoadStatus(undefined);
   }
 
-  private startMintLoader() {
-    this.mintStatus = TokenLoadStatus.CONFIRM_MINT;
-  }
-
-  private stopClipStoreLoader() {
+  stopClipStoreLoader() {
     clearTimeout(this.storeClipTimeoutId);
     this.storeClipTimeoutId = undefined;
     this.storeClipStatus = undefined;
   }
+  private startMintLoader() {
+    this.mintStatus = TokenLoadStatus.CONFIRM_MINT;
+  }
+
   private setClipStoreStatus(status: StoreClipStatus) {
     this.storeClipStatus = status;
   }

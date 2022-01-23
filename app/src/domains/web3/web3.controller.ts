@@ -199,6 +199,7 @@ export class Web3Controller implements IWeb3Controller {
       // TODO ideally we do not want to reload the app here and just update state
       location.assign(location.origin + `/nfts/${tokenId}`);
     } else {
+      this.model.stopClipStoreLoader();
       // TODO improve errors from clipit-api
       this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
     }
