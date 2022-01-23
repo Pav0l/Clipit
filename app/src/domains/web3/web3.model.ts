@@ -27,6 +27,18 @@ export enum AuctionBidLoadStatus {
   AUCTION_BID_SUCCESS = "Bid created successfully"
 }
 
+export enum AuctionCancelLoadStatus {
+  CONFIRM_AUCTION_CANCEL = "Transaction ready to be created.\nPlease confirm it in Metamask",
+  WAIT_FOR_AUCTION_CANCEL_TX = "Auction canceled, waiting for the transaction to confirm...",
+  AUCTION_CANCEL_SUCCESS = "Auction canceled successfully"
+}
+
+export enum AuctionEndLoadStatus {
+  CONFIRM_AUCTION_END = "Transaction ready to be created.\nPlease confirm it in Metamask",
+  WAIT_FOR_AUCTION_END_TX = "Auction ended, waiting for the transaction to confirm...",
+  AUCTION_END_SUCCESS = "Auction ended successfully"
+}
+
 export class Web3Model {
   meta: MetaModel;
 
@@ -44,6 +56,10 @@ export class Web3Model {
   auctionLoadStatus?: AuctionLoadStatus;
   // Bid on auction loader
   auctionBidLoadStatus?: AuctionBidLoadStatus;
+  // cancel auction loader
+  auctionCancelLoadStatus?: AuctionCancelLoadStatus;
+  // end auction loader
+  auctionEndLoadStatus?: AuctionEndLoadStatus;
 
 
   constructor(meta: MetaModel) {
@@ -136,6 +152,30 @@ export class Web3Model {
     this.setAuctionBidLoadStatus(undefined);
   }
 
+  setAuctionCancelLoader() {
+    this.setAuctionCancelLoadStatus(AuctionCancelLoadStatus.CONFIRM_AUCTION_CANCEL);
+  }
+
+  setWaitForAuctionCancelTxLoader() {
+    this.setAuctionCancelLoadStatus(AuctionCancelLoadStatus.WAIT_FOR_AUCTION_CANCEL_TX);
+  }
+
+  clearAuctionCancelLoader() {
+    this.setAuctionCancelLoadStatus(undefined);
+  }
+
+  setAuctionEndLoader() {
+    this.setAuctionEndLoadStatus(AuctionEndLoadStatus.CONFIRM_AUCTION_END);
+  }
+
+  setWaitForAuctionEndTxLoader() {
+    this.setAuctionEndLoadStatus(AuctionEndLoadStatus.WAIT_FOR_AUCTION_END_TX);
+  }
+
+  clearAuctionEndLoader() {
+    this.setAuctionEndLoadStatus(undefined);
+  }
+
   stopClipStoreLoader() {
     clearTimeout(this.storeClipTimeoutId);
     this.storeClipTimeoutId = undefined;
@@ -156,6 +196,14 @@ export class Web3Model {
   private setAuctionBidLoadStatus(status: AuctionBidLoadStatus | undefined) {
     this.auctionBidLoadStatus = status;
   }
+
+  private setAuctionCancelLoadStatus(status: AuctionCancelLoadStatus | undefined) {
+    this.auctionCancelLoadStatus = status;
+  }
+
+  private setAuctionEndLoadStatus(status: AuctionEndLoadStatus | undefined) {
+    this.auctionEndLoadStatus = status;
+  }
 }
 
 export enum Web3Errors {
@@ -171,6 +219,12 @@ export enum Web3Errors {
 
   AUCTION_BID_REJECTED = "Transaction to create auction bid rejected",
   AUCTION_BID_FAILED = "Failed to bid on auction",
+
+  AUCTION_CANCEL_REJECTED = "Transaction to cancel auction rejected",
+  AUCTION_CANCEL_FAILED = "Failed to cancel auction",
+
+  AUCTION_END_REJECTED = "Transaction to end auction rejected",
+  AUCTION_END_FAILED = "Failed to end auction",
 
   FAILED_TO_FETCH_SUBGRAPH_DATA = "There was an issue fetching your NFT data. The NFT was minted, however it may take some time to update the data. Please check your list of NFTs in couple of minutes",
 

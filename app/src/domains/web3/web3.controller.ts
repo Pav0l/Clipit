@@ -3,7 +3,7 @@ import { BigNumber, BigNumberish, BytesLike, constants, utils } from "ethers";
 import { IClipItContractClient } from "../../lib/contracts/ClipIt/clipit-contract.client";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
-import { Web3Model, Web3Errors, AuctionLoadStatus, AuctionBidLoadStatus } from "./web3.model";
+import { Web3Model, Web3Errors, AuctionLoadStatus, AuctionBidLoadStatus, AuctionCancelLoadStatus, AuctionEndLoadStatus } from "./web3.model";
 import { ISubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { Decimal } from "../../lib/decimal/decimal";
@@ -33,6 +33,8 @@ export interface IWeb3Controller {
   requestConnectAndCreateAuction: (tokenId: string, duration: BigNumberish, minPrice: BigNumberish,) => Promise<void>;
   // Bid on token in auction
   requestConnectAndBid: (auctionId: string, amount: string) => Promise<void>;
+  requestConnectAndCancelAuction: (auctionId: string) => Promise<void>;
+  requestConnectAndEndAuction: (auctionId: string) => Promise<void>;
 }
 
 
@@ -166,6 +168,161 @@ export class Web3Controller implements IWeb3Controller {
     await this.bidOnAuction(auctionId, amount);
   }
 
+  requestConnectAndCancelAuction = async (auctionId: string) => {
+    if (!this.model.isMetaMaskInstalled()) {
+      this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
+      return;
+    }
+
+    if (!this.model.isProviderConnected()) {
+      await this.requestAccounts();
+    }
+
+    const signerAddress = this.model.getAccount();
+    if (!signerAddress) {
+      // requestAccounts failed (rejected/already opened, etc...) and notification to user was sent
+      // just stop here
+      return;
+    }
+
+    await this.cancelAuction(auctionId);
+  };
+
+  requestConnectAndEndAuction = async (auctionId: string) => {
+    if (!this.model.isMetaMaskInstalled()) {
+      this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
+      return;
+    }
+
+    if (!this.model.isProviderConnected()) {
+      await this.requestAccounts();
+    }
+
+    const signerAddress = this.model.getAccount();
+    if (!signerAddress) {
+      // requestAccounts failed (rejected/already opened, etc...) and notification to user was sent
+      // just stop here
+      return;
+    }
+
+    await this.endAuction(auctionId);
+  };
+
+  private cancelAuction = async (auctionId: string) => {
+    try {
+      const auction = this.auctionContractCreator(window.ethereum as EthereumProvider);
+
+      this.model.setAuctionCancelLoader();
+
+      const tx = await auction.cancelAuction(auctionId);
+
+      this.model.setWaitForAuctionCancelTxLoader();
+
+      console.log('[LOG]:cancel auction tx hash', tx.hash);
+
+      await tx.wait();
+
+      this.snackbar.sendSuccess(AuctionCancelLoadStatus.AUCTION_CANCEL_SUCCESS);
+    } catch (error) {
+      // TODO sentry
+      console.log("[LOG]:cancel auction:error", error);
+
+      if (isEthersJsonRpcError(error)) {
+        // take out Rpc error from Ethers error
+        if (error.error) {
+          error = error.error;
+        }
+      }
+
+      if (isRpcError(error)) {
+        switch (error.code) {
+          case RpcErrors.USER_REJECTED_REQUEST:
+            this.snackbar.sendInfo(Web3Errors.AUCTION_CANCEL_REJECTED);
+            break;
+          case RpcErrors.INTERNAL_ERROR:
+            // contract reverts
+            if (error.message.includes(AuctionContractErrors.AUCTION_DOES_NOT_EXIST)) {
+              this.snackbar.sendError(AuctionContractErrors.AUCTION_DOES_NOT_EXIST);
+            } else if (error.message.includes(AuctionContractErrors.AUCTION_CANCEL_INVALID_CALLER)) {
+              this.snackbar.sendError(AuctionContractErrors.AUCTION_CANCEL_INVALID_CALLER);
+            } else if (error.message.includes(AuctionContractErrors.AUCTION_CANCEL_RUNNING)) {
+              this.snackbar.sendError(AuctionContractErrors.AUCTION_CANCEL_RUNNING);
+            }
+            break;
+          default:
+            // SENTRY
+            this.snackbar.sendError(Web3Errors.AUCTION_CANCEL_FAILED);
+            break;
+        }
+      } else {
+        // SENTRY
+        // unknown error
+        this.snackbar.sendError(Web3Errors.AUCTION_CANCEL_FAILED);
+      }
+
+      return null;
+    } finally {
+      this.model.clearAuctionCancelLoader();
+    }
+  }
+
+  private endAuction = async (auctionId: string) => {
+    try {
+      const auction = this.auctionContractCreator(window.ethereum as EthereumProvider);
+
+      this.model.setAuctionEndLoader();
+
+      const tx = await auction.endAuction(auctionId);
+
+      this.model.setWaitForAuctionEndTxLoader();
+
+      console.log('[LOG]:end auction tx hash', tx.hash);
+
+      await tx.wait();
+
+      this.snackbar.sendSuccess(AuctionEndLoadStatus.AUCTION_END_SUCCESS);
+    } catch (error) {
+      // TODO sentry
+      console.log("[LOG]:end auction:error", error);
+
+      if (isEthersJsonRpcError(error)) {
+        // take out Rpc error from Ethers error
+        if (error.error) {
+          error = error.error;
+        }
+      }
+
+      if (isRpcError(error)) {
+        switch (error.code) {
+          case RpcErrors.USER_REJECTED_REQUEST:
+            this.snackbar.sendInfo(Web3Errors.AUCTION_END_REJECTED);
+            break;
+          case RpcErrors.INTERNAL_ERROR:
+            // contract reverts
+            if (error.message.includes(AuctionContractErrors.AUCTION_DOES_NOT_EXIST)) {
+              this.snackbar.sendError(AuctionContractErrors.AUCTION_DOES_NOT_EXIST);
+            } else if (error.message.includes(AuctionContractErrors.AUCTION_END_HAS_NOT_STARTED)) {
+              this.snackbar.sendError(AuctionContractErrors.AUCTION_END_HAS_NOT_STARTED);
+            } else if (error.message.includes(AuctionContractErrors.AUCTION_END_HAS_NOT_COMPLETED)) {
+              this.snackbar.sendError(AuctionContractErrors.AUCTION_END_HAS_NOT_COMPLETED);
+            }
+            break;
+          default:
+            // SENTRY
+            this.snackbar.sendError(Web3Errors.AUCTION_END_FAILED);
+            break;
+        }
+      } else {
+        // SENTRY
+        // unknown error
+        this.snackbar.sendError(Web3Errors.AUCTION_END_FAILED);
+      }
+
+      return null;
+    } finally {
+      this.model.clearAuctionEndLoader();
+    }
+  }
 
   private prepareMetadataAndMintClip = async (clipId: string, address: string, creatorShare: string, clipTitle: string, clipDescription?: string) => {
     if (!clipId || !address || !clipTitle) {
@@ -399,7 +556,6 @@ export class Web3Controller implements IWeb3Controller {
 
       await tx.wait();
 
-      this.model.clearAuctionBidLoader();
       this.snackbar.sendSuccess(AuctionBidLoadStatus.AUCTION_BID_SUCCESS);
     } catch (error) {
       // TODO sentry
@@ -446,6 +602,8 @@ export class Web3Controller implements IWeb3Controller {
       }
 
       return null;
+    } finally {
+      this.model.clearAuctionBidLoader();
     }
   }
 

@@ -3,6 +3,7 @@ import { NftErrors } from './nft.errors';
 import { ISubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { ClipPartialFragment } from "../../lib/graphql/types";
+import { SnackbarClient } from "../snackbar/snackbar.controller";
 
 
 export class NftController {
@@ -10,7 +11,8 @@ export class NftController {
   constructor(
     private model: NftModel,
     private offChainStorage: OffChainStorage,
-    private subgraph: ISubgraphClient
+    private subgraph: ISubgraphClient,
+    private snackbar: SnackbarClient
   ) { }
 
   getTokenMetadata = async (tokenId: string) => {
@@ -109,7 +111,7 @@ export class NftController {
 
     } catch (error) {
       // TODO SENTRY
-      this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+      this.snackbar.sendError(NftErrors.ERROR_TRY_REFRESH);
     } finally {
       if (this.model.meta.isLoading) {
         this.model.meta.setLoading(false);

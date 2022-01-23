@@ -29,7 +29,7 @@ export class NftModel {
 
   updateTokenAuction(tokenId: string, auction: AuctionPartialFragment): void {
     const metadata = this.getTokenMetadata(tokenId);
-    metadata.auction = new Auction(auction);
+    metadata.auction = new Auction(auction, metadata.owner);
   }
 
   resetMetadata(): void {
@@ -94,7 +94,7 @@ export class Metadata {
     this.tokenId = this.validateField(data.tokenId);
     this.thumbnailUri = this.validateField(data.thumbnailUri);
     this.owner = this.validateField(data.owner);
-    this.auction = this.handleAuction(this.tokenId, data.reserveAuction);
+    this.auction = this.handleAuction(this.tokenId, this.owner, data.reserveAuction);
   }
 
   private validateField<T>(field: unknown) {
@@ -108,13 +108,13 @@ export class Metadata {
     return `${this.ipfsGatewayUri}/${cid}`;
   }
 
-  private handleAuction(tokenId: string, auction?: AuctionPartialFragment[] | null) {
+  private handleAuction(tokenId: string, tokenOwner: string, auction?: AuctionPartialFragment[] | null) {
     if (!auction || auction.length === 0) {
       return null;
     }
 
     const a = auction.filter(ah => ah.tokenId === tokenId)[0];
-    return new Auction(a)
+    return new Auction(a, tokenOwner);
   }
 }
 
@@ -132,7 +132,7 @@ export class ActiveBid {
   }
 }
 
-class Auction {
+export class Auction {
   id: string;
   tokenId: string;
   approved: boolean;
@@ -147,7 +147,7 @@ class Auction {
   auctionCurrency: CurrencyPartialFragment;
   highestBid: ActiveBid | null;
 
-  constructor(input: AuctionPartialFragment) {
+  constructor(input: AuctionPartialFragment, tokenOwner: string) {
     makeAutoObservable(this);
 
     this.id = input.id;
@@ -160,7 +160,7 @@ class Auction {
     this.reservePrice = input.reservePrice;
     this.displayReservePrice = formatCurrencyAmountToDisplayAmount(input.reservePrice ?? 0, input.auctionCurrency.decimals);
     this.status = input.status;
-    this.tokenOwnerId = input.tokenOwner.id;
+    this.tokenOwnerId = this.handleTokenOwnerId(input.tokenOwner.id, tokenOwner);
     this.auctionCurrency = input.auctionCurrency;
     this.highestBid = this.handleHighestBid(this.auctionCurrency, input.currentBid);
   }
@@ -179,6 +179,12 @@ class Auction {
 
   get isFinished(): boolean {
     return this.status === ReserveAuctionStatus.Finished;
+  }
+
+  private handleTokenOwnerId(auctionTokenOwnerId: string, tokenOwner: string) {
+    // auction.tokenOwnerId can be correct token owner, 
+    // or outdated token owner if auction is finished (subgraph handler does not update tokenOwnerId on auction ended event)
+    return this.isFinished ? tokenOwner : auctionTokenOwnerId;
   }
 
   private handleHighestBid(c?: CurrencyPartialFragment, bid?: AuctionBidPartialFragment | null) {

@@ -77,7 +77,8 @@ function initSynchronous() {
   const nftController = new NftController(
     model.nft,
     offChainStorageApi,
-    subgraph
+    subgraph,
+    snackbar
   );
 
   const web3Controller = new Web3Controller(
