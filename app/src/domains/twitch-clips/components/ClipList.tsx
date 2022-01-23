@@ -22,9 +22,6 @@ function EmptyList() {
       <Typography variant="h6" component="h6">
         Looks like you don't have any Twitch Clips yet...
       </Typography>
-      {/* TODO - add "create clip" button here that creates clip via twitch API? 
-            - or redirects to broadcasters vids or wherever streamers make clips
-       */}
     </CenteredContainer>
   );
 }

@@ -49,21 +49,12 @@ function ClipsContainer({ model, operations }: Props) {
     return <ErrorWithRetry text={model.clip.meta.error}></ErrorWithRetry>;
   }
 
-  // TODO this should not live in a component LOL
-  const clipList = model.clip.getUsersClips(model.user.id).map((clip) => {
-    return {
-      id: clip.id,
-      title: clip.title,
-      thumbnailUrl: clip.thumbnailUrl
-    };
-  });
-
   return (
     <>
       {model.user.meta.isLoading || model.clip.meta.isLoading ? (
         <FullPageLoader />
       ) : (
-        <ClipList clipList={clipList} />
+        <ClipList clipList={model.clip.getUsersClips(model.user.id)} />
       )}
     </>
   );

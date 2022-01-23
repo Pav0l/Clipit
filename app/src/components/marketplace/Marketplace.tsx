@@ -48,16 +48,13 @@ function Marketplace({ model, operations }: Props) {
 
   return (
     <>
-      {/* Temporary button to load more clips */}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={fetchNextBatchOfClips}
-      >
-        More!
-      </Button>
-
       <ListOfCardsWithThumbnail metadata={metadata} />
+
+      {/* Temporary button to load more clips
+          TODO - make this load more on scroll  */}
+      <Button variant="outlined" onClick={fetchNextBatchOfClips}>
+        Load more
+      </Button>
     </>
   );
 }
