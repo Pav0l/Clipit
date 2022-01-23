@@ -3,9 +3,8 @@ import { NftController } from "../../domains/nfts/nft.controller";
 import { Metadata, NftModel } from "../../domains/nfts/nft.model";
 import { Web3Controller } from "../../domains/web3/web3.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
-import { AuctionCreateForm } from "../auctions/AuctionCreateForm";
-import { AuctionDetails } from "../auctions/AuctionDetails";
 import { BidForm } from "../bidForm/BidForm";
+import { OwnerNftDetails } from "./OwnerNftDetails";
 
 interface Props {
   tokenId: string;
@@ -29,7 +28,6 @@ export const NftDetails = observer(function NftDetails({
 }: Props) {
   const userAddress = model.web3.getAccount();
 
-  // TODO how does this work on cancelled/finished auctions? it seems the auction.tokenOwnerId does not change
   let isUserOwner;
   if (!metadata.auction) {
     // token not in auction, just check owner
@@ -39,54 +37,25 @@ export const NftDetails = observer(function NftDetails({
     isUserOwner = metadata.auction.tokenOwnerId === userAddress;
   }
 
-  const isHighestBidder =
-    userAddress === metadata.auction?.highestBid?.bidderAddress;
-  const hasActiveAuction = metadata.auction?.isActive;
-  /**
-   * TODO this should be probably splitted into two types of details:
-   * - owner details
-   *  - not existing auction => create auction
-   *  - auction pending => approve
-   *  - auction active => show details / end auction
-   *  - auction finished => show details
-   *  - auction active & no bids => cancel auction
-   * - bidder details
-   *  - highest bidder => show details?
-   *  - other bidders => bid on aucton
-   */
-
-  if (
-    (hasActiveAuction || metadata.auction?.isFinished) &&
-    (isUserOwner || isHighestBidder)
-  ) {
-    // tokenOwner OR highest bidder and active/finished auction - SEE DETAILS!
+  if (isUserOwner) {
+    // handle token owner auction screens
     return (
-      <AuctionDetails metadata={metadata} userAddress={userAddress ?? ""} />
-    );
-  }
-
-  if (!isUserOwner && hasActiveAuction) {
-    // not owner and running active auction - BID!
-    return (
-      <BidForm
-        metadata={metadata}
-        operations={operations}
-        model={{ web3: model.web3 }}
-      />
-    );
-  }
-
-  if (isUserOwner && !hasActiveAuction) {
-    // owner without auction (not started / canceled) - CREATE AUCTION
-    return (
-      <AuctionCreateForm
+      <OwnerNftDetails
         tokenId={tokenId}
+        auction={metadata.auction}
+        ownerAddress={metadata.owner}
         operations={operations}
         model={model}
       />
     );
   }
 
-  // not owner of token and also no auction active
-  return null;
+  // TODO consider what to display to "highest bidder"
+  return (
+    <BidForm
+      metadata={metadata}
+      operations={operations}
+      model={{ web3: model.web3 }}
+    />
+  );
 });
