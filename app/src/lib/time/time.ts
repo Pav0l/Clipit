@@ -15,9 +15,9 @@ export function calcExpectedEndOfAuction(
   }
 }
 
-export function formatTimestampToCountdown(ts: number): string {
+export function formatTimestampToCountdown(ts: number): string | null {
   if (ts <= 0 || isNaN(ts)) {
-    return "ENDED";
+    return null;
   }
   const d = Math.floor(ts / (24 * 60 * 60));
   const h = Math.floor(ts / (60 * 60)) % 24;

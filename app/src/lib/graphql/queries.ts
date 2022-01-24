@@ -67,6 +67,16 @@ const AUCTION_PARTIALS = gql`
     createdAtTimestamp
   }
 
+  fragment InactiveAuctionBidPartial on InactiveReserveAuctionBid {
+    id
+    amount
+    bidInactivatedAtTimestamp
+    bidder {
+      id
+    }
+    bidType
+  }
+
   fragment AuctionPartial on ReserveAuction {
     id
     tokenId
@@ -88,6 +98,9 @@ const AUCTION_PARTIALS = gql`
     status
     currentBid {
       ...AuctionBidPartial
+    }
+    previousBids {
+      ...InactiveAuctionBidPartial
     }
   }
 

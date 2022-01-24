@@ -3,8 +3,8 @@ import { makeAutoObservable } from "mobx"
 
 import { pinataGatewayUri } from "../../lib/constants";
 import { formatCurrencyAmountToDisplayAmount } from "../../lib/ethereum/currency";
-import { AuctionBidPartialFragment, AuctionPartialFragment, BidPartialFragment, CurrencyPartialFragment, ReserveAuctionStatus } from "../../lib/graphql/types";
-import { calcExpectedEndOfAuction } from "../../lib/time/time";
+import { AuctionBidPartialFragment, AuctionPartialFragment, BidPartialFragment, CurrencyPartialFragment, InactiveAuctionBidPartialFragment, ReserveAuctionBidType, ReserveAuctionStatus } from "../../lib/graphql/types";
+import { calcExpectedEndOfAuction, formatTimestampToCountdown } from "../../lib/time/time";
 import { MetaModel } from "../app/meta.model";
 
 
@@ -52,7 +52,7 @@ export class NftModel {
   get metadataForMarketplace(): Metadata[] {
     return this.metadata.filter(metadata => {
       if (metadata.auction) {
-        return metadata.auction.approved;
+        return metadata.auction.approved && !metadata.auction.isCanceled;
       }
       return true;
     })
@@ -118,19 +118,22 @@ export class Metadata {
   }
 }
 
-export class ActiveBid {
+export class Bid {
   symbol: string;
   amount: BigNumberish;
   displayAmount: string;
   bidderAddress: string;
+  bidType: ReserveAuctionBidType;
 
-  constructor(data: { symbol: string; amount: BigNumberish; decimals?: number | null; bidder: string }) {
+  constructor(data: { symbol: string; amount: BigNumberish; decimals?: number | null; bidder: string; bidType: ReserveAuctionBidType; }) {
     this.symbol = data.symbol;
     this.amount = data.amount;
     this.displayAmount = formatCurrencyAmountToDisplayAmount(this.amount, data.decimals);
     this.bidderAddress = data.bidder;
+    this.bidType = data.bidType;
   }
 }
+
 
 export class Auction {
   id: string;
@@ -145,7 +148,9 @@ export class Auction {
   displayReservePrice: string;
   expectedEndTimestamp?: string | null;
   auctionCurrency: CurrencyPartialFragment;
-  highestBid: ActiveBid | null;
+  highestBid: Bid | null;
+  previousBids: Bid[];
+  previousHighestBid: Bid | null;
 
   constructor(input: AuctionPartialFragment, tokenOwner: string) {
     makeAutoObservable(this);
@@ -163,6 +168,8 @@ export class Auction {
     this.tokenOwnerId = this.handleTokenOwnerId(input.tokenOwner.id, tokenOwner);
     this.auctionCurrency = input.auctionCurrency;
     this.highestBid = this.handleHighestBid(this.auctionCurrency, input.currentBid);
+    this.previousBids = this.handlePreviousBids(this.auctionCurrency, input.previousBids);
+    this.previousHighestBid = this.handlePreviousHighestBid(input.previousBids)
   }
 
   get isActive(): boolean {
@@ -181,20 +188,113 @@ export class Auction {
     return this.status === ReserveAuctionStatus.Finished;
   }
 
+  get displayAuctionStatus(): DisplayAuctionStatus {
+    return new DisplayAuctionStatus(this);
+  }
+
+  get displayBid(): {
+    symbol: string;
+    displayAmount: string;
+    onlyDisplayReservePrice: boolean;
+  } {
+    // display bid priority: current highest bid > finished bid from previous auction > reserve price
+    if (this.isActive && this.highestBid) {
+      return { ...this.highestBid, onlyDisplayReservePrice: false };
+    }
+
+    if (this.isFinished && this.previousHighestBid) {
+      return { ...this.previousHighestBid, onlyDisplayReservePrice: false };
+    }
+
+    return {
+      symbol: this.auctionCurrency.symbol,
+      displayAmount: this.displayReservePrice,
+      onlyDisplayReservePrice: true
+    };
+  }
+
   private handleTokenOwnerId(auctionTokenOwnerId: string, tokenOwner: string) {
     // auction.tokenOwnerId can be correct token owner, 
     // or outdated token owner if auction is finished (subgraph handler does not update tokenOwnerId on auction ended event)
     return this.isFinished ? tokenOwner : auctionTokenOwnerId;
   }
 
-  private handleHighestBid(c?: CurrencyPartialFragment, bid?: AuctionBidPartialFragment | null) {
-    if (!c?.symbol) {
-      return null;
-    }
+  private handleHighestBid(c: CurrencyPartialFragment, bid?: AuctionBidPartialFragment | null) {
     if (!bid?.amount) {
       return null;
     }
 
-    return new ActiveBid({ symbol: c.symbol, amount: bid.amount, decimals: c.decimals, bidder: bid.bidder.id });
+    return new Bid({ symbol: c.symbol, amount: bid.amount, decimals: c.decimals, bidder: bid.bidder.id, bidType: bid.bidType });
+  }
+
+  private handlePreviousBids(c: CurrencyPartialFragment, bids?: InactiveAuctionBidPartialFragment[] | null) {
+    if (!bids) {
+      return [];
+    }
+
+    return bids.map((bid) => new Bid({ symbol: c.symbol, amount: bid.amount, decimals: c.decimals, bidder: bid.bidder.id, bidType: bid.bidType }));
+  }
+
+  private handlePreviousHighestBid(bids?: InactiveAuctionBidPartialFragment[] | null) {
+    if (!bids) {
+      return null;
+    }
+    // find highest previous bid based on bidType & bidInactivatedTs
+    const finalBids = bids.filter(b => b.bidType === ReserveAuctionBidType.Final);
+    if (finalBids.length === 0) {
+      return null
+    }
+
+    const highestBid = finalBids[0];
+    return new Bid({ symbol: this.auctionCurrency.symbol, amount: highestBid.amount, decimals: this.auctionCurrency.decimals, bidder: highestBid.bidder.id, bidType: highestBid.bidType });
+  }
+}
+
+
+export enum DisplayAuctionStatusTitle {
+  ENDED = "Auction ended",
+  ENDS_IN = "Auction ends in:",
+  NOT_APPROVED = "Auction not approved yet",
+  SOLD = "Sold for:",
+  EMPTY = "",
+}
+
+export class DisplayAuctionStatus {
+  title: DisplayAuctionStatusTitle;
+  value: string;
+
+  constructor(auction: Auction) {
+    makeAutoObservable(this);
+
+    const ts = calcExpectedEndOfAuction(
+      auction.firstBidTime,
+      auction.duration,
+      auction.expectedEndTimestamp
+    );
+    const countdown = formatTimestampToCountdown(ts);
+    const sv = this.getAuctionStatus(auction.status, countdown, `${auction.previousHighestBid?.displayAmount} ${auction.previousHighestBid?.symbol}`);
+    this.title = sv.title;
+    this.value = sv.value;
+  }
+
+  private getAuctionStatus(
+    status: ReserveAuctionStatus | null | undefined,
+    countdown: string | null,
+    highestBidDisplayValue: string
+  ): { title: DisplayAuctionStatusTitle; value: string } {
+    switch (status) {
+      case ReserveAuctionStatus.Pending:
+        return { title: DisplayAuctionStatusTitle.NOT_APPROVED, value: "" };
+      case ReserveAuctionStatus.Active:
+        if (!countdown) {
+          return { title: DisplayAuctionStatusTitle.ENDED, value: "" };
+        }
+        return { title: DisplayAuctionStatusTitle.ENDS_IN, value: countdown };
+      case ReserveAuctionStatus.Finished:
+        return { title: DisplayAuctionStatusTitle.SOLD, value: highestBidDisplayValue };
+      case ReserveAuctionStatus.Canceled:
+      default:
+        return { title: DisplayAuctionStatusTitle.EMPTY, value: "" };
+    }
   }
 }

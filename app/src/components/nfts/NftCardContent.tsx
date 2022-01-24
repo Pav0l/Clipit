@@ -1,49 +1,18 @@
 import { makeStyles, CardContent, Typography } from "@material-ui/core";
-import { ActiveBid } from "../../domains/nfts/nft.model";
-import { CurrencyPartialFragment } from "../../lib/graphql/types";
-import { useExpectedEndOfAuction } from "../../lib/hooks/useExpectedEndOfAuction";
+import { Auction } from "../../domains/nfts/nft.model";
+import { useAuctionStatus } from "../../lib/hooks/useAuctionStatus";
 
 interface Props {
   title: string;
   description: string;
-  // TODO this needs to change so it doesnt show DONE auction when its timedout
-  auction: {
-    approvedTimestamp?: string;
-    duration?: string;
-    expectedEndTimestamp?: string | null;
-    highestBid: ActiveBid | null;
-    displayReservePrice?: string;
-    auctionCurrency?: CurrencyPartialFragment;
-  } | null;
-}
-
-function figureOutWhichBidToDisplay({ auction }: Props): {
-  symbol: string;
-  displayAmount: string;
-  onlyDisplayReservePrice: boolean;
-} | null {
-  // Bid display priority: active auction bid > active auction reserve price > basic bid > nothing
-  if (auction) {
-    if (auction.highestBid) {
-      return { ...auction.highestBid, onlyDisplayReservePrice: false };
-    } else if (auction.displayReservePrice) {
-      return {
-        symbol: auction.auctionCurrency?.symbol ?? "",
-        displayAmount: auction.displayReservePrice,
-        onlyDisplayReservePrice: true
-      };
-    }
-  }
-
-  return null;
+  auction: Auction | null;
 }
 
 export function NftCardContent(props: Props) {
   const classes = useStyles();
-  const [expectedEndCountdown] = useExpectedEndOfAuction(props.auction);
-
   // display auction bid OR basic bid OR nothing
-  const bid = figureOutWhichBidToDisplay(props);
+  const bid = props.auction ? props.auction.displayBid : null;
+  const [status] = useAuctionStatus(props.auction);
 
   return (
     <div>
@@ -85,12 +54,12 @@ export function NftCardContent(props: Props) {
       </CardContent>
       <div className={`${classes.content} ${classes.fixedHeight}`}>
         <div className={`${classes.auctionEnds} ${classes.noWrap}`}>
-          {props.auction ? "Auction ends in:" : ""}
+          {status.title}
         </div>
         <div
           className={`${classes.auctionEnds} ${classes.glow} ${classes.auctionCountdownValue} ${classes.alignRight}`}
         >
-          {props.auction ? expectedEndCountdown : ""}
+          {status.value}
         </div>
       </div>
     </div>

@@ -1,11 +1,11 @@
-import { ReserveAuctionStatus } from "../../../lib/graphql/types";
+import { ReserveAuctionBidType, ReserveAuctionStatus } from "../../../lib/graphql/types";
 import { MetaModel } from "../../app/meta.model";
-import { ActiveBid, Metadata, NftModel } from "../nft.model";
+import { Bid, Auction, DisplayAuctionStatus, DisplayAuctionStatusTitle, Metadata, NftModel } from "../nft.model";
 
 describe("nft model", () => {
-  describe("active bids", () => {
+  describe("bids", () => {
     it("sets proper bid attributes", () => {
-      const bid = new ActiveBid({ bidder: "0x123", symbol: "WETH", amount: "1000000000000000000" });
+      const bid = new Bid({ bidder: "0x123", bidType: ReserveAuctionBidType.Active, symbol: "WETH", amount: "1000000000000000000" });
       expect(bid.symbol).toEqual("WETH");
       expect(bid.amount).toEqual("1000000000000000000");
       expect(bid.displayAmount).toEqual("1.0");
@@ -13,17 +13,17 @@ describe("nft model", () => {
     });
 
     it("displayAmount is max 4 decimal digits", () => {
-      const bid = new ActiveBid({ bidder: "0x123", symbol: "WETH", amount: "123451234567890", decimals: 10 });
+      const bid = new Bid({ bidder: "0x123", bidType: ReserveAuctionBidType.Active, symbol: "WETH", amount: "123451234567890", decimals: 10 });
       expect(bid.displayAmount).toEqual("12345.1234");
     });
 
     it("numbers higher than 6 digits do not have nums after the decimal dot", () => {
-      const bid = new ActiveBid({ bidder: "0x123", symbol: "WETH", amount: "123451234567890", decimals: 3 });
+      const bid = new Bid({ bidder: "0x123", bidType: ReserveAuctionBidType.Active, symbol: "WETH", amount: "123451234567890", decimals: 3 });
       expect(bid.displayAmount).toEqual("123451234567");
     });
 
     it("values without decimal are returned in full length", () => {
-      const bid = new ActiveBid({ bidder: "0x123", symbol: "WETH", amount: "123451234567890", decimals: 0 });
+      const bid = new Bid({ bidder: "0x123", bidType: ReserveAuctionBidType.Active, symbol: "WETH", amount: "123451234567890", decimals: 0 });
       expect(bid.displayAmount).toEqual("123451234567890");
     });
   });
@@ -84,6 +84,79 @@ describe("nft model", () => {
       });
 
       expect(model.metadataForMarketplace.length).toEqual(0);
+    });
+  });
+
+  describe("displayAuctionStatus", () => {
+    it("pending", () => {
+      const displayAuctionStatus = new DisplayAuctionStatus({
+        firstBidTime: "",
+        duration: "",
+        expectedEndTimestamp: "",
+        previousHighestBid: {
+          displayAmount: "",
+          symbol: "ETH"
+        },
+        status: ReserveAuctionStatus.Pending
+      } as Auction);
+      expect(displayAuctionStatus).toEqual({ title: DisplayAuctionStatusTitle.NOT_APPROVED, value: "" });
+    });
+
+    it("active but not ended in contract. just time run out", () => {
+      const displayAuctionStatus = new DisplayAuctionStatus({
+        firstBidTime: "",
+        duration: "",
+        expectedEndTimestamp: "",
+        previousHighestBid: {
+          displayAmount: "",
+          symbol: "ETH"
+        },
+        status: ReserveAuctionStatus.Active
+      } as Auction);
+      expect(displayAuctionStatus).toEqual({ title: DisplayAuctionStatusTitle.ENDED, value: "" });
+    });
+
+    it("active with remaining time", () => {
+      const displayAuctionStatus = new DisplayAuctionStatus({
+        firstBidTime: Math.floor(Date.now() / 1000).toString(),
+        duration: "3600",
+        expectedEndTimestamp: "",
+        previousHighestBid: {
+          displayAmount: "",
+          symbol: "ETH"
+        },
+        status: ReserveAuctionStatus.Active
+      } as Auction);
+      expect(displayAuctionStatus).toEqual({ title: DisplayAuctionStatusTitle.ENDS_IN, value: "0d 01h 00m 00s" });
+    });
+
+    it("canceled", () => {
+      const displayAuctionStatus = new DisplayAuctionStatus({
+        firstBidTime: Math.floor(Date.now() / 1000).toString(),
+        duration: "3600",
+        expectedEndTimestamp: "",
+        previousHighestBid: {
+          displayAmount: "",
+          symbol: "ETH"
+        },
+        status: ReserveAuctionStatus.Canceled
+      } as Auction);
+      expect(displayAuctionStatus).toEqual({ title: DisplayAuctionStatusTitle.EMPTY, value: "" });
+    });
+
+    // TODO update bid input
+    it("finished", () => {
+      const displayAuctionStatus = new DisplayAuctionStatus({
+        firstBidTime: Math.floor(Date.now() / 1000).toString(),
+        duration: "3600",
+        expectedEndTimestamp: "",
+        previousHighestBid: {
+          displayAmount: "1",
+          symbol: "ETH"
+        },
+        status: ReserveAuctionStatus.Finished
+      } as Auction);
+      expect(displayAuctionStatus).toEqual({ title: DisplayAuctionStatusTitle.SOLD, value: "1 ETH" });
     });
   });
 });

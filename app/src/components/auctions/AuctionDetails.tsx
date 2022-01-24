@@ -2,10 +2,14 @@ import { Button, makeStyles, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { NftController } from "../../domains/nfts/nft.controller";
 import { NftErrors } from "../../domains/nfts/nft.errors";
-import { Auction, NftModel } from "../../domains/nfts/nft.model";
+import {
+  Auction,
+  DisplayAuctionStatusTitle,
+  NftModel
+} from "../../domains/nfts/nft.model";
 import { Web3Controller } from "../../domains/web3/web3.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
-import { useExpectedEndOfAuction } from "../../lib/hooks/useExpectedEndOfAuction";
+import { useAuctionStatus } from "../../lib/hooks/useAuctionStatus";
 import ErrorWithRetry from "../error/Error";
 import FullPageLoader from "../loader/FullPageLoader";
 import LinearLoader from "../loader/LinearLoader";
@@ -32,9 +36,9 @@ export const AuctionDetails = observer(function AuctionDetails({
   operations,
   model
 }: Props) {
-  const [endOfAuction] = useExpectedEndOfAuction(auction);
-
+  const [status] = useAuctionStatus(auction);
   const classes = useStyles();
+  const bid = auction.displayBid;
 
   if (!auction) {
     return (
@@ -43,13 +47,11 @@ export const AuctionDetails = observer(function AuctionDetails({
   }
 
   const handleCancelButton = async () => {
-    // cancel auction
     await operations.web3.requestConnectAndCancelAuction(auction.id);
     await operations.nft.getAuctionForToken(tokenId);
   };
 
   const handleEndButton = async () => {
-    // end auction
     await operations.web3.requestConnectAndEndAuction(auction.id);
     await operations.nft.getAuctionForToken(tokenId);
   };
@@ -69,9 +71,8 @@ export const AuctionDetails = observer(function AuctionDetails({
   return (
     <div className={classes.container}>
       <Typography component="h5" variant="h5">
-        {auction.highestBid?.displayAmount
-          ? `Highest bid: ${auction.highestBid?.displayAmount} ${auction.auctionCurrency?.symbol}`
-          : `Reserve price: ${auction.displayReservePrice} ${auction.auctionCurrency?.symbol}`}
+        {bid.onlyDisplayReservePrice ? "Reserve price:" : "Highest bid:"}{" "}
+        {`${bid.displayAmount} ${bid.symbol}`}
       </Typography>
       <Typography>Owner: {auction.tokenOwnerId}</Typography>
       {auction.highestBid ? (
@@ -82,7 +83,7 @@ export const AuctionDetails = observer(function AuctionDetails({
               ? "you"
               : auction.highestBid?.bidderAddress}
           </Typography>
-          {endOfAuction === "ENDED" ? (
+          {status.title === DisplayAuctionStatusTitle.ENDED ? (
             <Button
               onClick={handleEndButton}
               size="medium"
@@ -94,7 +95,7 @@ export const AuctionDetails = observer(function AuctionDetails({
             </Button>
           ) : (
             <Typography className={classes.timer}>
-              Auction ends in: {endOfAuction}
+              {`${status.title} ${status.value}`}
             </Typography>
           )}
         </>
