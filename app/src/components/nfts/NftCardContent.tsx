@@ -10,9 +10,12 @@ interface Props {
 
 export function NftCardContent(props: Props) {
   const classes = useStyles();
+  const auction = props.auction;
   // display auction bid OR basic bid OR nothing
-  const bid = props.auction ? props.auction.displayBid : null;
-  const [status] = useAuctionStatus(props.auction);
+  const bid = auction ? auction.displayBid : null;
+  const hasBidInActiveAuction = bid && auction?.isActive;
+
+  const [status] = useAuctionStatus(auction);
 
   return (
     <div>
@@ -27,7 +30,7 @@ export function NftCardContent(props: Props) {
             {props.title}
           </Typography>
 
-          {bid ? (
+          {hasBidInActiveAuction ? (
             <Typography
               variant="subtitle1"
               component="h6"
@@ -41,7 +44,7 @@ export function NftCardContent(props: Props) {
           <Typography component="p" color="textSecondary" noWrap>
             {props.description}
           </Typography>
-          {bid ? (
+          {hasBidInActiveAuction ? (
             <Typography
               component="p"
               noWrap
