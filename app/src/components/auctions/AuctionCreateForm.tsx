@@ -71,7 +71,7 @@ export const AuctionCreateForm = observer(function AuctionCreateForm({
       utils.parseEther(reservePriceInput)
     );
 
-    await operations.nft.getAuctionForToken(tokenId);
+    await operations.nft.getAuctionForToken(tokenId, { clearCache: true });
   };
 
   const handleDurationChange = (

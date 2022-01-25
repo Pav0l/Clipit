@@ -83,7 +83,9 @@ export const BidForm = observer(function BidForm({
     }
 
     await operations.web3.requestConnectAndBid(metadata.auction?.id, input);
-    await operations.nft.getAuctionForToken(metadata.tokenId);
+    await operations.nft.getAuctionForToken(metadata.tokenId, {
+      clearCache: true
+    });
   };
 
   const handleBidChange = (

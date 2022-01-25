@@ -96,11 +96,11 @@ export class NftController {
     }
   }
 
-  getAuctionForToken = async (tokenId: string) => {
+  getAuctionForToken = async (tokenId: string, options: { clearCache: boolean } = { clearCache: false }) => {
     try {
       this.model.meta.setLoading(true);
 
-      const data = await this.subgraph.fetchAuctionCached(tokenId);
+      const data = await this.subgraph.fetchAuctionCached(tokenId, options);
 
       if (data === null) {
         return;

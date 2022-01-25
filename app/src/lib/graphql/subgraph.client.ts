@@ -9,7 +9,7 @@ export interface ISubgraphClient {
   fetchClipByHashCached: (txHash: string) => Promise<ClipPartialFragment | null>;
   fetchClips: (skip?: number) => Promise<GetClipsQuery | null>;
   fetchUserCached: (address: string) => Promise<UserData | null>;
-  fetchAuctionCached: (tokenId: string) => Promise<AuctionPartialFragment | null>;
+  fetchAuctionCached: (tokenId: string, options: { clearCache: boolean }) => Promise<AuctionPartialFragment | null>;
 }
 
 export class SubgraphClient implements ISubgraphClient {
@@ -59,7 +59,11 @@ export class SubgraphClient implements ISubgraphClient {
     return user;
   }
 
-  fetchAuctionCached = async (tokenId: string) => {
+  fetchAuctionCached = async (tokenId: string, options: { clearCache: boolean } = { clearCache: false }) => {
+    if (options.clearCache) {
+      this.auctionLoader.clear(tokenId);
+    }
+
     const auction = this.retryFetch<string, AuctionPartialFragment>(this.auctionLoader, tokenId, 3, 3000);
     if (!auction) {
       return null;

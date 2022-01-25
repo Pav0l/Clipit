@@ -48,12 +48,12 @@ export const AuctionDetails = observer(function AuctionDetails({
 
   const handleCancelButton = async () => {
     await operations.web3.requestConnectAndCancelAuction(auction.id);
-    await operations.nft.getAuctionForToken(tokenId);
+    await operations.nft.getAuctionForToken(tokenId, { clearCache: true });
   };
 
   const handleEndButton = async () => {
     await operations.web3.requestConnectAndEndAuction(auction.id);
-    await operations.nft.getAuctionForToken(tokenId);
+    await operations.nft.getAuctionForToken(tokenId, { clearCache: true });
   };
 
   if (model.web3.auctionCancelLoadStatus) {
