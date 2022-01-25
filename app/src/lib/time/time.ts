@@ -1,18 +1,12 @@
 /**
- * @dev - can return `NaN` if start and/or duration are undefined
+ * @dev - can return `NaN` if expectedEnd is undefined | null
  */
-export function calcExpectedEndOfAuction(
-  start?: string,
-  duration?: string,
-  expectedEnd?: string | null
-) {
-  const now = Math.floor(Date.now() / 1000);
-  if (expectedEnd) {
-    return (Number(expectedEnd) - now);
-  } else {
-    const end = Number(start) + Number(duration);
-    return (end - now);
+export function calcExpectedEndOfAuction(expectedEnd?: string | null) {
+  if (!expectedEnd) {
+    return NaN;
   }
+  const now = Math.floor(Date.now() / 1000);
+  return (Number(expectedEnd) - now);
 }
 
 export function formatTimestampToCountdown(ts: number): string | null {

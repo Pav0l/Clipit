@@ -252,6 +252,7 @@ export class Auction {
 
 
 export enum DisplayAuctionStatusTitle {
+  READY = "Auction ready",
   ENDED = "Auction ended",
   ENDS_IN = "Auction ends in:",
   NOT_APPROVED = "Auction not approved yet",
@@ -266,29 +267,36 @@ export class DisplayAuctionStatus {
   constructor(auction: Auction) {
     makeAutoObservable(this);
 
-    const ts = calcExpectedEndOfAuction(
+    const { title, value } = this.getAuctionStatus(
+      auction.status,
+      `${auction.previousHighestBid?.displayAmount} ${auction.previousHighestBid?.symbol}`,
       auction.firstBidTime,
-      auction.duration,
       auction.expectedEndTimestamp
     );
-    const countdown = formatTimestampToCountdown(ts);
-    const sv = this.getAuctionStatus(auction.status, countdown, `${auction.previousHighestBid?.displayAmount} ${auction.previousHighestBid?.symbol}`);
-    this.title = sv.title;
-    this.value = sv.value;
+    this.title = title;
+    this.value = value;
   }
 
   private getAuctionStatus(
     status: ReserveAuctionStatus | null | undefined,
-    countdown: string | null,
-    highestBidDisplayValue: string
+    highestBidDisplayValue: string,
+    firstBidTime?: string,
+    expectedEndTimestamp?: string | null,
   ): { title: DisplayAuctionStatusTitle; value: string } {
     switch (status) {
       case ReserveAuctionStatus.Pending:
         return { title: DisplayAuctionStatusTitle.NOT_APPROVED, value: "" };
       case ReserveAuctionStatus.Active:
+        if (!firstBidTime || firstBidTime === "0") {
+          // no bids yet, but active (approved) auction
+          return { title: DisplayAuctionStatusTitle.READY, value: "" };
+        }
+
+        const countdown = formatTimestampToCountdown(calcExpectedEndOfAuction(expectedEndTimestamp));
         if (!countdown) {
           return { title: DisplayAuctionStatusTitle.ENDED, value: "" };
         }
+
         return { title: DisplayAuctionStatusTitle.ENDS_IN, value: countdown };
       case ReserveAuctionStatus.Finished:
         return { title: DisplayAuctionStatusTitle.SOLD, value: highestBidDisplayValue };

@@ -88,11 +88,14 @@ describe("nft model", () => {
   });
 
   describe("displayAuctionStatus", () => {
+    const nowMinusTwoHours = (Math.floor(Date.now() / 1000) - 7200).toString();
+    const nowMinusOneHour = (Math.floor(Date.now() / 1000) - 3600).toString();
+    const nowPlusOneHour = (Math.floor(Date.now() / 1000) + 3600).toString();
+
     it("pending", () => {
       const displayAuctionStatus = new DisplayAuctionStatus({
-        firstBidTime: "",
-        duration: "",
-        expectedEndTimestamp: "",
+        firstBidTime: "0",
+        expectedEndTimestamp: null,
         previousHighestBid: {
           displayAmount: "",
           symbol: "ETH"
@@ -102,13 +105,25 @@ describe("nft model", () => {
       expect(displayAuctionStatus).toEqual({ title: DisplayAuctionStatusTitle.NOT_APPROVED, value: "" });
     });
 
-    it("active but not ended in contract. just time run out", () => {
+    it("active but no bids yet", () => {
       const displayAuctionStatus = new DisplayAuctionStatus({
-        firstBidTime: "",
-        duration: "",
-        expectedEndTimestamp: "",
+        firstBidTime: "0",
+        expectedEndTimestamp: null,
         previousHighestBid: {
           displayAmount: "",
+          symbol: "ETH"
+        },
+        status: ReserveAuctionStatus.Active
+      } as Auction);
+      expect(displayAuctionStatus).toEqual({ title: DisplayAuctionStatusTitle.READY, value: "" });
+    });
+
+    it("active but not ended in contract. just time run out", () => {
+      const displayAuctionStatus = new DisplayAuctionStatus({
+        firstBidTime: nowMinusTwoHours,
+        expectedEndTimestamp: nowMinusOneHour, // ended an hour ago
+        previousHighestBid: {
+          displayAmount: "1",
           symbol: "ETH"
         },
         status: ReserveAuctionStatus.Active
@@ -118,11 +133,10 @@ describe("nft model", () => {
 
     it("active with remaining time", () => {
       const displayAuctionStatus = new DisplayAuctionStatus({
-        firstBidTime: Math.floor(Date.now() / 1000).toString(),
-        duration: "3600",
-        expectedEndTimestamp: "",
+        firstBidTime: nowMinusTwoHours,
+        expectedEndTimestamp: nowPlusOneHour, // ends in hour
         previousHighestBid: {
-          displayAmount: "",
+          displayAmount: "1",
           symbol: "ETH"
         },
         status: ReserveAuctionStatus.Active
@@ -132,9 +146,8 @@ describe("nft model", () => {
 
     it("canceled", () => {
       const displayAuctionStatus = new DisplayAuctionStatus({
-        firstBidTime: Math.floor(Date.now() / 1000).toString(),
-        duration: "3600",
-        expectedEndTimestamp: "",
+        firstBidTime: "0",
+        expectedEndTimestamp: null,
         previousHighestBid: {
           displayAmount: "",
           symbol: "ETH"
@@ -144,12 +157,10 @@ describe("nft model", () => {
       expect(displayAuctionStatus).toEqual({ title: DisplayAuctionStatusTitle.EMPTY, value: "" });
     });
 
-    // TODO update bid input
     it("finished", () => {
       const displayAuctionStatus = new DisplayAuctionStatus({
-        firstBidTime: Math.floor(Date.now() / 1000).toString(),
-        duration: "3600",
-        expectedEndTimestamp: "",
+        firstBidTime: nowMinusTwoHours,
+        expectedEndTimestamp: nowMinusOneHour,
         previousHighestBid: {
           displayAmount: "1",
           symbol: "ETH"

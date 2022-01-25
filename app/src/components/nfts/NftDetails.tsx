@@ -64,8 +64,7 @@ export const NftDetails = observer(function NftDetails({
     if (
       auction.displayAuctionStatus.title ===
         DisplayAuctionStatusTitle.ENDS_IN ||
-      (auction.displayAuctionStatus.title === DisplayAuctionStatusTitle.ENDED &&
-        auction.firstBidTime === "0")
+      auction.firstBidTime === "0"
     ) {
       return (
         <BidForm
