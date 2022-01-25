@@ -94,7 +94,7 @@ export class Metadata {
     this.tokenId = this.validateField(data.tokenId);
     this.thumbnailUri = this.validateField(data.thumbnailUri);
     this.owner = this.validateField(data.owner);
-    this.auction = this.handleAuction(this.tokenId, this.owner, data.reserveAuction);
+    this.auction = this.handleLatestAuction(this.tokenId, this.owner, data.reserveAuction);
   }
 
   private validateField<T>(field: unknown) {
@@ -108,12 +108,12 @@ export class Metadata {
     return `${this.ipfsGatewayUri}/${cid}`;
   }
 
-  private handleAuction(tokenId: string, tokenOwner: string, auction?: AuctionPartialFragment[] | null) {
+  private handleLatestAuction(tokenId: string, tokenOwner: string, auction?: AuctionPartialFragment[] | null) {
     if (!auction || auction.length === 0) {
       return null;
     }
 
-    const a = auction.filter(ah => ah.tokenId === tokenId)[0];
+    const a = auction.filter(ah => ah.tokenId === tokenId).reduce((max, au) => max.id > au.id ? max : au);
     return new Auction(a, tokenOwner);
   }
 }
