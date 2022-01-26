@@ -3,7 +3,7 @@ import { makeAutoObservable } from "mobx"
 import { formatCurrencyAmountToDisplayAmount } from "../../lib/ethereum/currency";
 import { MetaModel } from "../app/meta.model";
 
-enum TokenLoadStatus {
+export enum MintStatus {
   CONFIRM_MINT = "Clip ready to be turned into an NFT!\nPlease confirm the transaction in MetaMask",
   WAIT_FOR_MINT_TX = "Clip minted, waiting for the transaction to confirm...",
 }
@@ -51,7 +51,7 @@ export class Web3Model {
   storeClipStatus?: StoreClipStatus;
   private storeClipTimeoutId?: number;
   // Minting NFT loader
-  mintStatus?: TokenLoadStatus;
+  mintStatus?: MintStatus;
   // Auction loader
   auctionLoadStatus?: AuctionLoadStatus;
   // Bid on auction loader
@@ -117,7 +117,7 @@ export class Web3Model {
   }
 
   setWaitForMintTx() {
-    this.mintStatus = TokenLoadStatus.WAIT_FOR_MINT_TX;
+    this.mintStatus = MintStatus.WAIT_FOR_MINT_TX;
   }
 
   setAuctionApproveTokenLoader() {
@@ -187,7 +187,7 @@ export class Web3Model {
   }
 
   private startMintLoader() {
-    this.mintStatus = TokenLoadStatus.CONFIRM_MINT;
+    this.mintStatus = MintStatus.CONFIRM_MINT;
   }
 
   private setClipStoreStatus(status: StoreClipStatus) {

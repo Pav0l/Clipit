@@ -14,7 +14,7 @@ import { UserController } from "../../twitch-user/user.controller";
 import { ClipController } from "../clip.controller";
 import { GameController } from "../../twitch-games/game.controller";
 import { useInputData } from "../../../lib/hooks/useInputData";
-import { Web3Model } from "../../web3/web3.model";
+import { MintStatus, Web3Model } from "../../web3/web3.model";
 import ClipCardContent from "./ClipCardContent";
 
 interface Props {
@@ -136,12 +136,17 @@ function ClipDetailContainer({ model, operations }: Props) {
   }
 
   if (model.web3.mintStatus) {
-    return (
-      <ErrorWithRetry
-        text={model.web3.mintStatus}
-        withRetry={false}
-      ></ErrorWithRetry>
-    );
+    switch (model.web3.mintStatus) {
+      case MintStatus.CONFIRM_MINT:
+        return (
+          <ErrorWithRetry
+            text={model.web3.mintStatus}
+            withRetry={false}
+          ></ErrorWithRetry>
+        );
+      case MintStatus.WAIT_FOR_MINT_TX:
+        return <LinearLoader text={model.web3.mintStatus} />;
+    }
   }
 
   return (
