@@ -37,6 +37,6 @@ const useStyles = makeStyles(() => ({
     flexDirection: "column",
     textAlign: "center",
     minHeight: "90vh",
-    width: "100%"
+    margin: "0 1rem"
   }
 }));

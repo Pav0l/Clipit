@@ -49,7 +49,7 @@ export class Web3Model {
 
   // Saving clip & generating signature loader
   storeClipStatus?: StoreClipStatus;
-  storeClipTimeoutId?: number;
+  private storeClipTimeoutId?: number;
   // Minting NFT loader
   mintStatus?: TokenLoadStatus;
   // Auction loader
@@ -104,7 +104,7 @@ export class Web3Model {
       this.setClipStoreStatus(StoreClipStatus.GENERATING_SIG);
     }, 20_000);
 
-    this.storeClipTimeoutId = timeoutId;
+    this.setStoreClipTimeoutId(timeoutId);
   }
 
   stopClipStoreLoaderAndStartMintLoader() {
@@ -178,9 +178,14 @@ export class Web3Model {
 
   stopClipStoreLoader() {
     clearTimeout(this.storeClipTimeoutId);
-    this.storeClipTimeoutId = undefined;
+    this.setStoreClipTimeoutId(undefined);
     this.storeClipStatus = undefined;
   }
+
+  private setStoreClipTimeoutId(value: number | undefined) {
+    this.storeClipTimeoutId = value;
+  }
+
   private startMintLoader() {
     this.mintStatus = TokenLoadStatus.CONFIRM_MINT;
   }
