@@ -232,3 +232,9 @@ export enum Web3Errors {
 
   SOMETHING_WENT_WRONG = "Something went wrong",
 }
+
+export enum MetamaskButton {
+  INSTALL = "Install MetaMask",
+  CONNECT = "Connect",
+  CONNECTED = "Connected",
+}

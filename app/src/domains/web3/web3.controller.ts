@@ -440,7 +440,7 @@ export class Web3Controller implements IWeb3Controller {
 
       switch (error.code) {
         case RpcErrors.REQUEST_ALREADY_PENDING:
-          this.snackbar.sendError(Web3Errors.REQUEST_ALREADY_PENDING);
+          this.snackbar.sendInfo(Web3Errors.REQUEST_ALREADY_PENDING);
           break;
         case RpcErrors.USER_REJECTED_REQUEST:
           this.snackbar.sendInfo(Web3Errors.CONNECT_MM_WARNING);
@@ -616,6 +616,7 @@ export class Web3Controller implements IWeb3Controller {
 
   private handleAccountsChange = (accounts: string[]) => {
     console.log('[web3.controller]:handleAccountsChange', accounts);
+    // TODO when accounts change, we should update NFT states of owners, etc
     this.model.setAccounts(accounts);
     this.model.resetEthBalance();
   }

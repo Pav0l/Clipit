@@ -108,10 +108,12 @@ function initSynchronous() {
 
 async function initAsync({
   model,
-  user
+  user,
+  web3
 }: {
   model: AppModel;
   user: UserController;
+  web3: Web3Controller;
 }) {
   if (!model.auth.isLoggedIn) {
     // user logged out -> nothing to init
@@ -123,13 +125,19 @@ async function initAsync({
   ////////////////////////////
 
   await user.getUser();
+
+  ////////////////////////////
+  // web3 init
+  ////////////////////////////
+
+  await web3.connectMetaMaskIfNecessaryForConnectBtn();
 }
 
 (async () => {
   try {
     const { model, operations } = initSynchronous();
 
-    await initAsync({ model, user: operations.user });
+    await initAsync({ model, user: operations.user, web3: operations.web3 });
 
     ReactDOM.render(
       <React.StrictMode>

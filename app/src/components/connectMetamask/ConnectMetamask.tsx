@@ -3,15 +3,11 @@ import MetaMaskOnboarding from "@metamask/onboarding";
 import { observer } from "mobx-react-lite";
 import { useState, useRef, useEffect } from "react";
 
-import { Web3Model } from "../../domains/web3/web3.model";
+import { Web3Model, MetamaskButton } from "../../domains/web3/web3.model";
 import { IWeb3Controller } from "../../domains/web3/web3.controller";
 import { SnackbarClient } from "../../domains/snackbar/snackbar.controller";
 
 import MetamaskIcon from "../../assets/metamask.svg";
-
-const ONBOARD_TEXT = "Install MetaMask";
-const CONNECT_TEXT = "Connect";
-const CONNECTED_TEXT = "Connected";
 
 interface Props {
   model: {
@@ -24,7 +20,7 @@ interface Props {
 }
 
 function ConnectMetamaskButton({ model, operations }: Props) {
-  const [buttonText, setButtonText] = useState(ONBOARD_TEXT);
+  const [buttonText, setButtonText] = useState(MetamaskButton.INSTALL);
   const [isDisabled, setDisabled] = useState(false);
 
   const onboarding = useRef<MetaMaskOnboarding>();
@@ -34,18 +30,16 @@ function ConnectMetamaskButton({ model, operations }: Props) {
     if (!onboarding.current) {
       onboarding.current = new MetaMaskOnboarding();
     }
-
-    operations.web3.connectMetaMaskIfNecessaryForConnectBtn();
   }, []);
 
   useEffect(() => {
     if (model.web3.isMetaMaskInstalled()) {
       if (model.web3.isProviderConnected()) {
-        setButtonText(CONNECTED_TEXT);
+        setButtonText(MetamaskButton.CONNECTED);
         setDisabled(true);
         onboarding.current!.stopOnboarding();
       } else {
-        setButtonText(CONNECT_TEXT);
+        setButtonText(MetamaskButton.CONNECT);
         setDisabled(false);
       }
     }
