@@ -12,16 +12,8 @@ export function CardWithThumbnail({ metadata }: Props) {
   return (
     <Card className={classes.card}>
       <CardActionArea>
-        <CardMedia
-          component="img"
-          alt="Card with thumbnail"
-          src={metadata.thumbnailUri}
-        />
-        <NftCardContent
-          title={metadata.clipTitle}
-          description={metadata.description}
-          auction={metadata.auction}
-        />
+        <CardMedia component="img" alt="Card with thumbnail" src={metadata.thumbnailUri} />
+        <NftCardContent title={metadata.clipTitle} description={metadata.description} auction={metadata.auction} />
       </CardActionArea>
     </Card>
   );
@@ -30,6 +22,6 @@ export function CardWithThumbnail({ metadata }: Props) {
 const useStyles = makeStyles(() => ({
   card: {
     width: "25vw",
-    maxWidth: "480px"
-  }
+    maxWidth: "480px",
+  },
 }));

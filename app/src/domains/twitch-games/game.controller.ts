@@ -1,10 +1,8 @@
-import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client"
+import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client";
 import { GameModel } from "./game.model";
 
-
 export class GameController {
-
-  constructor(private model: GameModel, private twitchApi: TwitchApiClient) { }
+  constructor(private model: GameModel, private twitchApi: TwitchApiClient) {}
 
   getGames = async (gameId: string) => {
     this.model.meta.setLoading(true);
@@ -18,7 +16,7 @@ export class GameController {
       console.log("Failed to get game name for id:", gameId);
     }
     this.model.meta.setLoading(false);
-  }
+  };
 
   getGamesForClips = async (gameIds: string[]) => {
     // TODO throttle these, so we don't hit rate limits on users with many "variety" clips
@@ -28,7 +26,5 @@ export class GameController {
         await this.getGames(gameId);
       }
     }
-  }
-
+  };
 }
-

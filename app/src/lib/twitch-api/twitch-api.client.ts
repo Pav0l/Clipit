@@ -2,67 +2,73 @@ import { HttpClient, RawResponse } from "../http-client/http-client";
 
 export interface TwitchApiClient {
   getUsers: () => Promise<RawResponse<{ data: TwitchUserResp[] } | TwitchError>>;
-  getClips: (queryParams: TwitchClipQuery, cursor?: string) => Promise<RawResponse<{ data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError>>;
-  getGames: (gameId: string, cursor?: string) => Promise<RawResponse<{ data: TwitchGameResp[]; pagination?: TwitchPaginationResp } | TwitchError>>;
+  getClips: (
+    queryParams: TwitchClipQuery,
+    cursor?: string
+  ) => Promise<RawResponse<{ data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError>>;
+  getGames: (
+    gameId: string,
+    cursor?: string
+  ) => Promise<RawResponse<{ data: TwitchGameResp[]; pagination?: TwitchPaginationResp } | TwitchError>>;
   isTwitchError: <T>(body: T | TwitchError) => body is TwitchError;
 }
 
-
 export class TwitchApi implements TwitchApiClient {
-
   constructor(private httpClient: HttpClient, clientId: string) {
-    this.httpClient.setCustomHeader('Client-Id', clientId);
+    this.httpClient.setCustomHeader("Client-Id", clientId);
   }
 
   getUsers = async () => {
     return this.httpClient.authorizedRequest<{ data: TwitchUserResp[] } | TwitchError>({
-      method: 'get',
-      url: '/users',
+      method: "get",
+      url: "/users",
     });
-  }
+  };
 
   getClips = async (queryParams: TwitchClipQuery, cursor?: string) => {
     if (cursor) {
-      queryParams.after = cursor
+      queryParams.after = cursor;
     }
     if (!queryParams.first || queryParams.first > "100") {
       // default number of clips to fetch
       queryParams.first = "50";
     }
 
-    return this.httpClient.authorizedRequest<{ data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError>({
-      method: 'get',
-      url: '/clips',
-      qs: queryParams
+    return this.httpClient.authorizedRequest<
+      { data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError
+    >({
+      method: "get",
+      url: "/clips",
+      qs: queryParams,
     });
-  }
+  };
 
   getGames = async (gameId: string, cursor?: string) => {
     const queryParams: TwitchGameQuery = { id: gameId };
 
     if (cursor) {
-      queryParams.after = cursor
+      queryParams.after = cursor;
     }
 
-    return this.httpClient.authorizedRequest<{ data: TwitchGameResp[]; pagination?: TwitchPaginationResp } | TwitchError>({
-      method: 'get',
-      url: '/games',
-      qs: queryParams
-    })
-  }
+    return this.httpClient.authorizedRequest<
+      { data: TwitchGameResp[]; pagination?: TwitchPaginationResp } | TwitchError
+    >({
+      method: "get",
+      url: "/games",
+      qs: queryParams,
+    });
+  };
 
   isTwitchError = <T>(body: T | TwitchError): body is TwitchError => {
     return (body as TwitchError).error !== undefined;
-  }
+  };
 }
-
 
 export interface TwitchError {
   error: string;
   status: number;
   message: string;
 }
-
 
 // https://dev.twitch.tv/docs/api/reference#get-clips
 export interface TwitchClipResp {
@@ -98,7 +104,7 @@ export interface TwitchClipQuery extends TwitchPaginationQuery {
   /**
    * Maximum number of objects to return. Maximum: 100. Default: 20.
    */
-  first?: string
+  first?: string;
 }
 
 // https://dev.twitch.tv/docs/api/reference#get-users

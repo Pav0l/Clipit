@@ -1,18 +1,25 @@
 import { BigNumberish } from "ethers";
-import { makeAutoObservable } from "mobx"
+import { makeAutoObservable } from "mobx";
 
 import { pinataGatewayUri } from "../../lib/constants";
 import { formatCurrencyAmountToDisplayAmount } from "../../lib/ethereum/currency";
-import { AuctionBidPartialFragment, AuctionPartialFragment, BidPartialFragment, CurrencyPartialFragment, InactiveAuctionBidPartialFragment, ReserveAuctionBidType, ReserveAuctionStatus } from "../../lib/graphql/types";
+import {
+  AuctionBidPartialFragment,
+  AuctionPartialFragment,
+  BidPartialFragment,
+  CurrencyPartialFragment,
+  InactiveAuctionBidPartialFragment,
+  ReserveAuctionBidType,
+  ReserveAuctionStatus,
+} from "../../lib/graphql/types";
 import { calcExpectedEndOfAuction, formatTimestampToCountdown } from "../../lib/time/time";
 import { MetaModel } from "../app/meta.model";
-
 
 export class NftModel {
   meta: MetaModel;
 
   metadata: Metadata[] = [];
-  hasMetadata: { [tokenId: string]: boolean } = {}
+  hasMetadata: { [tokenId: string]: boolean } = {};
 
   constructor(meta: MetaModel) {
     makeAutoObservable(this);
@@ -38,27 +45,28 @@ export class NftModel {
   }
 
   getMetadata(clipCid: string): Metadata {
-    return this.metadata.filter(metadata => metadata.clipCid === clipCid)[0];
+    return this.metadata.filter((metadata) => metadata.clipCid === clipCid)[0];
   }
 
   getTokenMetadata(tokenId: string): Metadata {
-    return this.metadata.filter(metadata => metadata.tokenId === tokenId)[0];
+    return this.metadata.filter((metadata) => metadata.tokenId === tokenId)[0];
   }
 
   getOwnMetadata(userAddress: string | null): Metadata[] {
-    return this.metadata.filter(metadata => metadata.owner === userAddress || metadata.auction?.tokenOwnerId === userAddress);
+    return this.metadata.filter(
+      (metadata) => metadata.owner === userAddress || metadata.auction?.tokenOwnerId === userAddress
+    );
   }
 
   get metadataForMarketplace(): Metadata[] {
-    return this.metadata.filter(metadata => {
+    return this.metadata.filter((metadata) => {
       if (metadata.auction) {
         return metadata.auction.approved && !metadata.auction.isCanceled;
       }
       return false; // for now do not display tokens without auction in marketplace
-    })
+    });
   }
 }
-
 
 interface MetadataInput {
   clipCid: string;
@@ -98,7 +106,7 @@ export class Metadata {
   }
 
   private validateField<T>(field: unknown) {
-    if (typeof field === 'undefined') {
+    if (typeof field === "undefined") {
       throw new Error(`Undefined metadata field type: ${field}`);
     }
     return field as T;
@@ -106,14 +114,14 @@ export class Metadata {
 
   private createClipIpfsGatewayUri = (cid: string) => {
     return `${this.ipfsGatewayUri}/${cid}`;
-  }
+  };
 
   private handleLatestAuction(tokenId: string, tokenOwner: string, auction?: AuctionPartialFragment[] | null) {
     if (!auction || auction.length === 0) {
       return null;
     }
 
-    const a = auction.filter(ah => ah.tokenId === tokenId).reduce((max, au) => max.id > au.id ? max : au);
+    const a = auction.filter((ah) => ah.tokenId === tokenId).reduce((max, au) => (max.id > au.id ? max : au));
     return new Auction(a, tokenOwner);
   }
 }
@@ -125,7 +133,13 @@ export class Bid {
   bidderAddress: string;
   bidType: ReserveAuctionBidType;
 
-  constructor(data: { symbol: string; amount: BigNumberish; decimals?: number | null; bidder: string; bidType: ReserveAuctionBidType; }) {
+  constructor(data: {
+    symbol: string;
+    amount: BigNumberish;
+    decimals?: number | null;
+    bidder: string;
+    bidType: ReserveAuctionBidType;
+  }) {
     this.symbol = data.symbol;
     this.amount = data.amount;
     this.displayAmount = formatCurrencyAmountToDisplayAmount(this.amount, data.decimals);
@@ -133,7 +147,6 @@ export class Bid {
     this.bidType = data.bidType;
   }
 }
-
 
 export class Auction {
   id: string;
@@ -163,13 +176,16 @@ export class Auction {
     this.approvedTimestamp = input.approvedTimestamp;
     this.expectedEndTimestamp = input.expectedEndTimestamp;
     this.reservePrice = input.reservePrice;
-    this.displayReservePrice = formatCurrencyAmountToDisplayAmount(input.reservePrice ?? 0, input.auctionCurrency.decimals);
+    this.displayReservePrice = formatCurrencyAmountToDisplayAmount(
+      input.reservePrice ?? 0,
+      input.auctionCurrency.decimals
+    );
     this.status = input.status;
     this.tokenOwnerId = this.handleTokenOwnerId(input.tokenOwner.id, tokenOwner);
     this.auctionCurrency = input.auctionCurrency;
     this.highestBid = this.handleHighestBid(this.auctionCurrency, input.currentBid);
     this.previousBids = this.handlePreviousBids(this.auctionCurrency, input.previousBids);
-    this.previousHighestBid = this.handlePreviousHighestBid(input.previousBids)
+    this.previousHighestBid = this.handlePreviousHighestBid(input.previousBids);
   }
 
   get isActive(): boolean {
@@ -209,12 +225,12 @@ export class Auction {
     return {
       symbol: this.auctionCurrency.symbol,
       displayAmount: this.displayReservePrice,
-      onlyDisplayReservePrice: true
+      onlyDisplayReservePrice: true,
     };
   }
 
   private handleTokenOwnerId(auctionTokenOwnerId: string, tokenOwner: string) {
-    // auction.tokenOwnerId can be correct token owner, 
+    // auction.tokenOwnerId can be correct token owner,
     // or outdated token owner if auction is finished (subgraph handler does not update tokenOwnerId on auction ended event)
     return this.isFinished ? tokenOwner : auctionTokenOwnerId;
   }
@@ -224,7 +240,13 @@ export class Auction {
       return null;
     }
 
-    return new Bid({ symbol: c.symbol, amount: bid.amount, decimals: c.decimals, bidder: bid.bidder.id, bidType: bid.bidType });
+    return new Bid({
+      symbol: c.symbol,
+      amount: bid.amount,
+      decimals: c.decimals,
+      bidder: bid.bidder.id,
+      bidType: bid.bidType,
+    });
   }
 
   private handlePreviousBids(c: CurrencyPartialFragment, bids?: InactiveAuctionBidPartialFragment[] | null) {
@@ -232,7 +254,16 @@ export class Auction {
       return [];
     }
 
-    return bids.map((bid) => new Bid({ symbol: c.symbol, amount: bid.amount, decimals: c.decimals, bidder: bid.bidder.id, bidType: bid.bidType }));
+    return bids.map(
+      (bid) =>
+        new Bid({
+          symbol: c.symbol,
+          amount: bid.amount,
+          decimals: c.decimals,
+          bidder: bid.bidder.id,
+          bidType: bid.bidType,
+        })
+    );
   }
 
   private handlePreviousHighestBid(bids?: InactiveAuctionBidPartialFragment[] | null) {
@@ -240,16 +271,21 @@ export class Auction {
       return null;
     }
     // find highest previous bid based on bidType & bidInactivatedTs
-    const finalBids = bids.filter(b => b.bidType === ReserveAuctionBidType.Final);
+    const finalBids = bids.filter((b) => b.bidType === ReserveAuctionBidType.Final);
     if (finalBids.length === 0) {
-      return null
+      return null;
     }
 
     const highestBid = finalBids[0];
-    return new Bid({ symbol: this.auctionCurrency.symbol, amount: highestBid.amount, decimals: this.auctionCurrency.decimals, bidder: highestBid.bidder.id, bidType: highestBid.bidType });
+    return new Bid({
+      symbol: this.auctionCurrency.symbol,
+      amount: highestBid.amount,
+      decimals: this.auctionCurrency.decimals,
+      bidder: highestBid.bidder.id,
+      bidType: highestBid.bidType,
+    });
   }
 }
-
 
 export enum DisplayAuctionStatusTitle {
   READY = "Auction ready",
@@ -281,12 +317,12 @@ export class DisplayAuctionStatus {
     status: ReserveAuctionStatus | null | undefined,
     highestBidDisplayValue: string,
     firstBidTime?: string,
-    expectedEndTimestamp?: string | null,
+    expectedEndTimestamp?: string | null
   ): { title: DisplayAuctionStatusTitle; value: string } {
     switch (status) {
       case ReserveAuctionStatus.Pending:
         return { title: DisplayAuctionStatusTitle.NOT_APPROVED, value: "" };
-      case ReserveAuctionStatus.Active:
+      case ReserveAuctionStatus.Active: {
         if (!firstBidTime || firstBidTime === "0") {
           // no bids yet, but active (approved) auction
           return { title: DisplayAuctionStatusTitle.READY, value: "" };
@@ -298,8 +334,12 @@ export class DisplayAuctionStatus {
         }
 
         return { title: DisplayAuctionStatusTitle.ENDS_IN, value: countdown };
+      }
       case ReserveAuctionStatus.Finished:
-        return { title: DisplayAuctionStatusTitle.SOLD, value: highestBidDisplayValue };
+        return {
+          title: DisplayAuctionStatusTitle.SOLD,
+          value: highestBidDisplayValue,
+        };
       case ReserveAuctionStatus.Canceled:
       default:
         return { title: DisplayAuctionStatusTitle.EMPTY, value: "" };

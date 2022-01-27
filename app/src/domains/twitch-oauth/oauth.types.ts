@@ -4,9 +4,9 @@ export enum OauthQueryParams {
   REDIRECT_URI = "redirect_uri",
   CLIENT_ID = "client_id",
   RESPONSE_TYPE = "response_type",
-  SCOPE = "scope"
+  SCOPE = "scope",
 }
 
 export enum OAuthErrors {
-  INVALID_SECRET = "Something went wrong."
+  INVALID_SECRET = "Something went wrong.",
 }

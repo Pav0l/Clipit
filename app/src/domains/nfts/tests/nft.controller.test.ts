@@ -17,17 +17,14 @@ describe("nft controller", () => {
     model = new NftModel(new MetaModel());
     ctrl = new NftController(
       model,
-      new OffChainStorage(
-        new ClipItApiTestClient(),
-        new IpfsTestClient()
-      ),
+      new OffChainStorage(new ClipItApiTestClient(), new IpfsTestClient()),
       new SubgraphTestClient(),
       new SnackbarController(new SnackbarModel())
     );
   });
 
   it("getCurrentSignerTokensMetadata sets metadata", async () => {
-    await ctrl.getCurrentSignerTokensMetadata('addressX0X0');
+    await ctrl.getCurrentSignerTokensMetadata("addressX0X0");
 
     expect(model.meta.isLoading).toEqual(false);
     expect(model.meta.hasError).toEqual(false);

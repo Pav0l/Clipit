@@ -1,6 +1,5 @@
 import { ILocalStorage } from "./local-storage.client";
 
-
 export class LocalStorageTestClient implements ILocalStorage {
   private inMemoryStorage: Record<string, string> = {};
 

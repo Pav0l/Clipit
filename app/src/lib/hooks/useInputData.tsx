@@ -9,9 +9,7 @@ export type useInputReturn = [
 export function useInputData(defaultValue?: string): useInputReturn {
   const [inputData, setInputData] = useState(defaultValue ?? "");
 
-  const inputHandler = (
-    input: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string
-  ) => {
+  const inputHandler = (input: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | string) => {
     if (typeof input === "string") {
       setInputData(input);
     } else {

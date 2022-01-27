@@ -5,12 +5,12 @@ export interface IIpfsClient {
 }
 
 export class IpfsClient implements IIpfsClient {
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {}
 
   getMetadata = async <V>(cid: string) => {
     return this.httpClient.requestRaw<V>({
-      method: 'get',
-      url: `/${cid}/metadata.json`
+      method: "get",
+      url: `/${cid}/metadata.json`,
     });
-  }
+  };
 }

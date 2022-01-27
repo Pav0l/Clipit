@@ -1,4 +1,3 @@
-
 export enum AuctionContractErrors {
   INVALID_CURATOR_FEE_USER_ERR = "Curator fee must be less than 100%",
   AUCTION_NOT_STARTED = "Auction has not started yet",

@@ -1,10 +1,4 @@
-import {
-  Button,
-  InputAdornment,
-  makeStyles,
-  TextField,
-  Typography
-} from "@material-ui/core";
+import { Button, InputAdornment, makeStyles, TextField, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { NftController } from "../../domains/nfts/nft.controller";
@@ -40,11 +34,7 @@ const calcMinBid = (metadata: Metadata) => {
   return auction.displayReservePrice ? auction.displayReservePrice : "0";
 };
 
-export const BidForm = observer(function BidForm({
-  metadata,
-  operations,
-  model
-}: Props) {
+export const BidForm = observer(function BidForm({ metadata, operations, model }: Props) {
   const [isDisabled, setDisabled] = useState(false);
   const [isInputErr, setInputErr] = useState(false);
 
@@ -84,13 +74,11 @@ export const BidForm = observer(function BidForm({
 
     await operations.web3.requestConnectAndBid(metadata.auction?.id, input);
     await operations.nft.getAuctionForToken(metadata.tokenId, {
-      clearCache: true
+      clearCache: true,
     });
   };
 
-  const handleBidChange = (
-    ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleBidChange = (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (ev.target.value < minimalBid) {
       setInputErr(true);
       setDisabled(true);
@@ -110,9 +98,7 @@ export const BidForm = observer(function BidForm({
     <div className={classes.container}>
       <div className={classes.title}>
         <Typography>Enter your Bid</Typography>
-        {model.web3.displayBalance ? (
-          <Typography>Balance: {model.web3.displayBalance} ETH</Typography>
-        ) : null}
+        {model.web3.displayBalance ? <Typography>Balance: {model.web3.displayBalance} ETH</Typography> : null}
       </div>
       <TextField
         label="Bid"
@@ -121,7 +107,7 @@ export const BidForm = observer(function BidForm({
         size="small"
         onChange={handleBidChange}
         InputProps={{
-          endAdornment: <InputAdornment position="end">ETH</InputAdornment>
+          endAdornment: <InputAdornment position="end">ETH</InputAdornment>,
         }}
         helperText={helperInputText}
         variant="outlined"
@@ -138,12 +124,9 @@ export const BidForm = observer(function BidForm({
       >
         Enter Bid
       </Button>
+      <Typography className={classes.text}>Once submitted, you can not withdraw your bid.</Typography>
       <Typography className={classes.text}>
-        Once submitted, you can not withdraw your bid.
-      </Typography>
-      <Typography className={classes.text}>
-        If you get outbidded, your bid will be automatically returned to your
-        wallet.
+        If you get outbidded, your bid will be automatically returned to your wallet.
       </Typography>
     </div>
   );
@@ -152,22 +135,22 @@ export const BidForm = observer(function BidForm({
 const useStyles = makeStyles(() => ({
   container: {
     margin: "1rem",
-    maxWidth: "35vw"
+    maxWidth: "35vw",
   },
   button: {
     width: "100%",
-    marginBottom: "0.5rem"
+    marginBottom: "0.5rem",
   },
   input: {
     width: "100%",
-    margin: "0.8rem 0 0.5rem 0"
+    margin: "0.8rem 0 0.5rem 0",
   },
   title: {
     display: "flex",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   text: {
     color: "rgba(0, 0, 0, 0.54)",
-    fontSize: "0.9rem"
-  }
+    fontSize: "0.9rem",
+  },
 }));

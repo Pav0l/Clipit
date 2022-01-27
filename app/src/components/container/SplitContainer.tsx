@@ -19,6 +19,6 @@ const useStyles = makeStyles(() => ({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    minHeight: "90vh"
-  }
+    minHeight: "90vh",
+  },
 }));

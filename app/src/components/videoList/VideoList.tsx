@@ -16,6 +16,6 @@ const useStyles = makeStyles(() => ({
     flexDirection: "row",
     justifyContent: "center",
     flexWrap: "wrap",
-    margin: "0 1rem"
-  }
+    margin: "0 1rem",
+  },
 }));

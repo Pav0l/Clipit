@@ -32,9 +32,7 @@ function NftsContainer({ model, operations }: Props) {
     if (!model.web3.isProviderConnected()) {
       // MM was not connected -> no reason to keep some previous NFTs on state
       model.nft.resetMetadata();
-      operations.web3.requestConnect(
-        operations.nft.getCurrentSignerTokensMetadata
-      );
+      operations.web3.requestConnect(operations.nft.getCurrentSignerTokensMetadata);
     }
 
     if (signer) {
@@ -57,17 +55,14 @@ function NftsContainer({ model, operations }: Props) {
   }
 
   if (!signer) {
-    return (
-      <ErrorWithRetry text={Web3Errors.CONNECT_METAMASK} withRetry={false} />
-    );
+    return <ErrorWithRetry text={Web3Errors.CONNECT_METAMASK} withRetry={false} />;
   }
 
   if (metadata.length === 0) {
     return (
       <CenteredContainer>
         <Typography variant="h6" component="h6">
-          It seems you have no NFTs yet. Try{" "}
-          <Link to={AppRoute.CLIPS}>minting your first clip</Link>.
+          It seems you have no NFTs yet. Try <Link to={AppRoute.CLIPS}>minting your first clip</Link>.
         </Typography>
       </CenteredContainer>
     );

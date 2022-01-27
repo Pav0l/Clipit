@@ -1,10 +1,4 @@
-import {
-  Button,
-  InputAdornment,
-  makeStyles,
-  TextField,
-  Typography
-} from "@material-ui/core";
+import { Button, InputAdornment, makeStyles, TextField, Typography } from "@material-ui/core";
 import { utils } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -29,11 +23,7 @@ interface Props {
   };
 }
 
-export const AuctionCreateForm = observer(function AuctionCreateForm({
-  tokenId,
-  operations,
-  model
-}: Props) {
+export const AuctionCreateForm = observer(function AuctionCreateForm({ tokenId, operations, model }: Props) {
   const classes = useStyles();
   const [durationInput, setDuration] = useInputData("1");
   const [durationErr, setDurationErr] = useState(false);
@@ -44,10 +34,7 @@ export const AuctionCreateForm = observer(function AuctionCreateForm({
   const [isDisabled, setDisabled] = useState(false);
 
   useEffect(() => {
-    if (
-      !isValidDuration(durationInput) ||
-      !isValidReservePrice(reservePriceInput)
-    ) {
+    if (!isValidDuration(durationInput) || !isValidReservePrice(reservePriceInput)) {
       setDisabled(true);
     } else if (isDisabled) {
       setDisabled(false);
@@ -74,18 +61,14 @@ export const AuctionCreateForm = observer(function AuctionCreateForm({
     await operations.nft.getAuctionForToken(tokenId, { clearCache: true });
   };
 
-  const handleDurationChange = (
-    ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleDurationChange = (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (isValidDuration(ev.target.value)) {
       setDuration(ev.target.value);
       setDurationErr(false);
     }
   };
 
-  const handleReservePriceChange = (
-    ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleReservePriceChange = (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (isValidReservePrice(ev.target.value)) {
       setReservePrice(ev.target.value);
       setReservePriceErr(false);
@@ -113,18 +96,10 @@ export const AuctionCreateForm = observer(function AuctionCreateForm({
         onChange={handleDurationChange}
         type="number"
         InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              {durationInput === "1" ? "day" : "days"}
-            </InputAdornment>
-          )
+          endAdornment: <InputAdornment position="end">{durationInput === "1" ? "day" : "days"}</InputAdornment>,
         }}
         error={durationErr}
-        helperText={
-          durationErr
-            ? "Duration has to be more than 1 day"
-            : "How many days should the Auction run for"
-        }
+        helperText={durationErr ? "Duration has to be more than 1 day" : "How many days should the Auction run for"}
         variant="outlined"
         className={classes.input}
       />
@@ -136,14 +111,10 @@ export const AuctionCreateForm = observer(function AuctionCreateForm({
         onChange={handleReservePriceChange}
         type="number"
         InputProps={{
-          endAdornment: <InputAdornment position="end">ETH</InputAdornment>
+          endAdornment: <InputAdornment position="end">ETH</InputAdornment>,
         }}
         error={reservePriceErr}
-        helperText={
-          reservePriceErr
-            ? "Invalid minimal price for your NFT"
-            : "Minimal value of bid for your NFT"
-        }
+        helperText={reservePriceErr ? "Invalid minimal price for your NFT" : "Minimal value of bid for your NFT"}
         variant="outlined"
         className={classes.input}
       />
@@ -164,24 +135,24 @@ export const AuctionCreateForm = observer(function AuctionCreateForm({
 const useStyles = makeStyles(() => ({
   container: {
     margin: "1rem",
-    maxWidth: "50vw"
+    maxWidth: "50vw",
   },
   button: {
     width: "100%",
-    marginBottom: "0.5rem"
+    marginBottom: "0.5rem",
   },
   input: {
     width: "100%",
-    margin: "0.8rem 0 0.5rem 0"
+    margin: "0.8rem 0 0.5rem 0",
   },
   title: {
     display: "flex",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   text: {
     color: "rgba(0, 0, 0, 0.54)",
-    fontSize: "0.9rem"
-  }
+    fontSize: "0.9rem",
+  },
 }));
 
 function isValidDuration(duration: string): boolean {

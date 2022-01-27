@@ -26,16 +26,10 @@ export const OwnerNftDetails = observer(function OwnerNftDetails({
   ownerAddress,
   auction,
   model,
-  operations
+  operations,
 }: Props) {
   if (!auction || auction.isCanceled || auction.isFinished) {
-    return (
-      <AuctionCreateForm
-        tokenId={tokenId}
-        operations={operations}
-        model={model}
-      />
-    );
+    return <AuctionCreateForm tokenId={tokenId} operations={operations} model={model} />;
   }
 
   if (auction.isActive) {

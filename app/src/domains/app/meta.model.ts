@@ -1,12 +1,12 @@
-import { makeAutoObservable } from "mobx"
+import { makeAutoObservable } from "mobx";
 
 /**
  * MetaStore keeps metadata about stores (loading, error, ...)
  */
 export class MetaModel {
-  isLoading: boolean = false;
-  hasError: boolean = false;
-  error: string = "";
+  isLoading = false;
+  hasError = false;
+  error = "";
 
   constructor() {
     makeAutoObservable(this);
@@ -14,10 +14,10 @@ export class MetaModel {
 
   setLoading = (value: boolean) => {
     this.isLoading = value;
-  }
+  };
 
   setError = (message: string) => {
     this.hasError = true;
     this.error = message;
-  }
+  };
 }

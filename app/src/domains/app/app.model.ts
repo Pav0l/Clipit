@@ -8,7 +8,6 @@ import { UserModel } from "../twitch-user/user.model";
 import { OAuthModel } from "../twitch-oauth/oauth.model";
 import { Web3Model } from "../web3/web3.model";
 
-
 export interface IAppModel {
   clip: ClipModel;
   user: UserModel;
@@ -20,7 +19,6 @@ export interface IAppModel {
   snackbar: SnackbarModel;
 
   testStore: TestStore;
-
 }
 
 export class AppModel implements IAppModel {
@@ -33,7 +31,6 @@ export class AppModel implements IAppModel {
   web3: Web3Model;
 
   testStore: TestStore;
-
 
   constructor() {
     this.clip = new ClipModel(new MetaModel());

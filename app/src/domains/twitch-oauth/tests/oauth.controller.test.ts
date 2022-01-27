@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { twitchAccessToken, twitchSecretKey } from "../../../lib/constants";
 import { LocalStorageTestClient } from "../../../lib/local-storage/local-storage-test.client";
 import { OAuthController } from "../oauth.controller";
@@ -9,7 +10,6 @@ describe("oauth controller", () => {
   let model: OAuthModel;
   let ctrl: OAuthController;
   let ls: LocalStorageTestClient;
-
 
   // TODO replace this
   const { location } = window;
@@ -31,8 +31,8 @@ describe("oauth controller", () => {
 
   it("logout: removes token", async () => {
     // user logged in -> token in storage
-    ls.setItem(twitchAccessToken, 'secret');
-    expect(ls.getItem(twitchAccessToken)).toEqual('secret');
+    ls.setItem(twitchAccessToken, "secret");
+    expect(ls.getItem(twitchAccessToken)).toEqual("secret");
 
     await ctrl.logout();
 
@@ -47,11 +47,10 @@ describe("oauth controller", () => {
 
   it("checkTokenInStorage: set auth flag in app state if token exist", async () => {
     // user logged in -> token in storage
-    ls.setItem(twitchAccessToken, 'secret');
-    expect(ls.getItem(twitchAccessToken)).toEqual('secret');
+    ls.setItem(twitchAccessToken, "secret");
+    expect(ls.getItem(twitchAccessToken)).toEqual("secret");
 
     expect(model.isLoggedIn).toEqual(false);
-
 
     ctrl.checkTokenInStorage();
 
@@ -60,7 +59,7 @@ describe("oauth controller", () => {
 
   describe("handleOAuth2Redirect", () => {
     let state: string;
-    const secret = 'top_secret_secret';
+    const secret = "top_secret_secret";
 
     beforeEach(() => {
       ls.setItem(twitchSecretKey, secret);
@@ -80,7 +79,10 @@ describe("oauth controller", () => {
     });
 
     it("shows error on different secret", async () => {
-      const differentState = JSON.stringify({ referrer: "/path", secret: 'different_secret' });
+      const differentState = JSON.stringify({
+        referrer: "/path",
+        secret: "different_secret",
+      });
       ctrl.handleOAuth2Redirect(new URL(`https://example.com#access_token=TOKEN&state=${differentState}`));
       expect(model.meta.hasError).toEqual(true);
     });

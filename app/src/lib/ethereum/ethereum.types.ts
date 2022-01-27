@@ -26,7 +26,7 @@ export enum ChainId {
   RINKEBY = "0x4",
   GOERLI = "0x5",
   KOVAN = "0x2a",
-  HARDHAT = "31337"
+  HARDHAT = "31337",
 }
 
 export interface ProviderMessage {

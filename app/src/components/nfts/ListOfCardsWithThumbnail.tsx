@@ -14,11 +14,7 @@ export default function ListOfCardsWithThumbnail({ metadata }: Props) {
   return (
     <VideoList>
       {metadata.map((metadata, idx) => (
-        <Link
-          to={`/nfts/${metadata.tokenId}`}
-          key={idx}
-          className={classes.link}
-        >
+        <Link to={`/nfts/${metadata.tokenId}`} key={idx} className={classes.link}>
           <CardWithThumbnail key={idx} metadata={metadata} />
         </Link>
       ))}
@@ -29,6 +25,6 @@ export default function ListOfCardsWithThumbnail({ metadata }: Props) {
 const useStyles = makeStyles(() => ({
   link: {
     textDecoration: "none",
-    margin: "1rem"
-  }
+    margin: "1rem",
+  },
 }));

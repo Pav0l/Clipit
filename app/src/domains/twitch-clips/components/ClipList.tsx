@@ -20,7 +20,7 @@ function EmptyList() {
   return (
     <CenteredContainer>
       <Typography variant="h6" component="h6">
-        Looks like you don't have any Twitch Clips yet...
+        {"Looks like you don't have any Twitch Clips yet..."}
       </Typography>
     </CenteredContainer>
   );
@@ -38,11 +38,7 @@ export default function ClipList({ clipList }: Props) {
           {clipList.map((clip, idx) => {
             return (
               <Link to={`/clips/${clip.id}`} key={idx} className={classes.link}>
-                <ClipCard
-                  title={clip.title}
-                  thumbnailUrl={clip.thumbnailUrl}
-                  key={idx}
-                />
+                <ClipCard title={clip.title} thumbnailUrl={clip.thumbnailUrl} key={idx} />
               </Link>
             );
           })}
@@ -55,6 +51,6 @@ export default function ClipList({ clipList }: Props) {
 const useStyles = makeStyles(() => ({
   link: {
     textDecoration: "none",
-    margin: "1rem"
-  }
+    margin: "1rem",
+  },
 }));

@@ -1,21 +1,17 @@
 import { createTheme, ThemeOptions } from "@material-ui/core";
 
-
 export const defaultThemeOpts: ThemeOptions = {
   overrides: {
-    "MuiButton": {
+    MuiButton: {
       containedPrimary: {
-        backgroundColor: "#2176FF"
-      }
-    }
-
+        backgroundColor: "#2176FF",
+      },
+    },
   },
   palette: {
-    background: {
-    },
-    text: {
-    }
-  }
+    background: {},
+    text: {},
+  },
 };
 
 export const defaultTheme = createTheme(defaultThemeOpts);

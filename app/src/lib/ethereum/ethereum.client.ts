@@ -8,14 +8,16 @@ export interface IEthClient {
 }
 
 export default class EthereumClient implements IEthClient {
-  constructor(private provider: EthereumProvider) { }
+  constructor(private provider: EthereumProvider) {}
 
   /**
    * requestAccounts opens MetaMask and asks user to connect wallet to app
    */
   requestAccounts = async () => {
-    return this.provider.request<Promise<string[]>>({ method: 'eth_requestAccounts' });
-  }
+    return this.provider.request<Promise<string[]>>({
+      method: "eth_requestAccounts",
+    });
+  };
 
   /**
    * ethAccounts silently requests users account (without opening up MetaMask).
@@ -23,27 +25,31 @@ export default class EthereumClient implements IEthClient {
    * It only opens MetaMask if user is not logged into MetaMask
    */
   ethAccounts = async () => {
-    return this.provider.request<Promise<string[]>>({ method: 'eth_accounts' });
-  }
+    return this.provider.request<Promise<string[]>>({ method: "eth_accounts" });
+  };
 
   getBalance = async (address: string) => {
-    return this.provider.request<Promise<string>>({ method: 'eth_getBalance', params: [address, 'latest'] });
-  }
+    return this.provider.request<Promise<string>>({
+      method: "eth_getBalance",
+      params: [address, "latest"],
+    });
+  };
 
   chainId = async () => {
-    return this.provider.request<Promise<string>>({ method: 'eth_chainid' });
-  }
+    return this.provider.request<Promise<string>>({ method: "eth_chainid" });
+  };
 
   registerEventHandler = (event: EthereumEvents, handler: (data: EthereumEventData) => void) => {
     if (this.isListenerAlreadyRegistered(event, handler)) {
       return;
     }
     this.provider.on(event, handler);
-  }
+  };
 
   private isListenerAlreadyRegistered(event: EthereumEvents, handler: (data: EthereumEventData) => void): boolean {
     // MM provider implements Node.js EventEmitter API (but I don't have its types rn)
     // https://docs.metamask.io/guide/ethereum-provider.html#events
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const listeners = (this.provider as any).listeners(event);
     for (const registeredListener of listeners) {
       if (registeredListener === handler) {

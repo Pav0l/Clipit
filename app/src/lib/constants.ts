@@ -1,4 +1,3 @@
-
 // TODO configurable variables into config file
 // CONTRACT -> into config
 export const clipitContractAddress = "0xBacff2b8579F5BBd6db50f6f3390b0a3a71d7434";
@@ -7,12 +6,11 @@ export const clipitContractAddress = "0xBacff2b8579F5BBd6db50f6f3390b0a3a71d7434
 
 export const auctionContractAddress = "0xcCeB966Ea756C8316ebB69da9800Efa869d08907";
 
-
 // IPFS -> into config
 export const ipfsBaseUri = `http://127.0.0.1:8080/ipfs`;
 
 // CLIPIT -> into config
-export const clipItUri = "http://localhost:8000/v2"
+export const clipItUri = "http://localhost:8000/v2";
 
 // IPFS
 export const pinataGatewayUri = "https://gateway.pinata.cloud/ipfs";

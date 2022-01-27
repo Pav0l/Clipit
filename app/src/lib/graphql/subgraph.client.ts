@@ -1,8 +1,17 @@
 import DataLoader from "dataloader";
 import { GraphQLClient } from "graphql-request";
 import { GET_AUCTION_QUERY, GET_CLIPS, GET_TOKENS_QUERY, GET_TOKEN_BY_TX_HASH, GET_USER_TOKENS_QUERY } from "./queries";
-import { BidPartialFragment, ClipPartialFragment, GetClipDataQuery, GetUserDataQuery, GetTokenByTxHashQuery, GetClipsQuery, AuctionPartialFragment, GetAuctionForTokenQuery } from "./types";
-import { CLIPS_PAGINATION_SKIP_VALUE } from '../constants';
+import {
+  BidPartialFragment,
+  ClipPartialFragment,
+  GetClipDataQuery,
+  GetUserDataQuery,
+  GetTokenByTxHashQuery,
+  GetClipsQuery,
+  AuctionPartialFragment,
+  GetAuctionForTokenQuery,
+} from "./types";
+import { CLIPS_PAGINATION_SKIP_VALUE } from "../constants";
 
 export interface ISubgraphClient {
   fetchClipCached: (tokenId: string) => Promise<ClipPartialFragment | null>;
@@ -34,7 +43,7 @@ export class SubgraphClient implements ISubgraphClient {
       return null;
     }
     return clip;
-  }
+  };
 
   fetchClipByHashCached = async (txHash: string) => {
     const clip = this.retryFetch<string, { id: string }>(this.clipHashLoader, txHash, 3, 5000);
@@ -43,13 +52,17 @@ export class SubgraphClient implements ISubgraphClient {
     }
 
     return clip;
-  }
+  };
 
   /**
    * Fetches first CLIPS_PAGINATION_SKIP_VALUE Clips (NFTs) from the subgraph
    * @param skip Used to paginate next CLIPS_PAGINATION_SKIP_VALUE results.
    */
-  fetchClips = async (skip?: number) => this.client.request<GetClipsQuery>(GET_CLIPS, { first: CLIPS_PAGINATION_SKIP_VALUE, skip });
+  fetchClips = async (skip?: number) =>
+    this.client.request<GetClipsQuery>(GET_CLIPS, {
+      first: CLIPS_PAGINATION_SKIP_VALUE,
+      skip,
+    });
 
   fetchUserCached = async (address: string) => {
     const user = await this.userLoader.load(address);
@@ -57,7 +70,7 @@ export class SubgraphClient implements ISubgraphClient {
       return null;
     }
     return user;
-  }
+  };
 
   fetchAuctionCached = async (tokenId: string, options: { clearCache: boolean } = { clearCache: false }) => {
     if (options.clearCache) {
@@ -70,45 +83,50 @@ export class SubgraphClient implements ISubgraphClient {
     }
 
     return auction;
-  }
+  };
 
   private getUser = async (addresses: readonly string[]) => {
     const resp = await this.client.request<GetUserDataQuery>(GET_USER_TOKENS_QUERY, {
       ids: addresses,
-      ownerIds: addresses
+      ownerIds: addresses,
     });
 
     return addresses.map((addr) => transformUserData(resp, addr));
-  }
+  };
 
   private getClip = async (clipIds: readonly string[]) => {
     const resp = await this.client.request<GetClipDataQuery>(GET_TOKENS_QUERY, {
-      ids: clipIds
+      ids: clipIds,
     });
 
     return clipIds.map((clipId) => transformClipData(resp, clipId));
-  }
+  };
 
   private getClipByTxHash = async (txHashes: readonly string[]) => {
     const resp = await this.client.request<GetTokenByTxHashQuery>(GET_TOKEN_BY_TX_HASH, {
-      hashes: txHashes
+      hashes: txHashes,
     });
 
     return txHashes.map((hash) => transformClipDataFromHash(resp, hash));
-  }
+  };
 
   private getAuctionForToken = async (tokenIds: readonly string[]) => {
     const resp = await this.client.request<GetAuctionForTokenQuery>(GET_AUCTION_QUERY, {
-      tokenIds: tokenIds
+      tokenIds: tokenIds,
     });
 
-    return tokenIds.map(tokenId => {
-      const auction = resp.reserveAuctions.find(a => a.tokenId === tokenId);
+    return tokenIds.map((tokenId) => {
+      const auction = resp.reserveAuctions.find((a) => a.tokenId === tokenId);
       return auction ? auction : null;
-    })
-  }
+    });
+  };
 
-  private retryFetch = async <K, V>(loader: DataLoader<K, V | null>, key: K, retryCount: number, retryDelay: number) => {
+  private retryFetch = async <K, V>(
+    loader: DataLoader<K, V | null>,
+    key: K,
+    retryCount: number,
+    retryDelay: number
+  ) => {
     let delay = retryDelay;
     for (let i = 0; i < retryCount; i++) {
       const value = await loader.load(key);
@@ -127,11 +145,11 @@ export class SubgraphClient implements ISubgraphClient {
     }
     console.log(`[LOG]:unable to get value from graph after ${retryCount} retries`);
     return null;
-  }
+  };
 }
 
 function sleep(ms: number) {
-  return new Promise(res => setTimeout(res, ms));
+  return new Promise((res) => setTimeout(res, ms));
 }
 
 function transformUserData(data: GetUserDataQuery, key: string): UserData | null {
@@ -142,7 +160,7 @@ function transformUserData(data: GetUserDataQuery, key: string): UserData | null
   const clipsOnAuction: ClipPartialFragment[] = [];
   data.reserveAuctions.forEach((auction) => {
     if (auction.tokenOwner.id === key && auction.clip != null) {
-      clipsOnAuction.push(auction.clip)
+      clipsOnAuction.push(auction.clip);
     }
   });
 
@@ -163,11 +181,11 @@ function transformUserData(data: GetUserDataQuery, key: string): UserData | null
         decimals: bid.currency.decimals,
       },
       bidder: {
-        id: bid.bidder.id
-      }
+        id: bid.bidder.id,
+      },
     })),
-    collection: [...user.collection, ...clipsOnAuction]
-  }
+    collection: [...user.collection, ...clipsOnAuction],
+  };
 }
 
 function transformClipData(data: GetClipDataQuery, key: string): ClipPartialFragment | null {
@@ -188,9 +206,8 @@ function transformClipDataFromHash(data: GetTokenByTxHashQuery, key: string): { 
   return clip;
 }
 
-
 export interface UserData {
   currentBids?: BidPartialFragment[];
   id: string;
-  collection: ClipPartialFragment[]
+  collection: ClipPartialFragment[];
 }

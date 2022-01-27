@@ -1,10 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { NftController } from "../../domains/nfts/nft.controller";
-import {
-  DisplayAuctionStatusTitle,
-  Metadata,
-  NftModel
-} from "../../domains/nfts/nft.model";
+import { DisplayAuctionStatusTitle, Metadata, NftModel } from "../../domains/nfts/nft.model";
 import { Web3Controller } from "../../domains/web3/web3.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { BidForm } from "../bidForm/BidForm";
@@ -24,12 +20,7 @@ interface Props {
   };
 }
 
-export const NftDetails = observer(function NftDetails({
-  tokenId,
-  metadata,
-  model,
-  operations
-}: Props) {
+export const NftDetails = observer(function NftDetails({ tokenId, metadata, model, operations }: Props) {
   const userAddress = model.web3.getAccount();
   const auction = metadata.auction;
 
@@ -61,18 +52,8 @@ export const NftDetails = observer(function NftDetails({
   // active:
   if (auction && auction.isActive) {
     // -> either running auction or active auction with no bids yet
-    if (
-      auction.displayAuctionStatus.title ===
-        DisplayAuctionStatusTitle.ENDS_IN ||
-      auction.firstBidTime === "0"
-    ) {
-      return (
-        <BidForm
-          metadata={metadata}
-          operations={operations}
-          model={{ web3: model.web3 }}
-        />
-      );
+    if (auction.displayAuctionStatus.title === DisplayAuctionStatusTitle.ENDS_IN || auction.firstBidTime === "0") {
+      return <BidForm metadata={metadata} operations={operations} model={{ web3: model.web3 }} />;
     }
   }
 

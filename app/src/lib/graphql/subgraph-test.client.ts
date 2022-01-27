@@ -5,30 +5,30 @@ import { ISubgraphClient, UserData } from "./subgraph.client";
 
 export class SubgraphTestClient implements ISubgraphClient {
   fetchAuctionCached = (tokenId: string): Promise<AuctionPartialFragment | null> => {
-    throw new Error('method not implemented');
+    throw new Error("method not implemented");
   };
   fetchClipCached = async (_tokenId: string): Promise<ClipPartialFragment | null> => {
     return clipPartialFragment;
-  }
+  };
 
   fetchClipByHashCached = async (_txHash: string): Promise<ClipPartialFragment | null> => {
     return clipPartialFragment;
-  }
+  };
 
   fetchClips = async (skip?: number): Promise<GetClipsQuery | null> => {
     if (skip) {
       throw new Error("skip not implemented yet");
     }
     return {
-      clips: [clipPartialFragment]
-    }
-  }
+      clips: [clipPartialFragment],
+    };
+  };
 
   fetchUserCached = async (_address: string): Promise<UserData | null> => {
     return {
       id: clipPartialFragment.id,
       currentBids: clipPartialFragment.currentBids,
-      collection: [clipPartialFragment]
-    }
-  }
+      collection: [clipPartialFragment],
+    };
+  };
 }

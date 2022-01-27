@@ -1,13 +1,13 @@
-const path = require('path')
-const webpack = require('webpack')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const path = require("path");
+const webpack = require("webpack");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const config = {
   entry: "./src/index.tsx",
   output: {
-    path: path.join(__dirname, '/dist'),
-    filename: 'index.js',
-    publicPath: '/', // react-router default path 
+    path: path.join(__dirname, "/dist"),
+    filename: "index.js",
+    publicPath: "/", // react-router default path
   },
   devServer: {
     port: 3000,
@@ -17,7 +17,7 @@ const config = {
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
     fallback: {
-      process: require.resolve('process/browser')
+      process: require.resolve("process/browser"),
     },
   },
   module: {
@@ -26,8 +26,8 @@ const config = {
         test: /\.(js|jsx)$/,
         exclude: /nodeModules/,
         use: {
-          loader: 'babel-loader'
-        }
+          loader: "babel-loader",
+        },
       },
       {
         test: /\.(ts|tsx)$/,
@@ -36,24 +36,24 @@ const config = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: ["style-loader", "css-loader"],
       },
       {
         test: /\.svg$/,
-        use: ['@svgr/webpack'],
+        use: ["@svgr/webpack"],
       },
-    ]
+    ],
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/index.html',
-      favicon: './src/assets/favicon.ico',
+      template: "./src/index.html",
+      favicon: "./src/assets/favicon.ico",
     }),
     new webpack.ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
-      process: 'process/browser'
-    })
+      Buffer: ["buffer", "Buffer"],
+      process: "process/browser",
+    }),
   ],
-}
+};
 
 module.exports = config;

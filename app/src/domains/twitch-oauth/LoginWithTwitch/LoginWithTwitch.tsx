@@ -17,11 +17,7 @@ function LoginWithTwitch({ model, operations }: Props) {
   return (
     <Button
       className={`${classes.button} ${isLoggedIn ? classes.logOut : ""}`}
-      onClick={
-        isLoggedIn
-          ? operations.logout
-          : () => location.assign(operations.getTwitchOAuth2AuthorizeUrl())
-      }
+      onClick={isLoggedIn ? operations.logout : () => location.assign(operations.getTwitchOAuth2AuthorizeUrl())}
     >
       {isLoggedIn ? "Log out" : "Login with Twitch"}
     </Button>
@@ -42,15 +38,15 @@ const useStyles = makeStyles(() => ({
     fontWeight: 600,
     "&:hover": {
       backgroundColor: "#772ce8",
-      color: "#fff"
-    }
+      color: "#fff",
+    },
   },
   logOut: {
     backgroundColor: "rgba(0, 0, 0, 0.05)",
     color: "#000",
     "&:hover": {
       backgroundColor: "rgba(0, 0, 0, 0.1)",
-      color: "#000"
-    }
-  }
+      color: "#000",
+    },
+  },
 }));

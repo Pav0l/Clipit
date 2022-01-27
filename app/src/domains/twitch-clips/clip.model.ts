@@ -1,6 +1,5 @@
-import { makeAutoObservable } from "mobx"
+import { makeAutoObservable } from "mobx";
 import { MetaModel } from "../app/meta.model";
-
 
 export class ClipModel {
   clips: TwitchClip[] = [];
@@ -26,7 +25,7 @@ export class ClipModel {
   }
 
   getClip(clipId: string): TwitchClip | undefined {
-    return this.clips.filter(clip => clip.id === clipId)[0];
+    return this.clips.filter((clip) => clip.id === clipId)[0];
   }
 
   get gameIds(): string[] {
@@ -39,12 +38,12 @@ export class ClipModel {
   }
 
   getUsersClips = (userId: string): TwitchClip[] => {
-    return this.clips.filter(clip => clip.broadcasterId === userId);
-  }
+    return this.clips.filter((clip) => clip.broadcasterId === userId);
+  };
 
   createDefaultClipDescription = (streamerName: string, gameName?: string): string => {
     return `${streamerName} playing ${gameName ?? "game"}`;
-  }
+  };
 }
 
 export class TwitchClip {

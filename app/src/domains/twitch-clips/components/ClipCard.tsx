@@ -1,11 +1,4 @@
-import {
-  makeStyles,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Typography
-} from "@material-ui/core";
+import { makeStyles, Card, CardActionArea, CardContent, CardMedia, Typography } from "@material-ui/core";
 
 interface Props {
   title: string;
@@ -18,18 +11,9 @@ export function ClipCard(props: Props) {
   return (
     <Card className={classes.card}>
       <CardActionArea>
-        <CardMedia
-          component="img"
-          alt="Clip thumbnail"
-          image={props.thumbnailUrl}
-        />
+        <CardMedia component="img" alt="Clip thumbnail" image={props.thumbnailUrl} />
         <CardContent>
-          <Typography
-            variant="subtitle1"
-            component="p"
-            noWrap
-            className={classes.title}
-          >
+          <Typography variant="subtitle1" component="p" noWrap className={classes.title}>
             {props.title}
           </Typography>
         </CardContent>
@@ -41,11 +25,11 @@ export function ClipCard(props: Props) {
 const useStyles = makeStyles(() => ({
   card: {
     width: "25vw",
-    maxWidth: "350px"
+    maxWidth: "350px",
   },
   title: {
     fontWeight: 600,
     color: "#31393C",
-    fontSize: "1rem"
-  }
+    fontSize: "1rem",
+  },
 }));

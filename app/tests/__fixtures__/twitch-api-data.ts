@@ -1,7 +1,7 @@
 export const twitchGame = {
-  box_art_url: 'www.example.com/art',
-  id: '12345',
-  name: 'GameName',
+  box_art_url: "www.example.com/art",
+  id: "12345",
+  name: "GameName",
 };
 
 export const twitchUser = {
@@ -16,7 +16,7 @@ export const twitchUser = {
   view_count: 100,
   email: "foo@test.com",
   created_at: "2016-12-14T20:32:28Z",
-}
+};
 
 export const twitchClip = {
   id: "VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW",
@@ -27,5 +27,5 @@ export const twitchClip = {
   game_id: "12345",
   title: "I SAP ROGUE",
   thumbnail_url: "https://clips-media-assets2.twitch.tv/AT-cm%7C1300029032-preview-260x147.jpg",
-  view_count: 20000
+  view_count: 20000,
 };

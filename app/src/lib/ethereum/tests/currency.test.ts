@@ -18,7 +18,10 @@ describe("currency", () => {
   });
 
   it("formatCurrencyAmountToDisplayAmount: throws if number overflows", () => {
-    expect(() => formatCurrencyAmountToDisplayAmount(123451234567890123451234567890, 3)).toThrow();
+    expect(() =>
+      // eslint-disable-next-line @typescript-eslint/no-loss-of-precision
+      formatCurrencyAmountToDisplayAmount(123451234567890123451234567890, 3)
+    ).toThrow();
   });
 
   it("formatCurrencyAmountToDisplayAmount: throws on invalid amount", () => {

@@ -10,10 +10,12 @@ export enum RpcErrors {
 }
 
 export function isRpcError(error: ProviderRpcError | unknown): error is ProviderRpcError {
-  return (error as ProviderRpcError).code !== undefined &&
-    typeof (error as ProviderRpcError).code === 'number' &&
+  return (
+    (error as ProviderRpcError).code !== undefined &&
+    typeof (error as ProviderRpcError).code === "number" &&
     (error as ProviderRpcError).message !== undefined &&
-    typeof (error as ProviderRpcError).message === 'string';
+    typeof (error as ProviderRpcError).message === "string"
+  );
 }
 
 export interface ProviderRpcError extends Error {

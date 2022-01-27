@@ -1,4 +1,3 @@
-
 export enum ClipItContractErrors {
   TOKEN_ALREADY_MINTED = "This clip is already minted into an NFT",
   ADDRESS_NOT_ALLOWED = "Address not allowed to mint this token",

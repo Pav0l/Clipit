@@ -1,16 +1,13 @@
 import React from "react";
 import ErrorWithRetry from "./Error";
 
-export default class ErrorBoundary extends React.Component<
-  {},
-  { hasError: boolean }
-> {
-  constructor(props: any) {
+export default class ErrorBoundary extends React.Component<Record<string, unknown>, { hasError: boolean }> {
+  constructor(props: Record<string, unknown>) {
     super(props);
     this.state = { hasError: false };
   }
 
-  componentDidCatch(error: any, errorInfo: any) {
+  componentDidCatch() {
     this.setState({ hasError: true });
     // SENTRY
   }

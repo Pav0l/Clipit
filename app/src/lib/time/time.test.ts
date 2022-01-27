@@ -34,8 +34,8 @@ describe("time", () => {
     // null expected end
     expect(calcExpectedEndOfAuction(null)).toEqual(NaN);
     // invalid inputs
-    expect(calcExpectedEndOfAuction('')).toEqual(NaN);
-    expect(calcExpectedEndOfAuction('xxx')).toEqual(NaN);
+    expect(calcExpectedEndOfAuction("")).toEqual(NaN);
+    expect(calcExpectedEndOfAuction("xxx")).toEqual(NaN);
 
     const nowPlusHour = Math.floor(Date.now() / 1000) + 3600;
     expect(calcExpectedEndOfAuction(nowPlusHour.toString())).toEqual(3600);

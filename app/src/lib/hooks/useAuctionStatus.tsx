@@ -1,14 +1,10 @@
 import { useState, useEffect } from "react";
-import {
-  Auction,
-  DisplayAuctionStatus,
-  DisplayAuctionStatusTitle
-} from "../../domains/nfts/nft.model";
+import { Auction, DisplayAuctionStatus, DisplayAuctionStatusTitle } from "../../domains/nfts/nft.model";
 
 export function useAuctionStatus(auction: Auction | null) {
   const [status, setStatus] = useState<DisplayAuctionStatus>({
     title: DisplayAuctionStatusTitle.EMPTY,
-    value: ""
+    value: "",
   } as DisplayAuctionStatus);
 
   useEffect(() => {

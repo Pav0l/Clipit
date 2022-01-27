@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx"
+import { makeAutoObservable } from "mobx";
 import { MetaModel } from "../app/meta.model";
 
 /**
@@ -7,7 +7,7 @@ import { MetaModel } from "../app/meta.model";
 export class OAuthModel {
   meta: MetaModel;
 
-  isLoggedIn: boolean = false;
+  isLoggedIn = false;
   referrer?: string;
 
   constructor(meta: MetaModel) {

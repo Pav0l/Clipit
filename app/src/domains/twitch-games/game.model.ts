@@ -1,9 +1,8 @@
-import { makeAutoObservable } from "mobx"
+import { makeAutoObservable } from "mobx";
 import { MetaModel } from "../app/meta.model";
 
-
 export class GameModel {
-  games = new Map<string, string>()
+  games = new Map<string, string>();
   meta: MetaModel;
 
   constructor(meta: MetaModel) {

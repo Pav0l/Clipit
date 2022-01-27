@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
 import { twitchClip } from "../../../../tests/__fixtures__/twitch-api-data";
 import { ClipItApiTestClient } from "../../../lib/clipit-api/clipit-api-test.client";
@@ -30,7 +31,7 @@ describe("web3 controller", () => {
       snackbar,
       ClipItTestContractCreator,
       AuctionTestContractCreator
-    )
+    );
   });
 
   describe("without ethereum provider", () => {
@@ -64,12 +65,11 @@ describe("web3 controller", () => {
       // @ts-ignore
       delete window.location;
       // @ts-ignore
-      window.location = { assign: jest.fn(), origin: 'http://localhost' };
+      window.location = { assign: jest.fn(), origin: "http://localhost" };
     });
     afterAll(() => {
       window.location = location;
     });
-
 
     beforeEach(() => {
       // create eth provider on window object like a wallet extension would
@@ -88,7 +88,7 @@ describe("web3 controller", () => {
     });
 
     it("connectMetaMaskIfNecessaryForConnectBtn does not overwrite already existing account", async () => {
-      model.setAccounts(["foo"])
+      model.setAccounts(["foo"]);
 
       // if this would call eth_accounts, it would return [signerAddress] fixture
       await ctrl.connectMetaMaskIfNecessaryForConnectBtn();
@@ -97,7 +97,7 @@ describe("web3 controller", () => {
     });
 
     it("requestConnect does not overwrite already existing account", async () => {
-      model.setAccounts(["foo"])
+      model.setAccounts(["foo"]);
 
       // if this would call eth_accounts, it would return [signerAddress] fixture
       await ctrl.requestConnect();
@@ -125,7 +125,7 @@ describe("web3 controller", () => {
 
     it("requestConnectAndMint: invalid clipId => shows snackbar error", async () => {
       // invalid clipId
-      await ctrl.requestConnectAndMint("", "xx", "xx", "xx")
+      await ctrl.requestConnectAndMint("", "xx", "xx", "xx");
       expect(snackModel.open).toEqual(true);
       expect(snackModel.message?.text).toEqual(Web3Errors.SOMETHING_WENT_WRONG);
       expect(snackModel.message?.severity).toEqual("error");
@@ -133,7 +133,7 @@ describe("web3 controller", () => {
 
     it("requestConnectAndMint: invalid clipTitle => shows snackbar error", async () => {
       // invalid clipTitle
-      await ctrl.requestConnectAndMint("xx", "xx", "", "xx")
+      await ctrl.requestConnectAndMint("xx", "xx", "", "xx");
       expect(snackModel.open).toEqual(true);
       expect(snackModel.message?.text).toEqual(Web3Errors.SOMETHING_WENT_WRONG);
       expect(snackModel.message?.severity).toEqual("error");
@@ -141,7 +141,7 @@ describe("web3 controller", () => {
 
     it("requestConnectAndMint: creates the NFT and redirects to it", async () => {
       await ctrl.requestConnectAndMint(twitchClip.id, "5", twitchClip.title, "");
-      expect(window.location.assign).toHaveBeenCalledWith('http://localhost/nfts/1');
+      expect(window.location.assign).toHaveBeenCalledWith("http://localhost/nfts/1");
     });
   });
 });

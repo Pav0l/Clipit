@@ -62,12 +62,7 @@ function ClipDetailContainer({ model, operations }: Props) {
     if (clip) {
       setTitleInput(clip.title);
 
-      setDescInput(
-        model.clip.createDefaultClipDescription(
-          clip.broadcasterName,
-          model.game.getGame(clip.gameId)
-        )
-      );
+      setDescInput(model.clip.createDefaultClipDescription(clip.broadcasterName, model.game.getGame(clip.gameId)));
     }
   }, [model.game.games.size, model.clip.clips.length]);
 
@@ -79,12 +74,7 @@ function ClipDetailContainer({ model, operations }: Props) {
       // TODO hardcoded user Id
       (model.user.id === "30094526" || clip.broadcasterId === model.user.id)
     ) {
-      await operations.web3.requestConnectAndMint(
-        clip.id,
-        creatorShare,
-        titleInput,
-        descriptionInput
-      );
+      await operations.web3.requestConnectAndMint(clip.id, creatorShare, titleInput, descriptionInput);
     }
   };
 
@@ -100,11 +90,7 @@ function ClipDetailContainer({ model, operations }: Props) {
     return <ErrorWithRetry text={model.web3.meta.error}></ErrorWithRetry>;
   }
 
-  if (
-    model.clip.meta.isLoading ||
-    model.user.meta.isLoading ||
-    model.web3.meta.isLoading
-  ) {
+  if (model.clip.meta.isLoading || model.user.meta.isLoading || model.web3.meta.isLoading) {
     return <FullPageLoader />;
   }
 
@@ -123,12 +109,7 @@ function ClipDetailContainer({ model, operations }: Props) {
     model.user.id !== "30094526" &&
     clip.broadcasterId !== model.user.id
   ) {
-    return (
-      <ErrorWithRetry
-        text="You can only create clip NFTs of your own clips"
-        withRetry={false}
-      ></ErrorWithRetry>
-    );
+    return <ErrorWithRetry text="You can only create clip NFTs of your own clips" withRetry={false}></ErrorWithRetry>;
   }
 
   if (model.web3.storeClipStatus) {
@@ -138,12 +119,7 @@ function ClipDetailContainer({ model, operations }: Props) {
   if (model.web3.mintStatus) {
     switch (model.web3.mintStatus) {
       case MintStatus.CONFIRM_MINT:
-        return (
-          <ErrorWithRetry
-            text={model.web3.mintStatus}
-            withRetry={false}
-          ></ErrorWithRetry>
-        );
+        return <ErrorWithRetry text={model.web3.mintStatus} withRetry={false}></ErrorWithRetry>;
       case MintStatus.WAIT_FOR_MINT_TX:
         return <LinearLoader text={model.web3.mintStatus} />;
     }
@@ -179,12 +155,12 @@ export default observer(ClipDetailContainer);
 const useStyles = makeStyles(() => ({
   container: {
     margin: "2rem auto",
-    borderRadius: "0px"
+    borderRadius: "0px",
   },
   iframe: {
     // video aspect ratio is 16:9
     width: "80vw",
     height: "45vw",
-    maxHeight: "70vh"
-  }
+    maxHeight: "70vh",
+  },
 }));

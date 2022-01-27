@@ -1,11 +1,9 @@
-import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client"
-import { UserModel } from "./user.model"
+import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client";
+import { UserModel } from "./user.model";
 import { TwitchUserError } from "./twitch-user.errors";
 
-
 export class UserController {
-
-  constructor(private model: UserModel, private twitchApi: TwitchApiClient) { }
+  constructor(private model: UserModel, private twitchApi: TwitchApiClient) {}
 
   getUser = async () => {
     this.model.meta.setLoading(true);
@@ -19,6 +17,5 @@ export class UserController {
     }
 
     this.model.meta.setLoading(false);
-  }
+  };
 }
-

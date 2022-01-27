@@ -3,7 +3,7 @@ import { ClipPayload, IClipItApiClient } from "../clipit-api/clipit-api.client";
 import { IIpfsClient } from "../ipfs/ipfs.client";
 
 export class OffChainStorage {
-  constructor(private writer: IClipItApiClient, private reader: IIpfsClient) { }
+  constructor(private writer: IClipItApiClient, private reader: IIpfsClient) {}
 
   async saveClipAndCreateMetadata(clipId: string, payload: ClipPayload) {
     return this.writer.storeClip<StoreClipResp | StoreClipError>(clipId, payload);

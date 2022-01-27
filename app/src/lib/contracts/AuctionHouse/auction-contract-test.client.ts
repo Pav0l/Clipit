@@ -7,7 +7,15 @@ class AuctionContractTestClient implements IAuctionContractClient {
   cancelAuction(auctionId: BigNumberish): Promise<ContractTransaction> {
     throw new Error("Method not implemented.");
   }
-  createAuction(tokenId: BigNumberish, tokenContract: string, duration: BigNumberish, reservePrice: BigNumberish, curator: string, curatorFeePercentage: BigNumberish, auctionCurrency: string): Promise<ContractTransaction> {
+  createAuction(
+    tokenId: BigNumberish,
+    tokenContract: string,
+    duration: BigNumberish,
+    reservePrice: BigNumberish,
+    curator: string,
+    curatorFeePercentage: BigNumberish,
+    auctionCurrency: string
+  ): Promise<ContractTransaction> {
     throw new Error("Method not implemented.");
   }
   createBid(auctionId: BigNumberish, amount: BigNumberish): Promise<ContractTransaction> {

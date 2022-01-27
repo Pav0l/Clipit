@@ -59,12 +59,7 @@ function ConnectMetamaskButton({ model, operations }: Props) {
   };
 
   return (
-    <Button
-      startIcon={<MetamaskIcon />}
-      className={classes.button}
-      disabled={isDisabled}
-      onClick={onClick}
-    >
+    <Button startIcon={<MetamaskIcon />} className={classes.button} disabled={isDisabled} onClick={onClick}>
       {buttonText}
     </Button>
   );
@@ -76,6 +71,6 @@ const useStyles = makeStyles(() => ({
   button: {
     border: "1px solid black",
     padding: "5px 10px",
-    textTransform: "none"
-  }
+    textTransform: "none",
+  },
 }));

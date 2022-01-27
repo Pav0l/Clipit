@@ -11,9 +11,8 @@ export class EthereumTestProvider implements EthereumProvider {
     accountsChanged: [],
     chainChanged: [],
     disconnect: [],
-    message: []
-  }
-
+    message: [],
+  };
 
   isConnected(): boolean {
     return this.isProviderConnected;
@@ -31,7 +30,7 @@ export class EthereumTestProvider implements EthereumProvider {
     switch (args.method) {
       case "eth_requestAccounts":
       case "eth_accounts":
-        return [signerAddress]
+        return [signerAddress];
       case "eth_chainid":
         return chainId;
       default:
@@ -52,6 +51,6 @@ export class EthereumTestProvider implements EthereumProvider {
   }
 
   sendEventFromProvider(eventName: EthereumEvents, msg: EthereumEventData) {
-    this.registeredListeners[eventName].forEach(listener => listener(msg));
+    this.registeredListeners[eventName].forEach((listener) => listener(msg));
   }
 }

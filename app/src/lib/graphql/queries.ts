@@ -1,4 +1,4 @@
-import { gql } from 'graphql-request';
+import { gql } from "graphql-request";
 
 const CLIP_PARTIALS = gql`
   fragment AskPartial on Ask {
@@ -103,7 +103,6 @@ const AUCTION_PARTIALS = gql`
       ...InactiveAuctionBidPartial
     }
   }
-
 `;
 
 const CURRENCY_PARTIAL = gql`
@@ -121,9 +120,7 @@ export const GET_USER_TOKENS_QUERY = gql`
   ${AUCTION_PARTIALS}
 
   query getUserData($ids: [ID!], $ownerIds: [String!]) {
-    users(
-      where: { id_in: $ids }
-    ) {
+    users(where: { id_in: $ids }) {
       id
       collection {
         ...ClipPartial
@@ -149,9 +146,7 @@ export const GET_TOKENS_QUERY = gql`
   ${AUCTION_PARTIALS}
 
   query getClipData($ids: [ID!]) {
-    clips(
-      where: { id_in: $ids }
-    ) {
+    clips(where: { id_in: $ids }) {
       ...ClipPartial
     }
   }
@@ -159,9 +154,7 @@ export const GET_TOKENS_QUERY = gql`
 
 export const GET_TOKEN_BY_TX_HASH = gql`
   query getTokenByTxHash($hashes: [String!]) {
-    clips(
-      where: { transactionHash_in: $hashes }
-    ) {
+    clips(where: { transactionHash_in: $hashes }) {
       id
       transactionHash
     }
@@ -186,9 +179,7 @@ export const GET_AUCTION_QUERY = gql`
   ${AUCTION_PARTIALS}
 
   query getAuctionForToken($tokenIds: [BigInt!]) {
-    reserveAuctions(
-      where: { tokenId_in: $tokenIds }
-    ) {
+    reserveAuctions(where: { tokenId_in: $tokenIds }) {
       ...AuctionPartial
     }
   }

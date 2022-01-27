@@ -5,7 +5,6 @@ import { ClipIt } from "./ClipIt";
 import { clipitContractAddress } from "../../constants";
 import { EthereumProvider } from "../../ethereum/ethereum.types";
 
-
 export interface MediaData {
   tokenURI: string;
   metadataURI: string;
@@ -20,9 +19,9 @@ export interface BidShares {
 }
 
 export interface Signature {
-  v: BigNumberish,
-  r: BytesLike,
-  s: BytesLike,
+  v: BigNumberish;
+  r: BytesLike;
+  s: BytesLike;
 }
 
 export interface IClipItContractClient {
@@ -40,22 +39,21 @@ class ClipItContractClient implements IClipItContractClient {
     try {
       const ethersProvider = new ethers.providers.Web3Provider(provider);
       const jsonRpcSigner = ethersProvider.getSigner();
-      this.contract = (new ethers.Contract(clipitContractAddress, ContractBuild.abi, jsonRpcSigner)) as ClipIt;
+      this.contract = new ethers.Contract(clipitContractAddress, ContractBuild.abi, jsonRpcSigner) as ClipIt;
     } catch (error) {
       // SENTRY
       console.log("[contract.client]:construct:error", error);
-      throw new Error('Invalid ethereum provider');
+      throw new Error("Invalid ethereum provider");
     }
   }
 
   async approve(to: string, tokenId: string): Promise<ethers.ContractTransaction> {
     return this.contract.approve(to, tokenId);
-  };
-
+  }
 
   async getApproved(tokenId: string): Promise<string> {
     return this.contract.getApproved(tokenId);
-  };
+  }
 
   async mint(data: MediaData, bidShares: BidShares, signature: Signature) {
     return this.contract.mint(data, bidShares, signature.v, signature.r, signature.s);

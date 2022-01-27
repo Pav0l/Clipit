@@ -1,19 +1,17 @@
 import type { NftModel } from "./nft.model";
-import { NftErrors } from './nft.errors';
+import { NftErrors } from "./nft.errors";
 import { ISubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { ClipPartialFragment } from "../../lib/graphql/types";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 
-
 export class NftController {
-
   constructor(
     private model: NftModel,
     private offChainStorage: OffChainStorage,
     private subgraph: ISubgraphClient,
     private snackbar: SnackbarClient
-  ) { }
+  ) {}
 
   getTokenMetadata = async (tokenId: string) => {
     try {
@@ -31,10 +29,10 @@ export class NftController {
       await this.getMetadataForClipFragmentAndStoreInModel(clip, true);
     } catch (error) {
       // SENTRY
-      console.log('[LOG]:getTokenMetadata err', error);
+      console.log("[LOG]:getTokenMetadata err", error);
       this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     }
-  }
+  };
 
   getCurrentSignerTokensMetadata = async (address: string) => {
     try {
@@ -50,7 +48,6 @@ export class NftController {
         // we can stop loading after we have data for first NFT
         this.model.meta.setLoading(false);
       }
-
     } catch (error) {
       // SENTRY
       this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
@@ -59,18 +56,18 @@ export class NftController {
         this.model.meta.setLoading(false);
       }
     }
-  }
+  };
 
   getOwnerMetadata = (ownerAddress: string | null) => {
     if (!ownerAddress) {
       return [];
     }
     return this.model.getOwnMetadata(ownerAddress);
-  }
+  };
 
   /**
    * Fetch a list of clips from subgraph. Use `skip` to paginate more clips
-   * @param skip 
+   * @param skip
    */
   getClips = async (skip?: number) => {
     try {
@@ -94,7 +91,7 @@ export class NftController {
         this.model.meta.setLoading(false);
       }
     }
-  }
+  };
 
   getAuctionForToken = async (tokenId: string, options: { clearCache: boolean } = { clearCache: false }) => {
     try {
@@ -108,7 +105,6 @@ export class NftController {
 
       // update reserveAuction for token
       this.model.updateTokenAuction(tokenId, data);
-
     } catch (error) {
       // SENTRY
       this.snackbar.sendError(NftErrors.ERROR_TRY_REFRESH);
@@ -117,7 +113,7 @@ export class NftController {
         this.model.meta.setLoading(false);
       }
     }
-  }
+  };
 
   private getMetadataForClipFragmentAndStoreInModel = async (clip?: ClipPartialFragment, shouldThrow?: boolean) => {
     if (clip == null) {
@@ -142,7 +138,7 @@ export class NftController {
     if (!metadata) {
       // SENTRY - in case the metadata fetch fails
       if (shouldThrow) {
-        throw new Error(`No token metadata? ${clip.metadataURI}`)
+        throw new Error(`No token metadata? ${clip.metadataURI}`);
       }
       return;
     }
@@ -155,14 +151,14 @@ export class NftController {
       currentBids: clip.currentBids,
       reserveAuction: clip.reserveAuctions,
     });
-  }
+  };
 
   private parseCidFromURI = (uri: string): string => {
     if (uri.startsWith("ipfs://")) {
       return uri.replace("ipfs://", "").split("/")[0];
     }
     return "";
-  }
+  };
 
   private getMetadataFromIpfs = async (cid: string) => {
     const resp = await this.offChainStorage.getMetadata(cid);
@@ -170,5 +166,5 @@ export class NftController {
       return resp.body;
     }
     return null;
-  }
+  };
 }

@@ -1,12 +1,6 @@
 import { useState } from "react";
 import { observer } from "mobx-react-lite";
-import {
-  CardContent,
-  Button,
-  makeStyles,
-  TextField,
-  InputAdornment
-} from "@material-ui/core";
+import { CardContent, Button, makeStyles, TextField, InputAdornment } from "@material-ui/core";
 
 import type { useInputReturn } from "../../../lib/hooks/useInputData";
 
@@ -19,17 +13,10 @@ interface Props {
   shareInputHook: useInputReturn;
 }
 
-const defHelperShareMsg =
-  "Percentage of all future sales you'll receive as a creator";
+const defHelperShareMsg = "Percentage of all future sales you'll receive as a creator";
 const defTitleMsg = "Title";
 
-function ClipCardContent({
-  validateCreatorShare,
-  mint,
-  titleInputHook,
-  descInputHook,
-  shareInputHook
-}: Props) {
+function ClipCardContent({ validateCreatorShare, mint, titleInputHook, descInputHook, shareInputHook }: Props) {
   const [isDisabled, setDisabled] = useState(false);
 
   const [titleInput, setTitleInput] = titleInputHook;
@@ -44,9 +31,7 @@ function ClipCardContent({
 
   const classes = useStyles();
 
-  const handleShareChange = (
-    ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleShareChange = (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (!validateCreatorShare(ev.target.value)) {
       setShareErr(true);
       setHelperShareMsg("The value must be an integer between 0-99");
@@ -59,9 +44,7 @@ function ClipCardContent({
     }
   };
 
-  const handleTitle = (
-    ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleTitle = (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (ev.target.value.length > 100) {
       setDisabled(true);
       setTitleErr(true);
@@ -130,7 +113,7 @@ function ClipCardContent({
           size="small"
           onChange={handleShareChange}
           InputProps={{
-            startAdornment: <InputAdornment position="start">%</InputAdornment>
+            startAdornment: <InputAdornment position="start">%</InputAdornment>,
           }}
           helperText={helperShareMsg}
           error={isShareErr}
@@ -157,18 +140,18 @@ export default observer(ClipCardContent);
 const useStyles = makeStyles(() => ({
   content: {
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
   },
   form: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
-    minWidth: "80%"
+    minWidth: "80%",
   },
   input: {
-    margin: "1rem 0"
+    margin: "1rem 0",
   },
   button: {
-    alignSelf: "flex-end"
-  }
+    alignSelf: "flex-end",
+  },
 }));

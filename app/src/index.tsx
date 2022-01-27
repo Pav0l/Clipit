@@ -11,7 +11,7 @@ import {
   subgraphUrl,
   twitchApiUri,
   twitchAppClientId,
-  twitchOAuthUri
+  twitchOAuthUri,
 } from "./lib/constants";
 import { AppModel } from "./domains/app/app.model";
 import { Web3Controller } from "./domains/web3/web3.controller";
@@ -58,29 +58,15 @@ function initSynchronous() {
     new IpfsClient(new HttpClient(storage, pinataGatewayUri))
   );
 
-  const twitchOAuthApi = new TwitchOAuthApiClient(
-    new HttpClient(storage, twitchOAuthUri)
-  );
-  const twitchApi = new TwitchApi(
-    new HttpClient(storage, twitchApiUri),
-    twitchAppClientId
-  );
+  const twitchOAuthApi = new TwitchOAuthApiClient(new HttpClient(storage, twitchOAuthUri));
+  const twitchApi = new TwitchApi(new HttpClient(storage, twitchApiUri), twitchAppClientId);
   const subgraph = new SubgraphClient(new GraphQLClient(subgraphUrl));
 
-  const authController = new OAuthController(
-    model.auth,
-    twitchOAuthApi,
-    storage
-  );
+  const authController = new OAuthController(model.auth, twitchOAuthApi, storage);
   const clipController = new ClipController(model.clip, snackbar, twitchApi);
   const gameController = new GameController(model.game, twitchApi);
   const userController = new UserController(model.user, twitchApi);
-  const nftController = new NftController(
-    model.nft,
-    offChainStorageApi,
-    subgraph,
-    snackbar
-  );
+  const nftController = new NftController(model.nft, offChainStorageApi, subgraph, snackbar);
 
   const web3Controller = new Web3Controller(
     model.web3,
@@ -102,20 +88,12 @@ function initSynchronous() {
       game: gameController,
       auth: authController,
       nft: nftController,
-      snackbar: snackbar
-    }
+      snackbar: snackbar,
+    },
   };
 }
 
-async function initAsync({
-  model,
-  user,
-  web3
-}: {
-  model: AppModel;
-  user: UserController;
-  web3: Web3Controller;
-}) {
+async function initAsync({ model, user, web3 }: { model: AppModel; user: UserController; web3: Web3Controller }) {
   if (!model.auth.isLoggedIn) {
     // user logged out -> nothing to init
     return;
@@ -149,21 +127,15 @@ async function initAsync({
               operations={{
                 web3: operations.web3,
                 auth: operations.auth,
-                snackbar: operations.snackbar
+                snackbar: operations.snackbar,
               }}
             />
 
-            <Snackbar
-              model={{ snackbar: model.snackbar }}
-              operations={operations.snackbar}
-            />
+            <Snackbar model={{ snackbar: model.snackbar }} operations={operations.snackbar} />
 
             <Switch>
               <Route exact path={AppRoute.MARKETPLACE}>
-                <Marketplace
-                  model={{ nft: model.nft, web3: model.web3 }}
-                  operations={operations.nft}
-                />
+                <Marketplace model={{ nft: model.nft, web3: model.web3 }} operations={operations.nft} />
               </Route>
               <OAuthProtectedRoute
                 exact
@@ -197,12 +169,12 @@ async function initAsync({
                   <ClipsContainer
                     model={{
                       clip: model.clip,
-                      user: model.user
+                      user: model.user,
                     }}
                     operations={{
                       clip: operations.clip,
                       game: operations.game,
-                      user: operations.user
+                      user: operations.user,
                     }}
                   />
                 </ErrorBoundary>
@@ -219,34 +191,28 @@ async function initAsync({
                       clip: model.clip,
                       user: model.user,
                       game: model.game,
-                      web3: model.web3
+                      web3: model.web3,
                     }}
                     operations={operations}
                   />
                 </ErrorBoundary>
               </OAuthProtectedRoute>
               <Route exact path={AppRoute.OAUTH_REDIRECT}>
-                <OAuth2Redirect
-                  controller={operations.auth}
-                  model={model.auth}
-                />
+                <OAuth2Redirect controller={operations.auth} model={model.auth} />
               </Route>
               <Route exact path={AppRoute.ABOUT}>
                 <Playground
                   model={{
-                    nft: model.nft
+                    nft: model.nft,
                   }}
                   operations={{
                     web3: operations.web3,
-                    snackbar: operations.snackbar
+                    snackbar: operations.snackbar,
                   }}
                 />
               </Route>
               <Route path={AppRoute.HOME}>
-                <Home
-                  model={{ clip: model.clip }}
-                  operations={{ clip: operations.clip }}
-                />
+                <Home model={{ clip: model.clip }} operations={{ clip: operations.clip }} />
               </Route>
             </Switch>
           </Router>

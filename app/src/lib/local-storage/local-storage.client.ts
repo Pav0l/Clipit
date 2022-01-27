@@ -1,4 +1,3 @@
-
 export interface ILocalStorage {
   setItem: (key: string, value: string) => void;
   getItem: (key: string) => string | null;
@@ -6,7 +5,6 @@ export interface ILocalStorage {
 }
 
 export class LocalStorageClient implements ILocalStorage {
-
   setItem(key: string, value: string): void {
     window.localStorage.setItem(key, value);
   }

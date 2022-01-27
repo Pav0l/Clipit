@@ -7,7 +7,7 @@ export class IpfsTestClient implements IIpfsClient {
     return {
       statusOk: true,
       statusCode: 200,
-      body: metadata as unknown as V
+      body: metadata as unknown as V,
     };
-  }
+  };
 }

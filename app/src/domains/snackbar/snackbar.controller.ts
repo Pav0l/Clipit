@@ -8,8 +8,7 @@ export interface SnackbarClient {
 }
 
 export class SnackbarController implements SnackbarClient {
-  constructor(private model: SnackbarModel) { }
-
+  constructor(private model: SnackbarModel) {}
 
   handleSnackClose = (_: SyntheticEvent | MouseEvent, reason?: string) => {
     if (reason === "clickaway") {
@@ -31,10 +30,7 @@ export class SnackbarController implements SnackbarClient {
   }
 
   sendSuccess(text: string, duration?: number) {
-    this.model.addSuccessToSnackbarQue(
-      text,
-      duration
-    );
+    this.model.addSuccessToSnackbarQue(text, duration);
     this.showNextMessageFromQue();
   }
 

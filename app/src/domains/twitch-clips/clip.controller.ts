@@ -1,4 +1,4 @@
-import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client"
+import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client";
 import { ClipModel } from "./clip.model";
 import { TwitchClipsErrors } from "./clip.errors";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
@@ -9,18 +9,14 @@ const clipPatterns = [
   /^https:\/\/(www.)?twitch.tv\/\w+\/clip\/([A-Za-z0-9]+(?:-[A-Za-z0-9_-]{16})?)(\?.+)?$/,
 ];
 
-
 export class ClipController {
-
-  constructor(
-    private model: ClipModel,
-    private snackbar: SnackbarClient,
-    private twitchApi: TwitchApiClient,
-  ) { }
+  constructor(private model: ClipModel, private snackbar: SnackbarClient, private twitchApi: TwitchApiClient) {}
 
   getBroadcasterClips = async (broadcasterId: string) => {
     this.model.meta.setLoading(true);
-    const data = await this.twitchApi.getClips({ broadcaster_id: broadcasterId });
+    const data = await this.twitchApi.getClips({
+      broadcaster_id: broadcasterId,
+    });
 
     if (data.statusOk && !this.twitchApi.isTwitchError(data.body)) {
       this.model.appendMultipleClips(data.body.data);
@@ -29,7 +25,7 @@ export class ClipController {
       this.model.meta.setError(TwitchClipsErrors.UNABLE_TO_GET_CLIPS);
     }
     this.model.meta.setLoading(false);
-  }
+  };
 
   getClip = async (clipId: string) => {
     this.model.meta.setLoading(true);
@@ -46,7 +42,7 @@ export class ClipController {
       this.model.meta.setError(TwitchClipsErrors.UNABLE_TO_GET_CLIPS);
     }
     this.model.meta.setLoading(false);
-  }
+  };
 
   validateClipUrl = (url: string) => {
     const clipId = this.getSlugFromUrl(url);
@@ -56,7 +52,7 @@ export class ClipController {
       return "";
     }
     return clipId;
-  }
+  };
 
   validateCreatorShare = (value: string): boolean => {
     if (value.includes(".")) return false;
@@ -68,7 +64,7 @@ export class ClipController {
     if (num < 0 || num > 99) return false;
 
     return true;
-  }
+  };
 
   private getSlugFromUrl = (url: string): string | undefined => {
     let match;
@@ -84,7 +80,7 @@ export class ClipController {
     const confirmedMatch = match?.find((regexpMatch) => regexpMatch === pathnameMatch);
 
     return confirmedMatch;
-  }
+  };
 
   private parseClipSlugFromPath = (url: string) => {
     let slug;
@@ -96,7 +92,5 @@ export class ClipController {
       // in case the input is not valid url
     }
     return slug;
-  }
-
+  };
 }
-

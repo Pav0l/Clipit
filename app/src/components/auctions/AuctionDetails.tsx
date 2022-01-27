@@ -2,11 +2,7 @@ import { Button, makeStyles, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { NftController } from "../../domains/nfts/nft.controller";
 import { NftErrors } from "../../domains/nfts/nft.errors";
-import {
-  Auction,
-  DisplayAuctionStatusTitle,
-  NftModel
-} from "../../domains/nfts/nft.model";
+import { Auction, DisplayAuctionStatusTitle, NftModel } from "../../domains/nfts/nft.model";
 import { Web3Controller } from "../../domains/web3/web3.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { useAuctionStatus } from "../../lib/hooks/useAuctionStatus";
@@ -34,16 +30,14 @@ export const AuctionDetails = observer(function AuctionDetails({
   tokenId,
   userAddress,
   operations,
-  model
+  model,
 }: Props) {
   const [status] = useAuctionStatus(auction);
   const classes = useStyles();
   const bid = auction.displayBid;
 
   if (!auction) {
-    return (
-      <ErrorWithRetry text={NftErrors.SOMETHING_WENT_WRONG} withRetry={true} />
-    );
+    return <ErrorWithRetry text={NftErrors.SOMETHING_WENT_WRONG} withRetry={true} />;
   }
 
   const handleCancelButton = async () => {
@@ -71,17 +65,13 @@ export const AuctionDetails = observer(function AuctionDetails({
   return (
     <div className={classes.container}>
       <Typography component="h5" variant="h5">
-        {bid.onlyDisplayReservePrice ? "Reserve price:" : "Highest bid:"}{" "}
-        {`${bid.displayAmount} ${bid.symbol}`}
+        {bid.onlyDisplayReservePrice ? "Reserve price:" : "Highest bid:"} {`${bid.displayAmount} ${bid.symbol}`}
       </Typography>
       <Typography>Owner: {auction.tokenOwnerId}</Typography>
       {auction.highestBid ? (
         <>
           <Typography>
-            by:{" "}
-            {auction.highestBid?.bidderAddress === userAddress
-              ? "you"
-              : auction.highestBid?.bidderAddress}
+            by: {auction.highestBid?.bidderAddress === userAddress ? "you" : auction.highestBid?.bidderAddress}
           </Typography>
           {status.title === DisplayAuctionStatusTitle.ENDED ? (
             <Button
@@ -94,9 +84,7 @@ export const AuctionDetails = observer(function AuctionDetails({
               End auction
             </Button>
           ) : (
-            <Typography className={classes.timer}>
-              {`${status.title} ${status.value}`}
-            </Typography>
+            <Typography className={classes.timer}>{`${status.title} ${status.value}`}</Typography>
           )}
         </>
       ) : (
@@ -117,13 +105,13 @@ export const AuctionDetails = observer(function AuctionDetails({
 const useStyles = makeStyles(() => ({
   container: {
     margin: "1rem",
-    maxWidth: "50vw"
+    maxWidth: "50vw",
   },
   timer: {
-    fontWeight: "bolder"
+    fontWeight: "bolder",
   },
   button: {
     width: "50%",
-    margin: "0.5rem auto"
-  }
+    margin: "0.5rem auto",
+  },
 }));

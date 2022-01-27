@@ -6,7 +6,7 @@ describe("ethereum.client", () => {
   let provider: EthereumTestProvider;
 
   beforeEach(() => {
-    provider = new EthereumTestProvider()
+    provider = new EthereumTestProvider();
     client = new EthereumClient(provider);
   });
 
@@ -21,9 +21,7 @@ describe("ethereum.client", () => {
     expect(provider.listeners("accountsChanged").length).toEqual(1);
 
     // but different handler is registered
-    client.registerEventHandler("accountsChanged", () => { });
+    client.registerEventHandler("accountsChanged", () => null);
     expect(provider.listeners("accountsChanged").length).toEqual(2);
   });
-
-
 });

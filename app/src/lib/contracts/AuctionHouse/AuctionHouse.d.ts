@@ -35,84 +35,31 @@ interface AuctionHouseInterface extends ethers.utils.Interface {
     "zora()": FunctionFragment;
   };
 
-  encodeFunctionData(
-    functionFragment: "auctions",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "cancelAuction",
-    values: [BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "auctions", values: [BigNumberish]): string;
+  encodeFunctionData(functionFragment: "cancelAuction", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "createAuction",
-    values: [
-      BigNumberish,
-      string,
-      BigNumberish,
-      BigNumberish,
-      string,
-      BigNumberish,
-      string
-    ]
+    values: [BigNumberish, string, BigNumberish, BigNumberish, string, BigNumberish, string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "createBid",
-    values: [BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "endAuction",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "minBidIncrementPercentage",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setAuctionApproval",
-    values: [BigNumberish, boolean]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setAuctionReservePrice",
-    values: [BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "timeBuffer",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "wethAddress",
-    values?: undefined
-  ): string;
+  encodeFunctionData(functionFragment: "createBid", values: [BigNumberish, BigNumberish]): string;
+  encodeFunctionData(functionFragment: "endAuction", values: [BigNumberish]): string;
+  encodeFunctionData(functionFragment: "minBidIncrementPercentage", values?: undefined): string;
+  encodeFunctionData(functionFragment: "setAuctionApproval", values: [BigNumberish, boolean]): string;
+  encodeFunctionData(functionFragment: "setAuctionReservePrice", values: [BigNumberish, BigNumberish]): string;
+  encodeFunctionData(functionFragment: "timeBuffer", values?: undefined): string;
+  encodeFunctionData(functionFragment: "wethAddress", values?: undefined): string;
   encodeFunctionData(functionFragment: "zora", values?: undefined): string;
 
   decodeFunctionResult(functionFragment: "auctions", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "cancelAuction",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "createAuction",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "cancelAuction", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "createAuction", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "createBid", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "endAuction", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "minBidIncrementPercentage",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setAuctionApproval",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setAuctionReservePrice",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "minBidIncrementPercentage", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setAuctionApproval", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setAuctionReservePrice", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "timeBuffer", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "wethAddress",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "wethAddress", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "zora", data: BytesLike): Result;
 
   events: {
@@ -263,20 +210,7 @@ export class AuctionHouse extends BaseContract {
     arg0: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [
-      BigNumber,
-      string,
-      boolean,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      BigNumber,
-      number,
-      string,
-      string,
-      string,
-      string
-    ] & {
+    [BigNumber, string, boolean, BigNumber, BigNumber, BigNumber, BigNumber, number, string, string, string, string] & {
       tokenId: BigNumber;
       tokenContract: string;
       approved: boolean;
@@ -373,10 +307,7 @@ export class AuctionHouse extends BaseContract {
       }
     >;
 
-    cancelAuction(
-      auctionId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    cancelAuction(auctionId: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     createAuction(
       tokenId: BigNumberish,
@@ -389,24 +320,13 @@ export class AuctionHouse extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    createBid(
-      auctionId: BigNumberish,
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    createBid(auctionId: BigNumberish, amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
-    endAuction(
-      auctionId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    endAuction(auctionId: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
     minBidIncrementPercentage(overrides?: CallOverrides): Promise<number>;
 
-    setAuctionApproval(
-      auctionId: BigNumberish,
-      approved: boolean,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    setAuctionApproval(auctionId: BigNumberish, approved: boolean, overrides?: CallOverrides): Promise<void>;
 
     setAuctionReservePrice(
       auctionId: BigNumberish,
@@ -484,17 +404,7 @@ export class AuctionHouse extends BaseContract {
       curatorFeePercentage?: null,
       auctionCurrency?: null
     ): TypedEventFilter<
-      [
-        BigNumber,
-        BigNumber,
-        string,
-        BigNumber,
-        BigNumber,
-        string,
-        string,
-        number,
-        string
-      ],
+      [BigNumber, BigNumber, string, BigNumber, BigNumber, string, string, number, string],
       {
         auctionId: BigNumber;
         tokenId: BigNumber;
@@ -534,17 +444,7 @@ export class AuctionHouse extends BaseContract {
       curatorFee?: null,
       auctionCurrency?: null
     ): TypedEventFilter<
-      [
-        BigNumber,
-        BigNumber,
-        string,
-        string,
-        string,
-        string,
-        BigNumber,
-        BigNumber,
-        string
-      ],
+      [BigNumber, BigNumber, string, string, string, string, BigNumber, BigNumber, string],
       {
         auctionId: BigNumber;
         tokenId: BigNumber;
@@ -626,10 +526,7 @@ export class AuctionHouse extends BaseContract {
   };
 
   populateTransaction: {
-    auctions(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    auctions(arg0: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     cancelAuction(
       auctionId: BigNumberish,
@@ -658,9 +555,7 @@ export class AuctionHouse extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    minBidIncrementPercentage(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    minBidIncrementPercentage(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     setAuctionApproval(
       auctionId: BigNumberish,

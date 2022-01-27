@@ -49,8 +49,7 @@ function Home({ model, operations }: Props) {
         <Typography variant="h4" className={classes.description}>
           {/* Show off your great moments by generating immutable NFTs stored on distributed file system */}
           {/* Convert your greatest moments to unique digital collectibles for your fans to collect */}
-          Convert your greatest moments to unique digital collectibles for your
-          fans
+          Convert your greatest moments to unique digital collectibles for your fans
         </Typography>
         <TextField
           id="clip_url_input"
@@ -59,12 +58,7 @@ function Home({ model, operations }: Props) {
           value={inputData}
           onChange={(ev) => inputHandler(ev)}
         ></TextField>
-        <Button
-          variant="contained"
-          color="primary"
-          className={classes.button}
-          onClick={(ev) => buttonHandler(ev)}
-        >
+        <Button variant="contained" color="primary" className={classes.button} onClick={(ev) => buttonHandler(ev)}>
           Prepare NFT
         </Button>
       </section>
@@ -81,27 +75,27 @@ const useStyles = makeStyles((theme) => ({
     color: "#2176FF",
     textDecoration: "none",
     margin: "1rem 0",
-    fontWeight: "bolder"
+    fontWeight: "bolder",
   },
   input: {
     width: "80vw",
     margin: "1.8rem 0",
-    color: theme.palette.text.hint
+    color: theme.palette.text.hint,
   },
   description: {
-    maxWidth: "80vw"
+    maxWidth: "80vw",
   },
   button: {
-    alignSelf: "flex-end"
+    alignSelf: "flex-end",
   },
   main: {
-    flexDirection: "column"
+    flexDirection: "column",
   },
   section: {
     padding: "5rem 0",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "flex-start"
-  }
+    alignItems: "flex-start",
+  },
 }));

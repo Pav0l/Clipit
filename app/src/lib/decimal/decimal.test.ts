@@ -4,7 +4,6 @@ function decValToStr(num: number) {
   return Decimal.from(num).value.toString();
 }
 describe("decimal", () => {
-
   it("counts decimals in value", () => {
     // no decimals
     expect(Decimal.countDecimals(1)).toEqual(0);
@@ -14,9 +13,9 @@ describe("decimal", () => {
 
     // with decimals
     expect(Decimal.countDecimals(1.0)).toEqual(0);
-    expect(Decimal.countDecimals(1.00000000)).toEqual(0);
+    expect(Decimal.countDecimals(1.0)).toEqual(0);
     expect(Decimal.countDecimals(1.1)).toEqual(1);
-    expect(Decimal.countDecimals(1.10000000)).toEqual(1);
+    expect(Decimal.countDecimals(1.1)).toEqual(1);
     expect(Decimal.countDecimals(1.00000001)).toEqual(8);
   });
 

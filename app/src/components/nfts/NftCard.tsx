@@ -24,11 +24,7 @@ export function NftCard({ metadata }: Props) {
           controlsList="nodownload"
           poster={metadata.thumbnailUri}
         />
-        <NftCardContent
-          title={metadata.clipTitle}
-          description={metadata.description}
-          auction={metadata.auction}
-        />
+        <NftCardContent title={metadata.clipTitle} description={metadata.description} auction={metadata.auction} />
       </CardActionArea>
     </Card>
   );
@@ -37,9 +33,9 @@ export function NftCard({ metadata }: Props) {
 const useStyles = makeStyles(() => ({
   card: {
     margin: "1rem",
-    maxWidth: "50vw"
+    maxWidth: "50vw",
   },
   video: {
-    maxHeight: "70vh"
-  }
+    maxHeight: "70vh",
+  },
 }));

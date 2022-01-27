@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { makeAutoObservable } from "mobx"
+import { makeAutoObservable } from "mobx";
 import { formatCurrencyAmountToDisplayAmount } from "../../lib/ethereum/currency";
 import { MetaModel } from "../app/meta.model";
 
@@ -18,25 +18,25 @@ export enum AuctionLoadStatus {
   WAIT_FOR_APPROVE_TOKEN_TX = "Auction contract approved, waiting for the transaction to confirm...",
   CONFIRM_CREATE_AUCTION = "Auction ready to be created.\nPlease confirm the transaction in Metamask",
   WAIT_FOR_AUCTION_CREATE_TX = "Auction created, waiting for the transaction to confirm...",
-  CREATE_AUCTION_SUCCESS = "Auction created successfully"
+  CREATE_AUCTION_SUCCESS = "Auction created successfully",
 }
 
 export enum AuctionBidLoadStatus {
   CONFIRM_AUCTION_BID = "Bid ready to be created.\nPlease confirm the transaction in Metamask",
   WAIT_FOR_AUCTION_BID_TX = "Bid created, waiting for the transaction to confirm...",
-  AUCTION_BID_SUCCESS = "Bid created successfully"
+  AUCTION_BID_SUCCESS = "Bid created successfully",
 }
 
 export enum AuctionCancelLoadStatus {
   CONFIRM_AUCTION_CANCEL = "Transaction ready to be created.\nPlease confirm it in Metamask",
   WAIT_FOR_AUCTION_CANCEL_TX = "Auction canceled, waiting for the transaction to confirm...",
-  AUCTION_CANCEL_SUCCESS = "Auction canceled successfully"
+  AUCTION_CANCEL_SUCCESS = "Auction canceled successfully",
 }
 
 export enum AuctionEndLoadStatus {
   CONFIRM_AUCTION_END = "Transaction ready to be created.\nPlease confirm it in Metamask",
   WAIT_FOR_AUCTION_END_TX = "Auction ended, waiting for the transaction to confirm...",
-  AUCTION_END_SUCCESS = "Auction ended successfully"
+  AUCTION_END_SUCCESS = "Auction ended successfully",
 }
 
 export class Web3Model {
@@ -61,14 +61,13 @@ export class Web3Model {
   // end auction loader
   auctionEndLoadStatus?: AuctionEndLoadStatus;
 
-
   constructor(meta: MetaModel) {
     makeAutoObservable(this);
     this.meta = meta;
   }
 
   setAccounts(accounts: string[]) {
-    this.accounts = accounts.map(address => address.toLowerCase());
+    this.accounts = accounts.map((address) => address.toLowerCase());
   }
 
   setChainId(chainId: string) {

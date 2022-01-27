@@ -3,7 +3,14 @@ import { BigNumber, BigNumberish, BytesLike, constants, utils } from "ethers";
 import { IClipItContractClient } from "../../lib/contracts/ClipIt/clipit-contract.client";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
-import { Web3Model, Web3Errors, AuctionLoadStatus, AuctionBidLoadStatus, AuctionCancelLoadStatus, AuctionEndLoadStatus } from "./web3.model";
+import {
+  Web3Model,
+  Web3Errors,
+  AuctionLoadStatus,
+  AuctionBidLoadStatus,
+  AuctionCancelLoadStatus,
+  AuctionEndLoadStatus,
+} from "./web3.model";
 import { ISubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { Decimal } from "../../lib/decimal/decimal";
@@ -18,25 +25,29 @@ import { AuctionContractErrors } from "../../lib/contracts/AuctionHouse/auction-
 interface Signature {
   v: number;
   r: string;
-  s: string
+  s: string;
 }
 
 export interface IWeb3Controller {
   // silently try to get ethAccounts
   connectMetaMaskIfNecessaryForConnectBtn: () => Promise<void>;
   // mint token
-  requestConnectAndMint: (clipId: string, creatorShare: string, clipTitle: string, clipDescription?: string) => Promise<void>;
+  requestConnectAndMint: (
+    clipId: string,
+    creatorShare: string,
+    clipTitle: string,
+    clipDescription?: string
+  ) => Promise<void>;
   // open MM and call requestAccounts
   requestConnect: (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => Promise<void>;
   // get current users balance
   getBalance: (address: string) => Promise<void>;
-  requestConnectAndCreateAuction: (tokenId: string, duration: BigNumberish, minPrice: BigNumberish,) => Promise<void>;
+  requestConnectAndCreateAuction: (tokenId: string, duration: BigNumberish, minPrice: BigNumberish) => Promise<void>;
   // Bid on token in auction
   requestConnectAndBid: (auctionId: string, amount: string) => Promise<void>;
   requestConnectAndCancelAuction: (auctionId: string) => Promise<void>;
   requestConnectAndEndAuction: (auctionId: string) => Promise<void>;
 }
-
 
 export class Web3Controller implements IWeb3Controller {
   constructor(
@@ -46,8 +57,7 @@ export class Web3Controller implements IWeb3Controller {
     private snackbar: SnackbarClient,
     private clipitContractCreator: (provider: EthereumProvider) => IClipItContractClient,
     private auctionContractCreator: (provider: EthereumProvider) => IAuctionContractClient
-
-  ) { }
+  ) {}
 
   async connectMetaMaskIfNecessaryForConnectBtn() {
     if (!this.model.isMetaMaskInstalled()) {
@@ -88,7 +98,7 @@ export class Web3Controller implements IWeb3Controller {
     }
 
     if (andThenCallThisWithSignerAddress) {
-      await andThenCallThisWithSignerAddress(signerAddress)
+      await andThenCallThisWithSignerAddress(signerAddress);
     }
 
     this.model.meta.setLoading(false);
@@ -110,13 +120,7 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    await this.prepareMetadataAndMintClip(
-      clipId,
-      signerAddress,
-      creatorShare,
-      clipTitle,
-      clipDescription
-    );
+    await this.prepareMetadataAndMintClip(clipId, signerAddress, creatorShare, clipTitle, clipDescription);
   }
 
   getBalance = async (address: string) => {
@@ -126,9 +130,9 @@ export class Web3Controller implements IWeb3Controller {
     } catch (error) {
       // SENTRY
     }
-  }
+  };
 
-  requestConnectAndCreateAuction = async (tokenId: string, duration: BigNumberish, minPrice: BigNumberish,) => {
+  requestConnectAndCreateAuction = async (tokenId: string, duration: BigNumberish, minPrice: BigNumberish) => {
     if (!this.model.isMetaMaskInstalled()) {
       this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
       return;
@@ -146,7 +150,7 @@ export class Web3Controller implements IWeb3Controller {
     }
 
     await this.createAuction(tokenId, duration, minPrice);
-  }
+  };
 
   requestConnectAndBid = async (auctionId: string, amount: string) => {
     if (!this.model.isMetaMaskInstalled()) {
@@ -166,7 +170,7 @@ export class Web3Controller implements IWeb3Controller {
     }
 
     await this.bidOnAuction(auctionId, amount);
-  }
+  };
 
   requestConnectAndCancelAuction = async (auctionId: string) => {
     if (!this.model.isMetaMaskInstalled()) {
@@ -218,7 +222,7 @@ export class Web3Controller implements IWeb3Controller {
 
       this.model.setWaitForAuctionCancelTxLoader();
 
-      console.log('[LOG]:cancel auction tx hash', tx.hash);
+      console.log("[LOG]:cancel auction tx hash", tx.hash);
 
       await tx.wait();
 
@@ -227,25 +231,26 @@ export class Web3Controller implements IWeb3Controller {
       // SENTRY
       console.log("[LOG]:cancel auction:error", error);
 
-      if (isEthersJsonRpcError(error)) {
+      let err = error;
+      if (isEthersJsonRpcError(err)) {
         // take out Rpc error from Ethers error
-        if (error.error) {
-          error = error.error;
+        if (err.error) {
+          err = err.error;
         }
       }
 
-      if (isRpcError(error)) {
-        switch (error.code) {
+      if (isRpcError(err)) {
+        switch (err.code) {
           case RpcErrors.USER_REJECTED_REQUEST:
             this.snackbar.sendInfo(Web3Errors.AUCTION_CANCEL_REJECTED);
             break;
           case RpcErrors.INTERNAL_ERROR:
             // contract reverts
-            if (error.message.includes(AuctionContractErrors.AUCTION_DOES_NOT_EXIST)) {
+            if (err.message.includes(AuctionContractErrors.AUCTION_DOES_NOT_EXIST)) {
               this.snackbar.sendError(AuctionContractErrors.AUCTION_DOES_NOT_EXIST);
-            } else if (error.message.includes(AuctionContractErrors.AUCTION_CANCEL_INVALID_CALLER)) {
+            } else if (err.message.includes(AuctionContractErrors.AUCTION_CANCEL_INVALID_CALLER)) {
               this.snackbar.sendError(AuctionContractErrors.AUCTION_CANCEL_INVALID_CALLER);
-            } else if (error.message.includes(AuctionContractErrors.AUCTION_CANCEL_RUNNING)) {
+            } else if (err.message.includes(AuctionContractErrors.AUCTION_CANCEL_RUNNING)) {
               this.snackbar.sendError(AuctionContractErrors.AUCTION_CANCEL_RUNNING);
             }
             break;
@@ -264,7 +269,7 @@ export class Web3Controller implements IWeb3Controller {
     } finally {
       this.model.clearAuctionCancelLoader();
     }
-  }
+  };
 
   private endAuction = async (auctionId: string) => {
     try {
@@ -276,7 +281,7 @@ export class Web3Controller implements IWeb3Controller {
 
       this.model.setWaitForAuctionEndTxLoader();
 
-      console.log('[LOG]:end auction tx hash', tx.hash);
+      console.log("[LOG]:end auction tx hash", tx.hash);
 
       await tx.wait();
 
@@ -285,25 +290,26 @@ export class Web3Controller implements IWeb3Controller {
       // SENTRY
       console.log("[LOG]:end auction:error", error);
 
-      if (isEthersJsonRpcError(error)) {
-        // take out Rpc error from Ethers error
-        if (error.error) {
-          error = error.error;
+      let err = error;
+      if (isEthersJsonRpcError(err)) {
+        // take out Rpc err from Ethers error
+        if (err.error) {
+          err = err.error;
         }
       }
 
-      if (isRpcError(error)) {
-        switch (error.code) {
+      if (isRpcError(err)) {
+        switch (err.code) {
           case RpcErrors.USER_REJECTED_REQUEST:
             this.snackbar.sendInfo(Web3Errors.AUCTION_END_REJECTED);
             break;
           case RpcErrors.INTERNAL_ERROR:
             // contract reverts
-            if (error.message.includes(AuctionContractErrors.AUCTION_DOES_NOT_EXIST)) {
+            if (err.message.includes(AuctionContractErrors.AUCTION_DOES_NOT_EXIST)) {
               this.snackbar.sendError(AuctionContractErrors.AUCTION_DOES_NOT_EXIST);
-            } else if (error.message.includes(AuctionContractErrors.AUCTION_END_HAS_NOT_STARTED)) {
+            } else if (err.message.includes(AuctionContractErrors.AUCTION_END_HAS_NOT_STARTED)) {
               this.snackbar.sendError(AuctionContractErrors.AUCTION_END_HAS_NOT_STARTED);
-            } else if (error.message.includes(AuctionContractErrors.AUCTION_END_HAS_NOT_COMPLETED)) {
+            } else if (err.message.includes(AuctionContractErrors.AUCTION_END_HAS_NOT_COMPLETED)) {
               this.snackbar.sendError(AuctionContractErrors.AUCTION_END_HAS_NOT_COMPLETED);
             }
             break;
@@ -322,9 +328,15 @@ export class Web3Controller implements IWeb3Controller {
     } finally {
       this.model.clearAuctionEndLoader();
     }
-  }
+  };
 
-  private prepareMetadataAndMintClip = async (clipId: string, address: string, creatorShare: string, clipTitle: string, clipDescription?: string) => {
+  private prepareMetadataAndMintClip = async (
+    clipId: string,
+    address: string,
+    creatorShare: string,
+    clipTitle: string,
+    clipDescription?: string
+  ) => {
     if (!clipId || !address || !clipTitle) {
       // SENTRY this should not happen
       this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
@@ -333,7 +345,11 @@ export class Web3Controller implements IWeb3Controller {
 
     this.model.startClipStoreLoader();
 
-    const resp = await this.offChainStorage.saveClipAndCreateMetadata(clipId, { address, clipTitle, clipDescription });
+    const resp = await this.offChainStorage.saveClipAndCreateMetadata(clipId, {
+      address,
+      clipTitle,
+      clipDescription,
+    });
 
     if (resp.statusOk && !this.offChainStorage.isStoreClipError(resp.body)) {
       this.model.stopClipStoreLoaderAndStartMintLoader();
@@ -346,9 +362,9 @@ export class Web3Controller implements IWeb3Controller {
       this.model.meta.setLoading(true);
 
       const clip = await this.subgraph.fetchClipByHashCached(txHash);
-      console.log('[LOG]:clip', clip);
+      console.log("[LOG]:clip", clip);
       if (!clip) {
-        // SENTRY this should not happen    
+        // SENTRY this should not happen
         this.model.meta.setError(Web3Errors.FAILED_TO_FETCH_SUBGRAPH_DATA);
         return;
       }
@@ -362,15 +378,25 @@ export class Web3Controller implements IWeb3Controller {
       this.model.stopClipStoreLoader();
       this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
     }
-  }
+  };
 
-  private mintNFT = async (data: { tokenURI: string, metadataURI: string, contentHash: BytesLike, metadataHash: BytesLike }, clipId: string, signature: Signature, creatorShare: string) => {
+  private mintNFT = async (
+    data: {
+      tokenURI: string;
+      metadataURI: string;
+      contentHash: BytesLike;
+      metadataHash: BytesLike;
+    },
+    clipId: string,
+    signature: Signature,
+    creatorShare: string
+  ) => {
     const forCreator = Number(creatorShare); // if creatorShare is '' it's converted to 0 here
     const defaultBidshares = {
       creator: Decimal.from(forCreator),
       owner: Decimal.from(100 - forCreator),
       prevOwner: Decimal.from(0),
-    }
+    };
 
     try {
       const contract = this.clipitContractCreator(window.ethereum as EthereumProvider);
@@ -387,23 +413,27 @@ export class Web3Controller implements IWeb3Controller {
       // SENTRY
       console.log("[LOG]:mint:error", error);
 
-      if (isEthersJsonRpcError(error)) {
+      let err = error;
+      if (isEthersJsonRpcError(err)) {
         // take out Rpc error from Ethers error
-        if (error.error) {
-          error = error.error;
+        if (err.error) {
+          err = err.error;
         }
       }
 
-      if (isRpcError(error)) {
-        switch (error.code) {
+      if (isRpcError(err)) {
+        switch (err.code) {
           case RpcErrors.USER_REJECTED_REQUEST:
             this.snackbar.sendInfo(Web3Errors.MINT_REJECTED);
             break;
           case RpcErrors.INTERNAL_ERROR:
             // contract reverts
-            if (error.message.includes(ClipItContractErrors.ERC721_TOKEN_MINTED) || error.message.includes(ClipItContractErrors.CLIPIT_TOKEN_EXIST)) {
+            if (
+              err.message.includes(ClipItContractErrors.ERC721_TOKEN_MINTED) ||
+              err.message.includes(ClipItContractErrors.CLIPIT_TOKEN_EXIST)
+            ) {
               this.snackbar.sendError(ClipItContractErrors.TOKEN_ALREADY_MINTED);
-            } else if (error.message.includes(ClipItContractErrors.CLIPIT_INVALID_ADDRESS)) {
+            } else if (err.message.includes(ClipItContractErrors.CLIPIT_INVALID_ADDRESS)) {
               this.snackbar.sendError(ClipItContractErrors.ADDRESS_NOT_ALLOWED);
             }
             break;
@@ -423,12 +453,12 @@ export class Web3Controller implements IWeb3Controller {
       // clean the loading screen
       this.model.stopMintLoader();
     }
-  }
+  };
 
   private requestAccounts = async () => {
     try {
       const accounts = await this.initEthClient().requestAccounts();
-      console.log('[ethereum.controller]:requestAccounts:accounts', accounts);
+      console.log("[ethereum.controller]:requestAccounts:accounts", accounts);
 
       this.model.setAccounts(accounts);
     } catch (error) {
@@ -451,27 +481,27 @@ export class Web3Controller implements IWeb3Controller {
           break;
       }
     }
-  }
+  };
 
   private ethAccounts = async () => {
     try {
       const accounts = await this.initEthClient().ethAccounts();
-      console.log('[ethereum.controller]:ethAccounts:accounts', accounts);
+      console.log("[ethereum.controller]:ethAccounts:accounts", accounts);
 
       this.model.setAccounts(accounts);
     } catch (error) {
       console.log("[ethereum.controller]:ethAccounts:error", error);
       this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
     }
-  }
+  };
 
-  private createAuction = async (tokenId: string, duration: BigNumberish, minPrice: BigNumberish,) => {
+  private createAuction = async (tokenId: string, duration: BigNumberish, minPrice: BigNumberish) => {
     try {
       const auction = this.auctionContractCreator(window.ethereum as EthereumProvider);
       const token = this.clipitContractCreator(window.ethereum as EthereumProvider);
 
       const approved = await token.getApproved(tokenId);
-      console.log('[LOG]:token approved', approved);
+      console.log("[LOG]:token approved", approved);
       if (!approved || approved === constants.AddressZero) {
         this.model.setAuctionApproveTokenLoader();
 
@@ -479,7 +509,7 @@ export class Web3Controller implements IWeb3Controller {
         const tx = await token.approve(auctionContractAddress, tokenId);
 
         this.model.setWaitForApproveTxLoader();
-        console.log('[LOG]:approve auction tx hash', tx.hash);
+        console.log("[LOG]:approve auction tx hash", tx.hash);
         await tx.wait();
       }
 
@@ -499,7 +529,7 @@ export class Web3Controller implements IWeb3Controller {
 
       this.model.setWaitForAuctionCreateTxLoader();
 
-      console.log('[LOG]:auction create tx hash', tx.hash);
+      console.log("[LOG]:auction create tx hash", tx.hash);
 
       await tx.wait();
 
@@ -509,21 +539,22 @@ export class Web3Controller implements IWeb3Controller {
       // SENTRY
       console.log("[LOG]:createAuction:error", error);
 
-      if (isEthersJsonRpcError(error)) {
+      let err = error;
+      if (isEthersJsonRpcError(err)) {
         // take out Rpc error from Ethers error
-        if (error.error) {
-          error = error.error;
+        if (err.error) {
+          err = err.error;
         }
       }
 
-      if (isRpcError(error)) {
-        switch (error.code) {
+      if (isRpcError(err)) {
+        switch (err.code) {
           case RpcErrors.USER_REJECTED_REQUEST:
             this.snackbar.sendInfo(Web3Errors.AUCTION_CREATE_REJECTED);
             break;
           case RpcErrors.INTERNAL_ERROR:
             // contract reverts
-            if (error.message.includes(AuctionContractErrors.INVALID_CURATOR_FEE)) {
+            if (err.message.includes(AuctionContractErrors.INVALID_CURATOR_FEE)) {
               this.snackbar.sendError(AuctionContractErrors.INVALID_CURATOR_FEE_USER_ERR);
             }
             break;
@@ -540,7 +571,7 @@ export class Web3Controller implements IWeb3Controller {
 
       return null;
     }
-  }
+  };
 
   private bidOnAuction = async (auctionId: string, amount: string) => {
     try {
@@ -553,7 +584,7 @@ export class Web3Controller implements IWeb3Controller {
 
       this.model.setWaitForAuctionBidTxLoader();
 
-      console.log('[LOG]:auction bid tx hash', tx.hash);
+      console.log("[LOG]:auction bid tx hash", tx.hash);
 
       await tx.wait();
 
@@ -562,30 +593,31 @@ export class Web3Controller implements IWeb3Controller {
       // SENTRY
       console.log("[LOG]:bid auction:error", error);
 
-      if (isEthersJsonRpcError(error)) {
+      let err = error;
+      if (isEthersJsonRpcError(err)) {
         // take out Rpc error from Ethers error
-        if (error.error) {
-          error = error.error;
+        if (err.error) {
+          err = err.error;
         }
       }
 
-      if (isRpcError(error)) {
-        switch (error.code) {
+      if (isRpcError(err)) {
+        switch (err.code) {
           case RpcErrors.USER_REJECTED_REQUEST:
             this.snackbar.sendInfo(Web3Errors.AUCTION_BID_REJECTED);
             break;
           case RpcErrors.INTERNAL_ERROR:
             // contract reverts
-            if (error.message.includes(AuctionContractErrors.AUCTION_DOES_NOT_EXIST)) {
+            if (err.message.includes(AuctionContractErrors.AUCTION_DOES_NOT_EXIST)) {
               this.snackbar.sendError(AuctionContractErrors.AUCTION_DOES_NOT_EXIST);
-            } else if (error.message.includes(AuctionContractErrors.AUCTION_NOT_APPROVED)) {
+            } else if (err.message.includes(AuctionContractErrors.AUCTION_NOT_APPROVED)) {
               this.snackbar.sendError(AuctionContractErrors.AUCTION_NOT_STARTED);
-            } else if (error.message.includes(AuctionContractErrors.AUCTION_EXPIRED)) {
+            } else if (err.message.includes(AuctionContractErrors.AUCTION_EXPIRED)) {
               this.snackbar.sendError(AuctionContractErrors.AUCTION_EXPIRED);
-            } else if (error.message.includes(AuctionContractErrors.AUCTION_BID_LOWER_THAN_RESERVE_PRICE)) {
+            } else if (err.message.includes(AuctionContractErrors.AUCTION_BID_LOWER_THAN_RESERVE_PRICE)) {
               // TODO send displayReservePrice here as well
               this.snackbar.sendError(AuctionContractErrors.BID_NOT_HIGH_ENOUGH);
-            } else if (error.message.includes(AuctionContractErrors.AUCTION_BID_LOWER_THAN_PREVIOUS_BID)) {
+            } else if (err.message.includes(AuctionContractErrors.AUCTION_BID_LOWER_THAN_PREVIOUS_BID)) {
               // TODO send minBidIncrementPercentage here as well
               this.snackbar.sendError(AuctionContractErrors.BID_NOT_HIGH_ENOUGH);
             }
@@ -606,7 +638,7 @@ export class Web3Controller implements IWeb3Controller {
     } finally {
       this.model.clearAuctionBidLoader();
     }
-  }
+  };
 
   private initEthClient = () => {
     const client = new EthereumClient(window.ethereum as EthereumProvider);
@@ -616,14 +648,14 @@ export class Web3Controller implements IWeb3Controller {
   };
 
   private handleAccountsChange = (accounts: string[]) => {
-    console.log('[web3.controller]:handleAccountsChange', accounts);
+    console.log("[web3.controller]:handleAccountsChange", accounts);
     // TODO when accounts change, we should update NFT states of owners, etc
     this.model.setAccounts(accounts);
     this.model.resetEthBalance();
-  }
+  };
 
   private handleChainChanged(chainId: ChainId) {
-    console.log("[web3.controller]::chainChanged", chainId)
+    console.log("[web3.controller]::chainChanged", chainId);
     window.location.reload();
   }
 }

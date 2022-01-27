@@ -5,33 +5,44 @@ directive @derivedFrom(field: String) on FIELD_DEFINITION
 directive @subgraphId(id: String) on OBJECT
 
 type _Block_ {
-  """The hash of the block"""
+  """
+  The hash of the block
+  """
   hash: Bytes
 
-  """The block number"""
+  """
+  The block number
+  """
   number: Int!
 }
 
-"""The type for the top-level _meta field"""
+"""
+The type for the top-level _meta field
+"""
 type _Meta_ {
   """
   Information about a specific subgraph block. The hash of the block
   will be null if the _meta field has a block constraint that asks for
   a block number. It will be filled if the _meta field has no block constraint
   and therefore asks for the latest  block
-  
   """
   block: _Block_!
 
-  """The deployment ID"""
+  """
+  The deployment ID
+  """
   deployment: String!
 
-  """If `true`, the subgraph encountered indexing errors at some past block"""
+  """
+  If `true`, the subgraph encountered indexing errors at some past block
+  """
   hasIndexingErrors: Boolean!
 }
 
 enum _SubgraphErrorPolicy_ {
-  """Data will be returned even if the subgraph has indexing errors"""
+  """
+  Data will be returned even if the subgraph has indexing errors
+  """
   allow
 
   """
@@ -41,28 +52,44 @@ enum _SubgraphErrorPolicy_ {
 }
 
 type Ask {
-  """<tokenId>-<ownerAddress>"""
+  """
+  <tokenId>-<ownerAddress>
+  """
   id: ID!
 
-  """The Clip associated with the Ask"""
+  """
+  The Clip associated with the Ask
+  """
   clip: Clip!
 
-  """Transaction hash the ask was created at"""
+  """
+  Transaction hash the ask was created at
+  """
   transactionHash: String!
 
-  """The Currency of the Ask"""
+  """
+  The Currency of the Ask
+  """
   currency: Currency!
 
-  """The amount of Currency of the Ask"""
+  """
+  The amount of Currency of the Ask
+  """
   amount: BigInt!
 
-  """The owner of the Ask"""
+  """
+  The owner of the Ask
+  """
   owner: User!
 
-  """The timestamp of the block the Ask was created in"""
+  """
+  The timestamp of the block the Ask was created in
+  """
   createdAtTimestamp: BigInt!
 
-  """The number of the block the Ask created in"""
+  """
+  The number of the block the Ask created in
+  """
   createdAtBlockNumber: BigInt!
 }
 
@@ -169,34 +196,54 @@ enum Ask_orderBy {
 }
 
 type Bid {
-  """<token-id>-<bidderAddress>"""
+  """
+  <token-id>-<bidderAddress>
+  """
   id: ID!
 
-  """Transaction hash the bid was created at"""
+  """
+  Transaction hash the bid was created at
+  """
   transactionHash: String!
 
-  """The Clip associated with the Bid"""
+  """
+  The Clip associated with the Bid
+  """
   clip: Clip!
 
-  """The Currency of the Bid"""
+  """
+  The Currency of the Bid
+  """
   currency: Currency!
 
-  """The amount of Currency of the Bid"""
+  """
+  The amount of Currency of the Bid
+  """
   amount: BigInt!
 
-  """The sellOnShare of the Bid"""
+  """
+  The sellOnShare of the Bid
+  """
   sellOnShare: BigInt!
 
-  """The bidder of the Bid"""
+  """
+  The bidder of the Bid
+  """
   bidder: User!
 
-  """The recipient of Clip if the Bid is accepted"""
+  """
+  The recipient of Clip if the Bid is accepted
+  """
   recipient: User!
 
-  """The timestamp of the block the Bid was created in"""
+  """
+  The timestamp of the block the Bid was created in
+  """
   createdAtTimestamp: BigInt!
 
-  """The number of the block the Bid was created in"""
+  """
+  The number of the block the Bid was created in
+  """
   createdAtBlockNumber: BigInt!
 }
 
@@ -339,74 +386,150 @@ input Block_height {
 scalar Bytes
 
 type Clip {
-  """The tokenId on the ClipIt Contract"""
+  """
+  The tokenId on the ClipIt Contract
+  """
   id: ID!
 
-  """The transaction hash the clip was created at"""
+  """
+  The transaction hash the clip was created at
+  """
   transactionHash: String!
 
-  """The current owner of the Clip"""
+  """
+  The current owner of the Clip
+  """
   owner: User!
 
-  """The creator of the Clip"""
+  """
+  The creator of the Clip
+  """
   creator: User!
 
-  """The previous owner of the ClipIt's Market"""
+  """
+  The previous owner of the ClipIt's Market
+  """
   prevOwner: User!
 
-  """The approved user of the Clip"""
+  """
+  The approved user of the Clip
+  """
   approved: User
 
-  """The sha256 hash of the clip's content"""
+  """
+  The sha256 hash of the clip's content
+  """
   contentHash: Bytes!
 
-  """The sha256 hash of the clip's metadata"""
+  """
+  The sha256 hash of the clip's metadata
+  """
   metadataHash: Bytes!
 
-  """The uri of the content"""
+  """
+  The uri of the content
+  """
   contentURI: String!
 
-  """The uri of the metadata"""
+  """
+  The uri of the metadata
+  """
   metadataURI: String!
 
-  """The bid share for the current owner of the Clip"""
+  """
+  The bid share for the current owner of the Clip
+  """
   ownerBidShare: BigInt!
 
-  """The bid share for the creator of the Clip"""
+  """
+  The bid share for the creator of the Clip
+  """
   creatorBidShare: BigInt!
 
-  """The bid share for the previous owner of the Clip's market"""
+  """
+  The bid share for the previous owner of the Clip's market
+  """
   prevOwnerBidShare: BigInt!
 
-  """The timestamp of the block the Clip was minted in"""
+  """
+  The timestamp of the block the Clip was minted in
+  """
   createdAtTimestamp: BigInt!
 
-  """The number of the block the Clip was minted in"""
+  """
+  The number of the block the Clip was minted in
+  """
   createdAtBlockNumber: BigInt!
 
-  """The timestamp of the block the Clip was burned in"""
+  """
+  The timestamp of the block the Clip was burned in
+  """
   burnedAtTimeStamp: BigInt
 
-  """The number of the block the Clip was burned in"""
+  """
+  The number of the block the Clip was burned in
+  """
   burnedAtBlockNumber: BigInt
 
-  """The current Ask of the Clip"""
+  """
+  The current Ask of the Clip
+  """
   currentAsk: Ask
 
-  """The current Bids on the Clip"""
-  currentBids(skip: Int = 0, first: Int = 100, orderBy: Bid_orderBy, orderDirection: OrderDirection, where: Bid_filter): [Bid!]
+  """
+  The current Bids on the Clip
+  """
+  currentBids(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Bid_orderBy
+    orderDirection: OrderDirection
+    where: Bid_filter
+  ): [Bid!]
 
-  """The InactiveAsks of the Clip"""
-  inactiveAsks(skip: Int = 0, first: Int = 100, orderBy: InactiveAsk_orderBy, orderDirection: OrderDirection, where: InactiveAsk_filter): [InactiveAsk!]
+  """
+  The InactiveAsks of the Clip
+  """
+  inactiveAsks(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: InactiveAsk_orderBy
+    orderDirection: OrderDirection
+    where: InactiveAsk_filter
+  ): [InactiveAsk!]
 
-  """The InactiveBids of the Clip"""
-  inactiveBids(skip: Int = 0, first: Int = 100, orderBy: InactiveBid_orderBy, orderDirection: OrderDirection, where: InactiveBid_filter): [InactiveBid!]
+  """
+  The InactiveBids of the Clip
+  """
+  inactiveBids(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: InactiveBid_orderBy
+    orderDirection: OrderDirection
+    where: InactiveBid_filter
+  ): [InactiveBid!]
 
-  """The transfers of the Clip"""
-  transfers(skip: Int = 0, first: Int = 100, orderBy: Transfer_orderBy, orderDirection: OrderDirection, where: Transfer_filter): [Transfer!]
+  """
+  The transfers of the Clip
+  """
+  transfers(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Transfer_orderBy
+    orderDirection: OrderDirection
+    where: Transfer_filter
+  ): [Transfer!]
 
-  """The ReserveAuctions of the Clip"""
-  reserveAuctions(skip: Int = 0, first: Int = 100, orderBy: ReserveAuction_orderBy, orderDirection: OrderDirection, where: ReserveAuction_filter): [ReserveAuction!]
+  """
+  The ReserveAuctions of the Clip
+  """
+  reserveAuctions(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: ReserveAuction_orderBy
+    orderDirection: OrderDirection
+    where: ReserveAuction_filter
+  ): [ReserveAuction!]
 }
 
 input Clip_filter {
@@ -613,32 +736,74 @@ enum Clip_orderBy {
 }
 
 type Currency {
-  """The address of the Currency"""
+  """
+  The address of the Currency
+  """
   id: ID!
 
-  """The name of the Currency"""
+  """
+  The name of the Currency
+  """
   name: String!
 
-  """The symbol of the Currency"""
+  """
+  The symbol of the Currency
+  """
   symbol: String!
 
-  """The decimals of the Currency"""
+  """
+  The decimals of the Currency
+  """
   decimals: Int
 
-  """Total Bid Liquidity of the Currency on all ClipIt"""
+  """
+  Total Bid Liquidity of the Currency on all ClipIt
+  """
   liquidity: BigInt!
 
-  """The active Bids denominated in the Currency"""
-  activeBids(skip: Int = 0, first: Int = 100, orderBy: Bid_orderBy, orderDirection: OrderDirection, where: Bid_filter): [Bid!]
+  """
+  The active Bids denominated in the Currency
+  """
+  activeBids(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Bid_orderBy
+    orderDirection: OrderDirection
+    where: Bid_filter
+  ): [Bid!]
 
-  """The active Asks denominated in the Currency"""
-  activeAsks(skip: Int = 0, first: Int = 100, orderBy: Ask_orderBy, orderDirection: OrderDirection, where: Ask_filter): [Ask!]
+  """
+  The active Asks denominated in the Currency
+  """
+  activeAsks(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Ask_orderBy
+    orderDirection: OrderDirection
+    where: Ask_filter
+  ): [Ask!]
 
-  """The InactiveBids denominated in the Currency"""
-  inactiveBids(skip: Int = 0, first: Int = 100, orderBy: InactiveBid_orderBy, orderDirection: OrderDirection, where: InactiveBid_filter): [InactiveBid!]
+  """
+  The InactiveBids denominated in the Currency
+  """
+  inactiveBids(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: InactiveBid_orderBy
+    orderDirection: OrderDirection
+    where: InactiveBid_filter
+  ): [InactiveBid!]
 
-  """The InactiveAsks denominated in the Currency"""
-  inactiveAsks(skip: Int = 0, first: Int = 100, orderBy: InactiveAsk_orderBy, orderDirection: OrderDirection, where: InactiveAsk_filter): [InactiveAsk!]
+  """
+  The InactiveAsks denominated in the Currency
+  """
+  inactiveAsks(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: InactiveAsk_orderBy
+    orderDirection: OrderDirection
+    where: InactiveAsk_filter
+  ): [InactiveAsk!]
 }
 
 input Currency_filter {
@@ -709,37 +874,59 @@ enum Currency_orderBy {
 }
 
 type InactiveAsk {
-  """<tokenId>-<transactionHash>-<logIndex>"""
+  """
+  <tokenId>-<transactionHash>-<logIndex>
+  """
   id: ID!
 
-  """Transaction hash the ask was created at"""
+  """
+  Transaction hash the ask was created at
+  """
   transactionHash: String!
 
-  """The Clip associated with the InactiveAsk"""
+  """
+  The Clip associated with the InactiveAsk
+  """
   clip: Clip!
 
-  """The why this Ask is Inactive"""
+  """
+  The why this Ask is Inactive
+  """
   type: MarketEventType!
 
-  """The Currency of the InactiveAsk"""
+  """
+  The Currency of the InactiveAsk
+  """
   currency: Currency!
 
-  """The amount of Currency of the InactiveAsk"""
+  """
+  The amount of Currency of the InactiveAsk
+  """
   amount: BigInt!
 
-  """The owner of the InactiveAsk"""
+  """
+  The owner of the InactiveAsk
+  """
   owner: User!
 
-  """The timestamp of the block the original Ask was created in"""
+  """
+  The timestamp of the block the original Ask was created in
+  """
   createdAtTimestamp: BigInt!
 
-  """The number of the block the original Ask was created in"""
+  """
+  The number of the block the original Ask was created in
+  """
   createdAtBlockNumber: BigInt!
 
-  """The timestamp of the block the original Ask was inactivated in"""
+  """
+  The timestamp of the block the original Ask was inactivated in
+  """
   inactivatedAtTimestamp: BigInt!
 
-  """The number of the block the original Ask was inactivated in"""
+  """
+  The number of the block the original Ask was inactivated in
+  """
   inactivatedAtBlockNumber: BigInt!
 }
 
@@ -869,43 +1056,69 @@ enum InactiveAsk_orderBy {
 }
 
 type InactiveBid {
-  """<tokenId>-<transactionHash>-<logIndex>"""
+  """
+  <tokenId>-<transactionHash>-<logIndex>
+  """
   id: ID!
 
-  """Transaction hash the bid was created at"""
+  """
+  Transaction hash the bid was created at
+  """
   transactionHash: String!
 
-  """The Clip associated with the InactiveBid"""
+  """
+  The Clip associated with the InactiveBid
+  """
   clip: Clip!
 
-  """The reason why this Bid is Inactive"""
+  """
+  The reason why this Bid is Inactive
+  """
   type: MarketEventType!
 
-  """The Currency of the InactiveBid"""
+  """
+  The Currency of the InactiveBid
+  """
   currency: Currency!
 
-  """The amount of Currency of the InactiveBid"""
+  """
+  The amount of Currency of the InactiveBid
+  """
   amount: BigInt!
 
-  """The sellOnShare of the InactiveBid"""
+  """
+  The sellOnShare of the InactiveBid
+  """
   sellOnShare: BigInt!
 
-  """The bidder of the InactiveBid"""
+  """
+  The bidder of the InactiveBid
+  """
   bidder: User!
 
-  """The recipient of the InactiveBid"""
+  """
+  The recipient of the InactiveBid
+  """
   recipient: User!
 
-  """The timestamp of the block the original Bid was created in"""
+  """
+  The timestamp of the block the original Bid was created in
+  """
   createdAtTimestamp: BigInt!
 
-  """The number of the block the original Bid was created in"""
+  """
+  The number of the block the original Bid was created in
+  """
   createdAtBlockNumber: BigInt!
 
-  """The timestamp of the block the original Bid was inactivated in"""
+  """
+  The timestamp of the block the original Bid was inactivated in
+  """
   inactivatedAtTimestamp: BigInt!
 
-  """The number of the block the original Bid was inactivated in"""
+  """
+  The number of the block the original Bid was inactivated in
+  """
   inactivatedAtBlockNumber: BigInt!
 }
 
@@ -1059,22 +1272,34 @@ enum InactiveBid_orderBy {
 }
 
 type InactiveReserveAuctionBid {
-  """<auctionId>-<txHash>-<logIndex>"""
+  """
+  <auctionId>-<txHash>-<logIndex>
+  """
   id: ID!
 
-  """The transaction hash the reserve auction big was created at"""
+  """
+  The transaction hash the reserve auction big was created at
+  """
   transactionHash: String!
 
-  """The Reserve auction associated with the Bid"""
+  """
+  The Reserve auction associated with the Bid
+  """
   reserveAuction: ReserveAuction!
 
-  """The amount of the Bid"""
+  """
+  The amount of the Bid
+  """
   amount: BigInt!
 
-  """The bidder of the Bid"""
+  """
+  The bidder of the Bid
+  """
   bidder: User!
 
-  """The type of bid (active, refunded, final)"""
+  """
+  The type of bid (active, refunded, final)
+  """
   bidType: ReserveAuctionBidType!
 
   """
@@ -1087,10 +1312,14 @@ type InactiveReserveAuctionBid {
   """
   bidInactivatedAtBlockNumber: BigInt!
 
-  """The timestamp of the block the Bid was created in"""
+  """
+  The timestamp of the block the Bid was created in
+  """
   createdAtTimestamp: BigInt!
 
-  """The number of the block the Bid was created in"""
+  """
+  The number of the block the Bid was created in
+  """
   createdAtBlockNumber: BigInt!
 }
 
@@ -1204,7 +1433,9 @@ enum InactiveReserveAuctionBid_orderBy {
   createdAtBlockNumber
 }
 
-"""The Types for MarketEvents (Asks, Bids)"""
+"""
+The Types for MarketEvents (Asks, Bids)
+"""
 enum MarketEventType {
   Finalized
   Removed
@@ -1697,30 +1928,46 @@ type Query {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [ReserveAuction!]!
 
-  """Access to subgraph metadata"""
+  """
+  Access to subgraph metadata
+  """
   _meta(block: Block_height): _Meta_
 }
 
 type ReserveAuction {
-  """ID of the auction from contract, autoincrementing int"""
+  """
+  ID of the auction from contract, autoincrementing int
+  """
   id: ID!
 
-  """Transaction hash where the reserve auction was created"""
+  """
+  Transaction hash where the reserve auction was created
+  """
   transactionHash: String!
 
-  """The originating token contract for this auction"""
+  """
+  The originating token contract for this auction
+  """
   tokenContract: String!
 
-  """The token ID for this auction"""
+  """
+  The token ID for this auction
+  """
   tokenId: BigInt!
 
-  """<tokenContract>-<tokenId>"""
+  """
+  <tokenContract>-<tokenId>
+  """
   token: String!
 
-  """The clip for the auction"""
+  """
+  The clip for the auction
+  """
   clip: Clip
 
-  """Whether or not the auction has been approved by the curator"""
+  """
+  Whether or not the auction has been approved by the curator
+  """
   approved: Boolean!
 
   """
@@ -1734,19 +1981,29 @@ type ReserveAuction {
   """
   expectedEndTimestamp: BigInt
 
-  """The time the first bid was placed"""
+  """
+  The time the first bid was placed
+  """
   firstBidTime: BigInt
 
-  """The minimum price of the first bid"""
+  """
+  The minimum price of the first bid
+  """
   reservePrice: BigInt!
 
-  """The sale percentage to send to the curator"""
+  """
+  The sale percentage to send to the curator
+  """
   curatorFeePercentage: Int!
 
-  """The address that should receive the funds once the NFT is sold"""
+  """
+  The address that should receive the funds once the NFT is sold
+  """
   tokenOwner: User!
 
-  """The address of the auction's curator"""
+  """
+  The address of the auction's curator
+  """
   curator: User!
 
   """
@@ -1755,28 +2012,50 @@ type ReserveAuction {
   auctionCurrency: Currency!
   status: ReserveAuctionStatus!
 
-  """The current bid on this auction"""
+  """
+  The current bid on this auction
+  """
   currentBid: ReserveAuctionBid
 
-  """The previous bids on this auction"""
-  previousBids(skip: Int = 0, first: Int = 100, orderBy: InactiveReserveAuctionBid_orderBy, orderDirection: OrderDirection, where: InactiveReserveAuctionBid_filter): [InactiveReserveAuctionBid!]
+  """
+  The previous bids on this auction
+  """
+  previousBids(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: InactiveReserveAuctionBid_orderBy
+    orderDirection: OrderDirection
+    where: InactiveReserveAuctionBid_filter
+  ): [InactiveReserveAuctionBid!]
 
-  """The time the auction was approved"""
+  """
+  The time the auction was approved
+  """
   approvedTimestamp: BigInt
 
-  """The number of the block the auction was Approved"""
+  """
+  The number of the block the auction was Approved
+  """
   approvedBlockNumber: BigInt
 
-  """The timestamp of the block the Transfer was created in"""
+  """
+  The timestamp of the block the Transfer was created in
+  """
   createdAtTimestamp: BigInt!
 
-  """The number of the block the Transfer was created in"""
+  """
+  The number of the block the Transfer was created in
+  """
   createdAtBlockNumber: BigInt!
 
-  """The timestamp at which the auction end function was called"""
+  """
+  The timestamp at which the auction end function was called
+  """
   finalizedAtTimestamp: BigInt
 
-  """The block number at which the auction end function was called"""
+  """
+  The block number at which the auction end function was called
+  """
   finalizedAtBlockNumber: BigInt
 }
 
@@ -2035,28 +2314,44 @@ enum ReserveAuction_orderBy {
 }
 
 type ReserveAuctionBid {
-  """<auctionId>-<txHash>-<logIndex>"""
+  """
+  <auctionId>-<txHash>-<logIndex>
+  """
   id: ID!
 
-  """The transaction hash the reserve auction big was created at"""
+  """
+  The transaction hash the reserve auction big was created at
+  """
   transactionHash: String!
 
-  """The Reserve auction associated with the Bid"""
+  """
+  The Reserve auction associated with the Bid
+  """
   reserveAuction: ReserveAuction!
 
-  """The amount of the Bid"""
+  """
+  The amount of the Bid
+  """
   amount: BigInt!
 
-  """The bidder of the Bid"""
+  """
+  The bidder of the Bid
+  """
   bidder: User!
 
-  """The type of bid (active, refunded, final)"""
+  """
+  The type of bid (active, refunded, final)
+  """
   bidType: ReserveAuctionBidType!
 
-  """The timestamp of the block the Bid was created in"""
+  """
+  The timestamp of the block the Bid was created in
+  """
   createdAtTimestamp: BigInt!
 
-  """The number of the block the Bid was created in"""
+  """
+  The number of the block the Bid was created in
+  """
   createdAtBlockNumber: BigInt!
 }
 
@@ -2647,30 +2942,46 @@ type Subscription {
     subgraphError: _SubgraphErrorPolicy_! = deny
   ): [ReserveAuction!]!
 
-  """Access to subgraph metadata"""
+  """
+  Access to subgraph metadata
+  """
   _meta(block: Block_height): _Meta_
 }
 
 type Transfer {
-  """<tokenId>-<transactionHash>-<logIndex>"""
+  """
+  <tokenId>-<transactionHash>-<logIndex>
+  """
   id: ID!
 
-  """Transaction hash for the transfer"""
+  """
+  Transaction hash for the transfer
+  """
   transactionHash: String!
 
-  """The Clip associated with the Transfer"""
+  """
+  The Clip associated with the Transfer
+  """
   clip: Clip!
 
-  """The User transferring the Clip"""
+  """
+  The User transferring the Clip
+  """
   from: User!
 
-  """The User receiving the Clip"""
+  """
+  The User receiving the Clip
+  """
   to: User!
 
-  """The timestamp of the block the Transfer was created in"""
+  """
+  The timestamp of the block the Transfer was created in
+  """
   createdAtTimestamp: BigInt!
 
-  """The number of the block the Transfer was created in"""
+  """
+  The number of the block the Transfer was created in
+  """
   createdAtBlockNumber: BigInt!
 }
 
@@ -2768,34 +3079,54 @@ enum Transfer_orderBy {
 }
 
 type URIUpdate {
-  """<tokenId>-<transactionHash>-<logIndex>"""
+  """
+  <tokenId>-<transactionHash>-<logIndex>
+  """
   id: ID!
 
-  """The transaction has the uri update happened at"""
+  """
+  The transaction has the uri update happened at
+  """
   transactionHash: String!
 
-  """The Type of URIUpdate"""
+  """
+  The Type of URIUpdate
+  """
   type: URIUpdateType!
 
-  """The previous uri"""
+  """
+  The previous uri
+  """
   from: String!
 
-  """The new uri"""
+  """
+  The new uri
+  """
   to: String!
 
-  """The Clip associated with the URIUpdate"""
+  """
+  The Clip associated with the URIUpdate
+  """
   clip: Clip!
 
-  """The owner of the Clip"""
+  """
+  The owner of the Clip
+  """
   owner: User!
 
-  """The updater of the Clip's URI"""
+  """
+  The updater of the Clip's URI
+  """
   updater: User!
 
-  """The timestamp of the block the URIUpdate was created in"""
+  """
+  The timestamp of the block the URIUpdate was created in
+  """
   createdAtTimestamp: BigInt!
 
-  """The number of the block the URIUpdate was created in"""
+  """
+  The number of the block the URIUpdate was created in
+  """
   createdAtBlockNumber: BigInt!
 }
 
@@ -2927,29 +3258,63 @@ enum URIUpdate_orderBy {
   createdAtBlockNumber
 }
 
-"""The Types of URI Updates"""
+"""
+The Types of URI Updates
+"""
 enum URIUpdateType {
   Content
   Metadata
 }
 
 type User {
-  """Ethereum Address"""
+  """
+  Ethereum Address
+  """
   id: ID!
 
   """
   Users that have been granted `ApprovalForAll` Clip of the User's Collection
   """
-  authorizedUsers(skip: Int = 0, first: Int = 100, orderBy: User_orderBy, orderDirection: OrderDirection, where: User_filter): [User!]
+  authorizedUsers(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: User_orderBy
+    orderDirection: OrderDirection
+    where: User_filter
+  ): [User!]
 
-  """The Clip the User owns"""
-  collection(skip: Int = 0, first: Int = 100, orderBy: Clip_orderBy, orderDirection: OrderDirection, where: Clip_filter): [Clip!]!
+  """
+  The Clip the User owns
+  """
+  collection(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Clip_orderBy
+    orderDirection: OrderDirection
+    where: Clip_filter
+  ): [Clip!]!
 
-  """The Clip the User created"""
-  creations(skip: Int = 0, first: Int = 100, orderBy: Clip_orderBy, orderDirection: OrderDirection, where: Clip_filter): [Clip!]!
+  """
+  The Clip the User created
+  """
+  creations(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Clip_orderBy
+    orderDirection: OrderDirection
+    where: Clip_filter
+  ): [Clip!]!
 
-  """The active Bids made by the User"""
-  currentBids(skip: Int = 0, first: Int = 100, orderBy: Bid_orderBy, orderDirection: OrderDirection, where: Bid_filter): [Bid!]
+  """
+  The active Bids made by the User
+  """
+  currentBids(
+    skip: Int = 0
+    first: Int = 100
+    orderBy: Bid_orderBy
+    orderDirection: OrderDirection
+    where: Bid_filter
+  ): [Bid!]
 }
 
 input User_filter {
@@ -2974,4 +3339,3 @@ enum User_orderBy {
   creations
   currentBids
 }
-

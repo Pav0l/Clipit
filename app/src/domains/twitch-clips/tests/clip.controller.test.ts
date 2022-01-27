@@ -12,24 +12,24 @@ describe("clip controller", () => {
   beforeEach(() => {
     model = new ClipModel(new MetaModel());
     ctrl = new ClipController(model, new SnackbarController(new SnackbarModel()), new TwitchTestApi());
-
   });
 
   it("really dumb test just to make a POC on twitchTestApi", async () => {
-    await ctrl.getBroadcasterClips('some-id');
+    await ctrl.getBroadcasterClips("some-id");
     // dummy clips are on state
     expect(model.clips.length).toBeGreaterThan(0);
   });
 
   it("validates clip url", () => {
-    expect(ctrl.validateClipUrl("https://www.twitch.tv/streamer/clip/GeorgeousPineappleCautiousVoteYes-Xact8iTQtX3F9VCW"))
-      .toEqual("GeorgeousPineappleCautiousVoteYes-Xact8iTQtX3F9VCW");
+    expect(
+      ctrl.validateClipUrl("https://www.twitch.tv/streamer/clip/GeorgeousPineappleCautiousVoteYes-Xact8iTQtX3F9VCW")
+    ).toEqual("GeorgeousPineappleCautiousVoteYes-Xact8iTQtX3F9VCW");
 
-    expect(ctrl.validateClipUrl("https://clips.twitch.tv/GeorgeousPineappleCautiousVoteYes-Xact8iTQtX3F9VCW"))
-      .toEqual("GeorgeousPineappleCautiousVoteYes-Xact8iTQtX3F9VCW");
+    expect(ctrl.validateClipUrl("https://clips.twitch.tv/GeorgeousPineappleCautiousVoteYes-Xact8iTQtX3F9VCW")).toEqual(
+      "GeorgeousPineappleCautiousVoteYes-Xact8iTQtX3F9VCW"
+    );
 
-    expect(ctrl.validateClipUrl("https://foo.tv/GeorgeousPineappleCautiousVoteYes-Xact8iTQtX3F9VCW"))
-      .toEqual("");
+    expect(ctrl.validateClipUrl("https://foo.tv/GeorgeousPineappleCautiousVoteYes-Xact8iTQtX3F9VCW")).toEqual("");
   });
 
   it("validates creator share to be an integer between 0-99", () => {

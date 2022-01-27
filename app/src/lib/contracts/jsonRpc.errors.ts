@@ -1,13 +1,14 @@
 import { ProviderRpcError } from "../ethereum/rpc.errors";
 
-
 export function isEthersJsonRpcError(error: EthersJsonRpcError | unknown): error is EthersJsonRpcError {
-  return (error as EthersJsonRpcError).code !== undefined &&
-    typeof (error as EthersJsonRpcError).code === 'string' &&
+  return (
+    (error as EthersJsonRpcError).code !== undefined &&
+    typeof (error as EthersJsonRpcError).code === "string" &&
     (error as EthersJsonRpcError).message !== undefined &&
-    typeof (error as EthersJsonRpcError).message === 'string' &&
+    typeof (error as EthersJsonRpcError).message === "string" &&
     (error as EthersJsonRpcError).reason !== undefined &&
-    typeof (error as EthersJsonRpcError).reason === 'string'
+    typeof (error as EthersJsonRpcError).reason === "string"
+  );
 }
 
 interface EthersJsonRpcError {

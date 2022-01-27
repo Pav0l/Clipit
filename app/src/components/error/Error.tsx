@@ -54,12 +54,12 @@ const useStyles = makeStyles(() => ({
   container: {
     flexDirection: "column",
     margin: "0 10rem",
-    textAlign: "center"
+    textAlign: "center",
   },
   bodyP: {
-    margin: "1rem 0"
+    margin: "1rem 0",
   },
   linkBtn: {
-    verticalAlign: "baseline"
-  }
+    verticalAlign: "baseline",
+  },
 }));

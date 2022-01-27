@@ -46,12 +46,7 @@ function NftContainer({ model, operations }: Props) {
     return (
       <SplitContainer>
         <NftCard metadata={metadata} />
-        <NftDetails
-          metadata={metadata}
-          tokenId={tokenId}
-          operations={operations}
-          model={model}
-        />
+        <NftDetails metadata={metadata} tokenId={tokenId} operations={operations} model={model} />
       </SplitContainer>
     );
   }

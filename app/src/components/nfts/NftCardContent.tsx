@@ -21,21 +21,12 @@ export function NftCardContent(props: Props) {
     <div>
       <CardContent>
         <div className={classes.content}>
-          <Typography
-            variant="subtitle1"
-            component="h6"
-            noWrap
-            className={classes.title}
-          >
+          <Typography variant="subtitle1" component="h6" noWrap className={classes.title}>
             {props.title}
           </Typography>
 
           {hasBidInActiveAuction ? (
-            <Typography
-              variant="subtitle1"
-              component="h6"
-              className={`${classes.bidTitle} ${classes.alignRight}`}
-            >
+            <Typography variant="subtitle1" component="h6" className={`${classes.bidTitle} ${classes.alignRight}`}>
               {bid.onlyDisplayReservePrice ? "Reserve price:" : "Current Bid:"}
             </Typography>
           ) : null}
@@ -56,9 +47,7 @@ export function NftCardContent(props: Props) {
         </div>
       </CardContent>
       <div className={`${classes.content} ${classes.fixedHeight}`}>
-        <div className={`${classes.auctionEnds} ${classes.noWrap}`}>
-          {status.title}
-        </div>
+        <div className={`${classes.auctionEnds} ${classes.noWrap}`}>{status.title}</div>
         <div
           className={`${classes.auctionEnds} ${classes.glow} ${classes.auctionCountdownValue} ${classes.alignRight}`}
         >
@@ -73,38 +62,38 @@ const useStyles = makeStyles(() => ({
   title: {
     fontWeight: 600,
     color: "#31393C",
-    fontSize: "1rem"
+    fontSize: "1rem",
   },
   content: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   glow: {
-    color: "#2176FF"
+    color: "#2176FF",
   },
   alignRight: {
-    textAlign: "right"
+    textAlign: "right",
   },
   auctionEnds: {
     margin: "0 1rem 0.5rem",
-    fontWeight: 600
+    fontWeight: 600,
   },
   noWrap: {
     overflow: "hidden",
     whiteSpace: "nowrap",
-    textOverflow: "ellipsis"
+    textOverflow: "ellipsis",
   },
   fixedHeight: {
-    minHeight: "24px"
+    minHeight: "24px",
   },
   bidTitle: {
-    minWidth: "106px"
+    minWidth: "106px",
   },
   bidValue: {
-    minWidth: "80px"
+    minWidth: "80px",
   },
   auctionCountdownValue: {
-    minWidth: "106px"
-  }
+    minWidth: "106px",
+  },
 }));

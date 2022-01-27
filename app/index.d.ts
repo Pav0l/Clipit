@@ -1,6 +1,6 @@
 import { EthereumProvider } from "./src/lib/ethereum/ethereum.types";
 
-export { };
+export {};
 
 declare global {
   interface Window {

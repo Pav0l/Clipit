@@ -1,6 +1,5 @@
-import { makeAutoObservable } from "mobx"
+import { makeAutoObservable } from "mobx";
 import { MetaModel } from "../app/meta.model";
-
 
 interface User {
   id?: string;
@@ -11,11 +10,11 @@ interface User {
 }
 
 export class UserModel {
-  id: string = "";
-  display_name: string = "";
-  login: string = "";
-  profile_image_url: string = "";
-  email: string = "";
+  id = "";
+  display_name = "";
+  login = "";
+  profile_image_url = "";
+  email = "";
 
   meta: MetaModel;
 
@@ -32,4 +31,3 @@ export class UserModel {
     this.email = user.email ?? "";
   }
 }
-
