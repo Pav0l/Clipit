@@ -30,7 +30,7 @@ export class NftController {
 
       await this.getMetadataForClipFragmentAndStoreInModel(clip, true);
     } catch (error) {
-      // TODO SENTRY
+      // SENTRY
       console.log('[LOG]:getTokenMetadata err', error);
       this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     }
@@ -52,7 +52,7 @@ export class NftController {
       }
 
     } catch (error) {
-      // TODO SENTRY
+      // SENTRY
       this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     } finally {
       if (this.model.meta.isLoading) {
@@ -87,7 +87,7 @@ export class NftController {
         this.model.meta.setLoading(false);
       }
     } catch (error) {
-      // TODO SENTRY
+      // SENTRY
       this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     } finally {
       if (this.model.meta.isLoading) {
@@ -110,7 +110,7 @@ export class NftController {
       this.model.updateTokenAuction(tokenId, data);
 
     } catch (error) {
-      // TODO SENTRY
+      // SENTRY
       this.snackbar.sendError(NftErrors.ERROR_TRY_REFRESH);
     } finally {
       if (this.model.meta.isLoading) {
@@ -131,7 +131,7 @@ export class NftController {
 
     const metadataCid = this.parseCidFromURI(clip.metadataURI);
     if (!metadataCid) {
-      // TODO sentry this should not happen
+      // SENTRY this should not happen
       if (shouldThrow) {
         throw new Error(`Invalid metadataURI? ${clip.metadataURI}`);
       }
@@ -140,7 +140,7 @@ export class NftController {
 
     const metadata = await this.getMetadataFromIpfs(metadataCid);
     if (!metadata) {
-      // TODO sentry - in case the metadata fetch fails
+      // SENTRY - in case the metadata fetch fails
       if (shouldThrow) {
         throw new Error(`No token metadata? ${clip.metadataURI}`)
       }

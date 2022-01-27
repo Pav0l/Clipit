@@ -33,7 +33,7 @@ class AuctionContractClient implements IAuctionContractClient {
       const jsonRpcSigner = ethersProvider.getSigner();
       this.contract = (new ethers.Contract(auctionContractAddress, AuctionHouseAbi.abi, jsonRpcSigner)) as AuctionHouse;
     } catch (error) {
-      // TODO sentry
+      // SENTRY
       console.log("[auction.contract.client]:construct:error", error);
       throw new Error('Invalid ethereum provider');
     }

@@ -54,7 +54,7 @@ export class NftModel {
       if (metadata.auction) {
         return metadata.auction.approved && !metadata.auction.isCanceled;
       }
-      return true;
+      return false; // for now do not display tokens without auction in marketplace
     })
   }
 }

@@ -26,7 +26,7 @@ interface Props {
 function NftContainer({ model, operations }: Props) {
   const { tokenId } = useParams<{ tokenId?: string }>();
   if (!tokenId) {
-    // TODO SENTRY + how is this handled?
+    // SENTRY
     return <ErrorWithRetry text="Something went wrong" withRetry={true} />;
   }
   const metadata = model.nft.getTokenMetadata(tokenId);

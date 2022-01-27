@@ -32,7 +32,7 @@ export class OAuthController {
         this.model.setReferrer(referrer);
         this.storeTokenAndRemoveSecret(access_token);
       } else {
-        // TODO sentry this should not happen
+        // SENTRY this should not happen
         this.model.meta.setError(OAuthErrors.INVALID_SECRET);
       }
     }

@@ -12,7 +12,7 @@ export default class ErrorBoundary extends React.Component<
 
   componentDidCatch(error: any, errorInfo: any) {
     this.setState({ hasError: true });
-    // TODO SENTRY
+    // SENTRY
   }
 
   render() {

@@ -26,7 +26,7 @@ export class ClipController {
     if (data.statusOk && !this.twitchApi.isTwitchError(data.body)) {
       this.model.appendMultipleClips(data.body.data);
     } else {
-      // TODO SENTRY MONITOR
+      // SENTRY MONITOR
       this.model.meta.setError(TwitchClipsErrors.UNABLE_TO_GET_CLIPS);
       // TODO collect debugging data when setting user error, in case the "contact us" is used, so it 
       // autogenerates data for us
@@ -45,7 +45,7 @@ export class ClipController {
         this.model.appendClip(clip);
       }
     } else {
-      // TODO SENTRY MONITOR
+      // SENTRY MONITOR
       this.model.meta.setError(TwitchClipsErrors.UNABLE_TO_GET_CLIPS);
       // TODO collect debugging data when setting user error, in case the "contact us" is used, so it 
       // autogenerates data for us

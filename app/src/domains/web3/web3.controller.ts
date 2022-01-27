@@ -124,7 +124,7 @@ export class Web3Controller implements IWeb3Controller {
       const balance = await this.initEthClient().getBalance(address);
       this.model.setEthBalance(BigNumber.from(balance));
     } catch (error) {
-      // TODO sentry
+      // SENTRY
     }
   }
 
@@ -224,7 +224,7 @@ export class Web3Controller implements IWeb3Controller {
 
       this.snackbar.sendSuccess(AuctionCancelLoadStatus.AUCTION_CANCEL_SUCCESS);
     } catch (error) {
-      // TODO sentry
+      // SENTRY
       console.log("[LOG]:cancel auction:error", error);
 
       if (isEthersJsonRpcError(error)) {
@@ -282,7 +282,7 @@ export class Web3Controller implements IWeb3Controller {
 
       this.snackbar.sendSuccess(AuctionEndLoadStatus.AUCTION_END_SUCCESS);
     } catch (error) {
-      // TODO sentry
+      // SENTRY
       console.log("[LOG]:end auction:error", error);
 
       if (isEthersJsonRpcError(error)) {
@@ -326,7 +326,7 @@ export class Web3Controller implements IWeb3Controller {
 
   private prepareMetadataAndMintClip = async (clipId: string, address: string, creatorShare: string, clipTitle: string, clipDescription?: string) => {
     if (!clipId || !address || !clipTitle) {
-      // TODO sentry this should not happen
+      // SENTRY this should not happen
       this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
       return;
     }
@@ -343,27 +343,28 @@ export class Web3Controller implements IWeb3Controller {
         return;
       }
 
-      // TODO we fetch all clip data here and then only utilize ID before redirecting, where we fetch data again
+      this.model.meta.setLoading(true);
+
       const clip = await this.subgraph.fetchClipByHashCached(txHash);
       console.log('[LOG]:clip', clip);
       if (!clip) {
-        // TODO sentry this should not happen    
+        // SENTRY this should not happen    
         this.model.meta.setError(Web3Errors.FAILED_TO_FETCH_SUBGRAPH_DATA);
         return;
       }
+
+      this.model.meta.setLoading(false);
 
       const tokenId = clip.id;
       // TODO ideally we do not want to reload the app here and just update state
       location.assign(location.origin + `/nfts/${tokenId}`);
     } else {
       this.model.stopClipStoreLoader();
-      // TODO improve errors from clipit-api
       this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
     }
   }
 
   private mintNFT = async (data: { tokenURI: string, metadataURI: string, contentHash: BytesLike, metadataHash: BytesLike }, clipId: string, signature: Signature, creatorShare: string) => {
-    // TODO abstract bidShares creation & calculation away
     const forCreator = Number(creatorShare); // if creatorShare is '' it's converted to 0 here
     const defaultBidshares = {
       creator: Decimal.from(forCreator),
@@ -383,7 +384,7 @@ export class Web3Controller implements IWeb3Controller {
 
       return tx.hash;
     } catch (error) {
-      // TODO sentry
+      // SENTRY
       console.log("[LOG]:mint:error", error);
 
       if (isEthersJsonRpcError(error)) {
@@ -505,7 +506,7 @@ export class Web3Controller implements IWeb3Controller {
       this.model.clearAuctionLoader();
       this.snackbar.sendSuccess(AuctionLoadStatus.CREATE_AUCTION_SUCCESS);
     } catch (error) {
-      // TODO sentry
+      // SENTRY
       console.log("[LOG]:createAuction:error", error);
 
       if (isEthersJsonRpcError(error)) {
@@ -558,7 +559,7 @@ export class Web3Controller implements IWeb3Controller {
 
       this.snackbar.sendSuccess(AuctionBidLoadStatus.AUCTION_BID_SUCCESS);
     } catch (error) {
-      // TODO sentry
+      // SENTRY
       console.log("[LOG]:bid auction:error", error);
 
       if (isEthersJsonRpcError(error)) {

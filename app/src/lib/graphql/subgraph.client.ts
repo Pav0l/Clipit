@@ -6,7 +6,7 @@ import { CLIPS_PAGINATION_SKIP_VALUE } from '../constants';
 
 export interface ISubgraphClient {
   fetchClipCached: (tokenId: string) => Promise<ClipPartialFragment | null>;
-  fetchClipByHashCached: (txHash: string) => Promise<ClipPartialFragment | null>;
+  fetchClipByHashCached: (txHash: string) => Promise<{ id: string } | null>;
   fetchClips: (skip?: number) => Promise<GetClipsQuery | null>;
   fetchUserCached: (address: string) => Promise<UserData | null>;
   fetchAuctionCached: (tokenId: string, options: { clearCache: boolean }) => Promise<AuctionPartialFragment | null>;
@@ -15,7 +15,7 @@ export interface ISubgraphClient {
 export class SubgraphClient implements ISubgraphClient {
   private userLoader: DataLoader<string, UserData | null>;
   private clipLoader: DataLoader<string, ClipPartialFragment | null>;
-  private clipHashLoader: DataLoader<string, ClipPartialFragment | null>;
+  private clipHashLoader: DataLoader<string, { id: string } | null>;
   private auctionLoader: DataLoader<string, AuctionPartialFragment | null>;
 
   constructor(private client: GraphQLClient) {
@@ -37,7 +37,7 @@ export class SubgraphClient implements ISubgraphClient {
   }
 
   fetchClipByHashCached = async (txHash: string) => {
-    const clip = this.retryFetch<string, ClipPartialFragment>(this.clipHashLoader, txHash, 3, 5000);
+    const clip = this.retryFetch<string, { id: string }>(this.clipHashLoader, txHash, 3, 5000);
     if (!clip) {
       return null;
     }
@@ -179,7 +179,7 @@ function transformClipData(data: GetClipDataQuery, key: string): ClipPartialFrag
   return clip;
 }
 
-function transformClipDataFromHash(data: GetTokenByTxHashQuery, key: string): ClipPartialFragment | null {
+function transformClipDataFromHash(data: GetTokenByTxHashQuery, key: string): { id: string } | null {
   const clip = data.clips.find((clip) => clip.transactionHash === key);
   if (!clip) {
     return null;

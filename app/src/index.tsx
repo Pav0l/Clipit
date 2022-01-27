@@ -45,6 +45,7 @@ import { ClipItApiClient } from "./lib/clipit-api/clipit-api.client";
 import { IpfsClient } from "./lib/ipfs/ipfs.client";
 import { ClipItContractCreator } from "./lib/contracts/ClipIt/clipit-contract.client";
 import { AuctionContractCreator } from "./lib/contracts/AuctionHouse/auction-contract.client";
+import ErrorWithRetry from "./components/error/Error";
 
 function initSynchronous() {
   const storage = new LocalStorageClient();
@@ -254,10 +255,11 @@ async function initAsync({
       document.getElementById("root")
     );
   } catch (error) {
+    // SENTRY
+
     ReactDOM.render(
       <React.StrictMode>
-        {/* TODO */}
-        <div>Error while initializing app</div>
+        <ErrorWithRetry text="Error while initializing app" withRetry={true} />
       </React.StrictMode>,
       document.getElementById("root")
     );

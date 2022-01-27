@@ -184,7 +184,6 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-// TODO into controller
 function isValidDuration(duration: string): boolean {
   return duration >= "1" && !duration.includes(".");
 }

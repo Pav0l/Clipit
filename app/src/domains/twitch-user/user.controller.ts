@@ -14,7 +14,7 @@ export class UserController {
     if (data.statusOk && !this.twitchApi.isTwitchError(data.body)) {
       this.model.setUser(data.body.data[0]);
     } else {
-      // TODO SENTRY MONITOR
+      // SENTRY MONITOR
       this.model.meta.setError(TwitchUserError.GENERIC);
 
       // TODO collect debugging data when setting user error, in case the "contact us" is used, so it 
