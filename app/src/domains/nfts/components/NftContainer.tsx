@@ -39,7 +39,6 @@ function NftContainer({ model, operations }: Props) {
 
   // MetaMask not installed
   if (model.nft.meta.hasError) {
-    // TODO add onboarding and retry handler button to error msg
     return <ErrorWithRetry text={model.nft.meta.error} withRetry={false} />;
   }
 

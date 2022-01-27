@@ -2,7 +2,6 @@ import { createTheme, ThemeOptions } from "@material-ui/core";
 
 
 export const defaultThemeOpts: ThemeOptions = {
-  // TODO
   overrides: {
     "MuiButton": {
       containedPrimary: {

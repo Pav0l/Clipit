@@ -16,9 +16,6 @@ export class UserController {
     } else {
       // SENTRY MONITOR
       this.model.meta.setError(TwitchUserError.GENERIC);
-
-      // TODO collect debugging data when setting user error, in case the "contact us" is used, so it 
-      // autogenerates data for us
     }
 
     this.model.meta.setLoading(false);

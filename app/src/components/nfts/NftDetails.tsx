@@ -74,15 +74,6 @@ export const NftDetails = observer(function NftDetails({
         />
       );
     }
-
-    // -> expired (but not ended yet) -> end it
-    // if (
-    //   auction.displayAuctionStatus.title === DisplayAuctionStatusTitle.ENDED &&
-    //   auction.firstBidTime !== "0"
-    // ) {
-    //   // consider if TODO, or we let ending auction only to owner
-    //   return <div>Auction Details for bidder (end auction) </div>;
-    // }
   }
 
   // finished -> null (details are on NftCard)

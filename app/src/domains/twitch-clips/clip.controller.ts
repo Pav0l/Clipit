@@ -20,7 +20,6 @@ export class ClipController {
 
   getBroadcasterClips = async (broadcasterId: string) => {
     this.model.meta.setLoading(true);
-    // TODO implement pagination for clips
     const data = await this.twitchApi.getClips({ broadcaster_id: broadcasterId });
 
     if (data.statusOk && !this.twitchApi.isTwitchError(data.body)) {
@@ -28,8 +27,6 @@ export class ClipController {
     } else {
       // SENTRY MONITOR
       this.model.meta.setError(TwitchClipsErrors.UNABLE_TO_GET_CLIPS);
-      // TODO collect debugging data when setting user error, in case the "contact us" is used, so it 
-      // autogenerates data for us
     }
     this.model.meta.setLoading(false);
   }
@@ -47,8 +44,6 @@ export class ClipController {
     } else {
       // SENTRY MONITOR
       this.model.meta.setError(TwitchClipsErrors.UNABLE_TO_GET_CLIPS);
-      // TODO collect debugging data when setting user error, in case the "contact us" is used, so it 
-      // autogenerates data for us
     }
     this.model.meta.setLoading(false);
   }

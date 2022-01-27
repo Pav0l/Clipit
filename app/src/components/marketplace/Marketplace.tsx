@@ -50,8 +50,6 @@ function Marketplace({ model, operations }: Props) {
     <>
       <ListOfCardsWithThumbnail metadata={metadata} />
 
-      {/* Temporary button to load more clips
-          TODO - make this load more on scroll  */}
       {metadata.length >= CLIPS_PAGINATION_SKIP_VALUE ? (
         <Button variant="outlined" onClick={fetchNextBatchOfClips}>
           Load more

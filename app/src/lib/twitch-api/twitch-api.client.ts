@@ -25,6 +25,10 @@ export class TwitchApi implements TwitchApiClient {
     if (cursor) {
       queryParams.after = cursor
     }
+    if (!queryParams.first || queryParams.first > "100") {
+      // default number of clips to fetch
+      queryParams.first = "50";
+    }
 
     return this.httpClient.authorizedRequest<{ data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError>({
       method: 'get',
@@ -91,22 +95,25 @@ export interface TwitchPaginationQuery {
 export interface TwitchClipQuery extends TwitchPaginationQuery {
   broadcaster_id?: string;
   id?: string;
+  /**
+   * Maximum number of objects to return. Maximum: 100. Default: 20.
+   */
+  first?: string
 }
 
 // https://dev.twitch.tv/docs/api/reference#get-users
 export interface TwitchUserResp {
-  // TODO these should be optional
-  broadcaster_type: string;
-  description: string;
-  display_name: string;
-  id: string;
-  login: string;
-  offline_image_url: string;
-  profile_image_url: string;
-  type: string;
-  view_count: number;
-  email: string;
-  created_at: string;
+  broadcaster_type?: string;
+  description?: string;
+  display_name?: string;
+  id?: string;
+  login?: string;
+  offline_image_url?: string;
+  profile_image_url?: string;
+  type?: string;
+  view_count?: number;
+  email?: string;
+  created_at?: string;
 }
 
 export interface TwitchGameResp {

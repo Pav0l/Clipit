@@ -48,14 +48,6 @@ export default function ClipList({ clipList }: Props) {
           })}
         </VideoList>
       )}
-
-      {/* <Button
-      // TODO add pagination to request
-        color="primary"
-        onClick={() => clipsService.getClips(userStore.id)}
-      >
-        Load more...
-      </Button> */}
     </>
   );
 }
