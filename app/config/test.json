@@ -1,0 +1,11 @@
+{
+  "tokenAddress": "0xc82355e1d263141139fce010982780140aa0cd5ab",
+  "auctionAddress": "0x039dc8e1d263141139fce010982780140aa0cd5ab",
+  "clipItApiUrl": "http://localhost:420/v2",
+  "subgraphUrl": "http://localhost:420/subgraph",
+  "twitch": {
+    "clientId": "42069",
+    "accessToken": "tokenzz",
+    "secretKey": "322"
+  }
+}

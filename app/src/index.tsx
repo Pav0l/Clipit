@@ -4,15 +4,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { GraphQLClient } from "graphql-request";
 
 import "./index.css";
-import {
-  AppRoute,
-  clipItUri,
-  pinataGatewayUri,
-  subgraphUrl,
-  twitchApiUri,
-  twitchAppClientId,
-  twitchOAuthUri,
-} from "./lib/constants";
+import { AppRoute, pinataGatewayUri, twitchApiUri, twitchOAuthUri } from "./lib/constants";
 import { AppModel } from "./domains/app/app.model";
 import { Web3Controller } from "./domains/web3/web3.controller";
 import NftContainer from "./domains/nfts/components/NftContainer";
@@ -54,15 +46,15 @@ function initSynchronous() {
   const snackbar = new SnackbarController(model.snackbar);
 
   const offChainStorageApi = new OffChainStorage(
-    new ClipItApiClient(new HttpClient(storage, clipItUri)),
+    new ClipItApiClient(new HttpClient(storage, CONFIG.clipItApiUrl), CONFIG.twitch.accessToken),
     new IpfsClient(new HttpClient(storage, pinataGatewayUri))
   );
 
-  const twitchOAuthApi = new TwitchOAuthApiClient(new HttpClient(storage, twitchOAuthUri));
-  const twitchApi = new TwitchApi(new HttpClient(storage, twitchApiUri), twitchAppClientId);
-  const subgraph = new SubgraphClient(new GraphQLClient(subgraphUrl));
+  const twitchOAuthApi = new TwitchOAuthApiClient(new HttpClient(storage, twitchOAuthUri), CONFIG.twitch.clientId);
+  const twitchApi = new TwitchApi(new HttpClient(storage, twitchApiUri), CONFIG.twitch);
+  const subgraph = new SubgraphClient(new GraphQLClient(CONFIG.subgraphUrl));
 
-  const authController = new OAuthController(model.auth, twitchOAuthApi, storage);
+  const authController = new OAuthController(model.auth, twitchOAuthApi, storage, CONFIG.twitch);
   const clipController = new ClipController(model.clip, snackbar, twitchApi);
   const gameController = new GameController(model.game, twitchApi);
   const userController = new UserController(model.user, twitchApi);
@@ -74,7 +66,8 @@ function initSynchronous() {
     subgraph,
     snackbar,
     ClipItContractCreator,
-    AuctionContractCreator
+    AuctionContractCreator,
+    CONFIG
   );
 
   authController.checkTokenInStorage();

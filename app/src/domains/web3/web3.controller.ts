@@ -19,8 +19,8 @@ import { isEthersJsonRpcError } from "../../lib/contracts/jsonRpc.errors";
 import { isRpcError, RpcErrors } from "../../lib/ethereum/rpc.errors";
 import EthereumClient from "../../lib/ethereum/ethereum.client";
 import { IAuctionContractClient } from "../../lib/contracts/AuctionHouse/auction-contract.client";
-import { auctionContractAddress, clipitContractAddress } from "../../lib/constants";
 import { AuctionContractErrors } from "../../lib/contracts/AuctionHouse/auction-contract.errors";
+import { IConfig } from "../app/config";
 
 interface Signature {
   v: number;
@@ -55,8 +55,9 @@ export class Web3Controller implements IWeb3Controller {
     private offChainStorage: OffChainStorage,
     private subgraph: ISubgraphClient,
     private snackbar: SnackbarClient,
-    private clipitContractCreator: (provider: EthereumProvider) => IClipItContractClient,
-    private auctionContractCreator: (provider: EthereumProvider) => IAuctionContractClient
+    private clipitContractCreator: (provider: EthereumProvider, address: string) => IClipItContractClient,
+    private auctionContractCreator: (provider: EthereumProvider, address: string) => IAuctionContractClient,
+    private config: IConfig
   ) {}
 
   async connectMetaMaskIfNecessaryForConnectBtn() {
@@ -214,7 +215,7 @@ export class Web3Controller implements IWeb3Controller {
 
   private cancelAuction = async (auctionId: string) => {
     try {
-      const auction = this.auctionContractCreator(window.ethereum as EthereumProvider);
+      const auction = this.createAuctionContract();
 
       this.model.setAuctionCancelLoader();
 
@@ -273,7 +274,7 @@ export class Web3Controller implements IWeb3Controller {
 
   private endAuction = async (auctionId: string) => {
     try {
-      const auction = this.auctionContractCreator(window.ethereum as EthereumProvider);
+      const auction = this.createAuctionContract();
 
       this.model.setAuctionEndLoader();
 
@@ -399,7 +400,7 @@ export class Web3Controller implements IWeb3Controller {
     };
 
     try {
-      const contract = this.clipitContractCreator(window.ethereum as EthereumProvider);
+      const contract = this.createTokenContract();
       const tx = await contract.mint(data, defaultBidshares, signature);
       console.log("[LOG]:minting NFT in tx", tx.hash);
 
@@ -497,8 +498,8 @@ export class Web3Controller implements IWeb3Controller {
 
   private createAuction = async (tokenId: string, duration: BigNumberish, minPrice: BigNumberish) => {
     try {
-      const auction = this.auctionContractCreator(window.ethereum as EthereumProvider);
-      const token = this.clipitContractCreator(window.ethereum as EthereumProvider);
+      const auction = this.createAuctionContract();
+      const token = this.createTokenContract();
 
       const approved = await token.getApproved(tokenId);
       console.log("[LOG]:token approved", approved);
@@ -506,7 +507,7 @@ export class Web3Controller implements IWeb3Controller {
         this.model.setAuctionApproveTokenLoader();
 
         // TODO consider using approveAll
-        const tx = await token.approve(auctionContractAddress, tokenId);
+        const tx = await token.approve(this.config.auctionAddress, tokenId);
 
         this.model.setWaitForApproveTxLoader();
         console.log("[LOG]:approve auction tx hash", tx.hash);
@@ -517,7 +518,7 @@ export class Web3Controller implements IWeb3Controller {
 
       const tx = await auction.createAuction(
         tokenId,
-        clipitContractAddress,
+        this.config.tokenAddress,
         duration,
         minPrice,
         // TODO - support currators
@@ -575,7 +576,7 @@ export class Web3Controller implements IWeb3Controller {
 
   private bidOnAuction = async (auctionId: string, amount: string) => {
     try {
-      const auction = this.auctionContractCreator(window.ethereum as EthereumProvider);
+      const auction = this.createAuctionContract();
 
       this.model.setAuctionBidLoader();
 
@@ -658,4 +659,12 @@ export class Web3Controller implements IWeb3Controller {
     console.log("[web3.controller]::chainChanged", chainId);
     window.location.reload();
   }
+
+  private createAuctionContract = () => {
+    return this.auctionContractCreator(window.ethereum as EthereumProvider, this.config.auctionAddress);
+  };
+
+  private createTokenContract = () => {
+    return this.clipitContractCreator(window.ethereum as EthereumProvider, this.config.tokenAddress);
+  };
 }

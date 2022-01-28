@@ -1,3 +1,4 @@
+import { TwitchConfig } from "../../domains/app/config";
 import { HttpClient, RawResponse } from "../http-client/http-client";
 
 export interface TwitchApiClient {
@@ -14,15 +15,18 @@ export interface TwitchApiClient {
 }
 
 export class TwitchApi implements TwitchApiClient {
-  constructor(private httpClient: HttpClient, clientId: string) {
-    this.httpClient.setCustomHeader("Client-Id", clientId);
+  constructor(private httpClient: HttpClient, private config: TwitchConfig) {
+    this.httpClient.setCustomHeader("Client-Id", this.config.clientId);
   }
 
   getUsers = async () => {
-    return this.httpClient.authorizedRequest<{ data: TwitchUserResp[] } | TwitchError>({
-      method: "get",
-      url: "/users",
-    });
+    return this.httpClient.authorizedRequest<{ data: TwitchUserResp[] } | TwitchError>(
+      {
+        method: "get",
+        url: "/users",
+      },
+      this.config.accessToken
+    );
   };
 
   getClips = async (queryParams: TwitchClipQuery, cursor?: string) => {
@@ -36,11 +40,14 @@ export class TwitchApi implements TwitchApiClient {
 
     return this.httpClient.authorizedRequest<
       { data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError
-    >({
-      method: "get",
-      url: "/clips",
-      qs: queryParams,
-    });
+    >(
+      {
+        method: "get",
+        url: "/clips",
+        qs: queryParams,
+      },
+      this.config.accessToken
+    );
   };
 
   getGames = async (gameId: string, cursor?: string) => {
@@ -52,11 +59,14 @@ export class TwitchApi implements TwitchApiClient {
 
     return this.httpClient.authorizedRequest<
       { data: TwitchGameResp[]; pagination?: TwitchPaginationResp } | TwitchError
-    >({
-      method: "get",
-      url: "/games",
-      qs: queryParams,
-    });
+    >(
+      {
+        method: "get",
+        url: "/games",
+        qs: queryParams,
+      },
+      this.config.accessToken
+    );
   };
 
   isTwitchError = <T>(body: T | TwitchError): body is TwitchError => {

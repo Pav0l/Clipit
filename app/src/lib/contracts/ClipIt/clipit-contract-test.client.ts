@@ -4,7 +4,6 @@ import { chainId, signerAddress } from "../../../../tests/__fixtures__/ethereum"
 import { EthereumProvider } from "../../ethereum/ethereum.types";
 import { BidShares, IClipItContractClient, MediaData, Signature } from "./clipit-contract.client";
 import { BigNumber, ContractReceipt, ethers } from "ethers";
-import { clipitContractAddress } from "../../constants";
 
 class ClipItContractTestClient implements IClipItContractClient {
   getApproved(tokenId: string): Promise<string> {
@@ -19,7 +18,7 @@ class ClipItContractTestClient implements IClipItContractClient {
     return {
       chainId: BigNumber.from(chainId).toNumber(),
       confirmations: 1,
-      from: clipitContractAddress,
+      from: CONFIG.tokenAddress,
       data: "",
       gasLimit: BigNumber.from("100000"),
       hash: "hash",
@@ -29,8 +28,8 @@ class ClipItContractTestClient implements IClipItContractClient {
         return new Promise((res) =>
           res({
             to: signerAddress,
-            from: clipitContractAddress,
-            contractAddress: clipitContractAddress,
+            from: CONFIG.tokenAddress,
+            contractAddress: CONFIG.tokenAddress,
             transactionIndex: 1,
             gasUsed: BigNumber.from("500"),
             logsBloom: "logsBloom",

@@ -11,6 +11,11 @@
 # production
 /build
 
+# configuration
+/config/**.json
+!/config/**.sample.json
+!/config/test.json
+
 # misc
 .DS_Store
 .env

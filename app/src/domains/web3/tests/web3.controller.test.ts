@@ -30,7 +30,8 @@ describe("web3 controller", () => {
       new SubgraphTestClient(),
       snackbar,
       ClipItTestContractCreator,
-      AuctionTestContractCreator
+      AuctionTestContractCreator,
+      CONFIG
     );
   });
 

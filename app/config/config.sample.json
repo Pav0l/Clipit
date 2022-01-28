@@ -1,0 +1,11 @@
+{
+  "tokenAddress": "",
+  "auctionAddress": "",
+  "clipItApiUrl": "",
+  "subgraphUrl": "",
+  "twitch": {
+    "clientId": "",
+    "accessToken": "",
+    "secretKey": ""
+  }
+}

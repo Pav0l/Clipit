@@ -1,8 +1,9 @@
 const path = require("path");
+const config = require("config");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-const config = {
+const webpackConfig = {
   entry: "./src/index.tsx",
   output: {
     path: path.join(__dirname, "/dist"),
@@ -53,7 +54,10 @@ const config = {
       Buffer: ["buffer", "Buffer"],
       process: "process/browser",
     }),
+    new webpack.DefinePlugin({
+      CONFIG: JSON.stringify(config),
+    }),
   ],
 };
 
-module.exports = config;
+module.exports = webpackConfig;

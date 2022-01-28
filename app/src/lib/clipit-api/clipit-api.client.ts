@@ -5,14 +5,17 @@ export interface IClipItApiClient {
 }
 
 export class ClipItApiClient implements IClipItApiClient {
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient, private tokenKey: string) {}
 
   storeClip = async <V>(clipId: string, payload: ClipPayload) => {
-    return this.httpClient.authorizedRequest<V>({
-      method: "post",
-      url: `/clips/${clipId}`,
-      body: payload,
-    });
+    return this.httpClient.authorizedRequest<V>(
+      {
+        method: "post",
+        url: `/clips/${clipId}`,
+        body: payload,
+      },
+      this.tokenKey
+    );
   };
 }
 

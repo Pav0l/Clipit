@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { twitchAccessToken, twitchSecretKey } from "../../../lib/constants";
 import { LocalStorageTestClient } from "../../../lib/local-storage/local-storage-test.client";
 import { OAuthController } from "../oauth.controller";
 import { OAuthModel } from "../oauth.model";
@@ -26,17 +25,17 @@ describe("oauth controller", () => {
   beforeEach(() => {
     model = new OAuthModel(new MetaModel());
     ls = new LocalStorageTestClient();
-    ctrl = new OAuthController(model, new TwitchOAuthApiTestClient(), ls);
+    ctrl = new OAuthController(model, new TwitchOAuthApiTestClient(), ls, CONFIG.twitch);
   });
 
   it("logout: removes token", async () => {
     // user logged in -> token in storage
-    ls.setItem(twitchAccessToken, "secret");
-    expect(ls.getItem(twitchAccessToken)).toEqual("secret");
+    ls.setItem(CONFIG.twitch.accessToken, "secret");
+    expect(ls.getItem(CONFIG.twitch.accessToken)).toEqual("secret");
 
     await ctrl.logout();
 
-    expect(ls.getItem(twitchAccessToken)).toEqual(null);
+    expect(ls.getItem(CONFIG.twitch.accessToken)).toEqual(null);
     expect(window.location.reload).toHaveBeenCalled();
   });
 
@@ -47,8 +46,8 @@ describe("oauth controller", () => {
 
   it("checkTokenInStorage: set auth flag in app state if token exist", async () => {
     // user logged in -> token in storage
-    ls.setItem(twitchAccessToken, "secret");
-    expect(ls.getItem(twitchAccessToken)).toEqual("secret");
+    ls.setItem(CONFIG.twitch.accessToken, "secret");
+    expect(ls.getItem(CONFIG.twitch.accessToken)).toEqual("secret");
 
     expect(model.isLoggedIn).toEqual(false);
 
@@ -62,7 +61,7 @@ describe("oauth controller", () => {
     const secret = "top_secret_secret";
 
     beforeEach(() => {
-      ls.setItem(twitchSecretKey, secret);
+      ls.setItem(CONFIG.twitch.secretKey, secret);
 
       state = JSON.stringify({ referrer: "/path", secret: secret });
     });
@@ -92,8 +91,8 @@ describe("oauth controller", () => {
 
       expect(model.referrer).toEqual("/path");
       expect(model.isLoggedIn).toEqual(true);
-      expect(ls.getItem(twitchSecretKey)).toBeNull();
-      expect(ls.getItem(twitchAccessToken)).toEqual("TOKEN");
+      expect(ls.getItem(CONFIG.twitch.secretKey)).toBeNull();
+      expect(ls.getItem(CONFIG.twitch.accessToken)).toEqual("TOKEN");
     });
   });
 });

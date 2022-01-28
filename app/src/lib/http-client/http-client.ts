@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from "axios";
-import { twitchAccessToken } from "../constants";
 import { ILocalStorage } from "../local-storage/local-storage.client";
 
 export interface RawResponse<T> {
@@ -11,7 +10,7 @@ export interface RawResponse<T> {
 export class HttpClient {
   private client: AxiosInstance;
 
-  constructor(private ls: ILocalStorage, baseURL?: string) {
+  constructor(private ls: ILocalStorage, baseURL: string) {
     this.client = axios.create({
       baseURL,
     });
@@ -61,15 +60,18 @@ export class HttpClient {
     }
   }
 
-  async authorizedRequest<T>(params: {
-    method: "get" | "post" | "put" | "delete";
-    url: string;
-    qs?: unknown;
-    body?: unknown;
-    headers?: Record<string, unknown>;
-    timeout?: number;
-  }): Promise<RawResponse<T>> {
-    const token = this.ls.getItem(twitchAccessToken);
+  async authorizedRequest<T>(
+    params: {
+      method: "get" | "post" | "put" | "delete";
+      url: string;
+      qs?: unknown;
+      body?: unknown;
+      headers?: Record<string, unknown>;
+      timeout?: number;
+    },
+    tokenKey: string
+  ): Promise<RawResponse<T>> {
+    const token = this.ls.getItem(tokenKey);
     if (!token) {
       return {
         statusCode: 401,

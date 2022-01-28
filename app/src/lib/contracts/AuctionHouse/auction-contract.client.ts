@@ -2,7 +2,6 @@ import { BigNumber, BigNumberish, ContractTransaction, ethers } from "ethers";
 
 import AuctionHouseAbi from "./AuctionHouse.json";
 import { AuctionHouse } from "./AuctionHouse";
-import { auctionContractAddress } from "../../constants";
 import { EthereumProvider } from "../../ethereum/ethereum.types";
 
 export interface IAuctionContractClient {
@@ -26,11 +25,11 @@ export interface IAuctionContractClient {
 class AuctionContractClient implements IAuctionContractClient {
   private contract: AuctionHouse;
 
-  constructor(provider: EthereumProvider) {
+  constructor(provider: EthereumProvider, address: string) {
     try {
       const ethersProvider = new ethers.providers.Web3Provider(provider);
       const jsonRpcSigner = ethersProvider.getSigner();
-      this.contract = new ethers.Contract(auctionContractAddress, AuctionHouseAbi.abi, jsonRpcSigner) as AuctionHouse;
+      this.contract = new ethers.Contract(address, AuctionHouseAbi.abi, jsonRpcSigner) as AuctionHouse;
     } catch (error) {
       // SENTRY
       console.log("[auction.contract.client]:construct:error", error);
@@ -86,6 +85,6 @@ class AuctionContractClient implements IAuctionContractClient {
   };
 }
 
-export function AuctionContractCreator(provider: EthereumProvider): IAuctionContractClient {
-  return new AuctionContractClient(provider);
+export function AuctionContractCreator(provider: EthereumProvider, address: string): IAuctionContractClient {
+  return new AuctionContractClient(provider, address);
 }

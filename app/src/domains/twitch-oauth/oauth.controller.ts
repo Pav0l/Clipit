@@ -1,17 +1,17 @@
 import { OAuthModel } from "./oauth.model";
 import { ILocalStorage } from "../../lib/local-storage/local-storage.client";
-import {
-  twitchAccessToken,
-  twitchSecretKey,
-  twitchAppClientId,
-  twitchOAuthUri,
-  twitchScopes,
-} from "../../lib/constants";
+import { twitchOAuthUri, twitchScopes } from "../../lib/constants";
 import { OAuthErrors, OauthQueryParams } from "./oauth.types";
 import { IOauthApiClient } from "../../lib/twitch-oauth/twitch-oauth-api.client";
+import { TwitchConfig } from "../app/config";
 
 export class OAuthController {
-  constructor(private model: OAuthModel, private oauthApi: IOauthApiClient, private storage: ILocalStorage) {}
+  constructor(
+    private model: OAuthModel,
+    private oauthApi: IOauthApiClient,
+    private storage: ILocalStorage,
+    private config: TwitchConfig
+  ) {}
 
   logout = async () => {
     const token = this.getAccessToken();
@@ -22,7 +22,7 @@ export class OAuthController {
 
     await this.oauthApi.revokeAccessToken(token);
 
-    this.storage.removeItem(twitchAccessToken);
+    this.storage.removeItem(this.config.accessToken);
     location.reload();
   };
 
@@ -50,12 +50,12 @@ export class OAuthController {
   }
 
   getAccessToken = () => {
-    return this.storage.getItem(twitchAccessToken);
+    return this.storage.getItem(this.config.accessToken);
   };
 
   getTwitchOAuth2AuthorizeUrl = () => {
     const url = new URL(`${twitchOAuthUri}/oauth2/authorize`);
-    url.searchParams.append(OauthQueryParams.CLIENT_ID, twitchAppClientId);
+    url.searchParams.append(OauthQueryParams.CLIENT_ID, this.config.clientId);
     url.searchParams.append(OauthQueryParams.REDIRECT_URI, `${location.origin}/oauth2/redirect`);
     url.searchParams.append(OauthQueryParams.RESPONSE_TYPE, "token");
     url.searchParams.append(OauthQueryParams.SCOPE, twitchScopes);
@@ -70,16 +70,16 @@ export class OAuthController {
   };
 
   private storeTokenAndRemoveSecret = (token: string) => {
-    this.storage.setItem(twitchAccessToken, token);
+    this.storage.setItem(this.config.accessToken, token);
     this.model.setLoggedIn(true);
-    this.storage.removeItem(twitchSecretKey);
+    this.storage.removeItem(this.config.secretKey);
   };
 
   private verifyStateSecret = (fromUrl: string) => {
     if (!fromUrl) {
       return false;
     }
-    const original = this.storage.getItem(twitchSecretKey);
+    const original = this.storage.getItem(this.config.secretKey);
     return original === fromUrl;
   };
 
@@ -118,7 +118,7 @@ export class OAuthController {
 
   private generateSecretAndStore = (): string => {
     const secret = this.generateRandomString();
-    this.storage.setItem(twitchSecretKey, secret);
+    this.storage.setItem(this.config.secretKey, secret);
     return secret;
   };
 }

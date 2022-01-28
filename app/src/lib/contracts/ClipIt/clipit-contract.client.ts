@@ -2,7 +2,6 @@ import { ethers, BigNumberish, BytesLike } from "ethers";
 
 import ContractBuild from "./ClipIt.json";
 import { ClipIt } from "./ClipIt";
-import { clipitContractAddress } from "../../constants";
 import { EthereumProvider } from "../../ethereum/ethereum.types";
 
 export interface MediaData {
@@ -35,11 +34,11 @@ export interface IClipItContractClient {
 class ClipItContractClient implements IClipItContractClient {
   private contract: ClipIt;
 
-  constructor(provider: EthereumProvider) {
+  constructor(provider: EthereumProvider, address: string) {
     try {
       const ethersProvider = new ethers.providers.Web3Provider(provider);
       const jsonRpcSigner = ethersProvider.getSigner();
-      this.contract = new ethers.Contract(clipitContractAddress, ContractBuild.abi, jsonRpcSigner) as ClipIt;
+      this.contract = new ethers.Contract(address, ContractBuild.abi, jsonRpcSigner) as ClipIt;
     } catch (error) {
       // SENTRY
       console.log("[contract.client]:construct:error", error);
@@ -68,6 +67,6 @@ class ClipItContractClient implements IClipItContractClient {
   }
 }
 
-export function ClipItContractCreator(provider: EthereumProvider): IClipItContractClient {
-  return new ClipItContractClient(provider);
+export function ClipItContractCreator(provider: EthereumProvider, address: string): IClipItContractClient {
+  return new ClipItContractClient(provider, address);
 }
