@@ -21,6 +21,7 @@ import EthereumClient from "../../lib/ethereum/ethereum.client";
 import { IAuctionContractClient } from "../../lib/contracts/AuctionHouse/auction-contract.client";
 import { AuctionContractErrors } from "../../lib/contracts/AuctionHouse/auction-contract.errors";
 import { IConfig } from "../app/config";
+import { ClipItApiErrors } from "../../lib/clipit-api/clipit-api.client";
 
 interface Signature {
   v: number;
@@ -376,8 +377,15 @@ export class Web3Controller implements IWeb3Controller {
       // TODO ideally we do not want to reload the app here and just update state
       location.assign(location.origin + `/nfts/${tokenId}`);
     } else {
+      if (this.offChainStorage.isStoreClipError(resp.body)) {
+        if (resp.statusCode === 403 && resp.body.error.includes(ClipItApiErrors.NOT_BROADCASTER)) {
+          this.snackbar.sendError(ClipItApiErrors.DISPLAY_NOT_BROADCASTER);
+        }
+      } else {
+        this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
+      }
+
       this.model.stopClipStoreLoader();
-      this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
     }
   };
 

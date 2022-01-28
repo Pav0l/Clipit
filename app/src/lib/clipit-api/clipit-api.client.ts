@@ -24,3 +24,9 @@ export interface ClipPayload {
   clipTitle: string;
   clipDescription?: string;
 }
+
+export enum ClipItApiErrors {
+  NOT_BROADCASTER = "user not clip broadcaster",
+
+  DISPLAY_NOT_BROADCASTER = "Only broadcaster is able to mint the clip",
+}

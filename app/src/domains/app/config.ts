@@ -4,6 +4,7 @@ export interface IConfig {
   clipItApiUrl: string;
   subgraphUrl: string;
   twitch: TwitchConfig;
+  isDevelopment: boolean;
 }
 
 export interface TwitchConfig {

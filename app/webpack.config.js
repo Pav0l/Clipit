@@ -3,6 +3,8 @@ const config = require("config");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
+const isDevelopment = process.env["NODE_ENV"] === "development";
+
 const webpackConfig = {
   entry: "./src/index.tsx",
   output: {
@@ -55,7 +57,7 @@ const webpackConfig = {
       process: "process/browser",
     }),
     new webpack.DefinePlugin({
-      CONFIG: JSON.stringify(config),
+      CONFIG: JSON.stringify({ ...config, isDevelopment }),
     }),
   ],
 };
