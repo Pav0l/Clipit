@@ -35,6 +35,7 @@ interface Props {
 function ClipDetailContainer({ model, operations }: Props) {
   const { clipId } = useParams<{ clipId: string }>();
   const clip = model.clip.getClip(clipId);
+  const isAllowedToMint = CONFIG.isDevelopment || clip?.broadcasterId === model.user.id;
 
   const [titleInput, setTitleInput, clearTitleInput] = useInputData();
   const [descriptionInput, setDescInput, clearDescInput] = useInputData();
@@ -69,7 +70,7 @@ function ClipDetailContainer({ model, operations }: Props) {
   const mint = async () => {
     // we need to verify that current user is owner of broadcaster of clip,
     // so we do not allow other people minting streamers clips
-    if (clip != null && (CONFIG.isDevelopment || clip.broadcasterId === model.user.id)) {
+    if (clip != null && isAllowedToMint) {
       await operations.web3.requestConnectAndMint(clip.id, creatorShare, titleInput, descriptionInput);
     }
   };
@@ -100,7 +101,7 @@ function ClipDetailContainer({ model, operations }: Props) {
     );
   }
 
-  if (!CONFIG.isDevelopment && clip.broadcasterId !== model.user.id) {
+  if (!isAllowedToMint) {
     return <ErrorWithRetry text="You can only create clip NFTs of your own clips" withRetry={false}></ErrorWithRetry>;
   }
 
