@@ -1,0 +1,22 @@
+version: "3.8"
+
+# define containers you want to run
+services:
+  clipit-api:
+    container_name: ${CONTAINER_NAME}
+    image: ${IMAGE_NAME}
+    ports:
+      - 8000:8000
+      - 9000:9000
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.clip-it-api
+      args:
+        BUILD_COMMIT: ${GIT_COMMIT}
+      cache_from:
+        - golang:1.16
+        - alpine:3.15.0
+    environment:
+      PINATA_JWT: ${PINATA_JWT}
+      TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID}
+      SIGNER_PRIVATE_KEY: ${SIGNER_PRIVATE_KEY}

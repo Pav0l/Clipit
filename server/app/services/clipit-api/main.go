@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/clip-it/server/app/services/clipit-api/handlers"
-	"github.com/joho/godotenv"
 )
 
 var Build = "development"
@@ -26,13 +25,7 @@ func main() {
 }
 
 func run() error {
-	log.Println("loading up envs")
-	err := godotenv.Load()
-  if err != nil {
-    log.Fatal("error loading .env file")
-  }
-
-	log.Print("setting up app config")
+	log.Println("setting up app config. build:", Build)
 
 	type webCfg struct {
 		APIHost         string        
@@ -109,7 +102,7 @@ func run() error {
 
 	// ==================== Start API Service ====================
 
-	log.Print("starting API router for build:", Build)
+	log.Print("starting API router")
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
