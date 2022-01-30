@@ -15,6 +15,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+var Build = "development"
 
 func main() {
 	// Perform the startup and shutdown sequence.
@@ -41,6 +42,9 @@ func run() error {
 		// IdleTimeout     time.Duration 
 		ShutdownTimeout time.Duration 
 	}
+	type versionCfg struct {
+		Build string
+	}
 	type corsCfg struct {
 		Origin string
 	}
@@ -55,14 +59,16 @@ func run() error {
 	}
 
 	cfg := struct {
-		Version string
+		Version versionCfg
 		Web webCfg
 		CORS corsCfg
 		Pinata pinataCfg
 		Twitch twitchCfg
 		Signer signerCfg
 	} {
-		Version: "0.0.1",
+		Version: versionCfg {
+			Build: Build,
+		},
 		Web: webCfg{
 			APIHost: loadEnvOrDefault("API_HOST", "0.0.0.0:8000"),
 			DebugHost: loadEnvOrDefault("DEBUG_HOST", "0.0.0.0:9000"),
@@ -90,7 +96,9 @@ func run() error {
 
 	log.Print("starting debug router")
 
-	debugMux := handlers.DebugMux()
+	debugMux := handlers.DebugMux(handlers.DebugMuxConfig{
+		Build: cfg.Version.Build,
+	})
 
 	go func() {
 		log.Print("starting debug server")
@@ -101,7 +109,7 @@ func run() error {
 
 	// ==================== Start API Service ====================
 
-	log.Print("starting API router")
+	log.Print("starting API router for build:", Build)
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)

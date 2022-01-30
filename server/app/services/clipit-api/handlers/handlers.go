@@ -35,6 +35,10 @@ type APIMuxConfig struct {
 	}
 }
 
+type DebugMuxConfig struct {
+	Build string
+}
+
 // DebugStandardLibraryMux registers all the debug routes from the standard library
 // into a new mux bypassing the use of the DefaultServerMux. Using the
 // DefaultServerMux would be a security risk since a dependency could inject a
@@ -51,10 +55,12 @@ func DebugStdLibMux() *http.ServeMux {
 	return mux
 }
 
-func DebugMux() http.Handler {
+func DebugMux(cfg DebugMuxConfig) http.Handler {
 	mux := DebugStdLibMux()
 
-	debugGrp := debuggrp.Handlers{}
+	debugGrp := debuggrp.Handlers{
+		Build: cfg.Build,
+	}
 
 	mux.HandleFunc("/debug/ping", debugGrp.Ping)
 

@@ -9,7 +9,7 @@ import (
 )
 
 type Handlers struct {
-
+	Build string
 }
 
 func (h *Handlers) Ping(w http.ResponseWriter, r *http.Request) {
@@ -21,9 +21,11 @@ func (h *Handlers) Ping(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		Status    string `json:"status,omitempty"`
 		Host string `json:"host,omitempty"`
+		Build string `json:"build"`
 	}{
 		Status: "ok",
 		Host: host,
+		Build: h.Build,
 	}
 
 	if err := web.Respond(r.Context(), w, data, http.StatusOK); err != nil {

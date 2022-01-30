@@ -1,6 +1,6 @@
 SHELL := /bin/bash
-VERSION := $(shell git rev-parse --short HEAD)
-IMAGE_NAME := clipit-api:${VERSION}
+COMMIT := $(shell git rev-parse --short HEAD)
+IMAGE_NAME := clipit-api:${COMMIT}
 CONTAINER_NAME := clipit
 
 all: build run
@@ -8,7 +8,7 @@ all: build run
 build:
 	docker build \
 	 --tag $(IMAGE_NAME) \
-	 --build-arg BUILD_VERSION=$(VERSION) \
+	 --build-arg BUILD_COMMIT=$(COMMIT) \
 	 --file docker/Dockerfile.clip-it-api \
 	 .
 

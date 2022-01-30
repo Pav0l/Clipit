@@ -3,7 +3,7 @@
 # use the official Go base image
 FROM golang:1.16
 # specify build-time variables
-ARG BUILD_VERSION
+ARG BUILD_COMMIT
 
 # create a directory and use it as default destination for all subsequent commands
 WORKDIR /service
@@ -18,7 +18,7 @@ COPY . ./
 
 # change to services directory and build the executable
 WORKDIR app/services/clipit-api
-RUN go build
+RUN go build -ldflags="-X main.Build=${BUILD_COMMIT}"
 
 # run the executable
 CMD ["./clipit-api"]
