@@ -1,0 +1,24 @@
+# syntax=docker/dockerfile:1
+
+# use the official Go base image
+FROM golang:1.16
+# specify build-time variables
+ARG BUILD_VERSION
+
+# create a directory and use it as default destination for all subsequent commands
+WORKDIR /service
+
+# download service dependencies necessary to compile the app
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+
+# copy files to container filesytem
+COPY . ./
+
+# change to services directory and build the executable
+WORKDIR app/services/clipit-api
+RUN go build
+
+# run the executable
+CMD ["./clipit-api"]
