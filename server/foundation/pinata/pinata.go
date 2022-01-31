@@ -3,10 +3,8 @@ package pinata
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"strconv"
@@ -32,6 +30,8 @@ type Body struct {
 	Timestamp string
 }
 
+// UploadJSON stores a JSON file via Pinata /pinning/pinJSONToIPFS API to IPFS. This API is optimized for JSON
+// and should be more performant than the UploadFile API
 func (pinata *Pinata) UploadJSON(payload io.Reader) (Body, error) {
 	url := pinata.host + "/pinning/pinJSONToIPFS"
   req, err := http.NewRequest("POST", url, payload)
@@ -48,16 +48,12 @@ func (pinata *Pinata) UploadJSON(payload io.Reader) (Body, error) {
   }
   defer resp.Body.Close()
 
-	log.Println("pinJSON status:", resp.Status)
-
 	if resp.StatusCode != http.StatusOK {
 		msg, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return Body{}, err
 		}
-		log.Println("resp err", string(msg))
-
-		return Body{}, errors.New(string(msg))
+		return Body{}, fmt.Errorf("%d: %s", resp.StatusCode, string(msg))
 	}
 	
 	var body Body
@@ -74,8 +70,6 @@ func (pinata *Pinata) UploadFile(id string, filename string, wrapWithDirectory b
 	if err != nil {
 		return Body{}, err
   }
-
-	log.Println("sending request to pinata")
 	
 	url := pinata.host + "/pinning/pinFileToIPFS"
   req, err := http.NewRequest("POST", url, payload)
@@ -92,16 +86,13 @@ func (pinata *Pinata) UploadFile(id string, filename string, wrapWithDirectory b
   }
   defer resp.Body.Close()
 
-	log.Println("pinFile status:", resp.Status)
-
 	if resp.StatusCode != http.StatusOK {
 		msg, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return Body{}, err
 		}
-		log.Println("resp err", string(msg))
-
-		return Body{}, errors.New(string(msg))
+		
+		return Body{}, fmt.Errorf("%d: %s", resp.StatusCode, string(msg))
 	}
 	
 	var body Body
@@ -129,16 +120,12 @@ func (pinata *Pinata) Unpin(cid string) (error) {
   }
   defer resp.Body.Close()
 
-	log.Println("unpin status:", cid, resp.Status)
-
 	if resp.StatusCode != http.StatusOK {
 		msg, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return err
 		}
-		log.Println("resp err", string(msg))
-
-		return errors.New(string(msg))
+		return fmt.Errorf("%d: %s", resp.StatusCode, string(msg))
 	}
 
 	return nil
@@ -174,16 +161,13 @@ func (pinata *Pinata) GetPinned() (PinList, error) {
   }
   defer resp.Body.Close()
 
-	log.Println("pinList status:", resp.Status)
-
 	if resp.StatusCode != http.StatusOK {
 		msg, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return PinList{}, err
 		}
-		log.Println("resp err", string(msg))
 
-		return PinList{}, errors.New(string(msg))
+		return PinList{}, fmt.Errorf("%d: %s", resp.StatusCode, string(msg))
 	}
 	
 	var body PinList
@@ -202,7 +186,7 @@ func preparePayload(id string, filename string, wrapWithDirectory bool, video []
 	if err != nil {
 		return &bytes.Buffer{}, "", err
 	}
-  // w, err := io.Copy(dst, file)
+
 	_, err = dst.Write(video)
 	if err != nil {
 		return &bytes.Buffer{}, "", err
@@ -211,7 +195,6 @@ func preparePayload(id string, filename string, wrapWithDirectory bool, video []
 	if err != nil {
 		return &bytes.Buffer{}, "", err
 	}
-	log.Println(fmt.Sprintf("storing file with %d bytes", len(video)))
 
 	_ = writer.WriteField("pinataOptions", fmt.Sprintf("{\"wrapWithDirectory\": %s,\"cidVersion\": \"1\"}", strconv.FormatBool(wrapWithDirectory)))
   _ = writer.WriteField("pinataMetadata", fmt.Sprintf("{\"name\":\"%s\",\"keyvalues\":{\"id\":\"%s\"}}", filename, id))

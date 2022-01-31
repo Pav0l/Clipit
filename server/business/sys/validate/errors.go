@@ -2,7 +2,6 @@ package validate
 
 import (
 	"errors"
-	"log"
 )
 
 // ErrorResponse is the form used for API responses from failures in the API.
@@ -36,7 +35,7 @@ func Cause(err error) error {
 		if err = errors.Unwrap(root); err == nil {
 			return root
 		}
-		log.Println("not yet unwrapped", root)
+
 		root = err
 	}
 }

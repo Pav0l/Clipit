@@ -25,7 +25,7 @@ func main() {
 }
 
 func run() error {
-	log.Println("setting up app config. build:", Build)
+	log.Println("setup config for build:", Build)
 
 	type webCfg struct {
 		APIHost         string        
@@ -87,14 +87,14 @@ func run() error {
 
 	// ==================== Start Debug Service ====================
 
-	log.Print("starting debug router")
+	log.Println("starting debug router")
 
 	debugMux := handlers.DebugMux(handlers.DebugMuxConfig{
 		Build: cfg.Version.Build,
 	})
 
 	go func() {
-		log.Print("starting debug server")
+		log.Println("starting debug server")
 		if err := http.ListenAndServe(cfg.Web.DebugHost, debugMux); err != nil {
 			log.Fatal("failed to start debug router. shutting down", err)
 		}
@@ -102,7 +102,7 @@ func run() error {
 
 	// ==================== Start API Service ====================
 
-	log.Print("starting API router")
+	log.Println("starting API router")
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
@@ -150,8 +150,8 @@ func run() error {
 		return fmt.Errorf("server error: %w", err)
 
 	case sig := <-shutdown:
-		log.Print("shutdown", "status", "shutdown started", "signal", sig)
-		defer log.Print("shutdown", "status", "shutdown complete", "signal", sig)
+		log.Println("shutdown started. signal", sig)
+		defer log.Println("shutdown complete. signal", sig)
 
 		// Give outstanding requests a deadline for completion.
 		ctx, cancel := context.WithTimeout(context.Background(), cfg.Web.ShutdownTimeout)

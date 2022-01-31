@@ -19,7 +19,7 @@ func NewStore(pinata pinata.Pinata) *Store {
 func (s Store) PinataUploadClip(clipId string, video []byte) (string, error) {
 	r, err := s.pinata.UploadFile(clipId, clipId + ".mp4", false, video)
 	if err != nil {
-		return "", fmt.Errorf("pinata upload: %w", err)
+		return "", fmt.Errorf("pinata upload clip: %w", err)
 	}
 	
 	return r.IpfsHash, nil

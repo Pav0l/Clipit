@@ -110,7 +110,7 @@ func (h Handlers) Upload(ctx context.Context, w http.ResponseWriter, r *http.Req
 		return validate.NewRequestError(e, http.StatusBadRequest)
 	}
 
-	log.Println("msg signature:", signature)
+	log.Printf("msg signature:\nR:%s\nS:%s\nV:%d", signature.R, signature.S, signature.V)
 
 	res := cStore.NewClip{ 
 		MetadataCid: mcid.Cid,

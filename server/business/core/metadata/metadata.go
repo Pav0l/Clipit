@@ -30,7 +30,6 @@ func (c Core) UploadToIpfs(clipId string, m interface{}) (clip.UploadedMetadata,
 	cid, err := c.storage.PinataUploadMetadata(clipId, metadataBytes)
 	if err != nil {
 		// TODO log/trace this
-		log.Println("upload err", err)
 		return clip.UploadedMetadata{}, fmt.Errorf("uploading to ipfs: %w", err)
 	}
 

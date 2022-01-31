@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"errors"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -65,8 +64,6 @@ func AuthorizeClip() web.Middleware {
 			if clipId == "" {
 				return validate.NewRequestError(errors.New("missing clipId in route param"), http.StatusBadRequest)
 			}
-
-			log.Println("fetch clip", clipId);
 
 			// TODO log externalCall
 			clip, err := twitchapi.NewTwitchApi(token.Client_id).GetClip(clipId, token.Token)

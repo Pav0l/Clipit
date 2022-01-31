@@ -29,6 +29,6 @@ func (h *Handlers) Ping(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := web.Respond(r.Context(), w, data, http.StatusOK); err != nil {
-		log.Print("failed to respond to ping", err)
+		log.Println("failed to respond to ping", err)
 	}
 }

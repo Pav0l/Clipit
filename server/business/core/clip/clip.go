@@ -42,35 +42,39 @@ func (c *Core) GetClipDownloadUrl(clipId string) (string, error) {
 	return url, nil
 }
 
-func (c *Core) DownloadClip(clipId string, url string, storage string) error {
+
+// DownloadClip used to download a clip from a url
+// @dev - currently unused
+func (c *Core) DownloadClip(clipId string, url string) error {
 	cl := http.Client{
 		// TODO do timeout and handle it
 		// Timeout: time.Second * 10,
 	}
 	resp, err := cl.Get(url)
 	if err != nil {
-		// TODO log/trace this
 		return fmt.Errorf("fetching clip: %w", err)
 	}
 	defer resp.Body.Close()
 
-	log.Println("DownloadClip status:", resp.Status)
+	if resp.StatusCode != http.StatusOK {
+		msg, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+
+		return fmt.Errorf("%d: %s - %s", resp.StatusCode, resp.Status, string(msg))
+	}
 
 	f, err := os.Create("vid.mp4")
 	if err != nil {
-		// TODO log/trace this
 		return fmt.Errorf("creating vid: %w", err)
 	}
 	defer f.Close()
 
-	s, err := io.Copy(f, resp.Body)
+	_, err = io.Copy(f, resp.Body)
 	if err != nil {
-		// TODO log/trace this
 		return fmt.Errorf("copying vid: %w", err)
 	}
-
-	log.Println("file size:", s)
-	log.Println("content length", resp.Header.Get("Content-Length"))
 
 	return nil
 }
@@ -109,6 +113,7 @@ func (c *Core) UploadToIpfs(clipId string, url string) (clip.UploadedClip, error
 	return clip.UploadedClip{Cid: cid, ClipHash: hash}, nil
 }
 
+// TODO this could live in core/metadata
 func (c *Core) GenerateMetadataHash(data clip.Metadata) ([32]byte, error) {
 	bytes, err := json.Marshal(data)
 
