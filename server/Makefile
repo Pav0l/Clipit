@@ -9,7 +9,7 @@ build:
 	docker build \
 	 --tag ${IMAGE_NAME} \
 	 --build-arg BUILD_COMMIT=${GIT_COMMIT} \
-	 --file docker/Dockerfile.clip-it-api \
+	 --file docker/Dockerfile.clipit-api \
 	 .
 
 compose:
