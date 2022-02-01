@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 
@@ -18,7 +19,9 @@ type TwitchApi struct {
 
 func NewTwitchApi(clientId string) *TwitchApi {
 	return &TwitchApi {
-		Client: http.Client{},
+		Client: http.Client{
+			Timeout: time.Second * 10,
+		},
 		Host: "https://api.twitch.tv/helix",
 		ClientId: clientId,
 	}

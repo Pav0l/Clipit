@@ -32,7 +32,7 @@ func run() error {
 		DebugHost       string        
 		ReadTimeout     time.Duration 
 		WriteTimeout    time.Duration 
-		// IdleTimeout     time.Duration 
+		IdleTimeout     time.Duration 
 		ShutdownTimeout time.Duration 
 	}
 	type versionCfg struct {
@@ -67,8 +67,7 @@ func run() error {
 			DebugHost: loadEnvOrDefault("DEBUG_HOST", "0.0.0.0:9000"),
 			ReadTimeout: time.Second * 60,
 			WriteTimeout: time.Second * 120,
-			// TODO make sure timeouts are set properly in all clients making external calls
-			// IdleTimeout: time.Second * 120,
+			IdleTimeout: time.Second * 120,
 			ShutdownTimeout: time.Second * 10,
 		},
 		CORS: corsCfg{
@@ -132,6 +131,7 @@ func run() error {
 		Handler: apiHandler,
 		ReadTimeout: cfg.Web.ReadTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
+		IdleTimeout: cfg.Web.IdleTimeout,
 	}
 
 	// Make a channel to listen for errors coming from the listener. Use a

@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type Pinata struct {
@@ -18,7 +19,9 @@ type Pinata struct {
 
 func NewPinata(jwt string) *Pinata {
 	return &Pinata{
-		client: http.Client{},
+		client: http.Client{
+			Timeout: time.Second * 90,
+		},
 		host: "https://api.pinata.cloud",
 		jwt: jwt,
 	}

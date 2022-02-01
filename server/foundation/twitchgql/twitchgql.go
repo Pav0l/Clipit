@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 
@@ -17,11 +18,14 @@ type TwitchGql struct {
 	ClientId string
 }
 
-func NewTwitchGql(clientId string) *TwitchGql {
+func NewTwitchGql() *TwitchGql {
 	return &TwitchGql {
-		Client: http.Client{},
+		Client: http.Client{
+			Timeout: time.Second * 10,
+		},
 		Host: "https://gql.twitch.tv/gql",
-		ClientId: clientId,
+		// this needs to stay. standard dev client-id is invalid
+		ClientId: "kimne78kx3ncx6brgo4mv6wki5h1ko",
 	}
 }
 

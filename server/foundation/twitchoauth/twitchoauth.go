@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 
@@ -17,7 +18,9 @@ type TwitchOauth struct {
 
 func NewTwitchOauth() *TwitchOauth {
 	return &TwitchOauth {
-		client: http.Client{},
+		client: http.Client{
+			Timeout: time.Second * 10,
+		},
 		host: "https://id.twitch.tv",
 	}
 }

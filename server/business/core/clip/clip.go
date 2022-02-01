@@ -7,7 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
+	"time"
 
 	"github.com/clip-it/server/business/data/store/clip"
 	"github.com/clip-it/server/foundation/twitchapi"
@@ -43,47 +43,10 @@ func (c *Core) GetClipDownloadUrl(clipId string) (string, error) {
 }
 
 
-// DownloadClip used to download a clip from a url
-// @dev - currently unused
-func (c *Core) DownloadClip(clipId string, url string) error {
-	cl := http.Client{
-		// TODO do timeout and handle it
-		// Timeout: time.Second * 10,
-	}
-	resp, err := cl.Get(url)
-	if err != nil {
-		return fmt.Errorf("fetching clip: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		msg, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
-
-		return fmt.Errorf("%d: %s - %s", resp.StatusCode, resp.Status, string(msg))
-	}
-
-	f, err := os.Create("vid.mp4")
-	if err != nil {
-		return fmt.Errorf("creating vid: %w", err)
-	}
-	defer f.Close()
-
-	_, err = io.Copy(f, resp.Body)
-	if err != nil {
-		return fmt.Errorf("copying vid: %w", err)
-	}
-
-	return nil
-}
-
-
 func (c *Core) UploadToIpfs(clipId string, url string) (clip.UploadedClip, error) {
+	// TODO this http.Client probably should not live here
 	cl := http.Client{
-		// TODO do timeout and handle it
-		// Timeout: time.Second * 10,
+		Timeout: time.Second * 30,
 	}
 	resp, err := cl.Get(url)
 	if err != nil {
