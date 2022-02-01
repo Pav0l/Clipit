@@ -54,6 +54,7 @@ func (h Handlers) Upload(ctx context.Context, w http.ResponseWriter, r *http.Req
 	uploadedClip, err := h.Clip.UploadToIpfs(clip.Id, url)
 	if err != nil {
 		e := fmt.Errorf("uploading clip: %w", err)
+		log.Println(e)
 		return validate.NewRequestError(e, http.StatusFailedDependency)
 	}
 
@@ -96,6 +97,7 @@ func (h Handlers) Upload(ctx context.Context, w http.ResponseWriter, r *http.Req
 	mcid, err := h.Metadata.UploadToIpfs(clip.Id, mtdt)
 	if err != nil {
 		e := fmt.Errorf("uploading metadata: %w", err)
+		log.Println(e)
 		return validate.NewRequestError(e, http.StatusFailedDependency)
 	}
 

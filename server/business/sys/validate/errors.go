@@ -23,7 +23,7 @@ func NewRequestError(err error, status int) error {
 	return &RequestError{err, status}
 }
 
-func ( err *RequestError) Error() string {
+func (err *RequestError) Error() string {
 	return err.Err.Error()
 }
 

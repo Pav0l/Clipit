@@ -34,7 +34,7 @@ func (c *Core) GetClipDownloadUrl(clipId string) (string, error) {
 		return "", fmt.Errorf("fetching clip access token: %w", err)
 	}
 
-	url, err := twitchgql.GetClipDownloadUrl(cat)
+	url, err := c.TwitchGql.GetClipDownloadUrl(cat)
 	if err != nil {
 		return "", fmt.Errorf("building clip dl url: %w", err)
 	}

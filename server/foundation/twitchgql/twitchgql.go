@@ -11,18 +11,17 @@ import (
 )
 
 
-
 type TwitchGql struct {
 	Client http.Client
 	Host string
 	ClientId string
 }
 
-func NewTwitchGql() *TwitchGql {
+func NewTwitchGql(clientId string) *TwitchGql {
 	return &TwitchGql {
 		Client: http.Client{},
 		Host: "https://gql.twitch.tv/gql",
-		ClientId: "kimne78kx3ncx6brgo4mv6wki5h1ko",
+		ClientId: clientId,
 	}
 }
 
@@ -63,7 +62,7 @@ func (t *TwitchGql) GetClipAccessToken(slug string) (Clip, error) {
 		if err != nil {
 			return Clip{}, err
 		}
-		return Clip{}, errors.New(string(msg))
+		return Clip{}, fmt.Errorf("%d:%s - %s", resp.StatusCode, resp.Status, string(msg))
 	}
 
 	var body []struct{
@@ -76,15 +75,8 @@ func (t *TwitchGql) GetClipAccessToken(slug string) (Clip, error) {
 	return body[0].Data.Clip, nil
 }
 
-func selectHighestVideoQuality(q []VideoQuality) (string, error) {
-	if len(q) == 0 {
-		return "", errors.New("missing video qualities")
-	}
-	return q[0].SourceUrl, nil
-}
-
 // GetClipDownloadUrl returns URL that can be used to download twitch clip
-func GetClipDownloadUrl(c Clip) (string, error) {
+func (t *TwitchGql) GetClipDownloadUrl(c Clip) (string, error) {
 	base, err := selectHighestVideoQuality(c.VideoQualities)
 	if err != nil {
 		return "", err
@@ -102,4 +94,11 @@ func GetClipDownloadUrl(c Clip) (string, error) {
 	u.RawQuery = q.Encode()
 
 	return u.String(), nil
+}
+
+func selectHighestVideoQuality(q []VideoQuality) (string, error) {
+	if len(q) == 0 {
+		return "", errors.New("missing video qualities")
+	}
+	return q[0].SourceUrl, nil
 }

@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"errors"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -32,6 +33,7 @@ func Authenticate() web.Middleware {
 			// TODO add `externalCallCount` and duration
 			if err != nil {
 				// TODO log externalCallError
+				log.Println("oauth validate token", err)
 				return validate.NewRequestError(errors.New("invalid token"), http.StatusUnauthorized)
 			}
 
@@ -69,6 +71,7 @@ func AuthorizeClip() web.Middleware {
 			clip, err := twitchapi.NewTwitchApi(token.Client_id).GetClip(clipId, token.Token)
 			if err != nil {
 				// TODO log externalCallError
+				log.Println("get clip:", err)
 				return validate.NewRequestError(errors.New("unable to get twitch clip data"), http.StatusBadRequest)
 			}
 

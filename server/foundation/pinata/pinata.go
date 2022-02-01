@@ -53,7 +53,7 @@ func (pinata *Pinata) UploadJSON(payload io.Reader) (Body, error) {
 		if err != nil {
 			return Body{}, err
 		}
-		return Body{}, fmt.Errorf("%d: %s", resp.StatusCode, string(msg))
+		return Body{}, fmt.Errorf("%d:%s - %s", resp.StatusCode, resp.Status, string(msg))
 	}
 	
 	var body Body
@@ -92,7 +92,7 @@ func (pinata *Pinata) UploadFile(id string, filename string, wrapWithDirectory b
 			return Body{}, err
 		}
 		
-		return Body{}, fmt.Errorf("%d: %s", resp.StatusCode, string(msg))
+		return Body{}, fmt.Errorf("%d:%s - %s", resp.StatusCode, resp.Status, string(msg))
 	}
 	
 	var body Body
@@ -125,7 +125,7 @@ func (pinata *Pinata) Unpin(cid string) (error) {
 		if err != nil {
 			return err
 		}
-		return fmt.Errorf("%d: %s", resp.StatusCode, string(msg))
+		return fmt.Errorf("%d:%s - %s", resp.StatusCode, resp.Status, string(msg))
 	}
 
 	return nil
@@ -167,7 +167,7 @@ func (pinata *Pinata) GetPinned() (PinList, error) {
 			return PinList{}, err
 		}
 
-		return PinList{}, fmt.Errorf("%d: %s", resp.StatusCode, string(msg))
+		return PinList{}, fmt.Errorf("%d:%s - %s", resp.StatusCode, resp.Status, string(msg))
 	}
 	
 	var body PinList

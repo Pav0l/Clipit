@@ -36,7 +36,7 @@ func (s *Signer) Sign(msg []byte) (Signature, error) {
 	
 	signature, err := crypto.Sign(hash, s.pk)
 	if err != nil {
-		return Signature{}, fmt.Errorf("signing message hash err: %w", err)
+		return Signature{}, fmt.Errorf("signing message hash: %w", err)
 	}
 
 	return Signature{

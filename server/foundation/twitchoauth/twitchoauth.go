@@ -51,7 +51,7 @@ func (t *TwitchOauth) ValidateToken(token string) (Token, error) {
 		if err != nil {
 			return Token{}, err
 		}
-		return Token{}, errors.New(string(msg))
+		return Token{}, fmt.Errorf("%d:%s - %s", resp.StatusCode, resp.Status, string(msg))
 	}
 
 	var body Token

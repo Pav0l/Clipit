@@ -60,7 +60,7 @@ func (t *TwitchApi) GetClip(id string, token string) (Clip, error) {
 		if err != nil {
 			return Clip{}, err
 		}
-		return Clip{}, errors.New(string(msg))
+		return Clip{}, fmt.Errorf("%d:%s - %s", resp.StatusCode, resp.Status, string(msg))
 	}
 
 	var body struct{
@@ -108,7 +108,7 @@ func (t *TwitchApi) GetGame(id string, token string) (Game, error) {
 		if err != nil {
 			return Game{}, err
 		}
-		return Game{}, errors.New(string(msg))
+		return Game{}, fmt.Errorf("%d:%s - %s", resp.StatusCode, resp.Status, string(msg))
 	}
 
 	var body struct{

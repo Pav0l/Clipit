@@ -82,7 +82,7 @@ func v2Grp(app *web.App, cfg APIMuxConfig) {
 	storage := *cStore.NewStore(*pinata.NewPinata(cfg.Pinata.Jwt))
 
 	cgh := clipgrp.Handlers{
-		Clip: clip.NewCore(*twitchapi.NewTwitchApi(cfg.Twitch.ClientId), *twitchgql.NewTwitchGql(), storage),
+		Clip: clip.NewCore(*twitchapi.NewTwitchApi(cfg.Twitch.ClientId), *twitchgql.NewTwitchGql(cfg.Twitch.ClientId), storage),
 		Metadata: metadata.NewCore(storage),
 		Game: game.NewCore(*twitchapi.NewTwitchApi(cfg.Twitch.ClientId)),
 		Signer: *signer.NewSigner(cfg.Signer.PrivateKey),
