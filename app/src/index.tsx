@@ -130,28 +130,21 @@ async function initAsync({ model, user, web3 }: { model: AppModel; user: UserCon
               <Route exact path={AppRoute.MARKETPLACE}>
                 <Marketplace model={{ nft: model.nft, web3: model.web3 }} operations={operations.nft} />
               </Route>
-              <OAuthProtectedRoute
-                exact
-                path={AppRoute.NFTS}
-                model={{ auth: model.auth }}
-                operations={{ auth: operations.auth }}
-              >
+
+              <Route exact path={AppRoute.NFTS}>
                 <NftsContainer
                   model={{ nft: model.nft, web3: model.web3 }}
                   operations={{ web3: operations.web3, nft: operations.nft }}
                 />
-              </OAuthProtectedRoute>
-              <OAuthProtectedRoute
-                exact
-                path={AppRoute.NFT}
-                model={{ auth: model.auth }}
-                operations={{ auth: operations.auth }}
-              >
+              </Route>
+
+              <Route exact path={AppRoute.NFT}>
                 <NftContainer
                   model={{ nft: model.nft, web3: model.web3 }}
                   operations={{ web3: operations.web3, nft: operations.nft }}
                 />
-              </OAuthProtectedRoute>
+              </Route>
+
               <OAuthProtectedRoute
                 exact
                 path={AppRoute.CLIPS}
