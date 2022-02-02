@@ -63,8 +63,8 @@ func run() error {
 			Build: Build,
 		},
 		Web: webCfg{
-			APIHost: loadEnvOrDefault("API_HOST", "0.0.0.0:8000"),
-			DebugHost: loadEnvOrDefault("DEBUG_HOST", "0.0.0.0:9000"),
+			APIHost: loadEnvOrDefault("API_HOST", "127.0.0.1:8000"),
+			DebugHost: loadEnvOrDefault("DEBUG_HOST", "127.0.0.1:9000"),
 			ReadTimeout: time.Second * 60,
 			WriteTimeout: time.Second * 120,
 			IdleTimeout: time.Second * 120,
