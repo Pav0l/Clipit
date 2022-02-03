@@ -10,12 +10,13 @@ build:
 	@docker build \
 	 --tag ${IMAGE_NAME} \
 	 --build-arg BUILD_COMMIT=${GIT_COMMIT} \
-	 --file docker/Dockerfile.clipit-api \
+	 --file Dockerfile \
 	 .
 
 compose:
 	docker compose up 
 
+# TODO PORTS!
 run:
 	@docker run \
 	 --name ${CONTAINER_NAME} \
