@@ -16,6 +16,7 @@ import { GameController } from "../../twitch-games/game.controller";
 import { useInputData } from "../../../lib/hooks/useInputData";
 import { MintStatus, Web3Model } from "../../web3/web3.model";
 import ClipCardContent from "./ClipCardContent";
+import { SnackbarController } from "../../snackbar/snackbar.controller";
 
 interface Props {
   model: {
@@ -29,13 +30,13 @@ interface Props {
     user: UserController;
     clip: ClipController;
     game: GameController;
+    snackbar: SnackbarController;
   };
 }
 
 function ClipDetailContainer({ model, operations }: Props) {
   const { clipId } = useParams<{ clipId: string }>();
   const clip = model.clip.getClip(clipId);
-  const isAllowedToMint = CONFIG.isDevelopment || clip?.broadcasterId === model.user.id;
 
   const [titleInput, setTitleInput, clearTitleInput] = useInputData();
   const [descriptionInput, setDescInput, clearDescInput] = useInputData();
@@ -68,6 +69,14 @@ function ClipDetailContainer({ model, operations }: Props) {
   }, [model.game.games.size, model.clip.clips.length]);
 
   const mint = async () => {
+    // TODO - allow mint for tests/feedback
+    let isAllowedToMint = clip?.broadcasterId === model.user.id;
+    if (!isAllowedToMint) {
+      operations.snackbar.sendInfo(
+        "In production, you won't be able to mint other streamers clips, but here, we let it pass"
+      );
+      isAllowedToMint = true;
+    }
     // we need to verify that current user is owner of broadcaster of clip,
     // so we do not allow other people minting streamers clips
     if (clip != null && isAllowedToMint) {
@@ -101,9 +110,10 @@ function ClipDetailContainer({ model, operations }: Props) {
     );
   }
 
-  if (!isAllowedToMint) {
-    return <ErrorWithRetry text="You can only create clip NFTs of your own clips" withRetry={false}></ErrorWithRetry>;
-  }
+  // TODO add this back after tests
+  // if (!isAllowedToMint) {
+  //   return <ErrorWithRetry text="You can only create clip NFTs of your own clips" withRetry={false}></ErrorWithRetry>;
+  // }
 
   if (model.web3.storeClipStatus) {
     return <LinearLoader text={model.web3.storeClipStatus} />;
