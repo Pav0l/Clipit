@@ -30,7 +30,7 @@ func run() error {
 	type webCfg struct {
 		APIHost         string        
 		DebugHost       string        
-		ReadTimeout     time.Duration 
+		ReadHeaderTimeout     time.Duration 
 		WriteTimeout    time.Duration 
 		IdleTimeout     time.Duration 
 		ShutdownTimeout time.Duration 
@@ -63,9 +63,9 @@ func run() error {
 			Build: Build,
 		},
 		Web: webCfg{
-			APIHost: loadEnvOrDefault("API_HOST", "127.0.0.1:8000"),
-			DebugHost: loadEnvOrDefault("DEBUG_HOST", "127.0.0.1:9000"),
-			ReadTimeout: time.Second * 60,
+			APIHost: fmt.Sprintf("0.0.0.0:%s", loadEnvOrDefault("PORT", "8000")),
+			DebugHost: fmt.Sprintf("0.0.0.0:%s", loadEnvOrDefault("DEBUG_PORT", "9000")),
+			ReadHeaderTimeout: time.Second * 60,
 			WriteTimeout: time.Second * 120,
 			IdleTimeout: time.Second * 120,
 			ShutdownTimeout: time.Second * 10,
@@ -129,7 +129,7 @@ func run() error {
 	api := http.Server{
 		Addr: cfg.Web.APIHost,
 		Handler: apiHandler,
-		ReadTimeout: cfg.Web.ReadTimeout,
+		ReadHeaderTimeout: cfg.Web.ReadHeaderTimeout,
 		WriteTimeout: cfg.Web.WriteTimeout,
 		IdleTimeout: cfg.Web.IdleTimeout,
 	}
