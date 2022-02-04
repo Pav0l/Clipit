@@ -47,5 +47,5 @@ gcp-deploy:
 	gcloud run deploy $(SERVICE_NAME) \
 	--region $(LOCATION) \
 	--allow-unauthenticated \
-	--set-env-vars DEBUG_PORT=9000,ALLOW_MINT=$(ALLOW_MINT),TWITCH_CLIENT_ID=$(TWITCH_CLIENT_ID) \
+	--set-env-vars DEBUG_PORT=9000,ALLOW_MINT=$(ALLOW_MINT),TWITCH_CLIENT_ID=$(TWITCH_CLIENT_ID),CORS_ORIGIN=$(CORS_ORIGIN) \
 	--source . 
