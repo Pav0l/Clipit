@@ -25,7 +25,7 @@ run:
 	 --env PINATA_JWT=$(PINATA_JWT) \
 	 --env TWITCH_CLIENT_ID=$(TWITCH_CLIENT_ID) \
 	 --env SIGNER_PRIVATE_KEY=$(SIGNER_PRIVATE_KEY) \
-	 --env USER_ID=$(USER_ID) \
+	 --env ALLOW_MINT=$(ALLOW_MINT) \
 	 ${IMAGE_NAME}
 
 cleanup:
@@ -36,6 +36,16 @@ run-dev:
 	@PINATA_JWT=$(PINATA_JWT) \
 	TWITCH_CLIENT_ID=$(TWITCH_CLIENT_ID) \
 	SIGNER_PRIVATE_KEY=$(SIGNER_PRIVATE_KEY) \
-	USER_ID=$(USER_ID) \
+	ALLOW_MINT=$(ALLOW_MINT) \
 	go run ./app/services/clipit-api/main.go
 
+
+LOCATION=us-central1
+SERVICE_NAME=clipit
+
+gcp-deploy:
+	gcloud run deploy $(SERVICE_NAME) \
+	--region $(LOCATION) \
+	--allow-unauthenticated \
+	--set-env-vars DEBUG_PORT=9000,ALLOW_MINT=$(ALLOW_MINT),TWITCH_CLIENT_ID=$(TWITCH_CLIENT_ID) \
+	--source . 

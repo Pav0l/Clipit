@@ -75,8 +75,8 @@ func AuthorizeClip() web.Middleware {
 				return validate.NewRequestError(errors.New("unable to get twitch clip data"), http.StatusBadRequest)
 			}
 
-			// TODO hmm
-			if token.User_id != os.Getenv("USER_ID") && clip.BroadcasterId != token.User_id {
+			// TODO remove this before release
+			if os.Getenv("ALLOW_MINT") != "ok" && clip.BroadcasterId != token.User_id {
 				return validate.NewRequestError(errors.New("user not clip broadcaster"), http.StatusForbidden)
 			}
 
