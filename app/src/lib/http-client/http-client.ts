@@ -50,7 +50,7 @@ export class HttpClient {
         body: response.data,
       };
     } catch (error) {
-      console.log(error);
+      console.log("raw request error", error);
 
       return {
         statusCode: 0,
