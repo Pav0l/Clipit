@@ -1,7 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { Typography } from "@material-ui/core";
-import { Link } from "react-router-dom";
 
 import FullPageLoader from "../../../components/loader/FullPageLoader";
 import { IWeb3Controller } from "../../web3/web3.controller";
@@ -12,11 +11,14 @@ import ListOfCardsWithThumbnail from "../../../components/nfts/ListOfCardsWithTh
 import { Web3Model, Web3Errors } from "../../web3/web3.model";
 import { NftController } from "../nft.controller";
 import { NftModel } from "../nft.model";
+import { LinkButton } from "../../navigation/components/LinkButton";
+import { NavigationModel } from "../../navigation/navigation.model";
 
 interface Props {
   model: {
     web3: Web3Model;
     nft: NftModel;
+    navigation: NavigationModel;
   };
   operations: {
     web3: IWeb3Controller;
@@ -62,7 +64,14 @@ function NftsContainer({ model, operations }: Props) {
     return (
       <CenteredContainer>
         <Typography variant="h6" component="h6">
-          It seems you have no NFTs yet. Try <Link to={AppRoute.CLIPS}>minting your first clip</Link>.
+          It seems you have no NFTs yet. Try{" "}
+          <LinkButton
+            to={AppRoute.CLIPS}
+            text="minting your first clip"
+            className=""
+            setActive={model.navigation.setActiveRoute}
+            underline="always"
+          />
         </Typography>
       </CenteredContainer>
     );

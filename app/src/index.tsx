@@ -15,7 +15,7 @@ import Snackbar from "./domains/snackbar/Snackbar";
 import Home from "./components/home/Home";
 import OAuth2Redirect from "./domains/twitch-oauth/OAuth2Redirect/OAuth2Redirect";
 import Marketplace from "./components/marketplace/Marketplace";
-import Navbar from "./components/navbar/Navbar";
+import Navbar from "./domains/navigation/components/Navbar";
 import ErrorBoundary from "./components/error/ErrorBoundry";
 import Playground from "./domains/playground/Playground";
 import { HttpClient } from "./lib/http-client/http-client";
@@ -42,6 +42,8 @@ import ErrorWithRetry from "./components/error/Error";
 function initSynchronous() {
   const storage = new LocalStorageClient();
   const model = new AppModel();
+
+  model.navigation.setActiveRoute(location.pathname as AppRoute);
 
   const snackbar = new SnackbarController(model.snackbar);
 
@@ -116,7 +118,7 @@ async function initAsync({ model, user, web3 }: { model: AppModel; user: UserCon
         <ThemeProvider theme={defaultTheme}>
           <Router basename={AppRoute.HOME}>
             <Navbar
-              model={{ web3: model.web3, auth: model.auth }}
+              model={{ web3: model.web3, auth: model.auth, navigation: model.navigation }}
               operations={{
                 web3: operations.web3,
                 auth: operations.auth,
@@ -133,7 +135,7 @@ async function initAsync({ model, user, web3 }: { model: AppModel; user: UserCon
 
               <Route exact path={AppRoute.NFTS}>
                 <NftsContainer
-                  model={{ nft: model.nft, web3: model.web3 }}
+                  model={{ nft: model.nft, web3: model.web3, navigation: model.navigation }}
                   operations={{ web3: operations.web3, nft: operations.nft }}
                 />
               </Route>
