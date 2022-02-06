@@ -6,7 +6,7 @@ import { OffChainStorage } from "../src/lib/off-chain-storage/off-chain-storage.
 import { ClipItApiTestClient } from "../src/lib/clipit-api/clipit-api-test.client";
 import { IpfsTestClient } from "../src/lib/ipfs/ipfs-test.client";
 import { TwitchOAuthApiTestClient } from "../src/lib/twitch-oauth/twitch-oauth-api-test.client";
-import { TwitchTestApi } from "../src/lib/twitch-api/twitch-api-test.client";
+import { TwitchApiTestClient } from "../src/lib/twitch-api/twitch-api-test.client";
 import { SubgraphTestClient } from "../src/lib/graphql/subgraph-test.client";
 import { OAuthController } from "../src/domains/twitch-oauth/oauth.controller";
 import { ClipController } from "../src/domains/twitch-clips/clip.controller";
@@ -29,7 +29,7 @@ export function initTestSync(testConfig: IConfig) {
   const offChainStorageApi = new OffChainStorage(new ClipItApiTestClient(), new IpfsTestClient());
 
   const twitchOAuthApi = new TwitchOAuthApiTestClient();
-  const twitchApi = new TwitchTestApi();
+  const twitchApi = new TwitchApiTestClient();
   const subgraph = new SubgraphTestClient();
 
   const authController = new OAuthController(model.auth, twitchOAuthApi, storage, testConfig.twitch);

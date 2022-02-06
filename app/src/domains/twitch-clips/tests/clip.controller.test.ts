@@ -1,4 +1,4 @@
-import { TwitchTestApi } from "../../../lib/twitch-api/twitch-api-test.client";
+import { TwitchApiTestClient } from "../../../lib/twitch-api/twitch-api-test.client";
 import { MetaModel } from "../../app/meta.model";
 import { SnackbarController } from "../../snackbar/snackbar.controller";
 import { SnackbarModel } from "../../snackbar/snackbar.model";
@@ -11,10 +11,10 @@ describe("clip controller", () => {
 
   beforeEach(() => {
     model = new ClipModel(new MetaModel());
-    ctrl = new ClipController(model, new SnackbarController(new SnackbarModel()), new TwitchTestApi());
+    ctrl = new ClipController(model, new SnackbarController(new SnackbarModel()), new TwitchApiTestClient());
   });
 
-  it("really dumb test just to make a POC on twitchTestApi", async () => {
+  it("really dumb test just to make a POC on TwitchApiTestClient", async () => {
     await ctrl.getBroadcasterClips("some-id");
     // dummy clips are on state
     expect(model.clips.length).toBeGreaterThan(0);

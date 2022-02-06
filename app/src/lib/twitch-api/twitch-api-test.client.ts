@@ -11,7 +11,7 @@ import {
   TwitchUserResp,
 } from "./twitch-api.client";
 
-export class TwitchTestApi implements TwitchApiClient {
+export class TwitchApiTestClient implements TwitchApiClient {
   getUsers = async (): Promise<RawResponse<{ data: TwitchUserResp[] } | TwitchError>> => {
     return {
       statusOk: true,
