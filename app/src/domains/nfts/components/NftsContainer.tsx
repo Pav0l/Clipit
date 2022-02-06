@@ -45,7 +45,7 @@ function NftsContainer({ model, operations }: Props) {
   // TODO MM not installed/connected should be a custom error/flow
   // MetaMask not installed or not connected
   if (model.web3.meta.hasError) {
-    return <ErrorWithRetry text={model.nft.meta.error} withRetry={false} />;
+    return <ErrorWithRetry text={model.web3.meta.error} withRetry={false} />;
   }
 
   if (model.nft.meta.hasError) {
