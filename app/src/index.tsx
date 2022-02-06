@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import { GraphQLClient } from "graphql-request";
 
 import "./index.css";
@@ -203,6 +203,9 @@ async function initAsync({ model, user, web3 }: { model: AppModel; user: UserCon
               <Route path={AppRoute.HOME}>
                 <Home model={{ clip: model.clip }} operations={{ clip: operations.clip }} />
               </Route>
+
+              {/* fallback route */}
+              <Redirect to={AppRoute.HOME} />
             </Switch>
           </Router>
         </ThemeProvider>
