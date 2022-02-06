@@ -11,7 +11,7 @@ import ListOfCardsWithThumbnail from "../../../components/nfts/ListOfCardsWithTh
 import { Web3Model, Web3Errors } from "../../web3/web3.model";
 import { NftController } from "../nft.controller";
 import { NftModel } from "../nft.model";
-import { LinkButton } from "../../navigation/components/LinkButton";
+import { LinkButton } from "../../../components/linkButton/LinkButton";
 import { NavigationModel } from "../../navigation/navigation.model";
 
 interface Props {

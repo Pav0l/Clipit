@@ -1,4 +1,4 @@
-import { makeStyles, AppBar, Toolbar, Typography } from "@material-ui/core";
+import { makeStyles, AppBar, Toolbar } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { IWeb3Controller } from "../../web3/web3.controller";
 import { AppRoute } from "../../../lib/constants";
@@ -9,7 +9,7 @@ import { OAuthController } from "../../twitch-oauth/oauth.controller";
 import { OAuthModel } from "../../twitch-oauth/oauth.model";
 import ConnectMetamaskButton from "../../../components/connectMetamask/ConnectMetamask";
 import { NavigationModel } from "../../navigation/navigation.model";
-import { LinkButton } from "../../navigation/components/LinkButton";
+import NavLink from "./NavLink";
 
 interface Props {
   model: {
@@ -28,27 +28,22 @@ interface Props {
 export default observer(function Navbar({ model, operations, isDevelopment }: Props) {
   const classes = useStyles();
 
-  const buildClassName = (to: AppRoute) => `${classes.li} ${model.navigation.activeRoute === to ? classes.active : ""}`;
-  const NavLink = ({ to, text }: { to: AppRoute; text: string }) => (
-    <LinkButton
-      to={to}
-      text={<Typography>{text}</Typography>}
-      setActive={model.navigation.setActiveRoute}
-      className={buildClassName(to)}
-      underline="none"
-    />
-  );
-
   return (
     <AppBar position="static" className={classes.appbar}>
       <Toolbar className={classes.toolbar}>
-        <div className={classes.div}>
-          <NavLink to={AppRoute.HOME} text={"Home"} />
-          <NavLink to={AppRoute.MARKETPLACE} text={"Marketplace"} />
-          {model.auth.isLoggedIn ? <NavLink to={AppRoute.NFTS} text={"NFTs"} /> : null}
+        <div className={classes.div} data-testid="navlinks-div">
+          <NavLink to={AppRoute.HOME} model={{ navigation: model.navigation }} text={"Home"} />
+          <NavLink to={AppRoute.MARKETPLACE} model={{ navigation: model.navigation }} text={"Marketplace"} />
+          {model.auth.isLoggedIn ? (
+            <NavLink to={AppRoute.NFTS} model={{ navigation: model.navigation }} text={"NFTs"} />
+          ) : null}
 
-          {model.auth.isLoggedIn ? <NavLink to={AppRoute.CLIPS} text={"Clips"} /> : null}
-          {isDevelopment ? <NavLink to={AppRoute.ABOUT} text={"About"} /> : null}
+          {model.auth.isLoggedIn ? (
+            <NavLink to={AppRoute.CLIPS} model={{ navigation: model.navigation }} text={"Clips"} />
+          ) : null}
+          {isDevelopment ? (
+            <NavLink to={AppRoute.ABOUT} model={{ navigation: model.navigation }} text={"About"} />
+          ) : null}
         </div>
 
         <div>
