@@ -124,6 +124,7 @@ async function initAsync({ model, user, web3 }: { model: AppModel; user: UserCon
                 auth: operations.auth,
                 snackbar: operations.snackbar,
               }}
+              isDevelopment={CONFIG.isDevelopment}
             />
 
             <Snackbar model={{ snackbar: model.snackbar }} operations={operations.snackbar} />

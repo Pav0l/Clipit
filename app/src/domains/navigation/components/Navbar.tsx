@@ -22,9 +22,10 @@ interface Props {
     auth: OAuthController;
     snackbar: SnackbarClient;
   };
+  isDevelopment: boolean;
 }
 
-export default observer(function Navbar({ model, operations }: Props) {
+export default observer(function Navbar({ model, operations, isDevelopment }: Props) {
   const classes = useStyles();
 
   const buildClassName = (to: AppRoute) => `${classes.li} ${model.navigation.activeRoute === to ? classes.active : ""}`;
@@ -47,7 +48,7 @@ export default observer(function Navbar({ model, operations }: Props) {
           {model.auth.isLoggedIn ? <NavLink to={AppRoute.NFTS} text={"NFTs"} /> : null}
 
           {model.auth.isLoggedIn ? <NavLink to={AppRoute.CLIPS} text={"Clips"} /> : null}
-          <NavLink to={AppRoute.ABOUT} text={"About"} />
+          {isDevelopment ? <NavLink to={AppRoute.ABOUT} text={"About"} /> : null}
         </div>
 
         <div>
