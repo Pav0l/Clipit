@@ -33,7 +33,7 @@ export function NftCard({ metadata }: Props) {
 const useStyles = makeStyles(() => ({
   card: {
     margin: "1rem",
-    maxWidth: "50vw",
+    width: "50vw",
   },
   video: {
     maxHeight: "70vh",
