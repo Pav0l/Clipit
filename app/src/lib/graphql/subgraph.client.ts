@@ -14,11 +14,22 @@ import {
 import { CLIPS_PAGINATION_SKIP_VALUE } from "../constants";
 
 export interface ISubgraphClient {
-  fetchClipCached: (tokenId: string) => Promise<ClipPartialFragment | null>;
-  fetchClipByHashCached: (txHash: string) => Promise<{ id: string } | null>;
-  fetchClips: (skip?: number) => Promise<GetClipsQuery | null>;
-  fetchUserCached: (address: string) => Promise<UserData | null>;
-  fetchAuctionCached: (tokenId: string, options: { clearCache: boolean }) => Promise<AuctionPartialFragment | null>;
+  fetchClipCached: (tokenId: string) => Promise<ClipPartialFragment | null | SubgraphError>;
+  fetchClipByHashCached: (txHash: string) => Promise<{ id: string } | null | SubgraphError>;
+  fetchClips: (skip?: number) => Promise<GetClipsQuery | null | SubgraphError>;
+  fetchUserCached: (address: string) => Promise<UserData | null | SubgraphError>;
+  fetchAuctionCached: (
+    tokenId: string,
+    options: { clearCache: boolean }
+  ) => Promise<AuctionPartialFragment | null | SubgraphError>;
+}
+
+interface SubgraphError {
+  errors: { message: string }[];
+}
+
+export function isSubgraphError(value: unknown | null | SubgraphError): value is SubgraphError {
+  return (value as SubgraphError)?.errors !== undefined;
 }
 
 export class SubgraphClient implements ISubgraphClient {
@@ -88,7 +99,7 @@ export class SubgraphClient implements ISubgraphClient {
   private getUser = async (addresses: readonly string[]) => {
     const resp = await this.client.request<GetUserDataQuery>(GET_USER_TOKENS_QUERY, {
       ids: addresses,
-      ownerIds: addresses,
+      userIds: addresses,
     });
 
     return addresses.map((addr) => transformUserData(resp, addr));
@@ -164,6 +175,13 @@ function transformUserData(data: GetUserDataQuery, key: string): UserData | null
     }
   });
 
+  const reserveAuctionBids: ClipPartialFragment[] = [];
+  data.reserveAuctionBids.forEach((bid) => {
+    if (bid.reserveAuction.clip) {
+      reserveAuctionBids.push(bid.reserveAuction.clip);
+    }
+  });
+
   return {
     id: user.id,
     currentBids: user.currentBids?.map((bid) => ({
@@ -185,6 +203,7 @@ function transformUserData(data: GetUserDataQuery, key: string): UserData | null
       },
     })),
     collection: [...user.collection, ...clipsOnAuction],
+    reserveAuctionBids: reserveAuctionBids,
   };
 }
 
@@ -210,4 +229,5 @@ export interface UserData {
   currentBids?: BidPartialFragment[];
   id: string;
   collection: ClipPartialFragment[];
+  reserveAuctionBids: ClipPartialFragment[];
 }

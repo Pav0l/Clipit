@@ -11,7 +11,7 @@ import {
   AuctionCancelLoadStatus,
   AuctionEndLoadStatus,
 } from "./web3.model";
-import { ISubgraphClient } from "../../lib/graphql/subgraph.client";
+import { isSubgraphError, ISubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { Decimal } from "../../lib/decimal/decimal";
 import { ClipItContractErrors } from "../../lib/contracts/ClipIt/clipit-contract.errors";
@@ -368,6 +368,12 @@ export class Web3Controller implements IWeb3Controller {
       if (!clip) {
         // SENTRY this should not happen
         this.model.meta.setError(Web3Errors.FAILED_TO_FETCH_SUBGRAPH_DATA);
+        return;
+      }
+
+      if (isSubgraphError(clip)) {
+        // SENTRY this should not happen
+        this.model.meta.setError(Web3Errors.SOMETHING_WENT_WRONG);
         return;
       }
 

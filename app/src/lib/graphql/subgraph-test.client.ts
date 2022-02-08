@@ -29,6 +29,7 @@ export class SubgraphTestClient implements ISubgraphClient {
       id: clipPartialFragment.id,
       currentBids: clipPartialFragment.currentBids,
       collection: [clipPartialFragment],
+      reserveAuctionBids: [],
     };
   };
 }

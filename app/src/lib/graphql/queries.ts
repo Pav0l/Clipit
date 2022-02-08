@@ -119,7 +119,7 @@ export const GET_USER_TOKENS_QUERY = gql`
   ${CLIP_PARTIALS}
   ${AUCTION_PARTIALS}
 
-  query getUserData($ids: [ID!], $ownerIds: [String!]) {
+  query getUserData($ids: [ID!], $userIds: [String!]) {
     users(where: { id_in: $ids }) {
       id
       collection {
@@ -129,12 +129,19 @@ export const GET_USER_TOKENS_QUERY = gql`
         ...BidPartial
       }
     }
-    reserveAuctions(where: { tokenOwner_in: $ownerIds }) {
+    reserveAuctions(where: { tokenOwner_in: $userIds }) {
       tokenOwner {
         id
       }
       clip {
         ...ClipPartial
+      }
+    }
+    reserveAuctionBids(where: { bidder_in: $userIds }) {
+      reserveAuction {
+        clip {
+          ...ClipPartial
+        }
       }
     }
   }

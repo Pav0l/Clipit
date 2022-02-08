@@ -1,14 +1,8 @@
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -2455,32 +2449,15 @@ export type AskPartialFragment = {
   id: string;
   amount: any;
   createdAtTimestamp: any;
-  currency: {
-    __typename?: "Currency";
-    id: string;
-    name: string;
-    symbol: string;
-    decimals?: number | null | undefined;
-  };
+  currency: { __typename?: "Currency"; id: string; name: string; symbol: string; decimals?: number | null | undefined };
 };
 
 export type BidPartialFragment = {
   __typename?: "Bid";
   id: string;
   amount: any;
-  clip: {
-    __typename?: "Clip";
-    id: string;
-    contentURI: string;
-    metadataURI: string;
-  };
-  currency: {
-    __typename?: "Currency";
-    id: string;
-    name: string;
-    symbol: string;
-    decimals?: number | null | undefined;
-  };
+  clip: { __typename?: "Clip"; id: string; contentURI: string; metadataURI: string };
+  currency: { __typename?: "Currency"; id: string; name: string; symbol: string; decimals?: number | null | undefined };
   bidder: { __typename?: "User"; id: string };
 };
 
@@ -2515,12 +2492,7 @@ export type ClipPartialFragment = {
         __typename?: "Bid";
         id: string;
         amount: any;
-        clip: {
-          __typename?: "Clip";
-          id: string;
-          contentURI: string;
-          metadataURI: string;
-        };
+        clip: { __typename?: "Clip"; id: string; contentURI: string; metadataURI: string };
         currency: {
           __typename?: "Currency";
           id: string;
@@ -2657,7 +2629,7 @@ export type CurrencyPartialFragment = {
 
 export type GetUserDataQueryVariables = Exact<{
   ids?: InputMaybe<Array<Scalars["ID"]> | Scalars["ID"]>;
-  ownerIds?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
+  userIds?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
 }>;
 
 export type GetUserDataQuery = {
@@ -2696,12 +2668,7 @@ export type GetUserDataQuery = {
             __typename?: "Bid";
             id: string;
             amount: any;
-            clip: {
-              __typename?: "Clip";
-              id: string;
-              contentURI: string;
-              metadataURI: string;
-            };
+            clip: { __typename?: "Clip"; id: string; contentURI: string; metadataURI: string };
             currency: {
               __typename?: "Currency";
               id: string;
@@ -2768,12 +2735,7 @@ export type GetUserDataQuery = {
           __typename?: "Bid";
           id: string;
           amount: any;
-          clip: {
-            __typename?: "Clip";
-            id: string;
-            contentURI: string;
-            metadataURI: string;
-          };
+          clip: { __typename?: "Clip"; id: string; contentURI: string; metadataURI: string };
           currency: {
             __typename?: "Currency";
             id: string;
@@ -2821,12 +2783,7 @@ export type GetUserDataQuery = {
                 __typename?: "Bid";
                 id: string;
                 amount: any;
-                clip: {
-                  __typename?: "Clip";
-                  id: string;
-                  contentURI: string;
-                  metadataURI: string;
-                };
+                clip: { __typename?: "Clip"; id: string; contentURI: string; metadataURI: string };
                 currency: {
                   __typename?: "Currency";
                   id: string;
@@ -2866,10 +2823,7 @@ export type GetUserDataQuery = {
                       amount: any;
                       bidType: ReserveAuctionBidType;
                       createdAtTimestamp: any;
-                      reserveAuction: {
-                        __typename?: "ReserveAuction";
-                        id: string;
-                      };
+                      reserveAuction: { __typename?: "ReserveAuction"; id: string };
                       bidder: { __typename?: "User"; id: string };
                     }
                   | null
@@ -2893,6 +2847,108 @@ export type GetUserDataQuery = {
         }
       | null
       | undefined;
+  }>;
+  reserveAuctionBids: Array<{
+    __typename?: "ReserveAuctionBid";
+    reserveAuction: {
+      __typename?: "ReserveAuction";
+      clip?:
+        | {
+            __typename?: "Clip";
+            id: string;
+            metadataURI: string;
+            contentURI: string;
+            transactionHash: string;
+            creatorBidShare: any;
+            ownerBidShare: any;
+            prevOwnerBidShare: any;
+            createdAtTimestamp: any;
+            currentAsk?:
+              | {
+                  __typename?: "Ask";
+                  id: string;
+                  amount: any;
+                  createdAtTimestamp: any;
+                  currency: {
+                    __typename?: "Currency";
+                    id: string;
+                    name: string;
+                    symbol: string;
+                    decimals?: number | null | undefined;
+                  };
+                }
+              | null
+              | undefined;
+            currentBids?:
+              | Array<{
+                  __typename?: "Bid";
+                  id: string;
+                  amount: any;
+                  clip: { __typename?: "Clip"; id: string; contentURI: string; metadataURI: string };
+                  currency: {
+                    __typename?: "Currency";
+                    id: string;
+                    name: string;
+                    symbol: string;
+                    decimals?: number | null | undefined;
+                  };
+                  bidder: { __typename?: "User"; id: string };
+                }>
+              | null
+              | undefined;
+            reserveAuctions?:
+              | Array<{
+                  __typename?: "ReserveAuction";
+                  id: string;
+                  tokenId: any;
+                  approved: boolean;
+                  duration: any;
+                  expectedEndTimestamp?: any | null | undefined;
+                  firstBidTime?: any | null | undefined;
+                  approvedTimestamp?: any | null | undefined;
+                  reservePrice: any;
+                  status: ReserveAuctionStatus;
+                  clip?: { __typename?: "Clip"; id: string } | null | undefined;
+                  tokenOwner: { __typename?: "User"; id: string };
+                  auctionCurrency: {
+                    __typename?: "Currency";
+                    id: string;
+                    name: string;
+                    symbol: string;
+                    decimals?: number | null | undefined;
+                  };
+                  currentBid?:
+                    | {
+                        __typename?: "ReserveAuctionBid";
+                        id: string;
+                        amount: any;
+                        bidType: ReserveAuctionBidType;
+                        createdAtTimestamp: any;
+                        reserveAuction: { __typename?: "ReserveAuction"; id: string };
+                        bidder: { __typename?: "User"; id: string };
+                      }
+                    | null
+                    | undefined;
+                  previousBids?:
+                    | Array<{
+                        __typename?: "InactiveReserveAuctionBid";
+                        id: string;
+                        amount: any;
+                        bidInactivatedAtTimestamp: any;
+                        bidType: ReserveAuctionBidType;
+                        bidder: { __typename?: "User"; id: string };
+                      }>
+                    | null
+                    | undefined;
+                }>
+              | null
+              | undefined;
+            owner: { __typename?: "User"; id: string };
+            creator: { __typename?: "User"; id: string };
+          }
+        | null
+        | undefined;
+    };
   }>;
 };
 
@@ -2933,12 +2989,7 @@ export type GetClipDataQuery = {
           __typename?: "Bid";
           id: string;
           amount: any;
-          clip: {
-            __typename?: "Clip";
-            id: string;
-            contentURI: string;
-            metadataURI: string;
-          };
+          clip: { __typename?: "Clip"; id: string; contentURI: string; metadataURI: string };
           currency: {
             __typename?: "Currency";
             id: string;
@@ -3049,12 +3100,7 @@ export type GetClipsQuery = {
           __typename?: "Bid";
           id: string;
           amount: any;
-          clip: {
-            __typename?: "Clip";
-            id: string;
-            contentURI: string;
-            metadataURI: string;
-          };
+          clip: { __typename?: "Clip"; id: string; contentURI: string; metadataURI: string };
           currency: {
             __typename?: "Currency";
             id: string;

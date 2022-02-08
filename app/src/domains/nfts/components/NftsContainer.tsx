@@ -1,18 +1,18 @@
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
-import { Typography } from "@material-ui/core";
+import { ChangeEvent, useState, useEffect, useMemo } from "react";
+import { Paper, Tabs, Tab } from "@material-ui/core";
 
-import FullPageLoader from "../../../components/loader/FullPageLoader";
 import { IWeb3Controller } from "../../web3/web3.controller";
-import { AppRoute } from "../../../lib/constants";
-import ErrorWithRetry from "../../../components/error/Error";
-import CenteredContainer from "../../../components/container/CenteredContainer";
-import ListOfCardsWithThumbnail from "../../../components/nfts/ListOfCardsWithThumbnail";
-import { Web3Model, Web3Errors } from "../../web3/web3.model";
 import { NftController } from "../nft.controller";
 import { NftModel } from "../nft.model";
-import { LinkButton } from "../../../components/linkButton/LinkButton";
 import { NavigationModel } from "../../navigation/navigation.model";
+import NftsPage from "./NftsPage";
+import { makeStyles } from "@material-ui/styles";
+import ActiveBidsPage from "./ActiveBidsPage";
+import FullPageLoader from "../../../components/loader/FullPageLoader";
+import ErrorWithRetry from "../../../components/error/Error";
+import { Web3Model, Web3Errors } from "../../web3/web3.model";
+import ReceivedBids from "./ReceivedBids";
 
 interface Props {
   model: {
@@ -27,8 +27,19 @@ interface Props {
 }
 
 function NftsContainer({ model, operations }: Props) {
+  const classes = useStyles();
+  const [value, setValue] = useState(0);
+
   const signer = model.web3.getAccount();
   const metadata = operations.nft.getOwnerMetadata(signer);
+  const bidsOnAuctions = useMemo(
+    () => metadata.filter((m) => m.auction?.displayBid !== null && m.auction?.isActive === true),
+    [metadata]
+  );
+
+  const handleChange = (_event: ChangeEvent<Record<string, never>>, newValue: number) => {
+    setValue(newValue);
+  };
 
   useEffect(() => {
     if (!model.web3.isProviderConnected()) {
@@ -60,24 +71,30 @@ function NftsContainer({ model, operations }: Props) {
     return <ErrorWithRetry text={Web3Errors.CONNECT_METAMASK} withRetry={false} />;
   }
 
-  if (metadata.length === 0) {
-    return (
-      <CenteredContainer>
-        <Typography variant="h6" component="h6">
-          It seems you have no NFTs yet. Try{" "}
-          <LinkButton
-            to={AppRoute.CLIPS}
-            text="minting your first clip"
-            className=""
-            setActive={model.navigation.setActiveRoute}
-            underline="always"
-          />
-        </Typography>
-      </CenteredContainer>
-    );
-  }
-
-  return <ListOfCardsWithThumbnail metadata={metadata} />;
+  return (
+    <>
+      <Paper className={classes.container}>
+        <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary" centered>
+          <Tab label="Clips" />
+          <Tab label="Active Bids" />
+          <Tab label="Received Bids" />
+        </Tabs>
+      </Paper>
+      {value === 0 ? (
+        <NftsPage model={model} metadata={metadata} />
+      ) : value === 1 ? (
+        <ActiveBidsPage model={model} metadata={model.nft.activeAuctionBidsMetadata} />
+      ) : value === 2 ? (
+        <ReceivedBids metadata={bidsOnAuctions} setTabValue={() => setValue(0)} />
+      ) : null}
+    </>
+  );
 }
 
 export default observer(NftsContainer);
+
+const useStyles = makeStyles(() => ({
+  container: {
+    margin: "0 2rem",
+  },
+}));

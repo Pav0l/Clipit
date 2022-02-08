@@ -21,6 +21,12 @@ export class NftModel {
   metadata: Metadata[] = [];
   hasMetadata: { [tokenId: string]: boolean } = {};
 
+  /**
+   * Auction Bids this user made for other Clips
+   */
+  activeAuctionBidsMetadata: Metadata[] = [];
+  hasAuctionBidsMetadata: { [tokenId: string]: boolean } = {};
+
   constructor(meta: MetaModel) {
     makeAutoObservable(this);
     this.meta = meta;
@@ -34,6 +40,14 @@ export class NftModel {
     this.hasMetadata[data.tokenId] = true;
   }
 
+  addAuctionBidMetadata(data: MetadataInput): void {
+    if (this.hasAuctionBidsMetadata[data.tokenId]) {
+      return;
+    }
+    this.activeAuctionBidsMetadata.push(new Metadata(data));
+    this.hasAuctionBidsMetadata[data.tokenId] = true;
+  }
+
   updateTokenAuction(tokenId: string, auction: AuctionPartialFragment): void {
     const metadata = this.getTokenMetadata(tokenId);
     metadata.auction = new Auction(auction, metadata.owner);
@@ -42,6 +56,8 @@ export class NftModel {
   resetMetadata(): void {
     this.metadata = [];
     this.hasMetadata = {};
+    this.activeAuctionBidsMetadata = [];
+    this.hasAuctionBidsMetadata = {};
   }
 
   getMetadata(clipCid: string): Metadata {

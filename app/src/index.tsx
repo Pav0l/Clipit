@@ -49,10 +49,12 @@ import { initSynchronous, initAsync } from "./init";
               </Route>
 
               <Route exact path={AppRoute.NFTS}>
-                <NftsContainer
-                  model={{ nft: model.nft, web3: model.web3, navigation: model.navigation }}
-                  operations={{ web3: operations.web3, nft: operations.nft }}
-                />
+                <ErrorBoundary>
+                  <NftsContainer
+                    model={{ nft: model.nft, web3: model.web3, navigation: model.navigation }}
+                    operations={{ web3: operations.web3, nft: operations.nft }}
+                  />
+                </ErrorBoundary>
               </Route>
 
               <Route exact path={AppRoute.NFT}>

@@ -1,6 +1,6 @@
 import type { NftModel } from "./nft.model";
 import { NftErrors } from "./nft.errors";
-import { ISubgraphClient } from "../../lib/graphql/subgraph.client";
+import { isSubgraphError, ISubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { ClipPartialFragment } from "../../lib/graphql/types";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
@@ -26,7 +26,13 @@ export class NftController {
         return;
       }
 
-      await this.getMetadataForClipFragmentAndStoreInModel(clip, true);
+      if (isSubgraphError(clip)) {
+        this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+        // SENTRY
+        return;
+      }
+
+      await this.getMetadataForClipFragmentAndStoreInModel(clip, { target: "metadata", shouldThrow: true });
     } catch (error) {
       // SENTRY
       console.log("[LOG]:getTokenMetadata err", error);
@@ -43,8 +49,20 @@ export class NftController {
         return;
       }
 
+      if (isSubgraphError(data)) {
+        this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+        // SENTRY
+        return;
+      }
+
       for (const clip of data.collection) {
-        await this.getMetadataForClipFragmentAndStoreInModel(clip);
+        await this.getMetadataForClipFragmentAndStoreInModel(clip, { target: "metadata" });
+        // we can stop loading after we have data for first NFT
+        this.model.meta.setLoading(false);
+      }
+
+      for (const bid of data.reserveAuctionBids) {
+        await this.getMetadataForClipFragmentAndStoreInModel(bid, { target: "auctionBid" });
         // we can stop loading after we have data for first NFT
         this.model.meta.setLoading(false);
       }
@@ -79,8 +97,14 @@ export class NftController {
         return;
       }
 
+      if (isSubgraphError(data)) {
+        this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+        // SENTRY
+        return;
+      }
+
       for (const clip of data.clips) {
-        await this.getMetadataForClipFragmentAndStoreInModel(clip);
+        await this.getMetadataForClipFragmentAndStoreInModel(clip, { target: "metadata" });
         this.model.meta.setLoading(false);
       }
     } catch (error) {
@@ -102,6 +126,11 @@ export class NftController {
       if (data === null) {
         return;
       }
+      if (isSubgraphError(data)) {
+        this.model.meta.setError(NftErrors.ERROR_TRY_REFRESH);
+        // SENTRY
+        return;
+      }
 
       // update reserveAuction for token
       this.model.updateTokenAuction(tokenId, data);
@@ -115,13 +144,23 @@ export class NftController {
     }
   };
 
-  private getMetadataForClipFragmentAndStoreInModel = async (clip?: ClipPartialFragment, shouldThrow?: boolean) => {
+  private getMetadataForClipFragmentAndStoreInModel = async (
+    clip?: ClipPartialFragment,
+    options: { shouldThrow?: boolean; target: "metadata" | "auctionBid" } = { target: "metadata" }
+  ) => {
+    const { shouldThrow, target } = options;
+
     if (clip == null) {
       return;
     }
 
-    if (this.model.hasMetadata[clip.id]) {
+    if (target === "metadata" && this.model.hasMetadata[clip.id]) {
       // we already have metadata for this clip
+      return;
+    }
+
+    if (target === "auctionBid" && this.model.hasAuctionBidsMetadata[clip.id]) {
+      // we already have metadata for this clip aucton bid
       return;
     }
 
@@ -143,14 +182,22 @@ export class NftController {
       return;
     }
 
-    this.model.addMetadata({
+    const metadataForModel = {
       ...metadata,
       metadataCid,
       tokenId: clip.id,
       owner: clip.owner.id,
       currentBids: clip.currentBids,
       reserveAuction: clip.reserveAuctions,
-    });
+    };
+
+    if (target === "metadata") {
+      this.model.addMetadata(metadataForModel);
+    } else if (target === "auctionBid") {
+      this.model.addAuctionBidMetadata(metadataForModel);
+    } else {
+      throw new Error(`Invalid metadata target: ${target}`);
+    }
   };
 
   private parseCidFromURI = (uri: string): string => {

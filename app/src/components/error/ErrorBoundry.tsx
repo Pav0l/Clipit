@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ErrorInfo } from "react";
 import ErrorWithRetry from "./Error";
 
 export default class ErrorBoundary extends React.Component<Record<string, unknown>, { hasError: boolean }> {
@@ -7,9 +7,11 @@ export default class ErrorBoundary extends React.Component<Record<string, unknow
     this.state = { hasError: false };
   }
 
-  componentDidCatch() {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({ hasError: true });
     // SENTRY
+    console.log("[LOG]:error boundry error:", error);
+    console.log("[LOG]:error boundry error info:", errorInfo);
   }
 
   render() {
