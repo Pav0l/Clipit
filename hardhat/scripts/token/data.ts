@@ -12,24 +12,23 @@ async function main() {
 
   const signer = getSignerWallet();
 
-  const contract = (new ethers.Contract(contractAddress, Contract.abi, signer)) as ClipIt;
-  const owner = await contract.owner()
-  console.log('contract owner', owner);
+  const contract = new ethers.Contract(contractAddress, Contract.abi, signer) as ClipIt;
+  const owner = await contract.owner();
+  console.log("contract owner", owner);
 
   const tokenUri = await contract.tokenURI(BigNumber.from(tokenId));
-  console.log('tokenUri:', tokenUri);
+  console.log("tokenUri:", tokenUri);
 
   const tokenOwner = await contract.ownerOf(tokenId);
-  console.log('tokenOwner:', tokenOwner);
+  console.log("tokenOwner:", tokenOwner);
 
   const wallets = await ethers.getSigners();
-  wallets.forEach(w => console.log(w.address));
-
+  wallets.forEach((w) => console.log(w.address));
 }
 
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });

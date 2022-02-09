@@ -45,35 +45,17 @@ interface IMarket {
   event AskRemoved(uint256 indexed tokenId, Ask ask);
   event BidShareUpdated(uint256 indexed tokenId, BidShares bidShares);
 
-  function bidForTokenBidder(uint256 tokenId, address bidder)
-    external
-    view
-    returns (Bid memory);
+  function bidForTokenBidder(uint256 tokenId, address bidder) external view returns (Bid memory);
 
-  function currentAskForToken(uint256 tokenId)
-    external
-    view
-    returns (Ask memory);
+  function currentAskForToken(uint256 tokenId) external view returns (Ask memory);
 
-  function bidSharesForToken(uint256 tokenId)
-    external
-    view
-    returns (BidShares memory);
+  function bidSharesForToken(uint256 tokenId) external view returns (BidShares memory);
 
-  function isValidBid(uint256 tokenId, uint256 bidAmount)
-    external
-    view
-    returns (bool);
+  function isValidBid(uint256 tokenId, uint256 bidAmount) external view returns (bool);
 
-  function isValidBidShares(BidShares calldata bidShares)
-    external
-    pure
-    returns (bool);
+  function isValidBidShares(BidShares calldata bidShares) external pure returns (bool);
 
-  function splitShare(Decimal.D256 calldata sharePercentage, uint256 amount)
-    external
-    pure
-    returns (uint256);
+  function splitShare(Decimal.D256 calldata sharePercentage, uint256 amount) external pure returns (uint256);
 
   function configure(address mediaContractAddress) external;
 

@@ -34,25 +34,23 @@ interface IClipIt {
   }
 
   event TokenURIUpdated(uint256 indexed _tokenId, address owner, string _uri);
-  event TokenMetadataURIUpdated(
-    uint256 indexed _tokenId,
-    address owner,
-    string _uri
-  );
+  event TokenMetadataURIUpdated(uint256 indexed _tokenId, address owner, string _uri);
 
   /**
    * @notice Return the metadata URI for a piece of media given the token URI
    */
-  function tokenMetadataURI(uint256 tokenId)
-    external
-    view
-    returns (string memory);
+  function tokenMetadataURI(uint256 tokenId) external view returns (string memory);
 
   /**
    * @notice Mint new Clip for msg.sender.
    */
-  function mint(MediaData calldata data, IMarket.BidShares calldata bidShares, uint8 v, bytes32 r, bytes32 s)
-    external;
+  function mint(
+    MediaData calldata data,
+    IMarket.BidShares calldata bidShares,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
+  ) external;
 
   /**
    * @notice Transfer the token with the given ID to a given address.
@@ -96,6 +94,5 @@ interface IClipIt {
   /**
    * @notice Update the token metadata uri
    */
-  function updateTokenMetadataURI(uint256 tokenId, string calldata metadataURI)
-    external;
+  function updateTokenMetadataURI(uint256 tokenId, string calldata metadataURI) external;
 }

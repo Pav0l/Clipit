@@ -9,7 +9,6 @@ import { generateSignatureV2, Decimal } from "../lib";
 import { arrayify, Bytes, Signature } from "@ethersproject/contracts/node_modules/@ethersproject/bytes";
 import { keccak256, sha256, toUtf8Bytes } from "ethers/lib/utils";
 
-
 function expectEventWithArgs<T>(receipt: ContractReceipt, eventName: string, assertion: (eventArgs: any) => T) {
   const receiptEvents = receipt.events || [];
 
@@ -32,17 +31,18 @@ describe("ClipIt", function () {
   const tid = BigNumber.from("0");
   const invalidTokenId = BigNumber.from(1000);
 
-  const mtdt = '{"name":"Almost again","description":"streamer playing game","external_url":"https://foo.bar/nft/id","image":"ipfs://bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku","cid":"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku","attributes":[{"trait_type":"Game","value":"name of game"},{"trait_type":"Streamer","value":"name of streamer"}]}';
+  const mtdt =
+    '{"name":"Almost again","description":"streamer playing game","external_url":"https://foo.bar/nft/id","image":"ipfs://bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku","cid":"bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku","attributes":[{"trait_type":"Game","value":"name of game"},{"trait_type":"Streamer","value":"name of streamer"}]}';
   const metadataURI = "ipfs://metadataCid";
   const metadataHash = sha256(toUtf8Bytes(mtdt));
   const metadataHashBytes = arrayify(metadataHash);
   const tokenURI = `ipfs://${clipCID}`;
-  const contentHash = sha256(toUtf8Bytes('content'));
+  const contentHash = sha256(toUtf8Bytes("content"));
   const contentHashBytes = arrayify(contentHash);
 
   const defaultAsk = (amount: number = 1000, currency: string = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707") => ({
     amount: amount,
-    currency: currency
+    currency: currency,
   });
   const defaultBid = (currency: string, bidder: string, recipient?: string) => ({
     // Amount of the currency being bid
@@ -54,7 +54,7 @@ describe("ClipIt", function () {
     // Address of the recipient
     recipient: recipient ?? bidder,
     // % of the next sale to award the current owner
-    sellOnShare: Decimal.from(10)
+    sellOnShare: Decimal.from(10),
   });
 
   interface MediaData {
@@ -66,13 +66,15 @@ describe("ClipIt", function () {
     metadataHash: Bytes;
   }
 
-  interface DecimalValue { value: BigNumber };
+  interface DecimalValue {
+    value: BigNumber;
+  }
 
   interface BidShares {
     owner: DecimalValue;
     prevOwner: DecimalValue;
     creator: DecimalValue;
-  };
+  }
 
   async function mint(
     contract: ClipIt,
@@ -94,7 +96,7 @@ describe("ClipIt", function () {
 
   async function deployCurrency(owner: Wallet) {
     const factory = await ethers.getContractFactory("BaseERC20", { signer: owner });
-    currencyContract = await factory.deploy('test', 'TEST', 18) as BaseERC20;
+    currencyContract = (await factory.deploy("test", "TEST", 18)) as BaseERC20;
     return currencyContract.address;
   }
 
@@ -106,15 +108,14 @@ describe("ClipIt", function () {
     await currencyContract.mint(to, value);
   }
 
-
   beforeEach(async () => {
     [contractOwner, two, three, four] = waffle.provider.getWallets();
 
     const marketFactory = await ethers.getContractFactory("Market", { signer: contractOwner });
-    marketContract = await marketFactory.deploy() as Market;
+    marketContract = (await marketFactory.deploy()) as Market;
 
     contractFactory = await ethers.getContractFactory("ClipIt", { signer: contractOwner });
-    contract = await contractFactory.deploy(marketContract.address) as ClipIt;
+    contract = (await contractFactory.deploy(marketContract.address)) as ClipIt;
 
     await marketContract.configure(contract.address);
   });
@@ -151,11 +152,19 @@ describe("ClipIt", function () {
       const sig = await generateSignatureV2(contractOwner, contentHash, two.address);
 
       const signerTwo = await contract.connect(two);
-      const tx = await mint(signerTwo, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10),
-      }, sig);
+      const tx = await mint(
+        signerTwo,
+        metadataURI,
+        tokenURI,
+        contentHashBytes,
+        metadataHashBytes,
+        {
+          creator: Decimal.from(10),
+          owner: Decimal.from(80),
+          prevOwner: Decimal.from(10),
+        },
+        sig
+      );
       const receipt = await tx.wait();
 
       expectEventWithArgs(receipt, "Transfer", (args) => {
@@ -202,106 +211,211 @@ describe("ClipIt", function () {
 
     it("can not mint content that already was already minted", async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
-      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig);
+      await mint(
+        contract,
+        metadataURI,
+        tokenURI,
+        contentHashBytes,
+        metadataHashBytes,
+        {
+          creator: Decimal.from(10),
+          owner: Decimal.from(80),
+          prevOwner: Decimal.from(10),
+        },
+        sig
+      );
 
-      await expect(mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10),
-      }, sig)).to.be.revertedWith("ClipIt: a token has already been created with this content hash")
+      await expect(
+        mint(
+          contract,
+          metadataURI,
+          tokenURI,
+          contentHashBytes,
+          metadataHashBytes,
+          {
+            creator: Decimal.from(10),
+            owner: Decimal.from(80),
+            prevOwner: Decimal.from(10),
+          },
+          sig
+        )
+      ).to.be.revertedWith("ClipIt: a token has already been created with this content hash");
     });
 
     it("does not allow minting with invalid signature signer", async () => {
       // signer `two` is not contract owner
       const sig = await generateSignatureV2(two, contentHash, two.address);
-      await expect(mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10),
-      }, sig)).to.be.revertedWith("ClipIt: address not allowed to mint");
+      await expect(
+        mint(
+          contract,
+          metadataURI,
+          tokenURI,
+          contentHashBytes,
+          metadataHashBytes,
+          {
+            creator: Decimal.from(10),
+            owner: Decimal.from(80),
+            prevOwner: Decimal.from(10),
+          },
+          sig
+        )
+      ).to.be.revertedWith("ClipIt: address not allowed to mint");
     });
 
     it("does not allow minting with invalid signature address", async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, three.address);
       // signed address and msg.sender do not match
-      await expect(mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10),
-      }, sig)).to.be.revertedWith("ClipIt: address not allowed to mint");
+      await expect(
+        mint(
+          contract,
+          metadataURI,
+          tokenURI,
+          contentHashBytes,
+          metadataHashBytes,
+          {
+            creator: Decimal.from(10),
+            owner: Decimal.from(80),
+            prevOwner: Decimal.from(10),
+          },
+          sig
+        )
+      ).to.be.revertedWith("ClipIt: address not allowed to mint");
     });
 
     it("does not allow minting with invalid signature cid", async () => {
-      const contentHash = keccak256(toUtf8Bytes('other content identifier'));
+      const contentHash = keccak256(toUtf8Bytes("other content identifier"));
       const sig = await generateSignatureV2(contractOwner, contentHash, three.address);
       // signed contentHash and ocntentHashBytes do not match
-      await expect(mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10),
-      }, sig)).to.be.revertedWith("ClipIt: address not allowed to mint");
+      await expect(
+        mint(
+          contract,
+          metadataURI,
+          tokenURI,
+          contentHashBytes,
+          metadataHashBytes,
+          {
+            creator: Decimal.from(10),
+            owner: Decimal.from(80),
+            prevOwner: Decimal.from(10),
+          },
+          sig
+        )
+      ).to.be.revertedWith("ClipIt: address not allowed to mint");
     });
 
     it("token and mint URIs must exist", async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
       // empty metadataURI
-      await expect(mint(contract, "", tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig)).to.be.revertedWith("ClipIt: specified uri must be non-empty");
+      await expect(
+        mint(
+          contract,
+          "",
+          tokenURI,
+          contentHashBytes,
+          metadataHashBytes,
+          {
+            creator: Decimal.from(10),
+            owner: Decimal.from(80),
+            prevOwner: Decimal.from(10),
+          },
+          sig
+        )
+      ).to.be.revertedWith("ClipIt: specified uri must be non-empty");
 
       // empty tokenURI
-      await expect(mint(contract, metadataURI, "", contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig)).to.be.revertedWith("ClipIt: specified uri must be non-empty");
+      await expect(
+        mint(
+          contract,
+          metadataURI,
+          "",
+          contentHashBytes,
+          metadataHashBytes,
+          {
+            creator: Decimal.from(10),
+            owner: Decimal.from(80),
+            prevOwner: Decimal.from(10),
+          },
+          sig
+        )
+      ).to.be.revertedWith("ClipIt: specified uri must be non-empty");
     });
 
     it("contentHash can not be empty", async () => {
       const sig = await generateSignatureV2(contractOwner, ethers.constants.HashZero, contractOwner.address);
-      await expect(mint(contract, metadataURI, tokenURI, arrayify(ethers.constants.HashZero), metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig)).to.be.revertedWith("ClipIt: content hash must be non-zero");
+      await expect(
+        mint(
+          contract,
+          metadataURI,
+          tokenURI,
+          arrayify(ethers.constants.HashZero),
+          metadataHashBytes,
+          {
+            creator: Decimal.from(10),
+            owner: Decimal.from(80),
+            prevOwner: Decimal.from(10),
+          },
+          sig
+        )
+      ).to.be.revertedWith("ClipIt: content hash must be non-zero");
     });
 
     it("metadataHash can not be empty", async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
-      await expect(mint(contract, metadataURI, tokenURI, contentHashBytes, arrayify(ethers.constants.HashZero), {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig)).to.be.revertedWith("ClipIt: metadata hash must be non-zero");
+      await expect(
+        mint(
+          contract,
+          metadataURI,
+          tokenURI,
+          contentHashBytes,
+          arrayify(ethers.constants.HashZero),
+          {
+            creator: Decimal.from(10),
+            owner: Decimal.from(80),
+            prevOwner: Decimal.from(10),
+          },
+          sig
+        )
+      ).to.be.revertedWith("ClipIt: metadata hash must be non-zero");
     });
 
     it("bidShares must eql to 100", async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
-      await expect(mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        // owner share too big
-        owner: Decimal.from(90),
-        prevOwner: Decimal.from(10)
-      }, sig)).to.be.revertedWith("Market: Invalid bid shares, must sum to 100");
+      await expect(
+        mint(
+          contract,
+          metadataURI,
+          tokenURI,
+          contentHashBytes,
+          metadataHashBytes,
+          {
+            creator: Decimal.from(10),
+            // owner share too big
+            owner: Decimal.from(90),
+            prevOwner: Decimal.from(10),
+          },
+          sig
+        )
+      ).to.be.revertedWith("Market: Invalid bid shares, must sum to 100");
     });
-
   });
 
   describe("burn:", () => {
     beforeEach(async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
 
-      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig);
+      await mint(
+        contract,
+        metadataURI,
+        tokenURI,
+        contentHashBytes,
+        metadataHashBytes,
+        {
+          creator: Decimal.from(10),
+          owner: Decimal.from(80),
+          prevOwner: Decimal.from(10),
+        },
+        sig
+      );
     });
 
     it("burns token", async () => {
@@ -331,7 +445,7 @@ describe("ClipIt", function () {
       });
 
       // Approvals cleared
-      await expect(contract.getApproved(tid)).revertedWith("ERC721: approved query for nonexistent token")
+      await expect(contract.getApproved(tid)).revertedWith("ERC721: approved query for nonexistent token");
       // Approval event to zero address emitted
       expectEventWithArgs<void>(receipt, "Approval", (args) => {
         expect(args["owner"]).to.eql(contractOwner.address);
@@ -372,7 +486,7 @@ describe("ClipIt", function () {
       });
 
       // Approvals cleared
-      await expect(approvedCaller.getApproved(tid)).revertedWith("ERC721: approved query for nonexistent token")
+      await expect(approvedCaller.getApproved(tid)).revertedWith("ERC721: approved query for nonexistent token");
       // Approval event to zero address emitted
       expectEventWithArgs<void>(receipt, "Approval", (args) => {
         expect(args["owner"]).to.eql(contractOwner.address);
@@ -421,11 +535,19 @@ describe("ClipIt", function () {
     beforeEach(async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
 
-      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig);
+      await mint(
+        contract,
+        metadataURI,
+        tokenURI,
+        contentHashBytes,
+        metadataHashBytes,
+        {
+          creator: Decimal.from(10),
+          owner: Decimal.from(80),
+          prevOwner: Decimal.from(10),
+        },
+        sig
+      );
     });
 
     it("only approved or owner", async () => {
@@ -434,7 +556,9 @@ describe("ClipIt", function () {
     });
 
     it("can not update tokenURI for non-existent token", async () => {
-      await expect(contract.updateTokenURI(invalidTokenId, newURI)).revertedWith("ERC721: operator query for nonexistent token");
+      await expect(contract.updateTokenURI(invalidTokenId, newURI)).revertedWith(
+        "ERC721: operator query for nonexistent token"
+      );
     });
 
     it("can not update tokenURI for burned token", async () => {
@@ -484,11 +608,19 @@ describe("ClipIt", function () {
     beforeEach(async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
 
-      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig);
+      await mint(
+        contract,
+        metadataURI,
+        tokenURI,
+        contentHashBytes,
+        metadataHashBytes,
+        {
+          creator: Decimal.from(10),
+          owner: Decimal.from(80),
+          prevOwner: Decimal.from(10),
+        },
+        sig
+      );
     });
 
     it("only approved or owner", async () => {
@@ -497,12 +629,16 @@ describe("ClipIt", function () {
     });
 
     it("can not update metadataURI for non-existent token", async () => {
-      await expect(contract.updateTokenMetadataURI(invalidTokenId, newURI)).revertedWith("ERC721: operator query for nonexistent token");
+      await expect(contract.updateTokenMetadataURI(invalidTokenId, newURI)).revertedWith(
+        "ERC721: operator query for nonexistent token"
+      );
     });
 
     it("can not update metadataURI for burned token", async () => {
       await contract.burn(tid);
-      await expect(contract.updateTokenMetadataURI(tid, newURI)).revertedWith("ERC721: operator query for nonexistent token");
+      await expect(contract.updateTokenMetadataURI(tid, newURI)).revertedWith(
+        "ERC721: operator query for nonexistent token"
+      );
     });
 
     it("must be valid URI", async () => {
@@ -545,26 +681,38 @@ describe("ClipIt", function () {
     beforeEach(async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
 
-      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig);
+      await mint(
+        contract,
+        metadataURI,
+        tokenURI,
+        contentHashBytes,
+        metadataHashBytes,
+        {
+          creator: Decimal.from(10),
+          owner: Decimal.from(80),
+          prevOwner: Decimal.from(10),
+        },
+        sig
+      );
     });
 
     it("non existing tokenId reverts", async () => {
-      await expect(
-        contract.approve(two.address, invalidTokenId)
-      ).to.be.revertedWith("ERC721: owner query for nonexistent token");
+      await expect(contract.approve(two.address, invalidTokenId)).to.be.revertedWith(
+        "ERC721: owner query for nonexistent token"
+      );
     });
 
     it("owner of token approving transfer to himself", async () => {
-      await expect(contract.approve(contractOwner.address, tid)).to.be.revertedWith("ERC721: approval to current owner");
+      await expect(contract.approve(contractOwner.address, tid)).to.be.revertedWith(
+        "ERC721: approval to current owner"
+      );
     });
 
     it("caller is not owner / 'approved for all' approves", async () => {
       const invalidCaller = await contract.connect(three);
-      await expect(invalidCaller.approve(three.address, tid)).to.be.revertedWith("ERC721: approve caller is not owner nor approved for all");
+      await expect(invalidCaller.approve(three.address, tid)).to.be.revertedWith(
+        "ERC721: approve caller is not owner nor approved for all"
+      );
     });
 
     it("approves transfer to address & emits event", async () => {
@@ -595,15 +743,17 @@ describe("ClipIt", function () {
 
     it("getApproved: non existing tokenId reverts", async () => {
       await expect(
-        contract.getApproved(BigNumber.from("2168405825740219867040700576505120080443780731148527622846639649708184909701"))
+        contract.getApproved(
+          BigNumber.from("2168405825740219867040700576505120080443780731148527622846639649708184909701")
+        )
       ).to.be.revertedWith("ERC721: approved query for nonexistent token");
     });
 
     describe("setApprovalForAll", () => {
       it("can not set approval for caller (self)", async () => {
-        await expect(
-          contract.setApprovalForAll(contractOwner.address, true)
-        ).to.be.revertedWith("ERC721: approve to caller");
+        await expect(contract.setApprovalForAll(contractOwner.address, true)).to.be.revertedWith(
+          "ERC721: approve to caller"
+        );
       });
 
       it("approves operator for transfers & emits event", async () => {
@@ -631,18 +781,25 @@ describe("ClipIt", function () {
         expect(await contract.isApprovedForAll(three.address, four.address)).to.eql(false);
       });
     });
-
   });
 
   describe("revokeApproval:", () => {
     beforeEach(async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
 
-      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig);
+      await mint(
+        contract,
+        metadataURI,
+        tokenURI,
+        contentHashBytes,
+        metadataHashBytes,
+        {
+          creator: Decimal.from(10),
+          owner: Decimal.from(80),
+          prevOwner: Decimal.from(10),
+        },
+        sig
+      );
 
       await contract.approve(two.address, tid);
     });
@@ -689,11 +846,19 @@ describe("ClipIt", function () {
     beforeEach(async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
 
-      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig);
+      await mint(
+        contract,
+        metadataURI,
+        tokenURI,
+        contentHashBytes,
+        metadataHashBytes,
+        {
+          creator: Decimal.from(10),
+          owner: Decimal.from(80),
+          prevOwner: Decimal.from(10),
+        },
+        sig
+      );
     });
 
     it("non-existing token reverts", async () => {
@@ -717,7 +882,7 @@ describe("ClipIt", function () {
         approvedWallet = two;
         approvedCaller = contract.connect(two);
         await contract.approve(approvedWallet.address, tid);
-      })
+      });
 
       it("caller is not owner reverts", async () => {
         await expect(
@@ -729,7 +894,11 @@ describe("ClipIt", function () {
       it("transfer to zero address reverts", async () => {
         await expect(
           // `to` can not be zero address
-          approvedCaller["safeTransferFrom(address,address,uint256)"](contractOwner.address, ethers.constants.AddressZero, tid)
+          approvedCaller["safeTransferFrom(address,address,uint256)"](
+            contractOwner.address,
+            ethers.constants.AddressZero,
+            tid
+          )
         ).revertedWith("ERC721: transfer to the zero address");
       });
 
@@ -738,7 +907,11 @@ describe("ClipIt", function () {
         const ownerBalance = (await approvedCaller.balanceOf(contractOwner.address)).toNumber();
         expect(await approvedCaller.ownerOf(tid)).to.eql(contractOwner.address);
 
-        const tx = await approvedCaller["safeTransferFrom(address,address,uint256)"](contractOwner.address, four.address, tid);
+        const tx = await approvedCaller["safeTransferFrom(address,address,uint256)"](
+          contractOwner.address,
+          four.address,
+          tid
+        );
         const receipt = await tx.wait();
 
         expectEventWithArgs(receipt, "Approval", (args) => {
@@ -763,7 +936,7 @@ describe("ClipIt", function () {
       it("removes previous ask", async () => {
         const ask = {
           amount: 10,
-          currency: "0xc778417e063141139fce010982780140aa0cd5ab"
+          currency: "0xc778417e063141139fce010982780140aa0cd5ab",
         };
         await contract.setAsk(tid, ask);
 
@@ -772,7 +945,6 @@ describe("ClipIt", function () {
         const zeroAsk = await marketContract.currentAskForToken(tid);
         expect(zeroAsk.amount.toNumber()).to.eql(0);
         expect(zeroAsk.currency).to.eql(ethers.constants.AddressZero);
-
       });
     });
   });
@@ -781,11 +953,19 @@ describe("ClipIt", function () {
     beforeEach(async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
 
-      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig);
+      await mint(
+        contract,
+        metadataURI,
+        tokenURI,
+        contentHashBytes,
+        metadataHashBytes,
+        {
+          creator: Decimal.from(10),
+          owner: Decimal.from(80),
+          prevOwner: Decimal.from(10),
+        },
+        sig
+      );
     });
 
     it("can be called only by approved or owner", async () => {
@@ -794,11 +974,15 @@ describe("ClipIt", function () {
     });
 
     it("ask can not be 0", async () => {
-      await expect(contract.setAsk(tid, { ...defaultAsk(), amount: 0 })).revertedWith("Market: Ask invalid for share splitting");
+      await expect(contract.setAsk(tid, { ...defaultAsk(), amount: 0 })).revertedWith(
+        "Market: Ask invalid for share splitting"
+      );
     });
 
     it("ask can not be split between BidShares", async () => {
-      await expect(contract.setAsk(tid, { ...defaultAsk(), amount: 7 })).revertedWith("Market: Ask invalid for share splitting");
+      await expect(contract.setAsk(tid, { ...defaultAsk(), amount: 7 })).revertedWith(
+        "Market: Ask invalid for share splitting"
+      );
     });
 
     it("sets ask for token", async () => {
@@ -817,11 +1001,19 @@ describe("ClipIt", function () {
     beforeEach(async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
 
-      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig);
+      await mint(
+        contract,
+        metadataURI,
+        tokenURI,
+        contentHashBytes,
+        metadataHashBytes,
+        {
+          creator: Decimal.from(10),
+          owner: Decimal.from(80),
+          prevOwner: Decimal.from(10),
+        },
+        sig
+      );
 
       await contract.setAsk(tid, defaultAsk());
     });
@@ -850,11 +1042,19 @@ describe("ClipIt", function () {
     beforeEach(async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
 
-      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(0),
-        owner: Decimal.from(100),
-        prevOwner: Decimal.from(0)
-      }, sig);
+      await mint(
+        contract,
+        metadataURI,
+        tokenURI,
+        contentHashBytes,
+        metadataHashBytes,
+        {
+          creator: Decimal.from(0),
+          owner: Decimal.from(100),
+          prevOwner: Decimal.from(0),
+        },
+        sig
+      );
 
       bidder = contract.connect(two);
       bidderAddress = two.address;
@@ -868,19 +1068,18 @@ describe("ClipIt", function () {
       await mintCurrency(bidderAddress);
       await approveCurrency(three, marketContract.address);
       await mintCurrency(otherBidderAddress);
-
     });
 
     it("reverts on nonexisting tokenId", async () => {
-      await expect(
-        bidder.setBid(invalidTokenId, defaultBid(currencyAddress, bidderAddress))
-      ).revertedWith("ClipIt: nonexistent token");
+      await expect(bidder.setBid(invalidTokenId, defaultBid(currencyAddress, bidderAddress))).revertedWith(
+        "ClipIt: nonexistent token"
+      );
     });
 
     it("sender is not bidder reverts", async () => {
-      await expect(
-        bidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress))
-      ).revertedWith("Market: Bidder must be msg sender");
+      await expect(bidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress))).revertedWith(
+        "Market: Bidder must be msg sender"
+      );
     });
 
     it("callable only by 'media' contract", async () => {
@@ -890,9 +1089,9 @@ describe("ClipIt", function () {
     });
 
     it("cannot bid amount of 0", async () => {
-      await expect(
-        bidder.setBid(tid, { ...defaultBid(currencyAddress, bidderAddress), amount: 0 })
-      ).revertedWith("Market: cannot bid amount of 0");
+      await expect(bidder.setBid(tid, { ...defaultBid(currencyAddress, bidderAddress), amount: 0 })).revertedWith(
+        "Market: cannot bid amount of 0"
+      );
     });
 
     it("bid currency cannot be 0 address", async () => {
@@ -919,17 +1118,17 @@ describe("ClipIt", function () {
 
     it("reverts if bidder does not have enough allowance for their bidding currency", async () => {
       const noAllowanceCaller = contract.connect(four);
-      await expect(
-        noAllowanceCaller.setBid(tid, defaultBid(currencyAddress, four.address))
-      ).revertedWith("SafeERC20: ERC20 operation did not succeed");
+      await expect(noAllowanceCaller.setBid(tid, defaultBid(currencyAddress, four.address))).revertedWith(
+        "SafeERC20: ERC20 operation did not succeed"
+      );
     });
 
     it("reverts if bidder does not have enough balance for their bidding currency", async () => {
       const noBalanceCaller = contract.connect(four);
       await approveCurrency(four, marketContract.address);
-      await expect(
-        noBalanceCaller.setBid(tid, defaultBid(currencyAddress, four.address))
-      ).revertedWith("SafeERC20: ERC20 operation did not succeed");
+      await expect(noBalanceCaller.setBid(tid, defaultBid(currencyAddress, four.address))).revertedWith(
+        "SafeERC20: ERC20 operation did not succeed"
+      );
     });
 
     it("sets the bid", async () => {
@@ -952,17 +1151,19 @@ describe("ClipIt", function () {
 
       // bidder balance is corret after fist bid
       const bidderBalanceAfterBid = await currencyContract.balanceOf(bidderAddress);
-      expect(bidderBalanceAfterBid.toNumber())
-        .eql(bidderBalanceBeforeBid.sub(BigNumber.from(defBid.amount)).toNumber());
+      expect(bidderBalanceAfterBid.toNumber()).eql(
+        bidderBalanceBeforeBid.sub(BigNumber.from(defBid.amount)).toNumber()
+      );
 
       // this bid should refund previous bid
-      const higherBid = { ...defaultBid(currencyAddress, bidderAddress), amount: defBid.amount * 2 }
+      const higherBid = { ...defaultBid(currencyAddress, bidderAddress), amount: defBid.amount * 2 };
       await bidder.setBid(tid, higherBid);
 
       // bidder balance is eql as if the first bid did not happen (it was refunded)
       const bidderBalanceAfterSecodBid = await currencyContract.balanceOf(bidderAddress);
-      expect(bidderBalanceAfterSecodBid.toNumber())
-        .eql(bidderBalanceBeforeBid.sub(BigNumber.from(higherBid.amount)).toNumber());
+      expect(bidderBalanceAfterSecodBid.toNumber()).eql(
+        bidderBalanceBeforeBid.sub(BigNumber.from(higherBid.amount)).toNumber()
+      );
     });
 
     it("finalizes NFT transfer if bid > ask", async () => {
@@ -981,7 +1182,6 @@ describe("ClipIt", function () {
       expect(newOwner).eql(bidderAddress);
     });
 
-
     async function printBalance(promise: () => Promise<any>) {
       let creatorBalanceBefore = await currencyContract.balanceOf(contractOwner.address);
       let bidderBalanceBefore = await currencyContract.balanceOf(bidderAddress);
@@ -993,8 +1193,8 @@ describe("ClipIt", function () {
       let otherBalance = await currencyContract.balanceOf(otherBidderAddress);
 
       const shares = await marketContract.bidSharesForToken(tid);
-      console.log('owner shares:', shares.owner.value.toString())
-      console.log('previous owner shares:', shares.prevOwner.value.toString())
+      console.log("owner shares:", shares.owner.value.toString());
+      console.log("previous owner shares:", shares.prevOwner.value.toString());
 
       console.log(`creator balance change:`, creatorBalance.toNumber() - creatorBalanceBefore.toNumber());
       console.log(`bidder balance change:`, bidderBalance.toNumber() - bidderBalanceBefore.toNumber());
@@ -1003,9 +1203,9 @@ describe("ClipIt", function () {
 
     it("sellOnShare test", async () => {
       await contract.setAsk(tid, defaultAsk(500, currencyAddress));
-      await printBalance(async () => console.log(''));
+      await printBalance(async () => console.log(""));
 
-      console.log('\nBidder bidding 500 to creator');
+      console.log("\nBidder bidding 500 to creator");
       // bid with 10% sellOnShare
       // await bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress));
       await printBalance(() => bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress)));
@@ -1013,8 +1213,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(bidderAddress);
 
-
-      console.log('\nOther bidding 500 to bidder');
+      console.log("\nOther bidding 500 to bidder");
       bidder.setAsk(tid, defaultAsk(500, currencyAddress));
       // await otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress));
       await printBalance(() => otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress)));
@@ -1022,8 +1221,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(otherBidderAddress);
 
-
-      console.log('\nBidder bidding 500 to other');
+      console.log("\nBidder bidding 500 to other");
       otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
       // bid with 10% sellOnShare
       // await bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress));
@@ -1032,8 +1230,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(bidderAddress);
 
-
-      console.log('\nOther bidding 500 to bidder');
+      console.log("\nOther bidding 500 to bidder");
       bidder.setAsk(tid, defaultAsk(500, currencyAddress));
       // await otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress));
       await printBalance(() => otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress)));
@@ -1041,8 +1238,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(otherBidderAddress);
 
-
-      console.log('\nBidder bidding 500 to other with 50% sellOnShare');
+      console.log("\nBidder bidding 500 to other with 50% sellOnShare");
       otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
       // bid with 10% sellOnShare
       const bb = defaultBid(currencyAddress, bidderAddress);
@@ -1053,8 +1249,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(bidderAddress);
 
-
-      console.log('\nOther bidding 500 to bidder with 40% sellOnShare');
+      console.log("\nOther bidding 500 to bidder with 40% sellOnShare");
       bidder.setAsk(tid, defaultAsk(500, currencyAddress));
       const xb = defaultBid(currencyAddress, otherBidderAddress);
       xb.sellOnShare = Decimal.from(40);
@@ -1064,7 +1259,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(otherBidderAddress);
 
-      console.log('\nBidder bidding 500 to other with 0% sellOnShare');
+      console.log("\nBidder bidding 500 to other with 0% sellOnShare");
       otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
       // bid with 10% sellOnShare
       const yb = defaultBid(currencyAddress, bidderAddress);
@@ -1075,7 +1270,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(bidderAddress);
 
-      console.log('\nOther bidding 500 to bidder with 0% sellOnShare');
+      console.log("\nOther bidding 500 to bidder with 0% sellOnShare");
       bidder.setAsk(tid, defaultAsk(500, currencyAddress));
       const zb = defaultBid(currencyAddress, otherBidderAddress);
       zb.sellOnShare = Decimal.from(0);
@@ -1085,7 +1280,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(otherBidderAddress);
 
-      console.log('\nBidder bidding 500 to other with 0% sellOnShare');
+      console.log("\nBidder bidding 500 to other with 0% sellOnShare");
       otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
       // bid with 10% sellOnShare
       const wb = defaultBid(currencyAddress, bidderAddress);
@@ -1107,11 +1302,19 @@ describe("ClipIt", function () {
     beforeEach(async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
 
-      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(0),
-        owner: Decimal.from(100),
-        prevOwner: Decimal.from(0)
-      }, sig);
+      await mint(
+        contract,
+        metadataURI,
+        tokenURI,
+        contentHashBytes,
+        metadataHashBytes,
+        {
+          creator: Decimal.from(0),
+          owner: Decimal.from(100),
+          prevOwner: Decimal.from(0),
+        },
+        sig
+      );
 
       bidder = contract.connect(two);
       bidderAddress = two.address;
@@ -1128,15 +1331,11 @@ describe("ClipIt", function () {
     });
 
     it("reverts on nonexisting tokenId", async () => {
-      await expect(
-        bidder.removeBid(invalidTokenId)
-      ).revertedWith("ClipIt: token with that id does not exist");
+      await expect(bidder.removeBid(invalidTokenId)).revertedWith("ClipIt: token with that id does not exist");
     });
 
     it("reverts if there is no existing bid on token", async () => {
-      await expect(
-        bidder.removeBid(tid)
-      ).revertedWith("Market: cannot remove bid amount of 0");
+      await expect(bidder.removeBid(tid)).revertedWith("Market: cannot remove bid amount of 0");
     });
 
     it("removes bid", async () => {
@@ -1146,7 +1345,6 @@ describe("ClipIt", function () {
       expect(b.bidder).eql(ethers.constants.AddressZero);
       expect(b.amount.toString()).eql("0");
     });
-
 
     it("transfers bid amount to bidder", async () => {
       const bid = defaultBid(currencyAddress, bidderAddress);
@@ -1170,11 +1368,19 @@ describe("ClipIt", function () {
     beforeEach(async () => {
       const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
 
-      await mint(contract, metadataURI, tokenURI, contentHashBytes, metadataHashBytes, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10)
-      }, sig);
+      await mint(
+        contract,
+        metadataURI,
+        tokenURI,
+        contentHashBytes,
+        metadataHashBytes,
+        {
+          creator: Decimal.from(10),
+          owner: Decimal.from(80),
+          prevOwner: Decimal.from(10),
+        },
+        sig
+      );
 
       bidder = contract.connect(two);
       bidderAddress = two.address;
@@ -1188,48 +1394,43 @@ describe("ClipIt", function () {
       await mintCurrency(bidderAddress);
       await approveCurrency(three, marketContract.address);
       await mintCurrency(otherBidderAddress);
-
     });
 
     it("reverts on nonexisting tokenId", async () => {
-      await expect(
-        bidder.acceptBid(invalidTokenId, defaultBid(currencyAddress, bidderAddress))
-      ).revertedWith("ERC721: operator query for nonexistent token");
+      await expect(bidder.acceptBid(invalidTokenId, defaultBid(currencyAddress, bidderAddress))).revertedWith(
+        "ERC721: operator query for nonexistent token"
+      );
     });
 
     it("only approved or owner can accept bid", async () => {
-      await expect(
-        bidder.acceptBid(tid, defaultBid(currencyAddress, bidderAddress))
-      ).revertedWith("ClipIt: Only approved or owner");
+      await expect(bidder.acceptBid(tid, defaultBid(currencyAddress, bidderAddress))).revertedWith(
+        "ClipIt: Only approved or owner"
+      );
     });
 
     it("only allable via media contract", async () => {
-      await expect(
-        marketContract.acceptBid(tid, defaultBid(currencyAddress, otherBidderAddress))
-      ).revertedWith("Market: Only media contract");
+      await expect(marketContract.acceptBid(tid, defaultBid(currencyAddress, otherBidderAddress))).revertedWith(
+        "Market: Only media contract"
+      );
     });
 
     it("can not accept non-existing bid", async () => {
-      await expect(
-        contract.acceptBid(tid, defaultBid(currencyAddress, otherBidderAddress))
-      ).revertedWith("Market: cannot accept bid of 0");
+      await expect(contract.acceptBid(tid, defaultBid(currencyAddress, otherBidderAddress))).revertedWith(
+        "Market: cannot accept bid of 0"
+      );
     });
 
     it("can not accept unexpected bid (different then setBid)", async () => {
       const bid = defaultBid(currencyAddress, bidderAddress);
       await bidder.setBid(tid, bid);
-      await expect(
-        contract.acceptBid(tid, { ...bid, amount: 555 })
-      ).revertedWith("Market: Unexpected bid found.");
+      await expect(contract.acceptBid(tid, { ...bid, amount: 555 })).revertedWith("Market: Unexpected bid found.");
     });
 
     it("accepted bid has to be valid for splitting", async () => {
       const bid = defaultBid(currencyAddress, bidderAddress);
       bid.amount = 89;
       await bidder.setBid(tid, bid);
-      await expect(
-        contract.acceptBid(tid, bid)
-      ).revertedWith("Market: Bid invalid for share splitting");
+      await expect(contract.acceptBid(tid, bid)).revertedWith("Market: Bid invalid for share splitting");
     });
 
     it("accepts a bid", async () => {
@@ -1258,7 +1459,6 @@ describe("ClipIt", function () {
       expect(bidShares.owner.value.toString()).eql("75000000000000000000");
       expect(bidShares.prevOwner.value.toString()).eql("15000000000000000000");
 
-
       // Another bid -> accept -> transfer
       creatorBalanceBefore = await currencyContract.balanceOf(contractOwner.address);
       bidderBalanceBefore = await currencyContract.balanceOf(bidderAddress);
@@ -1274,9 +1474,13 @@ describe("ClipIt", function () {
       otherBalanceAfter = await currencyContract.balanceOf(otherBidderAddress);
 
       // +10% to creator, +15% from sellOnFee for prevOwner, +1% of owner share as developer fee (to contract owner)
-      expect(creatorBalanceAfter.toNumber() - creatorBalanceBefore.toNumber()).eql(0.1 * 500 + 0.15 * 500 + Math.floor(0.75 * 500 * 0.01)); // 128
+      expect(creatorBalanceAfter.toNumber() - creatorBalanceBefore.toNumber()).eql(
+        0.1 * 500 + 0.15 * 500 + Math.floor(0.75 * 500 * 0.01)
+      ); // 128
       // +75% to owner of token minus the dev fee (1% of the 75%)
-      expect(bidderBalanceAfter.toNumber() - bidderBalanceBefore.toNumber()).eql(0.75 * 500 - Math.floor(0.75 * 500 * 0.01)); // 372
+      expect(bidderBalanceAfter.toNumber() - bidderBalanceBefore.toNumber()).eql(
+        0.75 * 500 - Math.floor(0.75 * 500 * 0.01)
+      ); // 372
       expect(otherBalanceAfter.toNumber() - otherBalanceBefore.toNumber()).eql(-500);
 
       const anotherNewOwner = await contract.ownerOf(tid);
@@ -1300,7 +1504,7 @@ describe("ClipIt", function () {
 
   describe("erc165 support", () => {
     it("supports media metadata interface", async () => {
-      const interfaceId = ethers.utils.arrayify('0x4e222e66');
+      const interfaceId = ethers.utils.arrayify("0x4e222e66");
       const supportsId = await contract.supportsInterface(interfaceId);
       expect(supportsId).eq(true);
     });

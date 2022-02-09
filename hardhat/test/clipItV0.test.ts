@@ -1,9 +1,8 @@
 import { ethers, waffle } from "hardhat";
 import { expect } from "chai";
 import { BigNumber, ContractFactory, ContractReceipt, Wallet } from "ethers";
-import { ClipItV0 } from "../typechain/ClipItV0"
+import { ClipItV0 } from "../typechain/ClipItV0";
 import { generateSignature } from "../lib";
-
 
 function expectEventWithArgs<T>(receipt: ContractReceipt, eventName: string, assertion: (eventArgs: any) => T) {
   const receiptEvents = receipt.events || [];
@@ -23,17 +22,17 @@ describe.skip("ClipItV0", function () {
   const clipCID = "clipCID";
   // "clipCID" token Id
   const tid = BigNumber.from("3168405825740219867040700576505120080443780731148527622846639649708184909701");
-  const defaultBaseURI = "ipfs://"
+  const defaultBaseURI = "ipfs://";
 
   beforeEach(async () => {
     [one, two, beforeEachWallet, three] = waffle.provider.getWallets();
 
     contractFactory = await ethers.getContractFactory("ClipItV0", { signer: one });
-    contract = await contractFactory.deploy() as ClipItV0;
+    contract = (await contractFactory.deploy()) as ClipItV0;
 
     const sig = await generateSignature(one, clipCID, beforeEachWallet.address);
     await contract.mint(beforeEachWallet.address, clipCID, BigNumber.from(sig.v), sig.r, sig.s);
-  })
+  });
 
   it("deploy: set proper owner, contract name & symbol", async () => {
     const owner = await contract.owner();
@@ -69,29 +68,39 @@ describe.skip("ClipItV0", function () {
 
   it("mint: can not mint to 0 address", async () => {
     const sig = await generateSignature(one, "cid", ethers.constants.AddressZero);
-    await expect(contract.mint(ethers.constants.AddressZero, "cid", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("ERC721: mint to the zero address");
+    await expect(
+      contract.mint(ethers.constants.AddressZero, "cid", BigNumber.from(sig.v), sig.r, sig.s)
+    ).to.be.revertedWith("ERC721: mint to the zero address");
   });
 
   it("mint: can not mint CID that already exists", async () => {
     const sig = await generateSignature(one, clipCID, one.address);
     // clipCID minted in beforeEach block
-    await expect(contract.mint(one.address, clipCID, BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("ERC721: token already minted")
+    await expect(contract.mint(one.address, clipCID, BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith(
+      "ERC721: token already minted"
+    );
   });
 
   it("mint: does not allow minting with invalid signature signer", async () => {
     // signer `two` is not contract owner
     const sig = await generateSignature(two, "cid", two.address);
-    await expect(contract.mint(two.address, "cid", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("address not allowed to mint");
+    await expect(contract.mint(two.address, "cid", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith(
+      "address not allowed to mint"
+    );
   });
 
   it("mint: does not allow minting with invalid signature address", async () => {
     const sig = await generateSignature(one, "cid", three.address);
-    await expect(contract.mint(two.address, "cid", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("address not allowed to mint");
+    await expect(contract.mint(two.address, "cid", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith(
+      "address not allowed to mint"
+    );
   });
 
   it("mint: does not allow minting with invalid signature cid", async () => {
     const sig = await generateSignature(one, "cid", two.address);
-    await expect(contract.mint(two.address, "cid2", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith("address not allowed to mint");
+    await expect(contract.mint(two.address, "cid2", BigNumber.from(sig.v), sig.r, sig.s)).to.be.revertedWith(
+      "address not allowed to mint"
+    );
   });
 
   it("ownerOf: non existing tokenId reverts", async () => {
@@ -122,7 +131,7 @@ describe.skip("ClipItV0", function () {
   });
 
   it("setBaseURI: permanently changes baseTokenURI", async () => {
-    const newBase = "https://domain.com/"
+    const newBase = "https://domain.com/";
     await contract.setBaseURI(newBase);
 
     const tokenURI = await contract.tokenURI(tid);
@@ -131,17 +140,24 @@ describe.skip("ClipItV0", function () {
 
   it("approve: non existing tokenId reverts", async () => {
     await expect(
-      contract.approve(one.address, BigNumber.from("2168405825740219867040700576505120080443780731148527622846639649708184909701"))
+      contract.approve(
+        one.address,
+        BigNumber.from("2168405825740219867040700576505120080443780731148527622846639649708184909701")
+      )
     ).to.be.revertedWith("ERC721: owner query for nonexistent token");
   });
 
   it("approve: owner of token approving transfer to himself", async () => {
-    await expect(contract.approve(beforeEachWallet.address, tid)).to.be.revertedWith("ERC721: approval to current owner");
+    await expect(contract.approve(beforeEachWallet.address, tid)).to.be.revertedWith(
+      "ERC721: approval to current owner"
+    );
   });
 
   it("approve: caller is not owner / 'approved for all' approves", async () => {
     const invalidCaller = await contract.connect(three);
-    await expect(invalidCaller.approve(three.address, tid)).to.be.revertedWith("ERC721: approve caller is not owner nor approved for all");
+    await expect(invalidCaller.approve(three.address, tid)).to.be.revertedWith(
+      "ERC721: approve caller is not owner nor approved for all"
+    );
   });
 
   it("approve: approves transfer to address & emits event", async () => {
@@ -175,14 +191,14 @@ describe.skip("ClipItV0", function () {
 
   it("getApproved: non existing tokenId reverts", async () => {
     await expect(
-      contract.getApproved(BigNumber.from("2168405825740219867040700576505120080443780731148527622846639649708184909701"))
+      contract.getApproved(
+        BigNumber.from("2168405825740219867040700576505120080443780731148527622846639649708184909701")
+      )
     ).to.be.revertedWith("ERC721: approved query for nonexistent token");
   });
 
   it("setApprovalForAll: can not set approval for caller (self)", async () => {
-    await expect(
-      contract.setApprovalForAll(one.address, true)
-    ).to.be.revertedWith("ERC721: approve to caller");
+    await expect(contract.setApprovalForAll(one.address, true)).to.be.revertedWith("ERC721: approve to caller");
   });
 
   it("setApprovalForAll: approves operator for transfers & emits event", async () => {
@@ -213,7 +229,11 @@ describe.skip("ClipItV0", function () {
   describe("token transfers", function () {
     it("safeTransferFrom: non-existing token reverts", async () => {
       await expect(
-        contract["safeTransferFrom(address,address,uint256)"](one.address, beforeEachWallet.address, BigNumber.from("2168405825740219867040700576505120080443780731148527622846639649708184909701"))
+        contract["safeTransferFrom(address,address,uint256)"](
+          one.address,
+          beforeEachWallet.address,
+          BigNumber.from("2168405825740219867040700576505120080443780731148527622846639649708184909701")
+        )
       ).to.be.revertedWith("ERC721: operator query for nonexistent token");
     });
 
@@ -228,7 +248,7 @@ describe.skip("ClipItV0", function () {
       beforeEach(async () => {
         ownerCaller = await contract.connect(beforeEachWallet);
         await ownerCaller.approve(one.address, tid);
-      })
+      });
 
       it("safeTransferFrom: caller is not owner reverts", async () => {
         await expect(
@@ -240,7 +260,11 @@ describe.skip("ClipItV0", function () {
       it("safeTransferFrom: transfer to zero address reverts", async () => {
         await expect(
           // `to` can not be zero address
-          ownerCaller["safeTransferFrom(address,address,uint256)"](beforeEachWallet.address, ethers.constants.AddressZero, tid)
+          ownerCaller["safeTransferFrom(address,address,uint256)"](
+            beforeEachWallet.address,
+            ethers.constants.AddressZero,
+            tid
+          )
         ).to.be.revertedWith("ERC721: transfer to the zero address");
       });
 
@@ -248,7 +272,11 @@ describe.skip("ClipItV0", function () {
         const beforeEachWalletBalance = (await ownerCaller.balanceOf(beforeEachWallet.address)).toNumber();
         const oneAddressBalance = (await ownerCaller.balanceOf(one.address)).toNumber();
 
-        const tx = await ownerCaller["safeTransferFrom(address,address,uint256)"](beforeEachWallet.address, one.address, tid);
+        const tx = await ownerCaller["safeTransferFrom(address,address,uint256)"](
+          beforeEachWallet.address,
+          one.address,
+          tid
+        );
         const receipt = await tx.wait();
 
         expectEventWithArgs(receipt, "Approval", (args) => {

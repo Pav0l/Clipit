@@ -5,7 +5,6 @@ import { getSignerWallet, Decimal } from "../../lib";
 import { ZoraMedia } from "../../typechain/ZoraMedia";
 const Contract = require("../../artifacts/contracts/zora/Media.sol/ZoraMedia.json");
 
-
 const tokenCid = "tokenCID";
 const metadataCid = "metadataCID";
 
@@ -22,7 +21,7 @@ interface ClipData {
   metadataURI: string;
   contentHash: BytesLike;
   metadataHash: BytesLike;
-};
+}
 interface BidShares {
   prevOwner: { value: BigNumberish };
   creator: { value: BigNumberish };
@@ -41,14 +40,13 @@ const bidShares: BidShares = {
   prevOwner: Decimal.from(0),
   creator: Decimal.from(5),
   owner: Decimal.from(95),
-}
-
+};
 
 async function main() {
   const contractAddress = "0x998abeb3E57409262aE5b751f60747921B33613E";
 
   const signer = getSignerWallet();
-  const contract = (new ethers.Contract(contractAddress, Contract.abi, signer)) as ZoraMedia;
+  const contract = new ethers.Contract(contractAddress, Contract.abi, signer) as ZoraMedia;
 
   console.log("minting NFT to", signer.address);
   const tx = await contract.mint(mintData, bidShares);
@@ -56,12 +54,12 @@ async function main() {
 
   console.log(r);
 
-  console.log("Done...")
+  console.log("Done...");
 }
 
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });

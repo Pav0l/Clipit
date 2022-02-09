@@ -6,13 +6,12 @@ const Token = require("../artifacts/contracts/ClipIt.sol/ClipIt.json");
 const Market = require("../artifacts/contracts/Market.sol/Market.json");
 const Auction = require("../artifacts/contracts/AuctionHouse.sol/AuctionHouse.json");
 
-
 async function main() {
   const signer = getSignerWallet();
 
   // TOKEN
   const tokenAddress = await getTokenAddress();
-  const token = (new ethers.Contract(tokenAddress, Token.abi, signer)) as ClipIt;
+  const token = new ethers.Contract(tokenAddress, Token.abi, signer) as ClipIt;
 
   console.log("Listening for ClipIt Events...");
   token.on("Transfer", console.log);
@@ -21,7 +20,7 @@ async function main() {
 
   // MARKET
   const marketAddress = await getMarketAddress();
-  const market = (new ethers.Contract(marketAddress, Market.abi, signer));
+  const market = new ethers.Contract(marketAddress, Market.abi, signer);
 
   console.log("Listening for Market Events...");
   market.on("BidCreated", console.log);
@@ -33,7 +32,7 @@ async function main() {
 
   // AUCTION
   const auctionAddress = await getAuctionAddress();
-  const auction = (new ethers.Contract(auctionAddress, Auction.abi, signer));
+  const auction = new ethers.Contract(auctionAddress, Auction.abi, signer);
 
   console.log("Listening for Auction Events...");
   auction.on("AuctionCreated", console.log);
@@ -45,8 +44,7 @@ async function main() {
   auction.on("AuctionCanceled", console.log);
 }
 
-main()
-  .catch(error => {
-    console.error(error);
-    process.exit(1);
-  });
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

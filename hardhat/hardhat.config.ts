@@ -1,12 +1,12 @@
-import 'dotenv/config';
-import '@typechain/hardhat'
+import "dotenv/config";
+import "@typechain/hardhat";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "hardhat-gas-reporter";
 import "hardhat-docgen";
 import { task } from "hardhat/config";
 import { HardhatUserConfig } from "hardhat/config";
-import { setupWallet } from './lib/setup-wallet';
+import { setupWallet } from "./lib/setup-wallet";
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -41,9 +41,9 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200
-      }
-    }
+        runs: 200,
+      },
+    },
   },
   defaultNetwork: "hardhat",
   networks: {
@@ -56,36 +56,36 @@ const config: HardhatUserConfig = {
         initialIndex: 0,
         count: 5,
         path: "m/44'/60'/0'/0",
-        mnemonic: 'test test test test test test test test test test test junk',
-        accountsBalance: '100000000000000000000'
-      }
+        mnemonic: "test test test test test test test test test test test junk",
+        accountsBalance: "100000000000000000000",
+      },
     },
     hardhat: {
-      allowUnlimitedContractSize: true
+      allowUnlimitedContractSize: true,
     },
     ropsten: {
-      url: `https://ropsten.infura.io/v3/${process.env['INFURA_PROJECT_ID']}`,
+      url: `https://ropsten.infura.io/v3/${process.env["INFURA_PROJECT_ID"]}`,
       accounts: {
-        mnemonic: process.env['ROPSTEN_MNEMONIC'],
-        path: process.env['ROPSTEN_MNEMONIC_PATH']
-      }
+        mnemonic: process.env["ROPSTEN_MNEMONIC"],
+        path: process.env["ROPSTEN_MNEMONIC_PATH"],
+      },
     },
     rinkeby: {
-      url: `https://rinkeby.infura.io/v3/${process.env['INFURA_PROJECT_ID']}`,
+      url: `https://rinkeby.infura.io/v3/${process.env["INFURA_PROJECT_ID"]}`,
       accounts: {
-        mnemonic: process.env['RINKEBY_MNEMONIC'],
-        path: process.env['RINKEBY_MNEMONIC_PATH']
+        mnemonic: process.env["RINKEBY_MNEMONIC"],
+        path: process.env["RINKEBY_MNEMONIC_PATH"],
       },
-    }
+    },
   },
   etherscan: {
-    apiKey: process.env['ETHERSCAN_API_KEY']
+    apiKey: process.env["ETHERSCAN_API_KEY"],
   },
   docgen: {
-    path: './docs',
+    path: "./docs",
     clear: true,
-    runOnCompile: false
-  }
-}
+    runOnCompile: false,
+  },
+};
 
 export default config;

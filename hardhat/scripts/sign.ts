@@ -1,7 +1,6 @@
 import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
 import { getSignerWallet, generateSignature, generateSignatureV2 } from "../lib";
 
-
 const cid = "";
 const address = "";
 
@@ -24,10 +23,9 @@ async function main() {
   console.log("signatureV2", sigV2);
 }
 
-
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });

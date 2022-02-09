@@ -64,30 +64,15 @@ contract Market is IMarket, Ownable {
    * View Functions
    * ****************
    */
-  function bidForTokenBidder(uint256 tokenId, address bidder)
-    external
-    view
-    override
-    returns (Bid memory)
-  {
+  function bidForTokenBidder(uint256 tokenId, address bidder) external view override returns (Bid memory) {
     return _tokenBidders[tokenId][bidder];
   }
 
-  function currentAskForToken(uint256 tokenId)
-    external
-    view
-    override
-    returns (Ask memory)
-  {
+  function currentAskForToken(uint256 tokenId) external view override returns (Ask memory) {
     return _tokenAsks[tokenId];
   }
 
-  function bidSharesForToken(uint256 tokenId)
-    public
-    view
-    override
-    returns (BidShares memory)
-  {
+  function bidSharesForToken(uint256 tokenId) public view override returns (BidShares memory) {
     return _bidShares[tokenId];
   }
 
@@ -98,50 +83,31 @@ contract Market is IMarket, Ownable {
    *  Because the splitShare function uses integer division, any inconsistencies with the original and split sums
    *  would be due to a bid splitting that does not perfectly divide the bid amount.
    */
-  function isValidBid(uint256 tokenId, uint256 bidAmount)
-    public
-    view
-    override
-    returns (bool)
-  {
+  function isValidBid(uint256 tokenId, uint256 bidAmount) public view override returns (bool) {
     BidShares memory bidShares = bidSharesForToken(tokenId);
-    require(
-      isValidBidShares(bidShares),
-      "Market: Invalid bid shares for token"
-    );
+    require(isValidBidShares(bidShares), "Market: Invalid bid shares for token");
     return
       bidAmount != 0 &&
       (bidAmount ==
-        splitShare(bidShares.creator, bidAmount)
-          .add(splitShare(bidShares.prevOwner, bidAmount))
-          .add(splitShare(bidShares.owner, bidAmount)));
+        splitShare(bidShares.creator, bidAmount).add(splitShare(bidShares.prevOwner, bidAmount)).add(
+          splitShare(bidShares.owner, bidAmount)
+        ));
   }
 
   /**
    * @notice Validates that the provided bid shares sum to 100
    */
-  function isValidBidShares(BidShares memory bidShares)
-    public
-    pure
-    override
-    returns (bool)
-  {
+  function isValidBidShares(BidShares memory bidShares) public pure override returns (bool) {
     return
-      bidShares.creator.value.add(bidShares.owner.value).add(
-        bidShares.prevOwner.value
-      ) == uint256(100).mul(Decimal.BASE);
+      bidShares.creator.value.add(bidShares.owner.value).add(bidShares.prevOwner.value) ==
+      uint256(100).mul(Decimal.BASE);
   }
 
   /**
    * @notice return a % of the specified amount. This function is used to split a bid into shares
    * for a media's shareholders.
    */
-  function splitShare(Decimal.D256 memory sharePercentage, uint256 amount)
-    public
-    pure
-    override
-    returns (uint256)
-  {
+  function splitShare(Decimal.D256 memory sharePercentage, uint256 amount) public pure override returns (uint256) {
     return Decimal.mul(amount, sharePercentage).div(100);
   }
 
@@ -159,10 +125,7 @@ contract Market is IMarket, Ownable {
   function configure(address mediaContractAddress) external override {
     require(msg.sender == owner(), "Market: Only owner");
     require(mediaContract == address(0), "Market: Already configured");
-    require(
-      mediaContractAddress != address(0),
-      "Market: cannot set media contract as zero address"
-    );
+    require(mediaContractAddress != address(0), "Market: cannot set media contract as zero address");
 
     mediaContract = mediaContractAddress;
   }
@@ -171,15 +134,8 @@ contract Market is IMarket, Ownable {
    * @notice Sets bid shares for a particular tokenId. These bid shares must
    * sum to 100.
    */
-  function setBidShares(uint256 tokenId, BidShares memory bidShares)
-    public
-    override
-    onlyMediaCaller
-  {
-    require(
-      isValidBidShares(bidShares),
-      "Market: Invalid bid shares, must sum to 100"
-    );
+  function setBidShares(uint256 tokenId, BidShares memory bidShares) public override onlyMediaCaller {
+    require(isValidBidShares(bidShares), "Market: Invalid bid shares, must sum to 100");
     _bidShares[tokenId] = bidShares;
     emit BidShareUpdated(tokenId, bidShares);
   }
@@ -188,15 +144,8 @@ contract Market is IMarket, Ownable {
    * @notice Sets the ask on a particular media. If the ask cannot be evenly split into the media's
    * bid shares, this reverts.
    */
-  function setAsk(uint256 tokenId, Ask memory ask)
-    public
-    override
-    onlyMediaCaller
-  {
-    require(
-      isValidBid(tokenId, ask.amount),
-      "Market: Ask invalid for share splitting"
-    );
+  function setAsk(uint256 tokenId, Ask memory ask) public override onlyMediaCaller {
+    require(isValidBid(tokenId, ask.amount), "Market: Ask invalid for share splitting");
 
     _tokenAsks[tokenId] = ask;
     emit AskCreated(tokenId, ask);
@@ -222,20 +171,13 @@ contract Market is IMarket, Ownable {
   ) public override onlyMediaCaller {
     BidShares memory bidShares = _bidShares[tokenId];
     require(
-      bidShares.creator.value.add(bid.sellOnShare.value) <=
-        uint256(100).mul(Decimal.BASE),
+      bidShares.creator.value.add(bid.sellOnShare.value) <= uint256(100).mul(Decimal.BASE),
       "Market: Sell on fee invalid for share splitting"
     );
     require(bid.bidder != address(0), "Market: bidder cannot be 0 address");
     require(bid.amount != 0, "Market: cannot bid amount of 0");
-    require(
-      bid.currency != address(0),
-      "Market: bid currency cannot be 0 address"
-    );
-    require(
-      bid.recipient != address(0),
-      "Market: bid recipient cannot be 0 address"
-    );
+    require(bid.currency != address(0), "Market: bid currency cannot be 0 address");
+    require(bid.recipient != address(0), "Market: bid recipient cannot be 0 address");
 
     Bid storage existingBid = _tokenBidders[tokenId][bid.bidder];
 
@@ -277,11 +219,7 @@ contract Market is IMarket, Ownable {
    * @notice Removes the bid on a particular media for a bidder. The bid amount
    * is transferred from this contract to the bidder, if they have a bid placed.
    */
-  function removeBid(uint256 tokenId, address bidder)
-    public
-    override
-    onlyMediaCaller
-  {
+  function removeBid(uint256 tokenId, address bidder) public override onlyMediaCaller {
     Bid storage bid = _tokenBidders[tokenId][bidder];
     uint256 bidAmount = bid.amount;
     address bidCurrency = bid.currency;
@@ -304,11 +242,7 @@ contract Market is IMarket, Ownable {
    * This should only revert in rare instances (example, a low bid with a zero-decimal token),
    * but is necessary to ensure fairness to all shareholders.
    */
-  function acceptBid(uint256 tokenId, Bid calldata expectedBid)
-    external
-    override
-    onlyMediaCaller
-  {
+  function acceptBid(uint256 tokenId, Bid calldata expectedBid) external override onlyMediaCaller {
     Bid memory bid = _tokenBidders[tokenId][expectedBid.bidder];
     require(bid.amount > 0, "Market: cannot accept bid of 0");
     require(
@@ -318,10 +252,7 @@ contract Market is IMarket, Ownable {
         bid.recipient == expectedBid.recipient,
       "Market: Unexpected bid found."
     );
-    require(
-      isValidBid(tokenId, bid.amount),
-      "Market: Bid invalid for share splitting"
-    );
+    require(isValidBid(tokenId, bid.amount), "Market: Bid invalid for share splitting");
 
     _finalizeNFTTransfer(tokenId, bid.bidder);
   }
@@ -345,20 +276,11 @@ contract Market is IMarket, Ownable {
     token.safeTransfer(owner(), devAmount);
 
     // Transfer bid share to owner of media
-    token.safeTransfer(
-      IERC721(mediaContract).ownerOf(tokenId),
-      ownerAmount
-    );
+    token.safeTransfer(IERC721(mediaContract).ownerOf(tokenId), ownerAmount);
     // Transfer bid share to creator of media
-    token.safeTransfer(
-      ClipIt(mediaContract).tokenCreators(tokenId),
-      splitShare(bidShares.creator, bid.amount)
-    );
+    token.safeTransfer(ClipIt(mediaContract).tokenCreators(tokenId), splitShare(bidShares.creator, bid.amount));
     // Transfer bid share to previous owner of media (if applicable)
-    token.safeTransfer(
-      ClipIt(mediaContract).previousTokenOwners(tokenId),
-      splitShare(bidShares.prevOwner, bid.amount)
-    );
+    token.safeTransfer(ClipIt(mediaContract).previousTokenOwners(tokenId), splitShare(bidShares.prevOwner, bid.amount));
 
     // Transfer media to bid recipient
     ClipIt(mediaContract).auctionTransfer(tokenId, bid.recipient);
@@ -366,9 +288,7 @@ contract Market is IMarket, Ownable {
     // Calculate the bid share for the new owner,
     // equal to 100 - creatorShare - sellOnShare
     bidShares.owner = Decimal.D256(
-      uint256(100).mul(Decimal.BASE).sub(_bidShares[tokenId].creator.value).sub(
-        bid.sellOnShare.value
-      )
+      uint256(100).mul(Decimal.BASE).sub(_bidShares[tokenId].creator.value).sub(bid.sellOnShare.value)
     );
     // Set the previous owner share to the accepted bid's sell-on fee
     bidShares.prevOwner = bid.sellOnShare;

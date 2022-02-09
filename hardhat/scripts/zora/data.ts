@@ -14,16 +14,14 @@ async function main() {
 
   const signer = getSignerWallet();
 
-  const contract = (new ethers.Contract(contractAddress, ZoraMediaContract.abi, signer)) as ZoraMedia;
+  const contract = new ethers.Contract(contractAddress, ZoraMediaContract.abi, signer) as ZoraMedia;
   const marketAddr = await contract.name();
-  console.log('marketAddr', marketAddr);
-
-
+  console.log("marketAddr", marketAddr);
 }
 
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });

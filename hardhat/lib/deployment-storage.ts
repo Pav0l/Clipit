@@ -1,15 +1,23 @@
-
 import fs from "fs";
 import { ethers } from "hardhat";
 
-
-export function writeDeploymentAddresses(marketAddress: string, tokenAddress: string, auctionAddress: string, wethAddress: string, chainId: number) {
-  const data = JSON.stringify({
-    [Contract.MARKET]: marketAddress,
-    [Contract.TOKEN]: tokenAddress,
-    [Contract.AUCTION]: auctionAddress,
-    [Contract.WETH]: wethAddress,
-  }, null, 2);
+export function writeDeploymentAddresses(
+  marketAddress: string,
+  tokenAddress: string,
+  auctionAddress: string,
+  wethAddress: string,
+  chainId: number
+) {
+  const data = JSON.stringify(
+    {
+      [Contract.MARKET]: marketAddress,
+      [Contract.TOKEN]: tokenAddress,
+      [Contract.AUCTION]: auctionAddress,
+      [Contract.WETH]: wethAddress,
+    },
+    null,
+    2
+  );
 
   fs.writeFileSync(getDeploymentFilePath(chainId), data);
 }
@@ -34,8 +42,8 @@ enum Contract {
   MARKET = "market",
   TOKEN = "token",
   AUCTION = "auction",
-  WETH = "weth"
-};
+  WETH = "weth",
+}
 
 interface DeploymentData {
   [Contract.TOKEN]: string;
@@ -45,7 +53,7 @@ interface DeploymentData {
 }
 
 /**
- * getContractAddress returns address of market or token contract 
+ * getContractAddress returns address of market or token contract
  * based on the network it's called on (main/testnets/hardhat/...)
  */
 async function getContractAddress(contract: Contract): Promise<string> {
@@ -91,5 +99,3 @@ async function getContractAddress(contract: Contract): Promise<string> {
 function getDeploymentFilePath(chainId: number) {
   return `deployments/${chainId}.json`;
 }
-
-

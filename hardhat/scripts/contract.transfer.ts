@@ -4,7 +4,6 @@ import { getSignerWallet, getTokenAddress } from "../lib";
 import { ClipIt } from "../typechain/ClipIt";
 const Contract = require("../artifacts/contracts/ClipIt.sol/ClipIt.json");
 
-
 const to = "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC";
 const tokenId = "101352479550096108241817719032806142388122693513050901758856327660349146233044";
 
@@ -12,14 +11,14 @@ async function main() {
   const contractAddress = await getTokenAddress();
 
   const signer = getSignerWallet();
-  const contract = (new ethers.Contract(contractAddress, Contract.abi, signer)) as ClipIt;
+  const contract = new ethers.Contract(contractAddress, Contract.abi, signer) as ClipIt;
 
   console.log(`transfering CLIP ${tokenId} from ${signer.address} to ${to}`);
   const tx = await contract.transferFrom(signer.address, to, BigNumber.from(tokenId));
-  console.log('transacton complete...', tx);
+  console.log("transacton complete...", tx);
 
   const receipt = await tx.wait();
-  console.log('transaction receipt:', receipt);
+  console.log("transaction receipt:", receipt);
 
   if (receipt.events) {
     receipt.events.forEach((ev) => {
@@ -33,7 +32,7 @@ async function main() {
 
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });

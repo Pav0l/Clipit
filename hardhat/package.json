@@ -7,7 +7,8 @@
     "deploy:ropsten": "npx hardhat run ./scripts/deploy.ts --network ropsten",
     "deploy:rinkeby": "npx hardhat run ./scripts/deploy.ts --network rinkeby",
     "etherscan:verify:rinkeby": "npx hardhat verify --constructor-args etherscan-args.js --network rinkeby 0x8fF5d1D8A2983a476baAA36C3edcf7Ee13ACB481",
-    "test": "npx hardhat test"
+    "test": "npx hardhat test",
+    "format": "prettier -w ."
   },
   "author": "h0ppx",
   "license": "ISC",

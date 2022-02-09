@@ -32,7 +32,6 @@ import { Decimal } from "./Decimal.sol";
 import { IMarket } from "./interfaces/IMarket.sol";
 import "./interfaces/IClipIt.sol";
 
-
 contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
   using Counters for Counters.Counter;
   using SafeMath for uint256;
@@ -93,10 +92,7 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
    * the media for the specified tokenId
    */
   modifier onlyApprovedOrOwner(address spender, uint256 tokenId) {
-    require(
-      _isApprovedOrOwner(spender, tokenId),
-      "ClipIt: Only approved or owner"
-    );
+    require(_isApprovedOrOwner(spender, tokenId), "ClipIt: Only approved or owner");
     _;
   }
 
@@ -104,10 +100,7 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
    * @notice Ensure the token has been created (even if it has been burned)
    */
   modifier onlyTokenCreated(uint256 tokenId) {
-    require(
-      _tokenIdTracker.current() > tokenId,
-      "ClipIt: token with that id does not exist"
-    );
+    require(_tokenIdTracker.current() > tokenId, "ClipIt: token with that id does not exist");
     _;
   }
 
@@ -140,13 +133,7 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
    * protocol does not support a base URI, so relevant conditionals are removed.
    * @return the URI for a token
    */
-  function tokenURI(uint256 tokenId)
-    public
-    view
-    override
-    onlyTokenCreated(tokenId)
-    returns (string memory)
-  {
+  function tokenURI(uint256 tokenId) public view override onlyTokenCreated(tokenId) returns (string memory) {
     string memory _tokenURI = _tokenURIs[tokenId];
 
     return _tokenURI;
@@ -156,13 +143,7 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
    * @notice Return the metadata URI for a piece of media given the token URI
    * @return the metadata URI for the token
    */
-  function tokenMetadataURI(uint256 tokenId)
-    external
-    view
-    override
-    onlyTokenCreated(tokenId)
-    returns (string memory)
-  {
+  function tokenMetadataURI(uint256 tokenId) external view override onlyTokenCreated(tokenId) returns (string memory) {
     return _tokenMetadataURIs[tokenId];
   }
 
@@ -174,11 +155,13 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
   /**
    * @notice see IClipIt
    */
-  function mint(MediaData memory data, IMarket.BidShares memory bidShares, uint8 v, bytes32 r, bytes32 s)
-    public
-    override
-    nonReentrant
-  {
+  function mint(
+    MediaData memory data,
+    IMarket.BidShares memory bidShares,
+    uint8 v,
+    bytes32 r,
+    bytes32 s
+  ) public override nonReentrant {
     require(_verifySignature(data.contentHash, msg.sender, v, r, s), "ClipIt: address not allowed to mint");
     _mintForCreator(msg.sender, data, bidShares);
   }
@@ -186,10 +169,7 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
   /**
    * @notice see IClipIt
    */
-  function auctionTransfer(uint256 tokenId, address recipient)
-    external
-    override
-  {
+  function auctionTransfer(uint256 tokenId, address recipient) external override {
     require(msg.sender == marketContract, "ClipIt: only market contract");
     previousTokenOwners[tokenId] = ownerOf(tokenId);
     _safeTransfer(ownerOf(tokenId), recipient, tokenId, "");
@@ -210,24 +190,14 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
   /**
    * @notice see IClipIt
    */
-  function removeAsk(uint256 tokenId)
-    external
-    override
-    nonReentrant
-    onlyApprovedOrOwner(msg.sender, tokenId)
-  {
+  function removeAsk(uint256 tokenId) external override nonReentrant onlyApprovedOrOwner(msg.sender, tokenId) {
     IMarket(marketContract).removeAsk(tokenId);
   }
 
   /**
    * @notice see IClipIt
    */
-  function setBid(uint256 tokenId, IMarket.Bid memory bid)
-    public
-    override
-    nonReentrant
-    onlyExistingToken(tokenId)
-  {
+  function setBid(uint256 tokenId, IMarket.Bid memory bid) public override nonReentrant onlyExistingToken(tokenId) {
     require(msg.sender == bid.bidder, "Market: Bidder must be msg sender");
     IMarket(marketContract).setBid(tokenId, bid, msg.sender);
   }
@@ -235,12 +205,7 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
   /**
    * @notice see IClipIt
    */
-  function removeBid(uint256 tokenId)
-    external
-    override
-    nonReentrant
-    onlyTokenCreated(tokenId)
-  {
+  function removeBid(uint256 tokenId) external override nonReentrant onlyTokenCreated(tokenId) {
     IMarket(marketContract).removeBid(tokenId, msg.sender);
   }
 
@@ -269,10 +234,7 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
   {
     address owner = ownerOf(tokenId);
 
-    require(
-      tokenCreators[tokenId] == owner,
-      "ClipIt: owner is not creator of media"
-    );
+    require(tokenCreators[tokenId] == owner, "ClipIt: owner is not creator of media");
 
     _burn(tokenId);
   }
@@ -284,10 +246,7 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
    * revoke their approval once their task is complete as a best practice.
    */
   function revokeApproval(uint256 tokenId) external override nonReentrant {
-    require(
-      msg.sender == getApproved(tokenId),
-      "ClipIt: caller not approved address"
-    );
+    require(msg.sender == getApproved(tokenId), "ClipIt: caller not approved address");
     _approve(address(0), tokenId);
   }
 
@@ -368,19 +327,11 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
     IMarket(marketContract).setBidShares(tokenId, bidShares);
   }
 
-  function _setTokenContentHash(uint256 tokenId, bytes32 contentHash)
-    internal
-    virtual
-    onlyExistingToken(tokenId)
-  {
+  function _setTokenContentHash(uint256 tokenId, bytes32 contentHash) internal virtual onlyExistingToken(tokenId) {
     tokenContentHashes[tokenId] = contentHash;
   }
 
-  function _setTokenMetadataHash(uint256 tokenId, bytes32 metadataHash)
-    internal
-    virtual
-    onlyExistingToken(tokenId)
-  {
+  function _setTokenMetadataHash(uint256 tokenId, bytes32 metadataHash) internal virtual onlyExistingToken(tokenId) {
     tokenMetadataHashes[tokenId] = metadataHash;
   }
 
@@ -431,9 +382,7 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
     bytes32 s
   ) internal view returns (bool) {
     bytes32 _msgHash = keccak256(abi.encodePacked(_msg, _to));
-    bytes32 _ethSignedMsgHash = keccak256(
-      abi.encodePacked("\x19Ethereum Signed Message:\n32", _msgHash)
-    );
+    bytes32 _ethSignedMsgHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _msgHash));
 
     return ecrecover(_ethSignedMsgHash, v, r, s) == owner();
   }

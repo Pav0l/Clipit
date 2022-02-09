@@ -50,23 +50,11 @@ interface ZoraMarketInterface extends ethers.utils.Interface {
       }
     ]
   ): string;
-  encodeFunctionData(
-    functionFragment: "bidForTokenBidder",
-    values: [BigNumberish, string]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "bidSharesForToken",
-    values: [BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "bidForTokenBidder", values: [BigNumberish, string]): string;
+  encodeFunctionData(functionFragment: "bidSharesForToken", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "configure", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "currentAskForToken",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "isValidBid",
-    values: [BigNumberish, BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "currentAskForToken", values: [BigNumberish]): string;
+  encodeFunctionData(functionFragment: "isValidBid", values: [BigNumberish, BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "isValidBidShares",
     values: [
@@ -77,18 +65,9 @@ interface ZoraMarketInterface extends ethers.utils.Interface {
       }
     ]
   ): string;
-  encodeFunctionData(
-    functionFragment: "mediaContract",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "removeAsk",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "removeBid",
-    values: [BigNumberish, string]
-  ): string;
+  encodeFunctionData(functionFragment: "mediaContract", values?: undefined): string;
+  encodeFunctionData(functionFragment: "removeAsk", values: [BigNumberish]): string;
+  encodeFunctionData(functionFragment: "removeBid", values: [BigNumberish, string]): string;
   encodeFunctionData(
     functionFragment: "setAsk",
     values: [BigNumberish, { amount: BigNumberish; currency: string }]
@@ -118,42 +97,21 @@ interface ZoraMarketInterface extends ethers.utils.Interface {
       }
     ]
   ): string;
-  encodeFunctionData(
-    functionFragment: "splitShare",
-    values: [{ value: BigNumberish }, BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "splitShare", values: [{ value: BigNumberish }, BigNumberish]): string;
 
   decodeFunctionResult(functionFragment: "acceptBid", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "bidForTokenBidder",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "bidSharesForToken",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "bidForTokenBidder", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "bidSharesForToken", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "configure", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "currentAskForToken",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "currentAskForToken", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isValidBid", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "isValidBidShares",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "mediaContract",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "isValidBidShares", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "mediaContract", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "removeAsk", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "removeBid", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setAsk", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setBid", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "setBidShares",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "setBidShares", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "splitShare", data: BytesLike): Result;
 
   events: {
@@ -235,13 +193,7 @@ export class ZoraMarket extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [
-        [
-          BigNumber,
-          string,
-          string,
-          string,
-          [BigNumber] & { value: BigNumber }
-        ] & {
+        [BigNumber, string, string, string, [BigNumber] & { value: BigNumber }] & {
           amount: BigNumber;
           currency: string;
           bidder: string;
@@ -256,11 +208,7 @@ export class ZoraMarket extends BaseContract {
       overrides?: CallOverrides
     ): Promise<
       [
-        [
-          [BigNumber] & { value: BigNumber },
-          [BigNumber] & { value: BigNumber },
-          [BigNumber] & { value: BigNumber }
-        ] & {
+        [[BigNumber] & { value: BigNumber }, [BigNumber] & { value: BigNumber }, [BigNumber] & { value: BigNumber }] & {
           prevOwner: [BigNumber] & { value: BigNumber };
           creator: [BigNumber] & { value: BigNumber };
           owner: [BigNumber] & { value: BigNumber };
@@ -278,11 +226,7 @@ export class ZoraMarket extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[[BigNumber, string] & { amount: BigNumber; currency: string }]>;
 
-    isValidBid(
-      tokenId: BigNumberish,
-      bidAmount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
+    isValidBid(tokenId: BigNumberish, bidAmount: BigNumberish, overrides?: CallOverrides): Promise<[boolean]>;
 
     isValidBidShares(
       bidShares: {
@@ -372,11 +316,7 @@ export class ZoraMarket extends BaseContract {
     tokenId: BigNumberish,
     overrides?: CallOverrides
   ): Promise<
-    [
-      [BigNumber] & { value: BigNumber },
-      [BigNumber] & { value: BigNumber },
-      [BigNumber] & { value: BigNumber }
-    ] & {
+    [[BigNumber] & { value: BigNumber }, [BigNumber] & { value: BigNumber }, [BigNumber] & { value: BigNumber }] & {
       prevOwner: [BigNumber] & { value: BigNumber };
       creator: [BigNumber] & { value: BigNumber };
       owner: [BigNumber] & { value: BigNumber };
@@ -393,11 +333,7 @@ export class ZoraMarket extends BaseContract {
     overrides?: CallOverrides
   ): Promise<[BigNumber, string] & { amount: BigNumber; currency: string }>;
 
-  isValidBid(
-    tokenId: BigNumberish,
-    bidAmount: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
+  isValidBid(tokenId: BigNumberish, bidAmount: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
   isValidBidShares(
     bidShares: {
@@ -474,13 +410,7 @@ export class ZoraMarket extends BaseContract {
       bidder: string,
       overrides?: CallOverrides
     ): Promise<
-      [
-        BigNumber,
-        string,
-        string,
-        string,
-        [BigNumber] & { value: BigNumber }
-      ] & {
+      [BigNumber, string, string, string, [BigNumber] & { value: BigNumber }] & {
         amount: BigNumber;
         currency: string;
         bidder: string;
@@ -493,32 +423,21 @@ export class ZoraMarket extends BaseContract {
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<
-      [
-        [BigNumber] & { value: BigNumber },
-        [BigNumber] & { value: BigNumber },
-        [BigNumber] & { value: BigNumber }
-      ] & {
+      [[BigNumber] & { value: BigNumber }, [BigNumber] & { value: BigNumber }, [BigNumber] & { value: BigNumber }] & {
         prevOwner: [BigNumber] & { value: BigNumber };
         creator: [BigNumber] & { value: BigNumber };
         owner: [BigNumber] & { value: BigNumber };
       }
     >;
 
-    configure(
-      mediaContractAddress: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    configure(mediaContractAddress: string, overrides?: CallOverrides): Promise<void>;
 
     currentAskForToken(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[BigNumber, string] & { amount: BigNumber; currency: string }>;
 
-    isValidBid(
-      tokenId: BigNumberish,
-      bidAmount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
+    isValidBid(tokenId: BigNumberish, bidAmount: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
     isValidBidShares(
       bidShares: {
@@ -533,11 +452,7 @@ export class ZoraMarket extends BaseContract {
 
     removeAsk(tokenId: BigNumberish, overrides?: CallOverrides): Promise<void>;
 
-    removeBid(
-      tokenId: BigNumberish,
-      bidder: string,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    removeBid(tokenId: BigNumberish, bidder: string, overrides?: CallOverrides): Promise<void>;
 
     setAsk(
       tokenId: BigNumberish,
@@ -580,10 +495,7 @@ export class ZoraMarket extends BaseContract {
       tokenId?: BigNumberish | null,
       ask?: null
     ): TypedEventFilter<
-      [
-        BigNumber,
-        [BigNumber, string] & { amount: BigNumber; currency: string }
-      ],
+      [BigNumber, [BigNumber, string] & { amount: BigNumber; currency: string }],
       {
         tokenId: BigNumber;
         ask: [BigNumber, string] & { amount: BigNumber; currency: string };
@@ -594,10 +506,7 @@ export class ZoraMarket extends BaseContract {
       tokenId?: BigNumberish | null,
       ask?: null
     ): TypedEventFilter<
-      [
-        BigNumber,
-        [BigNumber, string] & { amount: BigNumber; currency: string }
-      ],
+      [BigNumber, [BigNumber, string] & { amount: BigNumber; currency: string }],
       {
         tokenId: BigNumber;
         ask: [BigNumber, string] & { amount: BigNumber; currency: string };
@@ -610,13 +519,7 @@ export class ZoraMarket extends BaseContract {
     ): TypedEventFilter<
       [
         BigNumber,
-        [
-          BigNumber,
-          string,
-          string,
-          string,
-          [BigNumber] & { value: BigNumber }
-        ] & {
+        [BigNumber, string, string, string, [BigNumber] & { value: BigNumber }] & {
           amount: BigNumber;
           currency: string;
           bidder: string;
@@ -626,13 +529,7 @@ export class ZoraMarket extends BaseContract {
       ],
       {
         tokenId: BigNumber;
-        bid: [
-          BigNumber,
-          string,
-          string,
-          string,
-          [BigNumber] & { value: BigNumber }
-        ] & {
+        bid: [BigNumber, string, string, string, [BigNumber] & { value: BigNumber }] & {
           amount: BigNumber;
           currency: string;
           bidder: string;
@@ -648,13 +545,7 @@ export class ZoraMarket extends BaseContract {
     ): TypedEventFilter<
       [
         BigNumber,
-        [
-          BigNumber,
-          string,
-          string,
-          string,
-          [BigNumber] & { value: BigNumber }
-        ] & {
+        [BigNumber, string, string, string, [BigNumber] & { value: BigNumber }] & {
           amount: BigNumber;
           currency: string;
           bidder: string;
@@ -664,13 +555,7 @@ export class ZoraMarket extends BaseContract {
       ],
       {
         tokenId: BigNumber;
-        bid: [
-          BigNumber,
-          string,
-          string,
-          string,
-          [BigNumber] & { value: BigNumber }
-        ] & {
+        bid: [BigNumber, string, string, string, [BigNumber] & { value: BigNumber }] & {
           amount: BigNumber;
           currency: string;
           bidder: string;
@@ -686,13 +571,7 @@ export class ZoraMarket extends BaseContract {
     ): TypedEventFilter<
       [
         BigNumber,
-        [
-          BigNumber,
-          string,
-          string,
-          string,
-          [BigNumber] & { value: BigNumber }
-        ] & {
+        [BigNumber, string, string, string, [BigNumber] & { value: BigNumber }] & {
           amount: BigNumber;
           currency: string;
           bidder: string;
@@ -702,13 +581,7 @@ export class ZoraMarket extends BaseContract {
       ],
       {
         tokenId: BigNumber;
-        bid: [
-          BigNumber,
-          string,
-          string,
-          string,
-          [BigNumber] & { value: BigNumber }
-        ] & {
+        bid: [BigNumber, string, string, string, [BigNumber] & { value: BigNumber }] & {
           amount: BigNumber;
           currency: string;
           bidder: string;
@@ -724,11 +597,7 @@ export class ZoraMarket extends BaseContract {
     ): TypedEventFilter<
       [
         BigNumber,
-        [
-          [BigNumber] & { value: BigNumber },
-          [BigNumber] & { value: BigNumber },
-          [BigNumber] & { value: BigNumber }
-        ] & {
+        [[BigNumber] & { value: BigNumber }, [BigNumber] & { value: BigNumber }, [BigNumber] & { value: BigNumber }] & {
           prevOwner: [BigNumber] & { value: BigNumber };
           creator: [BigNumber] & { value: BigNumber };
           owner: [BigNumber] & { value: BigNumber };
@@ -762,32 +631,18 @@ export class ZoraMarket extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    bidForTokenBidder(
-      tokenId: BigNumberish,
-      bidder: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    bidForTokenBidder(tokenId: BigNumberish, bidder: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    bidSharesForToken(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    bidSharesForToken(tokenId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     configure(
       mediaContractAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    currentAskForToken(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    currentAskForToken(tokenId: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
-    isValidBid(
-      tokenId: BigNumberish,
-      bidAmount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    isValidBid(tokenId: BigNumberish, bidAmount: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     isValidBidShares(
       bidShares: {
@@ -800,10 +655,7 @@ export class ZoraMarket extends BaseContract {
 
     mediaContract(overrides?: CallOverrides): Promise<BigNumber>;
 
-    removeAsk(
-      tokenId: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
+    removeAsk(tokenId: BigNumberish, overrides?: Overrides & { from?: string | Promise<string> }): Promise<BigNumber>;
 
     removeBid(
       tokenId: BigNumberish,
@@ -860,26 +712,16 @@ export class ZoraMarket extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    bidForTokenBidder(
-      tokenId: BigNumberish,
-      bidder: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    bidForTokenBidder(tokenId: BigNumberish, bidder: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    bidSharesForToken(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    bidSharesForToken(tokenId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     configure(
       mediaContractAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    currentAskForToken(
-      tokenId: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    currentAskForToken(tokenId: BigNumberish, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     isValidBid(
       tokenId: BigNumberish,

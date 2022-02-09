@@ -1,7 +1,6 @@
 import { ethers } from "hardhat";
 import { getSignerWallet } from "../lib";
 
-
 async function main() {
   const deployer = getSignerWallet();
   const network = await ethers.provider.getNetwork();
@@ -20,13 +19,12 @@ async function main() {
 
   console.log("WETH contract deployed to:", weth.address);
 
-  console.log("Done!")
+  console.log("Done!");
 }
-
 
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });

@@ -5,7 +5,6 @@ import { getSignerWallet, getTokenAddress, generateSignatureV2, Decimal } from "
 import { ClipIt } from "../../typechain/ClipIt";
 const Contract = require("../../artifacts/contracts/ClipIt.sol/ClipIt.json");
 
-
 const tokenCid = "tokenCID";
 const metadataCid = "metadataCID";
 /**
@@ -26,7 +25,7 @@ interface ClipData {
   metadataURI: string;
   contentHash: BytesLike;
   metadataHash: BytesLike;
-};
+}
 interface BidShares {
   prevOwner: { value: BigNumberish };
   creator: { value: BigNumberish };
@@ -45,8 +44,7 @@ const bidShares: BidShares = {
   prevOwner: Decimal.from(0),
   creator: Decimal.from(5),
   owner: Decimal.from(95),
-}
-
+};
 
 async function main() {
   const contractAddress = await getTokenAddress();
@@ -55,18 +53,17 @@ async function main() {
   const creator = wallets[1];
 
   const signer = getSignerWallet();
-  const contract = (new ethers.Contract(contractAddress, Contract.abi, creator)) as ClipIt;
-
+  const contract = new ethers.Contract(contractAddress, Contract.abi, creator) as ClipIt;
 
   console.log("generating signature...");
   const signature = await generateSignatureV2(signer, contentHash, creator.address);
 
   console.log("minting CLIP...", mintData, bidShares);
   const tx = await contract.mint(mintData, bidShares, BigNumber.from(signature.v), signature.r, signature.s);
-  console.log('transacton complete...', tx);
+  console.log("transacton complete...", tx);
 
   const receipt = await tx.wait();
-  console.log('transaction receipt:', receipt);
+  console.log("transaction receipt:", receipt);
 
   if (receipt.events) {
     receipt.events.forEach((ev) => {
@@ -80,7 +77,7 @@ async function main() {
 
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });
