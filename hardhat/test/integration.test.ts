@@ -123,6 +123,7 @@ describe.only("AuctionHouse", function () {
 
     const bidderBalance = await wethCaller.balanceOf(bidder.address);
     expect(bidderBalance.toString()).eql(BigNumber.from(0).toString());
+    expect(await tokenContract.ownerOf(tid)).eql(three.address);
   });
 
   it("auction in erc20", async () => {
@@ -152,6 +153,7 @@ describe.only("AuctionHouse", function () {
 
     const bidderBalance = await currencyContract.balanceOf(bidder.address);
     expect(bidderBalance.toString()).eql(BigNumber.from(0).toString());
+    expect(await tokenContract.ownerOf(tid)).eql(three.address);
   });
 
   it("auction in native ETH", async () => {
@@ -171,5 +173,6 @@ describe.only("AuctionHouse", function () {
     const ownerBalanceAfter = await owner.getBalance();
     // just make sure balance increased
     expect(ownerBalanceAfter.gt(ownerBalanceBefore)).eql(true);
+    expect(await tokenContract.ownerOf(tid)).eql(three.address);
   });
 });
