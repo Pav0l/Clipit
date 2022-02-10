@@ -9,7 +9,7 @@ import { AuctionHouse, WETH } from "../typechain";
 import { expect } from "chai";
 import { Decimal, generateSignatureV2 } from "../lib";
 
-describe.only("AuctionHouse", function () {
+describe("AuctionHouse", function () {
   let tokenContract: ClipIt;
   let marketContract: Market;
   let auctionContract: AuctionHouse;
