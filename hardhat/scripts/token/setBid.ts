@@ -27,10 +27,11 @@ async function main() {
   await currency.approve(market.address, ethers.constants.MaxUint256);
   // await currency.deposit({ value: bidAmount });
 
-  const currencyVal = await currency.balanceOf(bidder.address);
-  console.log("currency", currencyVal.toString());
-  const xxxx = await currency.allowance(bidder.address, token.address);
-  console.log("allowance", xxxx.toString());
+  const bidderBalance = await currency.balanceOf(bidder.address);
+  console.log("currency", bidderBalance.toString());
+
+  const bidderAllowance = await currency.allowance(bidder.address, token.address);
+  console.log("allowance", bidderAllowance.toString());
 
   const ownerOf = await token.ownerOf(tokenId);
   console.log(`ownerof:${ownerOf}; bidder:${bidder.address}`);
@@ -38,7 +39,7 @@ async function main() {
   // @USER This needs to be set by the user
   const bid = {
     amount: bidAmount,
-    currency: wethAddress, // localhost WETH contract address
+    currency: wethAddress,
     bidder: bidder.address,
     recipient: bidder.address,
     sellOnShare: Decimal.from(0),

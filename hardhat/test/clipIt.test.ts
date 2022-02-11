@@ -5,7 +5,7 @@ import { ClipIt } from "../typechain/ClipIt";
 import { Market } from "../typechain/Market";
 import { BaseERC20 } from "../typechain/BaseERC20";
 
-import { generateSignatureV2, Decimal } from "../lib";
+import { generateSignature, Decimal } from "../lib";
 import { arrayify, Bytes, Signature } from "@ethersproject/contracts/node_modules/@ethersproject/bytes";
 import { keccak256, sha256, toUtf8Bytes } from "ethers/lib/utils";
 
@@ -149,7 +149,7 @@ describe("ClipIt", function () {
 
   describe("mint:", () => {
     it("generates new token", async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, two.address);
+      const sig = await generateSignature(contractOwner, contentHash, two.address);
 
       const signerTwo = await contract.connect(two);
       const tx = await mint(
@@ -210,7 +210,7 @@ describe("ClipIt", function () {
     // });
 
     it("can not mint content that already was already minted", async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
       await mint(
         contract,
         metadataURI,
@@ -244,7 +244,7 @@ describe("ClipIt", function () {
 
     it("does not allow minting with invalid signature signer", async () => {
       // signer `two` is not contract owner
-      const sig = await generateSignatureV2(two, contentHash, two.address);
+      const sig = await generateSignature(two, contentHash, two.address);
       await expect(
         mint(
           contract,
@@ -263,7 +263,7 @@ describe("ClipIt", function () {
     });
 
     it("does not allow minting with invalid signature address", async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, three.address);
+      const sig = await generateSignature(contractOwner, contentHash, three.address);
       // signed address and msg.sender do not match
       await expect(
         mint(
@@ -284,7 +284,7 @@ describe("ClipIt", function () {
 
     it("does not allow minting with invalid signature cid", async () => {
       const contentHash = keccak256(toUtf8Bytes("other content identifier"));
-      const sig = await generateSignatureV2(contractOwner, contentHash, three.address);
+      const sig = await generateSignature(contractOwner, contentHash, three.address);
       // signed contentHash and ocntentHashBytes do not match
       await expect(
         mint(
@@ -304,7 +304,7 @@ describe("ClipIt", function () {
     });
 
     it("token and mint URIs must exist", async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
       // empty metadataURI
       await expect(
         mint(
@@ -341,7 +341,7 @@ describe("ClipIt", function () {
     });
 
     it("contentHash can not be empty", async () => {
-      const sig = await generateSignatureV2(contractOwner, ethers.constants.HashZero, contractOwner.address);
+      const sig = await generateSignature(contractOwner, ethers.constants.HashZero, contractOwner.address);
       await expect(
         mint(
           contract,
@@ -360,7 +360,7 @@ describe("ClipIt", function () {
     });
 
     it("metadataHash can not be empty", async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
       await expect(
         mint(
           contract,
@@ -379,7 +379,7 @@ describe("ClipIt", function () {
     });
 
     it("bidShares must eql to 100", async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
       await expect(
         mint(
           contract,
@@ -401,7 +401,7 @@ describe("ClipIt", function () {
 
   describe("burn:", () => {
     beforeEach(async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
         contract,
@@ -533,7 +533,7 @@ describe("ClipIt", function () {
     const newURI = "www.example.com";
 
     beforeEach(async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
         contract,
@@ -606,7 +606,7 @@ describe("ClipIt", function () {
     const newURI = "www.example.com";
 
     beforeEach(async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
         contract,
@@ -679,7 +679,7 @@ describe("ClipIt", function () {
 
   describe("approve:", () => {
     beforeEach(async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
         contract,
@@ -785,7 +785,7 @@ describe("ClipIt", function () {
 
   describe("revokeApproval:", () => {
     beforeEach(async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
         contract,
@@ -844,7 +844,7 @@ describe("ClipIt", function () {
 
   describe("safeTransferFrom:", () => {
     beforeEach(async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
         contract,
@@ -951,7 +951,7 @@ describe("ClipIt", function () {
 
   describe("setAsk:", () => {
     beforeEach(async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
         contract,
@@ -999,7 +999,7 @@ describe("ClipIt", function () {
 
   describe("removeAsk:", () => {
     beforeEach(async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
         contract,
@@ -1040,7 +1040,7 @@ describe("ClipIt", function () {
     let currencyAddress: string;
 
     beforeEach(async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
         contract,
@@ -1300,7 +1300,7 @@ describe("ClipIt", function () {
     let currencyAddress: string;
 
     beforeEach(async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
         contract,
@@ -1366,7 +1366,7 @@ describe("ClipIt", function () {
     let currencyAddress: string;
 
     beforeEach(async () => {
-      const sig = await generateSignatureV2(contractOwner, contentHash, contractOwner.address);
+      const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
         contract,

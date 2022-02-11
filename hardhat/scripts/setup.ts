@@ -1,14 +1,7 @@
 import { BytesLike, BigNumber, BigNumberish } from "ethers";
 import { keccak256, arrayify, toUtf8Bytes, parseUnits } from "ethers/lib/utils";
 import { ethers } from "hardhat";
-import {
-  getSignerWallet,
-  getTokenAddress,
-  generateSignatureV2,
-  getWETHAddress,
-  Decimal,
-  getMarketAddress,
-} from "../lib";
+import { getSignerWallet, getTokenAddress, generateSignature, getWETHAddress, Decimal, getMarketAddress } from "../lib";
 import { ClipIt } from "../typechain/ClipIt";
 import { WETH } from "../typechain";
 const Contract = require("../artifacts/contracts/ClipIt.sol/ClipIt.json");
@@ -62,7 +55,7 @@ async function main() {
   const contract = new ethers.Contract(contractAddress, Contract.abi, creator) as ClipIt;
 
   console.log("generating signature...");
-  const signature = await generateSignatureV2(contractOwner, contentHash, creator.address);
+  const signature = await generateSignature(contractOwner, contentHash, creator.address);
 
   console.log("minting CLIP...");
   let tx = await contract.mint(mintData, bidShares, BigNumber.from(signature.v), signature.r, signature.s);

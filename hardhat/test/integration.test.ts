@@ -7,7 +7,7 @@ import { BaseERC20 } from "../typechain/BaseERC20";
 import { sha256, toUtf8Bytes } from "ethers/lib/utils";
 import { AuctionHouse, WETH } from "../typechain";
 import { expect } from "chai";
-import { Decimal, generateSignatureV2 } from "../lib";
+import { Decimal, generateSignature } from "../lib";
 
 describe("AuctionHouse", function () {
   let tokenContract: ClipIt;
@@ -44,7 +44,7 @@ describe("AuctionHouse", function () {
   }
 
   async function setupToken(owner: Wallet) {
-    const sig = await generateSignatureV2(deployer, contentHash, owner.address);
+    const sig = await generateSignature(deployer, contentHash, owner.address);
     const data = {
       tokenURI,
       metadataURI,

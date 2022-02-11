@@ -1,16 +1,12 @@
 import { BytesLike, BigNumber, BigNumberish } from "ethers";
 import { keccak256, arrayify, toUtf8Bytes } from "ethers/lib/utils";
 import { ethers } from "hardhat";
-import { getSignerWallet, getTokenAddress, generateSignatureV2, Decimal } from "../../lib";
+import { getSignerWallet, getTokenAddress, generateSignature, Decimal } from "../../lib";
 import { ClipIt } from "../../typechain/ClipIt";
 const Contract = require("../../artifacts/contracts/ClipIt.sol/ClipIt.json");
 
 const tokenCid = "tokenCID";
 const metadataCid = "metadataCID";
-/**
- * Wallet address that you wnat to mint to
- */
-const address = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 
 const metadataURI = `ipfs://${metadataCid}`;
 const metadataHash = keccak256(toUtf8Bytes(metadataCid));
@@ -56,7 +52,7 @@ async function main() {
   const contract = new ethers.Contract(contractAddress, Contract.abi, creator) as ClipIt;
 
   console.log("generating signature...");
-  const signature = await generateSignatureV2(signer, contentHash, creator.address);
+  const signature = await generateSignature(signer, contentHash, creator.address);
 
   console.log("minting CLIP...", mintData, bidShares);
   const tx = await contract.mint(mintData, bidShares, BigNumber.from(signature.v), signature.r, signature.s);

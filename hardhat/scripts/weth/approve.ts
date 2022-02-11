@@ -3,11 +3,11 @@ import { getMarketAddress, getSignerWallet, getWETHAddress } from "../../lib";
 import { WETH } from "../../typechain";
 const WETHContract = require("../../artifacts/contracts/tests/WETH.sol/WETH.json");
 
-const ONE_ETH = ethers.utils.parseUnits("1", "ether");
+const AMOUNT = ethers.utils.parseUnits("1", "ether");
 
 async function main() {
   const wethAddress = await getWETHAddress();
-  const marketAddress = "0x85e946e1Bd35EC91044Dc83A5DdAB2B6A262ffA6"; // Zora Market address on Rinkeby
+  const marketAddress = await getMarketAddress();
 
   const signer = await getSignerWallet();
   const weth = new ethers.Contract(wethAddress, WETHContract.abi, signer) as WETH;
@@ -17,10 +17,9 @@ async function main() {
 
   const balance = await weth.balanceOf(signer.address);
   console.log(`${signer.address} WETH balance is: ${balance}`);
-  console.log("1ETH", ethers.utils.parseUnits("1", "ether"));
 
   console.log(`Approving ${marketAddress} the allowance for ${signer.address}`);
-  const tx = await weth.approve(marketAddress, ONE_ETH);
+  const tx = await weth.approve(marketAddress, AMOUNT);
 
   const r = await tx.wait();
   console.log("tx receipt:", r);

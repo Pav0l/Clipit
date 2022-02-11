@@ -14,10 +14,9 @@ async function main() {
   const creator = wallets[1];
   const token = new ethers.Contract(tokenAddress, Contract.abi, creator) as ClipIt;
 
-  // @USER This needs to be set by the user
   const ask = {
     amount: parseUnits("1", "ether"),
-    currency: wethAddress, // localhost WETH contract address
+    currency: wethAddress,
   };
 
   console.log(`Setting ask for token:${tokenId}`, ask);

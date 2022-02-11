@@ -4,7 +4,7 @@ import { getSignerWallet, getWETHAddress } from "../../lib";
 import { WETH } from "../../typechain";
 const WETHContract = require("../../artifacts/contracts/tests/WETH.sol/WETH.json");
 
-const ONE_ETH = parseUnits("1", "ether");
+const AMOUNT = parseUnits("1", "ether");
 
 async function main() {
   const wethAddress = await getWETHAddress();
@@ -17,12 +17,12 @@ async function main() {
   let wethBalance = await weth.balanceOf(signer.address);
   console.log(`Signer WETH balance:${wethBalance.toString()}`);
 
-  if (wethBalance.lte(ONE_ETH)) {
+  if (wethBalance.lte(AMOUNT)) {
     throw new Error(`Signers WETH balance is lower then the amount you're trying to withdraw`);
   }
 
-  console.log(`Withdrawing ${ONE_ETH.toString()}wei from WETH at ${wethAddress} to ${signer.address}`);
-  const tx = await weth.withdraw(ONE_ETH);
+  console.log(`Withdrawing ${AMOUNT.toString()}wei from WETH at ${wethAddress} to ${signer.address}`);
+  const tx = await weth.withdraw(AMOUNT);
 
   console.log("transaction:", tx);
 

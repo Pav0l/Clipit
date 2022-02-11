@@ -1,57 +1,91 @@
-import { ethers, network } from "hardhat";
-import { writeFileSync } from "fs";
-import deployments from "../deployment.json";
-import { getSignerWallet, DEPLOYMENT_FILE_PATH, ETHERSCAN_ARGS_FILE_PATH, CONTRACT_NAME } from "../lib";
+import { ethers } from "hardhat";
+import { getSignerWallet, CONTRACT_NAME, writeDeploymentAddresses, getWETHAddress } from "../lib";
 
 async function main() {
-  const signer = getSignerWallet();
+  const deployer = getSignerWallet();
+  const network = await ethers.provider.getNetwork();
+  console.log("Init deployment flow from address:", deployer.address);
 
-  console.log(`Deploying contract from address`, signer.address);
+  const deployerBalanceBefore = await ethers.provider.getBalance(deployer.address);
+  console.log("Deployer balance:", ethers.utils.formatEther(deployerBalanceBefore), "ETH");
 
-  const balance = await ethers.provider.getBalance(signer.address);
-  console.log(`Address balance ${ethers.utils.formatEther(balance)} ETH`);
+  // Market
+  console.log(`Deploying Market contract to ${network.name}(${network.chainId})...`);
+  const MarketFactory = await ethers.getContractFactory("Market", { signer: deployer });
+  const market = await MarketFactory.deploy();
 
-  const ContractFactory = await ethers.getContractFactory(CONTRACT_NAME, { signer });
-  const estimatedGas = await signer.estimateGas(ContractFactory.getDeployTransaction());
-  console.log(`estimated gas`, estimatedGas.toString());
+  console.log("Waiting for the Market contract to be deployed. tx hash:", market.deployTransaction.hash);
+  console.log(
+    "gas limit & gas price of the tx:",
+    market.deployTransaction.gasLimit.toString(),
+    market.deployTransaction.gasPrice?.toString()
+  );
+  await market.deployed();
+  console.log("Market contract deployed to:", market.address);
 
-  const factoryaaddr = await ContractFactory.signer.getAddress();
-
-  let balanceF = await ethers.provider.getBalance(factoryaaddr);
-  console.log(`Address ${factoryaaddr} balance ${ethers.utils.formatEther(balanceF)} ETH`);
-
-  console.log("Deploying...");
-  const contract = await ContractFactory.deploy();
-
-  console.log(`Waiting for the contract to be deployed...`);
-  console.log(`Check progress on EtherScan by searching: ${contract.address}`);
-  await contract.deployed();
-  console.log("Contract deployed to:", contract.address);
-  console.log("Updating deployment file and etherscan args file...");
-
-  const provider = network.name;
-
-  const data = JSON.stringify(
-    {
-      ...deployments,
-      [provider]: {
-        /* TODO ADD RELEVANT DATA FOR DEPLOYMENT FILE */
-        address: contract.address,
-      },
-    },
-    null,
-    2
+  const deployerBalanceAfterMarket = await ethers.provider.getBalance(deployer.address);
+  console.log(
+    "Market deployment cost",
+    ethers.utils.formatEther(deployerBalanceBefore.sub(deployerBalanceAfterMarket)),
+    "ETH"
   );
 
-  writeFileSync(DEPLOYMENT_FILE_PATH, data);
+  // Token
+  console.log(`Deploying ClipIt token contract...`);
+  const TokenFactory = await ethers.getContractFactory(CONTRACT_NAME, { signer: deployer });
+  const token = await TokenFactory.deploy(market.address);
 
-  const etherscanArgs = `module.exports = [
-    ${/* TODO ETHERSCAN ARGS */ ""},
-  ];`;
+  console.log("Waiting for ClipIt to be deployed...", token.deployTransaction.hash);
+  console.log(
+    "gas limit & gas price",
+    token.deployTransaction.gasLimit.toString(),
+    token.deployTransaction.gasPrice?.toString()
+  );
+  await token.deployed();
+  console.log("ClipIt deployed to:", token.address);
 
-  writeFileSync(ETHERSCAN_ARGS_FILE_PATH, etherscanArgs);
+  const deployerBalanceAfterToken = await ethers.provider.getBalance(deployer.address);
+  console.log(
+    "Token deployment cost",
+    ethers.utils.formatEther(deployerBalanceAfterMarket.sub(deployerBalanceAfterToken)),
+    "ETH"
+  );
 
-  console.log("Don't forget to update npm scripts & docs with new contract address");
+  console.log("Configuring media token address to Market contract");
+  await market.configure(token.address);
+
+  // Auction House
+  console.log(`Deploying Auction House contract...`);
+  const wethAddress = await getWETHAddress();
+
+  const AuctionFactory = await ethers.getContractFactory("AuctionHouse", { signer: deployer });
+  const auction = await AuctionFactory.deploy(token.address, wethAddress);
+
+  console.log("Waiting for Auction House to be deployed...", auction.deployTransaction.hash);
+  console.log(
+    "gas limit & gas price",
+    auction.deployTransaction.gasLimit.toString(),
+    auction.deployTransaction.gasPrice?.toString()
+  );
+  await auction.deployed();
+  console.log("Auction House deployed to:", auction.address);
+
+  const deployerBalanceAfterAuction = await ethers.provider.getBalance(deployer.address);
+  console.log(
+    "Auction deployment cost",
+    ethers.utils.formatEther(deployerBalanceAfterToken.sub(deployerBalanceAfterAuction)),
+    "ETH"
+  );
+
+  console.log(
+    "Total deployment cost:",
+    ethers.utils.formatEther(deployerBalanceBefore.sub(deployerBalanceAfterAuction)),
+    "ETH"
+  );
+  console.log("Storing contract addresses to deployment file...");
+  writeDeploymentAddresses(market.address, token.address, auction.address, wethAddress, network.chainId);
+
+  console.log("Done!");
 }
 
 main()

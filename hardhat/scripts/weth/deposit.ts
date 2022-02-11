@@ -4,7 +4,7 @@ import { getSignerWallet, getWETHAddress } from "../../lib";
 import { WETH } from "../../typechain";
 const WETHContract = require("../../artifacts/contracts/tests/WETH.sol/WETH.json");
 
-const ONE_ETH = parseUnits("3", "ether");
+const AMOUNT = parseUnits("3", "ether");
 
 async function main() {
   const wethAddress = await getWETHAddress();
@@ -17,8 +17,8 @@ async function main() {
   let wethBalance = await weth.balanceOf(signer.address);
   console.log(`Signer WETH balance:${wethBalance.toString()}`);
 
-  console.log(`Depositing ${ONE_ETH.toString()}ETH to WETH at ${wethAddress} from ${signer.address}`);
-  const tx = await weth.deposit({ value: ONE_ETH });
+  console.log(`Depositing ${AMOUNT.toString()}ETH to WETH at ${wethAddress} from ${signer.address}`);
+  const tx = await weth.deposit({ value: AMOUNT });
 
   console.log("transaction:", tx);
 
