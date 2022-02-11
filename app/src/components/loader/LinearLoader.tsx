@@ -38,5 +38,6 @@ const useStyles = makeStyles(() => ({
     textAlign: "center",
     minHeight: "90vh",
     margin: "0 1rem",
+    width: "48vw",
   },
 }));

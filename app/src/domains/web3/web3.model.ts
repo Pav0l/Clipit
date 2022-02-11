@@ -4,7 +4,7 @@ import { formatCurrencyAmountToDisplayAmount } from "../../lib/ethereum/currency
 import { MetaModel } from "../app/meta.model";
 
 export enum MintStatus {
-  CONFIRM_MINT = "Clip ready to be turned into an NFT!\nPlease confirm the transaction in MetaMask",
+  CONFIRM_MINT = "Clip ready to be turned into an NFT! Please confirm the transaction in MetaMask",
   WAIT_FOR_MINT_TX = "Clip minted, waiting for the transaction to confirm...",
 }
 
@@ -14,27 +14,27 @@ enum StoreClipStatus {
 }
 
 export enum AuctionLoadStatus {
-  APPROVE_TOKEN = "Approving Auction contract to work with your NFT.\nPlease confirm the transaction in Metamask",
+  APPROVE_TOKEN = "Approving Auction contract to work with your NFT. Please confirm the transaction in Metamask",
   WAIT_FOR_APPROVE_TOKEN_TX = "Auction contract approved, waiting for the transaction to confirm...",
-  CONFIRM_CREATE_AUCTION = "Auction ready to be created.\nPlease confirm the transaction in Metamask",
+  CONFIRM_CREATE_AUCTION = "Auction ready to be created. Please confirm the transaction in Metamask",
   WAIT_FOR_AUCTION_CREATE_TX = "Auction created, waiting for the transaction to confirm...",
   CREATE_AUCTION_SUCCESS = "Auction created successfully",
 }
 
 export enum AuctionBidLoadStatus {
-  CONFIRM_AUCTION_BID = "Bid ready to be created.\nPlease confirm the transaction in Metamask",
+  CONFIRM_AUCTION_BID = "Bid ready to be created. Please confirm the transaction in Metamask",
   WAIT_FOR_AUCTION_BID_TX = "Bid created, waiting for the transaction to confirm...",
   AUCTION_BID_SUCCESS = "Bid created successfully",
 }
 
 export enum AuctionCancelLoadStatus {
-  CONFIRM_AUCTION_CANCEL = "Transaction ready to be created.\nPlease confirm it in Metamask",
+  CONFIRM_AUCTION_CANCEL = "Transaction ready to be created. Please confirm it in Metamask",
   WAIT_FOR_AUCTION_CANCEL_TX = "Auction canceled, waiting for the transaction to confirm...",
   AUCTION_CANCEL_SUCCESS = "Auction canceled successfully",
 }
 
 export enum AuctionEndLoadStatus {
-  CONFIRM_AUCTION_END = "Transaction ready to be created.\nPlease confirm it in Metamask",
+  CONFIRM_AUCTION_END = "Transaction ready to be created. Please confirm it in Metamask",
   WAIT_FOR_AUCTION_END_TX = "Auction ended, waiting for the transaction to confirm...",
   AUCTION_END_SUCCESS = "Auction ended successfully",
 }
