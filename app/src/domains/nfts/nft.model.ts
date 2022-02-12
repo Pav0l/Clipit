@@ -74,6 +74,11 @@ export class NftModel {
     );
   }
 
+  getRandomMetadata(): Metadata | null {
+    const idx = Math.random() * this.metadata.length;
+    return this.metadata[idx] ?? null;
+  }
+
   get metadataForMarketplace(): Metadata[] {
     return this.metadata.filter((metadata) => {
       if (metadata.auction) {

@@ -25,7 +25,7 @@ import { initSynchronous, initAsync } from "./init";
   try {
     const { model, operations } = initSynchronous();
 
-    await initAsync({ model, user: operations.user, web3: operations.web3 });
+    await initAsync({ model, user: operations.user, web3: operations.web3, nft: operations.nft });
 
     ReactDOM.render(
       <React.StrictMode>
@@ -117,7 +117,10 @@ import { initSynchronous, initAsync } from "./init";
                 />
               </Route>
               <Route path={AppRoute.HOME}>
-                <Home model={{ clip: model.clip }} operations={{ clip: operations.clip }} />
+                <Home
+                  model={{ clip: model.clip, nft: model.nft, auth: model.auth }}
+                  operations={{ clip: operations.clip, auth: operations.auth }}
+                />
               </Route>
 
               {/* fallback route */}

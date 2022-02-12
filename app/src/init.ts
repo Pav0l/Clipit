@@ -74,25 +74,24 @@ export async function initAsync({
   model,
   user,
   web3,
+  nft,
 }: {
   model: AppModel;
   user: UserController;
   web3: Web3Controller;
+  nft: NftController;
 }) {
-  if (!model.auth.isLoggedIn) {
-    // user logged out -> nothing to init
-    return;
-  }
-
   ////////////////////////////
   // twitch data init
   ////////////////////////////
-
-  await user.getUser();
+  if (model.auth.isLoggedIn) {
+    await user.getUser();
+  }
 
   ////////////////////////////
   // web3 init
   ////////////////////////////
 
   await web3.connectMetaMaskIfNecessaryForConnectBtn();
+  await nft.getClips();
 }
