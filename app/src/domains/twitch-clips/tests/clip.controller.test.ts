@@ -1,7 +1,4 @@
-import { TwitchApiTestClient } from "../../../lib/twitch-api/twitch-api-test.client";
-import { MetaModel } from "../../app/meta.model";
-import { SnackbarController } from "../../snackbar/snackbar.controller";
-import { SnackbarModel } from "../../snackbar/snackbar.model";
+import { initTestSync } from "../../../../tests/init-tests";
 import { ClipController } from "../clip.controller";
 import { ClipModel } from "../clip.model";
 
@@ -10,8 +7,9 @@ describe("clip controller", () => {
   let model: ClipModel;
 
   beforeEach(() => {
-    model = new ClipModel(new MetaModel());
-    ctrl = new ClipController(model, new SnackbarController(new SnackbarModel()), new TwitchApiTestClient());
+    const init = initTestSync(CONFIG);
+    model = init.model.clip;
+    ctrl = init.operations.clip;
   });
 
   it("really dumb test just to make a POC on TwitchApiTestClient", async () => {

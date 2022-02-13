@@ -1,17 +1,22 @@
 import React, { ErrorInfo } from "react";
+import { SentryClient } from "../../lib/sentry/sentry.client";
 import ErrorWithRetry from "./Error";
 
-export default class ErrorBoundary extends React.Component<Record<string, unknown>, { hasError: boolean }> {
-  constructor(props: Record<string, unknown>) {
+interface Params {
+  sentry: SentryClient;
+}
+
+export default class ErrorBoundary extends React.Component<Params, { hasError: boolean }> {
+  constructor(props: Params) {
     super(props);
     this.state = { hasError: false };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({ hasError: true });
-    // SENTRY
     console.log("[LOG]:error boundry error:", error);
     console.log("[LOG]:error boundry error info:", errorInfo);
+    this.props.sentry.captureException(error);
   }
 
   render() {

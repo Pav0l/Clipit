@@ -11,6 +11,7 @@ import { NftController } from "../nft.controller";
 import { Web3Model } from "../../web3/web3.model";
 import { Web3Controller } from "../../web3/web3.controller";
 import { NftDetails } from "../../../components/nfts/NftDetails";
+import { SentryClient } from "../../../lib/sentry/sentry.client";
 
 interface Props {
   model: {
@@ -21,12 +22,13 @@ interface Props {
     nft: NftController;
     web3: Web3Controller;
   };
+  sentry: SentryClient;
 }
 
-function NftContainer({ model, operations }: Props) {
+function NftContainer({ model, operations, sentry }: Props) {
   const { tokenId } = useParams<{ tokenId?: string }>();
   if (!tokenId) {
-    // SENTRY
+    sentry.captureMessage("missing tokenId in url params");
     return <ErrorWithRetry text="Something went wrong" withRetry={true} />;
   }
   const metadata = model.nft.getTokenMetadata(tokenId);

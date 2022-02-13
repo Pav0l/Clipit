@@ -2,6 +2,7 @@ import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client";
 import { ClipModel } from "./clip.model";
 import { TwitchClipsErrors } from "./clip.errors";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
+import { SentryClient } from "../../lib/sentry/sentry.client";
 
 const clipPatterns = [
   // /^([A-Za-z0-9]+(?:-[A-Za-z0-9_-]{16})?)$/,
@@ -10,7 +11,12 @@ const clipPatterns = [
 ];
 
 export class ClipController {
-  constructor(private model: ClipModel, private snackbar: SnackbarClient, private twitchApi: TwitchApiClient) {}
+  constructor(
+    private model: ClipModel,
+    private snackbar: SnackbarClient,
+    private twitchApi: TwitchApiClient,
+    private sentry: SentryClient
+  ) {}
 
   getBroadcasterClips = async (broadcasterId: string) => {
     this.model.meta.setLoading(true);
@@ -21,8 +27,20 @@ export class ClipController {
     if (data.statusOk && !this.twitchApi.isTwitchError(data.body)) {
       this.model.appendMultipleClips(data.body.data);
     } else {
-      // SENTRY MONITOR
       this.model.meta.setError(TwitchClipsErrors.UNABLE_TO_GET_CLIPS);
+
+      this.sentry.captureEvent({
+        message: "failed to get broadcaster clips from twitch",
+        contexts: {
+          response: {
+            code: data.statusCode,
+            body: JSON.stringify(data.body),
+          },
+          request: {
+            bId: broadcasterId,
+          },
+        },
+      });
     }
     this.model.meta.setLoading(false);
   };
@@ -38,8 +56,20 @@ export class ClipController {
         this.model.appendClip(clip);
       }
     } else {
-      // SENTRY MONITOR
       this.model.meta.setError(TwitchClipsErrors.UNABLE_TO_GET_CLIPS);
+
+      this.sentry.captureEvent({
+        message: "failed to get clip from twitch",
+        contexts: {
+          response: {
+            code: data.statusCode,
+            body: JSON.stringify(data.body),
+          },
+          request: {
+            clipId: clipId,
+          },
+        },
+      });
     }
     this.model.meta.setLoading(false);
   };

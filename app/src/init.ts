@@ -20,8 +20,11 @@ import { ClipItApiClient } from "./lib/clipit-api/clipit-api.client";
 import { IpfsClient } from "./lib/ipfs/ipfs.client";
 import { ClipItContractCreator } from "./lib/contracts/ClipIt/clipit-contract.client";
 import { AuctionContractCreator } from "./lib/contracts/AuctionHouse/auction-contract.client";
+import { SentryClient } from "./lib/sentry/sentry.client";
 
 export function initSynchronous() {
+  const sentry = new SentryClient(CONFIG.isDevelopment);
+
   const storage = new LocalStorageClient();
   const model = new AppModel();
 
@@ -38,17 +41,17 @@ export function initSynchronous() {
   const twitchApi = new TwitchApi(new HttpClient(storage, twitchApiUri), CONFIG.twitch);
   const subgraph = new SubgraphClient(new GraphQLClient(CONFIG.subgraphUrl));
 
-  const authController = new OAuthController(model.auth, twitchOAuthApi, storage, CONFIG.twitch);
-  const clipController = new ClipController(model.clip, snackbar, twitchApi);
-  const gameController = new GameController(model.game, twitchApi);
-  const userController = new UserController(model.user, twitchApi);
-  const nftController = new NftController(model.nft, offChainStorageApi, subgraph, snackbar);
-
+  const authController = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, CONFIG.twitch);
+  const clipController = new ClipController(model.clip, snackbar, twitchApi, sentry);
+  const gameController = new GameController(model.game, twitchApi, sentry);
+  const userController = new UserController(model.user, twitchApi, sentry);
+  const nftController = new NftController(model.nft, offChainStorageApi, subgraph, snackbar, sentry);
   const web3Controller = new Web3Controller(
     model.web3,
     offChainStorageApi,
     subgraph,
     snackbar,
+    sentry,
     ClipItContractCreator,
     AuctionContractCreator,
     CONFIG
@@ -67,6 +70,7 @@ export function initSynchronous() {
       nft: nftController,
       snackbar: snackbar,
     },
+    sentry,
   };
 }
 

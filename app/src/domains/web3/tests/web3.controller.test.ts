@@ -1,14 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { initTestSync } from "../../../../tests/init-tests";
 import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
 import { twitchClip } from "../../../../tests/__fixtures__/twitch-api-data";
-import { ClipItApiTestClient } from "../../../lib/clipit-api/clipit-api-test.client";
-import { AuctionTestContractCreator } from "../../../lib/contracts/AuctionHouse/auction-contract-test.client";
-import { ClipItTestContractCreator } from "../../../lib/contracts/ClipIt/clipit-contract-test.client";
 import { EthereumTestProvider } from "../../../lib/ethereum/ethereum-test-provider";
-import { SubgraphTestClient } from "../../../lib/graphql/subgraph-test.client";
-import { IpfsTestClient } from "../../../lib/ipfs/ipfs-test.client";
-import { OffChainStorage } from "../../../lib/off-chain-storage/off-chain-storage.client";
-import { MetaModel } from "../../app/meta.model";
 import { SnackbarController } from "../../snackbar/snackbar.controller";
 import { SnackbarModel } from "../../snackbar/snackbar.model";
 import { Web3Controller } from "../web3.controller";
@@ -21,18 +15,11 @@ describe("web3 controller", () => {
   let snackbar: SnackbarController;
 
   beforeEach(() => {
-    model = new Web3Model(new MetaModel());
-    snackModel = new SnackbarModel();
-    snackbar = new SnackbarController(snackModel);
-    ctrl = new Web3Controller(
-      model,
-      new OffChainStorage(new ClipItApiTestClient(), new IpfsTestClient()),
-      new SubgraphTestClient(),
-      snackbar,
-      ClipItTestContractCreator,
-      AuctionTestContractCreator,
-      CONFIG
-    );
+    const init = initTestSync(CONFIG);
+    model = init.model.web3;
+    snackModel = init.model.snackbar;
+    snackbar = init.operations.snackbar;
+    ctrl = init.operations.web3;
   });
 
   describe("without ethereum provider", () => {

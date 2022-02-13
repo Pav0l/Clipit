@@ -4,13 +4,15 @@ import { isSubgraphError, ISubgraphClient } from "../../lib/graphql/subgraph.cli
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { ClipPartialFragment } from "../../lib/graphql/types";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
+import { SentryClient } from "../../lib/sentry/sentry.client";
 
 export class NftController {
   constructor(
     private model: NftModel,
     private offChainStorage: OffChainStorage,
     private subgraph: ISubgraphClient,
-    private snackbar: SnackbarClient
+    private snackbar: SnackbarClient,
+    private sentry: SentryClient
   ) {}
 
   getTokenMetadata = async (tokenId: string) => {
@@ -28,15 +30,28 @@ export class NftController {
 
       if (isSubgraphError(clip)) {
         this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
-        // SENTRY
+
+        this.sentry.captureEvent({
+          message: "failed to get clip from subgraph",
+          contexts: {
+            data: {
+              tokenId,
+            },
+            error: {
+              errors: JSON.stringify(clip.errors),
+            },
+          },
+        });
+
         return;
       }
 
       await this.getMetadataForClipFragmentAndStoreInModel(clip, { target: "metadata", shouldThrow: true });
     } catch (error) {
-      // SENTRY
       console.log("[LOG]:getTokenMetadata err", error);
       this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+
+      this.sentry.captureException(error);
     }
   };
 
@@ -51,7 +66,18 @@ export class NftController {
 
       if (isSubgraphError(data)) {
         this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
-        // SENTRY
+
+        this.sentry.captureEvent({
+          message: "failed to get user from subgraph",
+          contexts: {
+            data: {
+              address,
+            },
+            error: {
+              errors: JSON.stringify(data.errors),
+            },
+          },
+        });
         return;
       }
 
@@ -67,7 +93,7 @@ export class NftController {
         this.model.meta.setLoading(false);
       }
     } catch (error) {
-      // SENTRY
+      this.sentry.captureException(error);
       this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     } finally {
       if (this.model.meta.isLoading) {
@@ -99,7 +125,18 @@ export class NftController {
 
       if (isSubgraphError(data)) {
         this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
-        // SENTRY
+
+        this.sentry.captureEvent({
+          message: "failed to get clips from subgraph",
+          contexts: {
+            data: {
+              skip,
+            },
+            error: {
+              errors: JSON.stringify(data.errors),
+            },
+          },
+        });
         return;
       }
 
@@ -108,7 +145,7 @@ export class NftController {
         this.model.meta.setLoading(false);
       }
     } catch (error) {
-      // SENTRY
+      this.sentry.captureException(error);
       this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
     } finally {
       if (this.model.meta.isLoading) {
@@ -128,14 +165,26 @@ export class NftController {
       }
       if (isSubgraphError(data)) {
         this.model.meta.setError(NftErrors.ERROR_TRY_REFRESH);
-        // SENTRY
+
+        this.sentry.captureEvent({
+          message: "failed to get auction from subgraph",
+          contexts: {
+            data: {
+              tokenId,
+              cleareCache: options.clearCache,
+            },
+            error: {
+              errors: JSON.stringify(data.errors),
+            },
+          },
+        });
         return;
       }
 
       // update reserveAuction for token
       this.model.updateTokenAuction(tokenId, data);
     } catch (error) {
-      // SENTRY
+      this.sentry.captureException(error);
       this.snackbar.sendError(NftErrors.ERROR_TRY_REFRESH);
     } finally {
       if (this.model.meta.isLoading) {
@@ -166,7 +215,16 @@ export class NftController {
 
     const metadataCid = this.parseCidFromURI(clip.metadataURI);
     if (!metadataCid) {
-      // SENTRY this should not happen
+      this.sentry.captureEvent({
+        message: "invalid metadata cid from metadataURI",
+        contexts: {
+          data: {
+            metadataURI: clip.metadataURI,
+            metadataCid,
+            tokenId: clip.id,
+          },
+        },
+      });
       if (shouldThrow) {
         throw new Error(`Invalid metadataURI? ${clip.metadataURI}`);
       }
@@ -175,7 +233,6 @@ export class NftController {
 
     const metadata = await this.getMetadataFromIpfs(metadataCid);
     if (!metadata) {
-      // SENTRY - in case the metadata fetch fails
       if (shouldThrow) {
         throw new Error(`No token metadata? ${clip.metadataURI}`);
       }
@@ -209,9 +266,24 @@ export class NftController {
 
   private getMetadataFromIpfs = async (cid: string) => {
     const resp = await this.offChainStorage.getMetadata(cid);
-    if (resp.statusOk) {
+    if (resp.statusOk && this.offChainStorage.isIpfsMetadata(resp.body)) {
       return resp.body;
     }
+
+    this.sentry.captureEvent({
+      message: "failed to get metadata from IPFS",
+      contexts: {
+        request: {
+          cid,
+        },
+        response: {
+          statusCode: resp.statusCode,
+          statusOk: resp.statusOk,
+          body: JSON.stringify(resp.body),
+        },
+      },
+    });
+
     return null;
   };
 }

@@ -1,8 +1,9 @@
+import { SentryClient } from "../../lib/sentry/sentry.client";
 import { TwitchApiClient } from "../../lib/twitch-api/twitch-api.client";
 import { GameModel } from "./game.model";
 
 export class GameController {
-  constructor(private model: GameModel, private twitchApi: TwitchApiClient) {}
+  constructor(private model: GameModel, private twitchApi: TwitchApiClient, private sentry: SentryClient) {}
 
   getGames = async (gameId: string) => {
     this.model.meta.setLoading(true);
@@ -14,6 +15,18 @@ export class GameController {
       // Don't think it's necessary to display these errors
       // this.model.meta.setError('games error')
       console.log("Failed to get game name for id:", gameId);
+      this.sentry.captureEvent({
+        message: "failed to get game from twitch",
+        contexts: {
+          response: {
+            code: data.statusCode,
+            body: JSON.stringify(data.body),
+          },
+          request: {
+            gameId,
+          },
+        },
+      });
     }
     this.model.meta.setLoading(false);
   };

@@ -35,15 +35,10 @@ class ClipItContractClient implements IClipItContractClient {
   private contract: ClipIt;
 
   constructor(provider: EthereumProvider, address: string) {
-    try {
-      const ethersProvider = new ethers.providers.Web3Provider(provider);
-      const jsonRpcSigner = ethersProvider.getSigner();
-      this.contract = new ethers.Contract(address, ContractBuild.abi, jsonRpcSigner) as ClipIt;
-    } catch (error) {
-      // SENTRY
-      console.log("[contract.client]:construct:error", error);
-      throw new Error("Invalid ethereum provider");
-    }
+    // this can throw!
+    const ethersProvider = new ethers.providers.Web3Provider(provider);
+    const jsonRpcSigner = ethersProvider.getSigner();
+    this.contract = new ethers.Contract(address, ContractBuild.abi, jsonRpcSigner) as ClipIt;
   }
 
   async approve(to: string, tokenId: string): Promise<ethers.ContractTransaction> {

@@ -26,15 +26,10 @@ class AuctionContractClient implements IAuctionContractClient {
   private contract: AuctionHouse;
 
   constructor(provider: EthereumProvider, address: string) {
-    try {
-      const ethersProvider = new ethers.providers.Web3Provider(provider);
-      const jsonRpcSigner = ethersProvider.getSigner();
-      this.contract = new ethers.Contract(address, AuctionHouseAbi.abi, jsonRpcSigner) as AuctionHouse;
-    } catch (error) {
-      // SENTRY
-      console.log("[auction.contract.client]:construct:error", error);
-      throw new Error("Invalid ethereum provider");
-    }
+    // this can throw
+    const ethersProvider = new ethers.providers.Web3Provider(provider);
+    const jsonRpcSigner = ethersProvider.getSigner();
+    this.contract = new ethers.Contract(address, AuctionHouseAbi.abi, jsonRpcSigner) as AuctionHouse;
   }
 
   cancelAuction = async (auctionId: BigNumberish): Promise<ContractTransaction> => {

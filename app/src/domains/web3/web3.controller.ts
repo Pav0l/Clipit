@@ -22,6 +22,7 @@ import { IAuctionContractClient } from "../../lib/contracts/AuctionHouse/auction
 import { AuctionContractErrors } from "../../lib/contracts/AuctionHouse/auction-contract.errors";
 import { IConfig } from "../app/config";
 import { ClipItApiErrors } from "../../lib/clipit-api/clipit-api.client";
+import { SentryClient } from "../../lib/sentry/sentry.client";
 
 interface Signature {
   v: number;
@@ -56,6 +57,7 @@ export class Web3Controller implements IWeb3Controller {
     private offChainStorage: OffChainStorage,
     private subgraph: ISubgraphClient,
     private snackbar: SnackbarClient,
+    private sentry: SentryClient,
     private clipitContractCreator: (provider: EthereumProvider, address: string) => IClipItContractClient,
     private auctionContractCreator: (provider: EthereumProvider, address: string) => IAuctionContractClient,
     private config: IConfig
@@ -130,7 +132,7 @@ export class Web3Controller implements IWeb3Controller {
       const balance = await this.initEthClient().getBalance(address);
       this.model.setEthBalance(BigNumber.from(balance));
     } catch (error) {
-      // SENTRY
+      this.sentry.captureException(error);
     }
   };
 
@@ -230,8 +232,8 @@ export class Web3Controller implements IWeb3Controller {
 
       this.snackbar.sendSuccess(AuctionCancelLoadStatus.AUCTION_CANCEL_SUCCESS);
     } catch (error) {
-      // SENTRY
       console.log("[LOG]:cancel auction:error", error);
+      this.sentry.captureException(error);
 
       let err = error;
       if (isEthersJsonRpcError(err)) {
@@ -257,12 +259,10 @@ export class Web3Controller implements IWeb3Controller {
             }
             break;
           default:
-            // SENTRY
             this.snackbar.sendError(Web3Errors.AUCTION_CANCEL_FAILED);
             break;
         }
       } else {
-        // SENTRY
         // unknown error
         this.snackbar.sendError(Web3Errors.AUCTION_CANCEL_FAILED);
       }
@@ -289,8 +289,8 @@ export class Web3Controller implements IWeb3Controller {
 
       this.snackbar.sendSuccess(AuctionEndLoadStatus.AUCTION_END_SUCCESS);
     } catch (error) {
-      // SENTRY
       console.log("[LOG]:end auction:error", error);
+      this.sentry.captureException(error);
 
       let err = error;
       if (isEthersJsonRpcError(err)) {
@@ -316,12 +316,10 @@ export class Web3Controller implements IWeb3Controller {
             }
             break;
           default:
-            // SENTRY
             this.snackbar.sendError(Web3Errors.AUCTION_END_FAILED);
             break;
         }
       } else {
-        // SENTRY
         // unknown error
         this.snackbar.sendError(Web3Errors.AUCTION_END_FAILED);
       }
@@ -340,8 +338,17 @@ export class Web3Controller implements IWeb3Controller {
     clipDescription?: string
   ) => {
     if (!clipId || !address || !clipTitle) {
-      // SENTRY this should not happen
       this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
+      this.sentry.captureEvent({
+        message: "missing data to mint clip",
+        contexts: {
+          data: {
+            clipId,
+            address,
+            clipTitle,
+          },
+        },
+      });
       return;
     }
 
@@ -356,7 +363,7 @@ export class Web3Controller implements IWeb3Controller {
     if (resp.statusOk && !this.offChainStorage.isStoreClipError(resp.body)) {
       this.model.stopClipStoreLoaderAndStartMintLoader();
 
-      const txHash = await this.mintNFT(resp.body.mediadata, clipId, resp.body.signature, creatorShare);
+      const txHash = await this.mintNFT(resp.body.mediadata, resp.body.signature, creatorShare);
       if (!txHash) {
         return;
       }
@@ -365,15 +372,35 @@ export class Web3Controller implements IWeb3Controller {
 
       const clip = await this.subgraph.fetchClipByHashCached(txHash);
       console.log("[LOG]:clip", clip);
+
       if (!clip) {
-        // SENTRY this should not happen
         this.model.meta.setError(Web3Errors.FAILED_TO_FETCH_SUBGRAPH_DATA);
+
+        this.sentry.captureEvent({
+          message: "empty clip from subgraph",
+          contexts: {
+            data: {
+              txHash: txHash,
+              clipId,
+            },
+          },
+        });
         return;
       }
 
       if (isSubgraphError(clip)) {
-        // SENTRY this should not happen
         this.model.meta.setError(Web3Errors.SOMETHING_WENT_WRONG);
+
+        this.sentry.captureEvent({
+          message: "failed to fetch clip from subgraph",
+          contexts: {
+            data: {
+              txHash: txHash,
+              clipId,
+              errors: JSON.stringify(clip.errors),
+            },
+          },
+        });
         return;
       }
 
@@ -402,7 +429,6 @@ export class Web3Controller implements IWeb3Controller {
       contentHash: BytesLike;
       metadataHash: BytesLike;
     },
-    clipId: string,
     signature: Signature,
     creatorShare: string
   ) => {
@@ -425,8 +451,8 @@ export class Web3Controller implements IWeb3Controller {
 
       return tx.hash;
     } catch (error) {
-      // SENTRY
       console.log("[LOG]:mint:error", error);
+      this.sentry.captureException(error);
 
       let err = error;
       if (isEthersJsonRpcError(err)) {
@@ -453,12 +479,10 @@ export class Web3Controller implements IWeb3Controller {
             }
             break;
           default:
-            // SENTRY
             this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
             break;
         }
       } else {
-        // SENTRY
         // unknown error
         this.model.meta.setError(Web3Errors.FAILED_TO_MINT);
       }
@@ -551,8 +575,8 @@ export class Web3Controller implements IWeb3Controller {
       this.model.clearAuctionLoader();
       this.snackbar.sendSuccess(AuctionLoadStatus.CREATE_AUCTION_SUCCESS);
     } catch (error) {
-      // SENTRY
       console.log("[LOG]:createAuction:error", error);
+      this.sentry.captureException(error);
 
       let err = error;
       if (isEthersJsonRpcError(err)) {
@@ -574,12 +598,10 @@ export class Web3Controller implements IWeb3Controller {
             }
             break;
           default:
-            // SENTRY
             this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
             break;
         }
       } else {
-        // SENTRY
         // unknown error
         this.model.meta.setError(Web3Errors.AUCTION_CREATE_FAILED);
       }
@@ -605,8 +627,8 @@ export class Web3Controller implements IWeb3Controller {
 
       this.snackbar.sendSuccess(AuctionBidLoadStatus.AUCTION_BID_SUCCESS);
     } catch (error) {
-      // SENTRY
       console.log("[LOG]:bid auction:error", error);
+      this.sentry.captureException(error);
 
       let err = error;
       if (isEthersJsonRpcError(err)) {
@@ -639,12 +661,10 @@ export class Web3Controller implements IWeb3Controller {
             // TODO handle AUCTION_BID_INVALID_FOR_SHARE_SPLITTING
             break;
           default:
-            // SENTRY
             this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
             break;
         }
       } else {
-        // SENTRY
         // unknown error
         this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
       }

@@ -2,8 +2,7 @@
 import { LocalStorageTestClient } from "../../../lib/local-storage/local-storage-test.client";
 import { OAuthController } from "../oauth.controller";
 import { OAuthModel } from "../oauth.model";
-import { TwitchOAuthApiTestClient } from "../../../lib/twitch-oauth/twitch-oauth-api-test.client";
-import { MetaModel } from "../../app/meta.model";
+import { initTestSync } from "../../../../tests/init-tests";
 
 describe("oauth controller", () => {
   let model: OAuthModel;
@@ -23,9 +22,10 @@ describe("oauth controller", () => {
   });
 
   beforeEach(() => {
-    model = new OAuthModel(new MetaModel());
-    ls = new LocalStorageTestClient();
-    ctrl = new OAuthController(model, new TwitchOAuthApiTestClient(), ls, CONFIG.twitch);
+    const init = initTestSync(CONFIG);
+    model = init.model.auth;
+    ls = init.localStorage;
+    ctrl = init.operations.auth;
   });
 
   it("logout: removes token", async () => {

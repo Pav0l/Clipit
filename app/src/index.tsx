@@ -25,9 +25,9 @@ import TermsOfService from "./components/terms/TermsOfService";
 import PrivacyPolicy from "./components/privacy/PrivacyPolicy";
 
 (async () => {
-  try {
-    const { model, operations } = initSynchronous();
+  const { model, operations, sentry } = initSynchronous();
 
+  try {
     await initAsync({ model, user: operations.user, web3: operations.web3, nft: operations.nft });
 
     ReactDOM.render(
@@ -52,7 +52,7 @@ import PrivacyPolicy from "./components/privacy/PrivacyPolicy";
               </Route>
 
               <Route exact path={AppRoute.NFTS}>
-                <ErrorBoundary>
+                <ErrorBoundary sentry={sentry}>
                   <NftsContainer
                     model={{ nft: model.nft, web3: model.web3, navigation: model.navigation }}
                     operations={{ web3: operations.web3, nft: operations.nft }}
@@ -64,6 +64,7 @@ import PrivacyPolicy from "./components/privacy/PrivacyPolicy";
                 <NftContainer
                   model={{ nft: model.nft, web3: model.web3 }}
                   operations={{ web3: operations.web3, nft: operations.nft }}
+                  sentry={sentry}
                 />
               </Route>
 
@@ -73,7 +74,7 @@ import PrivacyPolicy from "./components/privacy/PrivacyPolicy";
                 model={{ auth: model.auth }}
                 operations={{ auth: operations.auth }}
               >
-                <ErrorBoundary>
+                <ErrorBoundary sentry={sentry}>
                   <ClipsContainer
                     model={{
                       clip: model.clip,
@@ -93,7 +94,7 @@ import PrivacyPolicy from "./components/privacy/PrivacyPolicy";
                 model={{ auth: model.auth }}
                 operations={{ auth: operations.auth }}
               >
-                <ErrorBoundary>
+                <ErrorBoundary sentry={sentry}>
                   <ClipDetailContainer
                     model={{
                       clip: model.clip,
@@ -146,7 +147,7 @@ import PrivacyPolicy from "./components/privacy/PrivacyPolicy";
       document.getElementById("root")
     );
   } catch (error) {
-    // SENTRY
+    sentry.captureException(error);
 
     ReactDOM.render(
       <React.StrictMode>

@@ -10,11 +10,24 @@ export class OffChainStorage {
   }
 
   async getMetadata(cid: string) {
-    return await this.reader.getMetadata<IpfsMetadata | null>(cid);
+    return await this.reader.getMetadata<IpfsMetadata | Record<string, unknown>>(cid);
   }
 
   isStoreClipError(body: StoreClipError | unknown): body is StoreClipError {
     return (body as StoreClipError).error !== undefined;
+  }
+
+  isIpfsMetadata(body: IpfsMetadata | unknown): body is IpfsMetadata {
+    return (
+      (body as IpfsMetadata).description !== undefined &&
+      (body as IpfsMetadata).external_url !== undefined &&
+      (body as IpfsMetadata).name !== undefined &&
+      (body as IpfsMetadata).clipCid !== undefined &&
+      (body as IpfsMetadata).clipUri !== undefined &&
+      (body as IpfsMetadata).clipId !== undefined &&
+      (body as IpfsMetadata).thumbnailUri !== undefined &&
+      (body as IpfsMetadata).attributes !== undefined
+    );
   }
 }
 
