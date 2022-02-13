@@ -20,6 +20,7 @@ import { defaultTheme } from "./components/themeProvider/theme";
 import OAuthProtectedRoute from "./domains/twitch-oauth/OAuthProtected/OAuthProtectedRoute";
 import ErrorWithRetry from "./components/error/Error";
 import { initSynchronous, initAsync } from "./init";
+import Footer from "./components/footer/Footer";
 
 (async () => {
   try {
@@ -126,6 +127,8 @@ import { initSynchronous, initAsync } from "./init";
               {/* fallback route */}
               <Redirect to={AppRoute.HOME} />
             </Switch>
+
+            <Footer />
           </Router>
         </ThemeProvider>
       </React.StrictMode>,

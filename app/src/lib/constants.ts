@@ -21,4 +21,6 @@ export enum AppRoute {
   NFT = "/nfts/:tokenId",
   OAUTH_REDIRECT = "/oauth2/redirect",
   HOME = "/",
+  TERMS = "/terms",
+  PRIVACY = "/privacy",
 }
