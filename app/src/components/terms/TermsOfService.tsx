@@ -10,46 +10,46 @@ export default function TermsOfService() {
           Terms of Service
         </Typography>
 
+        <SectionParagraph text={<>Last updated: DD.MM.YYYY</>} />
+
         <Section>
           <SectionHeader text="Introduction" />
           <SectionParagraph
             text={
               <>
-                ClipIt is an NFT marketplace maintained by a decentralized team of developers. It is build on top of{" "}
+                ClipIt is an NFT marketplace maintained by a decentralized team of developers (&quot;ClipIt&quot;). It
+                is build on top of{" "}
                 <a href="https://zora.co/" target="_blank" rel="noreferrer">
                   Zora Market and AuctionHouse
                 </a>
-                , an NFT Martekplace Protocol on the Ethereum blockchain.
+                , an NFT Marketplace Protocol on the Ethereum blockchain.
               </>
             }
           />
-        </Section>
 
-        <Section>
-          <SectionHeader text="Another section" />
           <SectionParagraph
             text={
               <>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-                reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor
-                sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-                aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-                pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim
-                id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-                velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt
-                in culpa qui officia deserunt mollit anim id est laborum.
+                These Terms of Service (“Terms”) govern your access to and use of the ClipIt website, our APIs and any
+                other software, tools, features, or functionalities provided on or in connection with our services
+                (collectively, the “Site”).
               </>
             }
+            marginTop
+          />
+
+          <SectionParagraph
+            text={
+              <>
+                We reserve the right, in our sole discretion, to make changes or modifications to these Terms of Service
+                at any time and for any reason. We will alert you about any changes by updating the “Last updated” date
+                of these Terms, and you waive any right to receive specific notice of each such change. It is your
+                responsibility to periodically review these Terms to stay informed of updates. You will be subject to,
+                and will be deemed to have been made aware of and to have accepted, the changes in any revised Terms by
+                your continued use of the Site after the date such revised Terms are posted.
+              </>
+            }
+            marginTop
           />
         </Section>
       </Container>

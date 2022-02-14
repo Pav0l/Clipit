@@ -2,6 +2,7 @@ import { makeStyles, Typography } from "@material-ui/core";
 
 interface Props {
   text: string | JSX.Element;
+  marginTop?: boolean;
 }
 
 export function Section({ children }: { children: JSX.Element | JSX.Element[] }) {
@@ -14,9 +15,11 @@ export function SectionHeader({ text }: Props) {
   return <Typography variant="h6">{text}</Typography>;
 }
 
-export function SectionParagraph({ text }: Props) {
+export function SectionParagraph({ text, marginTop }: Props) {
+  const classes = useStyles();
+
   return (
-    <Typography variant="body2" component="p">
+    <Typography variant="body2" component="p" className={marginTop ? classes.marginTop : ""}>
       {text}
     </Typography>
   );
@@ -25,5 +28,8 @@ export function SectionParagraph({ text }: Props) {
 const useStyles = makeStyles(() => ({
   section: {
     margin: "1rem 0",
+  },
+  marginTop: {
+    marginTop: "1rem",
   },
 }));
