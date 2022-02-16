@@ -1,6 +1,9 @@
 import { Container, Typography } from "@material-ui/core";
+import { AppRoute } from "../../lib/constants";
 import CenteredContainer from "../container/CenteredContainer";
+import { LinkButton } from "../linkButton/LinkButton";
 import { SectionHeader, Section, SectionParagraph } from "../section/Section";
+import { SimpleList } from "../simpleList/SimpleList";
 
 export default function TermsOfService() {
   return (
@@ -18,12 +21,12 @@ export default function TermsOfService() {
           <SectionParagraph
             text={
               <>
-                ClipIt is an NFT marketplace maintained by a decentralized team of developers (&quot;ClipIt&quot;). It
-                is build on top of{" "}
+                ClipIt is an NFT marketplace maintained by a decentralized team of developers (&quot;ClipIt&quot;,
+                &quot;we&quot;, &quot;us&quot; or &quot;our&quot;). It is build on top of{" "}
                 <a href="https://zora.co/" target="_blank" rel="noreferrer">
                   Zora Market and AuctionHouse
                 </a>
-                , an NFT Marketplace Protocol on the Ethereum blockchain.
+                , an opensource NFT Marketplace Protocol on the Ethereum blockchain.
               </>
             }
           />
@@ -132,6 +135,168 @@ export default function TermsOfService() {
                 assets on faulty smart contracts, and assets that may become untransferable.
               </>
             }
+          />
+        </Section>
+
+        {/* Intellectual Property Rights */}
+        <Section>
+          <SectionHeader text="Intellectual Property Rights" />
+          <SectionParagraph
+            text={
+              <>
+                We own the intellectual property of the Service, including (but not limited to) software, text, designs,
+                images, and copyrights. We do not own any intellectual property of the Zora Protocol, any tokens or
+                user-generated content. The set of smart contracts on the Ethereum blockchain that govern the minting
+                and transacting the NFTs are open source and accessible to anyone. Each creator that mints NFTs using
+                the Service keeps all intellectual property rights to such content.
+              </>
+            }
+          />
+        </Section>
+
+        {/* Privacy */}
+        <Section>
+          <SectionHeader text="Privacy" />
+          <SectionParagraph
+            text={
+              <>
+                When you use the Service, the only information we collect from you is your blockchain wallet address,
+                completed transaction hashes, and token identifiers. We do not collect any personal information from
+                you. We do, however, use third-party services like Google Analytics, which may receive your publicly
+                available personal information. We do not take responsibility for any information you make public on the
+                Ethereum blockchain by taking actions through the Service. Please refer to our{" "}
+                <LinkButton
+                  to={AppRoute.PRIVACY}
+                  text="Privacy Policy"
+                  className=""
+                  setActive={() => null}
+                  underline="hover"
+                />{" "}
+                for information about what data we collect and how we use it.
+              </>
+            }
+          />
+        </Section>
+
+        {/* Accessing the Service */}
+        <Section>
+          <SectionHeader text="Accessing the Service" />
+          <SectionParagraph
+            text={
+              <>
+                To access or use the Service, you represent and warrant that you are at least the age of majority in
+                your jurisdiction, your access and use of the Service will fully comply with all applicable laws and
+                regulations and that you will not access or use the Service to conduct, promote, or otherwise facilitate
+                any illegal activity. Furthermore, you represent and warrant that (a) you are not located in a country
+                that is subject to a U.S. Government embargo; and (b) you have not been identified as a Specially
+                Designated National or placed on any U.S. Government list of prohibited, sanctioned, or restricted
+                parties.
+              </>
+            }
+          />
+          <SectionParagraph
+            text={
+              <>
+                Your access and use of the Service may be interrupted from time to time for any of several reasons,
+                including, without limitation, the malfunction of equipment, periodic updating, maintenance, or repair
+                of the Service or other actions that ClipIt, in its sole discretion, may elect to take.
+              </>
+            }
+            marginTop
+          />
+        </Section>
+
+        {/* Prohibited Activities */}
+        <Section>
+          <SectionHeader text="Prohibited Activities" />
+
+          <SectionParagraph
+            text={
+              <>
+                As a user of the Site, you agree not to engage in any of the following categories of prohibited activity
+                in relation to your access and use of Service:
+              </>
+            }
+          />
+
+          <SimpleList
+            listItemTexts={[
+              "Infringe or violate the intellectual property rights or any other rights of others, such as violations to copyright, trademark, service mark or patent.",
+              "Transacting in any Restricted Territory or interacting with any blockchain addresses controlled indirectly or directly by persons or entities Subject to Restrictions, that is, included in any trade embargoes or sanctions list.",
+              "Attempt to impersonate another user or person or use the username of another user without authorization from such user.",
+              "Attempt to mint Clips which you are not a Broadcaster of.",
+              "Attempt to cryptographically sign messages that would allow you to mint Clips which you are not a Broadcaster of.",
+              "Attempt to bypass any measures of the Service designed to prevent or restrict access to the Service, or any portion of the Service including, but not limited to attempting to circumvent any rate limiting systems, directing traffic through multiple IP addresses, or otherwise obfuscating the source of traffic you send to the Service.",
+              "Use the Service, including through disseminating any software or interacting with any API, that could damage, disable, overburden, or impair the functioning of the Service in any manner including, but not limited to denial of service attacks.",
+              "Use the Service to engage in price manipulation, fraud, or other deceptive, misleading, or manipulative activity.",
+              "Use the Service to buy, sell, or transfer stolen items, fraudulently obtained items, items taken without authorization, and/or any other illegally obtained items.",
+              "Interaction with assets, listings, smart contracts, and collections that include metadata that may be deemed harmful or illegal, including (but not limited to): metadata that promotes suicide or self-harm, incites hate or violence against others, degrades or doxxes another individual, depicts minors in sexually suggestive situations, or raises funds for terrorist organizations.",
+            ]}
+          />
+          <SectionParagraph
+            text={
+              <>
+                By using the Service, you bear full responsibility for verifying the authenticity, legitimacy, identity,
+                and other details about any NFT, collection, or account that you view or otherwise interact on our
+                Service. We make no guarantees or promises about the identity, legitimacy, or authenticity of any NFT,
+                collection, or account on the Service.
+              </>
+            }
+            marginTop
+          />
+        </Section>
+
+        {/* Termination */}
+        <Section>
+          <SectionHeader text="Termination" />
+          <SectionParagraph
+            text={
+              <>
+                These Terms shall remain in full force and effect while you use the Service. Without limiting any other
+                provision of these Terms, we reserve the right to, in our sole discretion and without notice or
+                liability, deny access to and use of the Service, at any time and for any or no reason to any person and
+                you acknowledge and agree that we shall have no liability or obligation to you in such event and that
+                you will not be entitled to a refund of any amounts.
+              </>
+            }
+          />
+        </Section>
+
+        {/* Limitation of Liability */}
+        <Section>
+          <SectionHeader text="Limitation of Liability" />
+
+          <SectionParagraph
+            text={
+              <>
+                To the fullest extent permitted by law, you agree that in no event will we or our directors, employees
+                or our service providers be liable to you or any third party for any lost profit or any indirect,
+                consequential, exemplary, incidental, special, or punitive damages arising from these terms or the
+                service, products or third-party sites and products, or for any damages related to loss of revenue, loss
+                of profits, loss of business or anticipated savings, loss of use, loss of goodwill, or loss of data, and
+                whether caused by strict liability or tort (including negligence), breach of contract, or otherwise,
+                even if foreseeable and even if ClipIt or its service providers have been advised of the possibility of
+                such damages; or (b) for any other claim, demand, or damages whatsoever resulting from or arising out of
+                or in connection with these terms of the delivery, use, or performance of the service. Access to, and
+                use of, the service, products or third-party sites, and products are at your own discretion and risk,
+                and you will be solely responsible for any damage to your computer system or mobile device or loss of
+                data or reputation resulting therefrom.
+              </>
+            }
+          />
+
+          <SectionParagraph
+            text={
+              <>
+                Notwithstanding anything to the contrary contained herein, in no event shall the maximum aggregate
+                liability of ClipIt arising out of or in any way related to these terms, the access to and use of the
+                service, content, NFTs, or any ClipIt products or services exceed the greater of (a) $100 or (b) the
+                amount received by ClipIt for its service directly relating to the items that are the subject of the
+                claim. The foregoing limitations will apply even if the above stated remedy fails of its essential
+                purpose.
+              </>
+            }
+            marginTop
           />
         </Section>
       </Container>
