@@ -1,7 +1,5 @@
 import { Container, Typography } from "@material-ui/core";
-import { AppRoute } from "../../lib/constants";
 import CenteredContainer from "../container/CenteredContainer";
-import { LinkButton } from "../linkButton/LinkButton";
 import { SectionHeader, Section, SectionParagraph } from "../section/Section";
 import { SimpleList } from "../simpleList/SimpleList";
 
@@ -13,7 +11,7 @@ export default function TermsOfService() {
           Terms of Service
         </Typography>
 
-        <SectionParagraph text={<>Last updated: DD.MM.YYYY</>} />
+        <SectionParagraph text={<>Last updated: February 2, 2022</>} marginTop />
 
         {/* Introduction */}
         <Section>
@@ -36,7 +34,7 @@ export default function TermsOfService() {
               <>
                 These Terms of Service (“Terms”) govern your access to and use of the ClipIt website, our APIs and any
                 other software, tools, features, or functionalities provided on or in connection with our services
-                (collectively, the “Site” or the ”Service”).
+                (collectively, the ”Service”).
               </>
             }
             marginTop
@@ -50,7 +48,7 @@ export default function TermsOfService() {
                 of these Terms, and you waive any right to receive specific notice of each such change. It is your
                 responsibility to periodically review these Terms to stay informed of updates. You will be subject to,
                 and will be deemed to have been made aware of and to have accepted, the changes in any revised Terms by
-                your continued use of the Site after the date such revised Terms are posted.
+                your continued use of the Service after the date such revised Terms are posted.
               </>
             }
             marginTop
@@ -145,7 +143,7 @@ export default function TermsOfService() {
             text={
               <>
                 We own the intellectual property of the Service, including (but not limited to) software, text, designs,
-                images, and copyrights. We do not own any intellectual property of the Zora Protocol, any tokens or
+                images, and copyrights. We do not own any intellectual property of the Zora Protocol or any tokens or
                 user-generated content. The set of smart contracts on the Ethereum blockchain that govern the minting
                 and transacting the NFTs are open source and accessible to anyone. Each creator that mints NFTs using
                 the Service keeps all intellectual property rights to such content.
@@ -162,7 +160,7 @@ export default function TermsOfService() {
               <>
                 When you use the Service, the only information we collect from you is your blockchain wallet address,
                 completed transaction hashes, and token identifiers. We do not collect any personal information from
-                you. We do, however, use third-party services like Google Analytics, which may receive your publicly
+                you. We may, however, use third-party services like Google Analytics, which may receive your publicly
                 available personal information. We do not take responsibility for any information you make public on the
                 Ethereum blockchain by taking actions through the Service.
               </>
@@ -205,8 +203,8 @@ export default function TermsOfService() {
           <SectionParagraph
             text={
               <>
-                As a user of the Site, you agree not to engage in any of the following categories of prohibited activity
-                in relation to your access and use of Service:
+                As a user of the Service, you agree not to engage in any of the following categories of prohibited
+                activity in relation to your access and use of Service:
               </>
             }
           />
