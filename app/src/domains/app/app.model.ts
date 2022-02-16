@@ -10,6 +10,7 @@ import { Web3Model } from "../web3/web3.model";
 import { NavigationModel } from "../navigation/navigation.model";
 
 export interface IAppModel {
+  meta: MetaModel;
   clip: ClipModel;
   user: UserModel;
   game: GameModel;
@@ -24,6 +25,8 @@ export interface IAppModel {
 }
 
 export class AppModel implements IAppModel {
+  meta: MetaModel;
+
   clip: ClipModel;
   user: UserModel;
   game: GameModel;
@@ -36,6 +39,8 @@ export class AppModel implements IAppModel {
   testStore: TestStore;
 
   constructor() {
+    this.meta = new MetaModel();
+
     this.clip = new ClipModel(new MetaModel());
     this.user = new UserModel(new MetaModel());
     this.game = new GameModel(new MetaModel());
