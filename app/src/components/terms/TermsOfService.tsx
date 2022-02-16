@@ -164,15 +164,7 @@ export default function TermsOfService() {
                 completed transaction hashes, and token identifiers. We do not collect any personal information from
                 you. We do, however, use third-party services like Google Analytics, which may receive your publicly
                 available personal information. We do not take responsibility for any information you make public on the
-                Ethereum blockchain by taking actions through the Service. Please refer to our{" "}
-                <LinkButton
-                  to={AppRoute.PRIVACY}
-                  text="Privacy Policy"
-                  className=""
-                  setActive={() => null}
-                  underline="hover"
-                />{" "}
-                for information about what data we collect and how we use it.
+                Ethereum blockchain by taking actions through the Service.
               </>
             }
           />

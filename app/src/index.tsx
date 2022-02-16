@@ -22,7 +22,6 @@ import ErrorWithRetry from "./components/error/Error";
 import { initSynchronous, initAsync } from "./init";
 import Footer from "./components/footer/Footer";
 import TermsOfService from "./components/terms/TermsOfService";
-import PrivacyPolicy from "./components/privacy/PrivacyPolicy";
 
 (async () => {
   const { model, operations, sentry } = initSynchronous();
@@ -123,10 +122,6 @@ import PrivacyPolicy from "./components/privacy/PrivacyPolicy";
 
               <Route exact path={AppRoute.TERMS}>
                 <TermsOfService />
-              </Route>
-
-              <Route exact path={AppRoute.PRIVACY}>
-                <PrivacyPolicy />
               </Route>
 
               <Route path={AppRoute.HOME}>

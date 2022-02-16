@@ -15,14 +15,6 @@ export default function Footer() {
           text={<Typography variant="caption">Terms of Service</Typography>}
           underline="hover"
         />
-
-        <LinkButton
-          to={AppRoute.PRIVACY}
-          setActive={() => null}
-          className={classes.link}
-          text={<Typography variant="caption">Privacy Policy</Typography>}
-          underline="hover"
-        />
       </Toolbar>
     </footer>
   );

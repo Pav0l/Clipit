@@ -22,5 +22,4 @@ export enum AppRoute {
   OAUTH_REDIRECT = "/oauth2/redirect",
   HOME = "/",
   TERMS = "/terms",
-  PRIVACY = "/privacy",
 }
