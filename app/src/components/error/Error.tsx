@@ -23,7 +23,7 @@ function PleaseTryAgain() {
           try again
         </Link>{" "}
         or {/* TODO implement 'contact us' form */}
-        <Link href="#" underline="always">
+        <Link href="mailto:support@clipit.auction" underline="always" target="_blank" rel="noreferrer">
           contact us
         </Link>
         .
