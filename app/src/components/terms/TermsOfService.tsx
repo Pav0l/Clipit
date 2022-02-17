@@ -11,7 +11,7 @@ export default function TermsOfService() {
           Terms of Service
         </Typography>
 
-        <SectionParagraph text={<>Last updated: February 2, 2022</>} marginTop />
+        <SectionParagraph text={<>Last updated: February 17, 2022</>} marginTop />
 
         {/* Introduction */}
         <Section>
@@ -19,7 +19,7 @@ export default function TermsOfService() {
           <SectionParagraph
             text={
               <>
-                ClipIt is an NFT marketplace maintained by a decentralized team of developers (&quot;ClipIt&quot;,
+                ClipIt is a NFT marketplace maintained by a decentralized team of developers (&quot;ClipIt&quot;,
                 &quot;we&quot;, &quot;us&quot; or &quot;our&quot;). It is build on top of{" "}
                 <a href="https://zora.co/" target="_blank" rel="noreferrer">
                   Zora Market and AuctionHouse
