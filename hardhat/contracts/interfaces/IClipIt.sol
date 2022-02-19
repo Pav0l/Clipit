@@ -53,6 +53,16 @@ interface IClipIt {
   ) external;
 
   /**
+   * @notice Mint new Clip to creator.
+   * @notice Can only be called by contract owner who can verify ownership of the Clip for creator offchain
+   */
+  function verifiedMint(
+    address creator,
+    MediaData calldata data,
+    IMarket.BidShares calldata bidShares
+  ) external;
+
+  /**
    * @notice Transfer the token with the given ID to a given address.
    * Save the previous owner before the transfer, in case there is a sell-on fee.
    * @dev This can only be called by the auction contract specified at deployment

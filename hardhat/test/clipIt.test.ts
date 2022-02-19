@@ -207,6 +207,7 @@ describe("ClipIt", function () {
     // it("can not mint to 0 address", async () => {
     //   // unable to do, since we use `msg.sender` for the `_to` parameter
     //   // might need if we use the `_to` argument for `mint` function
+    //   // but you can not verify if `_to` is really streamers address unless you keep it on chain/off chain sig verification
     // });
 
     it("can not mint content that already was already minted", async () => {
@@ -396,6 +397,95 @@ describe("ClipIt", function () {
           sig
         )
       ).to.be.revertedWith("Market: Invalid bid shares, must sum to 100");
+    });
+  });
+
+  describe("verifiedMint:", () => {
+    it("allows contract owner to mint clip to specific creator address", async () => {
+      const data: MediaData = {
+        tokenURI,
+        metadataURI,
+        contentHash: contentHashBytes,
+        metadataHash: metadataHashBytes,
+      };
+      const tx = await contract.verifiedMint(two.address, data, {
+        creator: Decimal.from(10),
+        owner: Decimal.from(80),
+        prevOwner: Decimal.from(10),
+      });
+      const receipt = await tx.wait();
+
+      expectEventWithArgs(receipt, "Transfer", (args) => {
+        expect(args["from"]).to.eql(ethers.constants.AddressZero);
+        expect(args["to"]).to.eql(two.address);
+        expect(args["tokenId"]).to.exist;
+        expect(args!.tokenId.toString()).to.eql("0");
+      });
+
+      const tokenCreator = await contract.tokenCreators(tid);
+      expect(tokenCreator).eq(two.address);
+
+      const previousTokenOwners = await contract.previousTokenOwners(tid);
+      expect(previousTokenOwners).eq(two.address);
+
+      const tokenContentHashes = await contract.tokenContentHashes(tid);
+      expect(tokenContentHashes).eq(contentHash);
+
+      const returnedTokenURI = await contract.tokenURI(tid);
+      expect(returnedTokenURI).eq(tokenURI);
+
+      const tokenMetadataHashes = await contract.tokenMetadataHashes(tid);
+      expect(tokenMetadataHashes).eq(metadataHash);
+
+      const tokenMetadataURI = await contract.tokenMetadataURI(tid);
+      expect(tokenMetadataURI).eq(metadataURI);
+
+      const ownerOf = await contract.ownerOf(tid);
+      expect(ownerOf).eql(two.address);
+
+      const token = await contract.tokenOfOwnerByIndex(two.address, 0);
+      expect(token.toString()).eql(tid.toString());
+
+      const bidShares = await marketContract.bidSharesForToken(tid);
+      expect(bidShares.owner.value.toString()).eql("80000000000000000000");
+      expect(bidShares.creator.value.toString()).eql("10000000000000000000");
+      expect(bidShares.prevOwner.value.toString()).eql("10000000000000000000");
+    });
+
+    it("can not mint to 0 address", async () => {
+      const data: MediaData = {
+        tokenURI,
+        metadataURI,
+        contentHash: contentHashBytes,
+        metadataHash: metadataHashBytes,
+      };
+
+      await expect(
+        contract.verifiedMint(ethers.constants.AddressZero, data, {
+          creator: Decimal.from(10),
+          owner: Decimal.from(80),
+          prevOwner: Decimal.from(10),
+        })
+      ).to.be.revertedWith("ERC721: mint to the zero address");
+    });
+
+    it("can not be called by other address than owner", async () => {
+      const data: MediaData = {
+        tokenURI,
+        metadataURI,
+        contentHash: contentHashBytes,
+        metadataHash: metadataHashBytes,
+      };
+
+      const caller = contract.connect(two);
+
+      await expect(
+        caller.verifiedMint(two.address, data, {
+          creator: Decimal.from(10),
+          owner: Decimal.from(80),
+          prevOwner: Decimal.from(10),
+        })
+      ).to.be.revertedWith("Ownable: caller is not the owner");
     });
   });
 

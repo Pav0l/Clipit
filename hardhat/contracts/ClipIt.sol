@@ -169,6 +169,17 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
   /**
    * @notice see IClipIt
    */
+  function verifiedMint(
+    address creator,
+    MediaData memory data,
+    IMarket.BidShares memory bidShares
+  ) public override nonReentrant onlyOwner {
+    _mintForCreator(creator, data, bidShares);
+  }
+
+  /**
+   * @notice see IClipIt
+   */
   function auctionTransfer(uint256 tokenId, address recipient) external override {
     require(msg.sender == marketContract, "ClipIt: only market contract");
     previousTokenOwners[tokenId] = ownerOf(tokenId);
