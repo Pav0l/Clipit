@@ -124,6 +124,58 @@ func (t *TwitchApi) GetGame(id string, token string) (Game, error) {
 	return body.Data[0], nil
 }
 
+type User struct {
+	Id string `json:"id"`
+	Login string `json:"login"`
+	Display_Name string `json:"display_name"`
+	Type string `json:"type"`
+	Broadcaster_Type string `json:"broadcaster_type"`
+	Description string `json:"description"`
+	Profile_Image_Url string `json:"profile_image_url"`
+	Offline_Image_Url string `json:"offline_image_url"`
+	View_Count uint `json:"view_count"`
+	Created_At string `json:"created_at"`
+}
+
+func (t *TwitchApi) GetUsers(id string, token string) (User, error) {
+	reqUrl := t.Host + "/users"
+	req, err := http.NewRequest("GET", reqUrl, nil)
+	if err != nil {
+		return User{}, fmt.Errorf("failed to create new request: %w", err)
+	}
+
+	req.Header.Add("Authorization", "Bearer " + token)
+	req.Header.Add("Client-Id", t.ClientId)
+
+	q := req.URL.Query()
+	q.Add("id", id)
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := t.Client.Do(req)
+	if err != nil {
+		return User{}, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		msg, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return User{}, err
+		}
+		return User{}, fmt.Errorf("%d:%s - %s", resp.StatusCode, resp.Status, string(msg))
+	}
+
+	var body struct{
+		Data []User `json:"data"`
+	}
+	if err = json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return User{}, err
+	}
+
+	return body.Data[0], nil
+}
+
+
 type ctxKey int
 
 const key ctxKey = 1
