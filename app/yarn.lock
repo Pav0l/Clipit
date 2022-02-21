@@ -2531,6 +2531,11 @@
   resolved "https://registry.npmjs.org/@types/stack-utils/-/stack-utils-2.0.1.tgz"
   integrity sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==
 
+"@types/twitch-ext@^1.24.4":
+  version "1.24.4"
+  resolved "https://registry.yarnpkg.com/@types/twitch-ext/-/twitch-ext-1.24.4.tgz#a7ef4aede38324515a6eec67ebdbc6d4b179f654"
+  integrity sha512-zlsEX/o4yWMVkYvh+sCCBYFv9py9KERHUNNA+89E597RFFlyzSu31QysbYbzFpXwu1bp+CEKKFkWLXKYaf2JCQ==
+
 "@types/websocket@^1.0.4":
   version "1.0.4"
   resolved "https://registry.npmjs.org/@types/websocket/-/websocket-1.0.4.tgz"

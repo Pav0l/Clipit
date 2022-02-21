@@ -8,5 +8,6 @@ declare global {
 
   interface Window {
     ethereum?: EthereumProvider;
+    Twitch?: Twitch;
   }
 }

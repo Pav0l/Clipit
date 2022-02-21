@@ -68,7 +68,7 @@ const appConfig = {
 };
 
 const extensionConfig = {
-  entry: "./extension/index.tsx",
+  entry: "./src/extension/index.tsx",
   output: {
     path: path.join(__dirname, "/ext-dist"),
     filename: "index.js",
@@ -112,23 +112,24 @@ const extensionConfig = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./extension/index.html",
+      template: "./src/extension/index.html",
     }),
+    // TODO consider removing these once we move with extension architecture
     new HtmlWebpackPlugin({
       filename: "config.html",
-      template: "./extension/public/config.html",
+      template: "./src/extension/public/config.html",
     }),
     new HtmlWebpackPlugin({
       filename: "panel.html",
-      template: "./extension/public/panel.html",
+      template: "./src/extension/public/panel.html",
     }),
     new HtmlWebpackPlugin({
       filename: "streamer.html",
-      template: "./extension/public/streamer.html",
+      template: "./src/extension/public/streamer.html",
     }),
     new HtmlWebpackPlugin({
       filename: "viewer.html",
-      template: "./extension/public/viewer.html",
+      template: "./src/extension/public/viewer.html",
     }),
     new webpack.DefinePlugin({
       CONFIG: JSON.stringify({ ...config, isDevelopment }),
