@@ -86,6 +86,9 @@ const extensionConfig = {
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
+    fallback: {
+      process: require.resolve("process/browser"),
+    },
   },
   module: {
     rules: [
@@ -131,6 +134,10 @@ const extensionConfig = {
     new HtmlWebpackPlugin({
       filename: "viewer.html",
       template: "./src/extension/public/viewer.html",
+    }),
+    new webpack.ProvidePlugin({
+      Buffer: ["buffer", "Buffer"],
+      process: "process/browser",
     }),
     new webpack.DefinePlugin({
       CONFIG: JSON.stringify({ ...config, isDevelopment }),

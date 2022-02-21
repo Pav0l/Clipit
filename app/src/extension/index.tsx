@@ -3,23 +3,35 @@ import ReactDOM from "react-dom";
 
 import "./index.css";
 import { Extension } from "./domains/extension/components/Extension";
-import { initExtSynchronous } from "./init";
+import { initExtAsync, initExtSynchronous } from "./init";
 
 (async () => {
   const path = location.pathname;
   // Twitch global var injected in index.html via <script>
   const twitchHelper = Twitch.ext;
 
-  const { model, logger } = initExtSynchronous(path, twitchHelper);
+  const { model, operations, logger, sentry } = initExtSynchronous(path, twitchHelper);
 
   logger.log(`Extension initialized in ${model.mode} mode.`, parseTwitchQueryParams());
 
   ReactDOM.render(
     <React.StrictMode>
-      <Extension model={model} operations={{}} />
+      <Extension model={model} operations={operations} />
     </React.StrictMode>,
     document.getElementById("root")
   );
+
+  model.meta.setLoading(true);
+
+  try {
+    await initExtAsync(twitchHelper, { model, web3: operations.web3 }, logger);
+  } catch (error) {
+    logger.log("init error:", error);
+    sentry.captureException(error);
+    model.meta.setError("Error while initializing extension");
+  }
+
+  model.meta.setLoading(false);
 })();
 
 // TODO move somewhere when used

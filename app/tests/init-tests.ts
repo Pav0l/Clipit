@@ -20,7 +20,7 @@ import { IConfig } from "../src/domains/app/config";
 import { SentryClient } from "../src/lib/sentry/sentry.client";
 
 export function initTestSync(testConfig: IConfig) {
-  const sentry = new SentryClient(true);
+  const sentry = new SentryClient("", true);
   const storage = new LocalStorageTestClient();
   const model = new AppModel();
 

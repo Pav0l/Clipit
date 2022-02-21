@@ -1,10 +1,35 @@
+import { GraphQLClient } from "graphql-request";
+import { NftController } from "../domains/nfts/nft.controller";
+import { SnackbarController } from "../domains/snackbar/snackbar.controller";
+import { ClipController } from "../domains/twitch-clips/clip.controller";
+import { Web3Controller } from "../domains/web3/web3.controller";
+import { ClipItApiClient } from "../lib/clipit-api/clipit-api.client";
+import { pinataGatewayUri, twitchApiUri } from "../lib/constants";
+import { AuctionContractCreator } from "../lib/contracts/AuctionHouse/auction-contract.client";
+import { ClipItContractCreator } from "../lib/contracts/ClipIt/clipit-contract.client";
+import { SubgraphClient } from "../lib/graphql/subgraph.client";
+import { HttpClient } from "../lib/http-client/http-client";
+import { IpfsClient } from "../lib/ipfs/ipfs.client";
+import { LocalStorageClient } from "../lib/local-storage/local-storage.client";
 import { Logger } from "../lib/logger/logger";
+import { OffChainStorage } from "../lib/off-chain-storage/off-chain-storage.client";
+import { SentryClient } from "../lib/sentry/sentry.client";
+import { TwitchApi } from "../lib/twitch-api/twitch-api.client";
 import { ExtensionMode } from "./domains/extension/extension.interfaces";
-import { ExtensionModel } from "./domains/extension/extension.model";
+import { ExtensionModel, IExtensionModel } from "./domains/extension/extension.model";
 import { ALLOWED_PATHS } from "./domains/extension/extension.routes";
 
 export function initExtSynchronous(path: string, twitchHelper: typeof Twitch.ext) {
   let mode: ExtensionMode = "UNKNOWN";
+
+  const logger = new Logger(twitchHelper.rig);
+  const storage = new LocalStorageClient();
+  const sentry = new SentryClient(CONFIG.sentryDsn, CONFIG.isDevelopment);
+  const offChainStorage = new OffChainStorage(
+    new ClipItApiClient(new HttpClient(storage, CONFIG.clipItApiUrl), CONFIG.twitch.secretKey),
+    new IpfsClient(new HttpClient(storage, pinataGatewayUri))
+  );
+  const subgraph = new SubgraphClient(new GraphQLClient(CONFIG.subgraphUrl));
 
   if (path.includes(ALLOWED_PATHS.PANEL)) {
     mode = "PANEL";
@@ -14,11 +39,55 @@ export function initExtSynchronous(path: string, twitchHelper: typeof Twitch.ext
     mode = "STREAMER";
   }
 
-  const logger = new Logger(twitchHelper.rig);
   const model = new ExtensionModel(mode);
+  const snackbar = new SnackbarController(model.snackbar);
+  const twitchApi = new TwitchApi(new HttpClient(storage, twitchApiUri), CONFIG.twitch);
+
+  const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
+  const nft = new NftController(model.nft, offChainStorage, subgraph, snackbar, sentry);
+  const web3 = new Web3Controller(
+    model.web3,
+    offChainStorage,
+    subgraph,
+    snackbar,
+    sentry,
+    ClipItContractCreator,
+    AuctionContractCreator,
+    CONFIG
+  );
 
   return {
     model,
+    operations: {
+      nft,
+      web3,
+      snackbar,
+      clip,
+    },
     logger,
+    sentry,
   };
+}
+
+export async function initExtAsync(
+  twitch: typeof Twitch.ext,
+  { model, web3 }: { model: IExtensionModel; web3: Web3Controller },
+  logger: Logger
+) {
+  // TODO
+  twitch.onAuthorized((auth) => logger.log("authorized", auth));
+  twitch.onContext((ctx) => logger.log("ctx", ctx));
+
+  switch (model.mode) {
+    case "STREAMER":
+      await initStreamer(web3);
+      break;
+
+    default:
+      break;
+  }
+}
+
+async function initStreamer(web3: Web3Controller) {
+  await web3.connectMetaMaskIfNecessaryForConnectBtn();
 }
