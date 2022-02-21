@@ -7,8 +7,8 @@ interface GenericLogger {
 export class Logger {
   constructor(private customLogger?: GenericLogger) {}
 
-  log(msg: any, ...optionalParams: any[]) {
+  log = (msg: any, ...optionalParams: any[]) => {
     this.customLogger?.log(msg, ...optionalParams);
     console.log(msg, ...optionalParams);
-  }
+  };
 }

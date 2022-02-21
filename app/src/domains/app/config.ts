@@ -5,6 +5,7 @@ export interface IConfig {
   subgraphUrl: string;
   twitch: TwitchConfig;
   isDevelopment: boolean;
+  sentryDsn: string;
 }
 
 export interface TwitchConfig {

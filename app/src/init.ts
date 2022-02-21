@@ -23,7 +23,7 @@ import { AuctionContractCreator } from "./lib/contracts/AuctionHouse/auction-con
 import { SentryClient } from "./lib/sentry/sentry.client";
 
 export function initSynchronous() {
-  const sentry = new SentryClient(CONFIG.isDevelopment);
+  const sentry = new SentryClient(CONFIG.sentryDsn, CONFIG.isDevelopment);
 
   const storage = new LocalStorageClient();
   const model = new AppModel();

@@ -3,6 +3,7 @@
   "auctionAddress": "",
   "clipItApiUrl": "",
   "subgraphUrl": "",
+  "sentryDsn": "",
   "twitch": {
     "clientId": "",
     "accessToken": "",
