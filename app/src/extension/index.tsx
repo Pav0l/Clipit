@@ -7,7 +7,8 @@ import { initExtSynchronous } from "./init";
 
 (async () => {
   const path = location.pathname;
-  const twitchHelper = window.Twitch.ext;
+  // Twitch global var injected in index.html via <script>
+  const twitchHelper = Twitch.ext;
 
   const { model, logger } = initExtSynchronous(path, twitchHelper);
 
