@@ -6,20 +6,18 @@ import ErrorWithRetry from "../../../../components/error/Error";
 import FullPageLoader from "../../../../components/loader/FullPageLoader";
 import { IExtensionModel } from "../extension.model";
 import { Web3Controller } from "../../../../domains/web3/web3.controller";
-import { NftController } from "../../../../domains/nfts/nft.controller";
 import { StreamerContainer } from "../../streamer/components/StreamerContainer";
 import { ReactElement } from "react";
 import Snackbar from "../../../../domains/snackbar/Snackbar";
 import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
-import { ClipController } from "../../../../domains/twitch-clips/clip.controller";
 import CenteredContainer from "../../../../components/container/CenteredContainer";
+import { StreamerUiController } from "../../streamer/streamer-ui.controller";
 
 interface Props {
   model: IExtensionModel;
   operations: {
     web3: Web3Controller;
-    nft: NftController;
-    clip: ClipController;
+    streamerUi: StreamerUiController;
     snackbar: SnackbarController;
   };
 }

@@ -24,7 +24,13 @@ import { initExtAsync, initExtSynchronous } from "./init";
   model.meta.setLoading(true);
 
   try {
-    await initExtAsync(twitchHelper, { model, web3: operations.web3 }, logger);
+    await initExtAsync({
+      model,
+      web3: operations.web3,
+      streamerUi: operations.streamerUi,
+      twitch: twitchHelper,
+      logger,
+    });
   } catch (error) {
     logger.log("init error:", error);
     sentry.captureException(error);

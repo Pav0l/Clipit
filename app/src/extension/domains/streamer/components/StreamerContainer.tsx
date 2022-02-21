@@ -2,24 +2,21 @@ import { Button, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { observer } from "mobx-react-lite";
 import ConnectMetamask from "../../../../components/connectMetamask/ConnectMetamask";
-import { NftController } from "../../../../domains/nfts/nft.controller";
-import { NftModel } from "../../../../domains/nfts/nft.model";
+import ErrorWithRetry from "../../../../components/error/Error";
 import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
-import { ClipController } from "../../../../domains/twitch-clips/clip.controller";
-import { Web3Controller } from "../../../../domains/web3/web3.controller";
 import { Web3Model } from "../../../../domains/web3/web3.model";
 import { useInputData } from "../../../../lib/hooks/useInputData";
+import { StreamerUiController } from "../streamer-ui.controller";
+import { StreamerUiModel } from "../streamer-ui.model";
 
 interface Props {
   model: {
     web3: Web3Model;
-    nft: NftModel;
+    streamerUi: StreamerUiModel;
   };
   operations: {
-    web3: Web3Controller;
-    nft: NftController;
-    clip: ClipController;
     snackbar: SnackbarController;
+    streamerUi: StreamerUiController;
   };
 }
 
@@ -27,35 +24,48 @@ export const StreamerContainer = observer(function StreamerContainer({ model, op
   const classes = useStyles();
   const [inputData, inputHandler, clearInput] = useInputData();
 
-  const buttonHandler = (event: React.MouseEvent) => {
+  const buttonHandler = async (event: React.MouseEvent) => {
     event.preventDefault();
-    operations.clip.validateUrlAndGetClip(inputData.trim());
+    await operations.streamerUi.prepareNft(inputData.trim());
     clearInput();
   };
 
-  if (!model.web3.isMetaMaskInstalled() || !model.web3.isProviderConnected()) {
-    return (
-      <ConnectMetamask
-        operations={{ web3: operations.web3, snackbar: operations.snackbar }}
-        model={{ web3: model.web3 }}
-      />
-    );
+  if (model.streamerUi.meta.hasError) {
+    return <ErrorWithRetry text={model.streamerUi.meta.error} />;
   }
 
-  return (
-    <div className={classes.container}>
-      <TextField
-        id="clip_url_input"
-        label="Enter your Clip URL:"
-        className={classes.input}
-        value={inputData}
-        onChange={(ev) => inputHandler(ev)}
-      ></TextField>
-      <Button variant="contained" color="primary" className={classes.button} onClick={(ev) => buttonHandler(ev)}>
-        Prepare NFT
-      </Button>
-    </div>
-  );
+  switch (model.streamerUi.page) {
+    case "MISSING_PROVIDER":
+      return (
+        <ConnectMetamask
+          model={{ web3: model.web3 }}
+          onClick={operations.streamerUi.connectMetamask}
+          onClickError={operations.snackbar.sendError}
+        />
+      );
+    case "INPUT":
+      return (
+        <div className={classes.container}>
+          <TextField
+            id="clip_url_input"
+            label="Enter your Clip URL:"
+            className={classes.input}
+            value={inputData}
+            onChange={(ev) => inputHandler(ev)}
+          ></TextField>
+          <Button variant="contained" color="primary" className={classes.button} onClick={(ev) => buttonHandler(ev)}>
+            Prepare NFT
+          </Button>
+        </div>
+      );
+    case "CLIP":
+      return <div>Clip Detail Page</div>;
+    case "NFT":
+      return <div>Minted Nft Detail Page</div>;
+    default:
+      // TODO
+      return <div>Invalid Page</div>;
+  }
 });
 
 const useStyles = makeStyles(() => ({

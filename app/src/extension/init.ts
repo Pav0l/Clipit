@@ -18,6 +18,7 @@ import { TwitchApi } from "../lib/twitch-api/twitch-api.client";
 import { ExtensionMode } from "./domains/extension/extension.interfaces";
 import { ExtensionModel, IExtensionModel } from "./domains/extension/extension.model";
 import { ALLOWED_PATHS } from "./domains/extension/extension.routes";
+import { StreamerUiController } from "./domains/streamer/streamer-ui.controller";
 
 export function initExtSynchronous(path: string, twitchHelper: typeof Twitch.ext) {
   let mode: ExtensionMode = "UNKNOWN";
@@ -56,6 +57,8 @@ export function initExtSynchronous(path: string, twitchHelper: typeof Twitch.ext
     CONFIG
   );
 
+  const streamerUi = new StreamerUiController(model, clip, web3);
+
   return {
     model,
     operations: {
@@ -63,24 +66,37 @@ export function initExtSynchronous(path: string, twitchHelper: typeof Twitch.ext
       web3,
       snackbar,
       clip,
+      streamerUi,
     },
     logger,
     sentry,
   };
 }
 
-export async function initExtAsync(
-  twitch: typeof Twitch.ext,
-  { model, web3 }: { model: IExtensionModel; web3: Web3Controller },
-  logger: Logger
-) {
-  // TODO
-  twitch.onAuthorized((auth) => logger.log("authorized", auth));
+export async function initExtAsync({
+  model,
+  web3,
+  streamerUi,
+  twitch,
+  logger,
+}: {
+  model: IExtensionModel;
+  web3: Web3Controller;
+  streamerUi: StreamerUiController;
+  twitch: typeof Twitch.ext;
+  logger: Logger;
+}) {
+  // TODO handle auth
+  twitch.onAuthorized((auth) => {
+    logger.log("authorized", auth);
+    // hax to store token for httpClient.authorizedRequest in TwitchApi
+    localStorage.setItem(CONFIG.twitch.accessToken, auth.token);
+  });
   twitch.onContext((ctx) => logger.log("ctx", ctx));
 
   switch (model.mode) {
     case "STREAMER":
-      await initStreamer(web3);
+      await initStreamer(web3, streamerUi);
       break;
 
     default:
@@ -88,6 +104,8 @@ export async function initExtAsync(
   }
 }
 
-async function initStreamer(web3: Web3Controller) {
+async function initStreamer(web3: Web3Controller, streamerUi: StreamerUiController) {
   await web3.connectMetaMaskIfNecessaryForConnectBtn();
+
+  streamerUi.initialize();
 }
