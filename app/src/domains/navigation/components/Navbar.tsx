@@ -50,10 +50,8 @@ export default observer(function Navbar({ model, operations, isDevelopment }: Pr
           <LoginWithTwitch model={{ auth: model.auth }} operations={operations.auth} />
           <ConnectMetamaskButton
             model={model}
-            operations={{
-              web3: operations.web3,
-              snackbar: operations.snackbar,
-            }}
+            onClick={operations.web3.requestConnect}
+            onClickError={operations.snackbar.sendError}
           />
         </div>
       </Toolbar>

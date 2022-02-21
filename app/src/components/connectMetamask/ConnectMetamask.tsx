@@ -4,8 +4,6 @@ import { observer } from "mobx-react-lite";
 import { useState, useRef, useEffect } from "react";
 
 import { Web3Model, MetamaskButton } from "../../domains/web3/web3.model";
-import { IWeb3Controller } from "../../domains/web3/web3.controller";
-import { SnackbarClient } from "../../domains/snackbar/snackbar.controller";
 
 import MetamaskIcon from "../../assets/metamask.svg";
 
@@ -13,13 +11,12 @@ interface Props {
   model: {
     web3: Web3Model;
   };
-  operations: {
-    web3: IWeb3Controller;
-    snackbar: SnackbarClient;
-  };
+
+  onClick: () => Promise<void>;
+  onClickError: (msg: string) => void;
 }
 
-function ConnectMetamaskButton({ model, operations }: Props) {
+function ConnectMetamaskButton({ model, onClick, onClickError }: Props) {
   const [buttonText, setButtonText] = useState(MetamaskButton.INSTALL);
   const [isDisabled, setDisabled] = useState(false);
 
@@ -45,12 +42,12 @@ function ConnectMetamaskButton({ model, operations }: Props) {
     }
   }, [model.web3.accounts, model.web3.accounts?.length]);
 
-  const onClick = async () => {
+  const onClickHandler = async () => {
     if (model.web3.isMetaMaskInstalled()) {
       try {
-        operations.web3.requestConnect();
+        onClick();
       } catch (error) {
-        operations.snackbar.sendError((error as Error).message);
+        onClickError((error as Error).message);
         return;
       }
     } else {
@@ -59,7 +56,7 @@ function ConnectMetamaskButton({ model, operations }: Props) {
   };
 
   return (
-    <Button startIcon={<MetamaskIcon />} className={classes.button} disabled={isDisabled} onClick={onClick}>
+    <Button startIcon={<MetamaskIcon />} className={classes.button} disabled={isDisabled} onClick={onClickHandler}>
       {buttonText}
     </Button>
   );

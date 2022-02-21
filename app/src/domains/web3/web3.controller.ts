@@ -79,7 +79,7 @@ export class Web3Controller implements IWeb3Controller {
     await this.ethAccounts();
   }
 
-  async requestConnect(andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) {
+  requestConnect = async (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => {
     // can't display this page if MM not installed
     if (!this.model.isMetaMaskInstalled()) {
       this.model.meta.setError(Web3Errors.INSTALL_METAMASK);
@@ -106,7 +106,7 @@ export class Web3Controller implements IWeb3Controller {
     }
 
     this.model.meta.setLoading(false);
-  }
+  };
 
   async requestConnectAndMint(clipId: string, creatorShare: string, clipTitle: string, clipDescription?: string) {
     if (!this.model.isMetaMaskInstalled()) {
