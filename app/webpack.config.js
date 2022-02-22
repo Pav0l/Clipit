@@ -117,23 +117,23 @@ const extensionConfig = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "./src/extension/index.html",
+      publicPath: "./"
     }),
-    // TODO consider removing these once we move with extension architecture
     new HtmlWebpackPlugin({
       filename: "config.html",
       template: "./src/extension/public/config.html",
+      publicPath: "./"
     }),
     new HtmlWebpackPlugin({
       filename: "panel.html",
       template: "./src/extension/public/panel.html",
+      publicPath: "./"
+
     }),
     new HtmlWebpackPlugin({
       filename: "streamer.html",
       template: "./src/extension/public/streamer.html",
-    }),
-    new HtmlWebpackPlugin({
-      filename: "viewer.html",
-      template: "./src/extension/public/viewer.html",
+      publicPath: "./"
     }),
     new webpack.ProvidePlugin({
       Buffer: ["buffer", "Buffer"],

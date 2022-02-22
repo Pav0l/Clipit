@@ -8,6 +8,8 @@
     "build": "rm -rf dist/ && NODE_ENV=production webpack --mode production && yarn setup-redirects",
     "start:ext": "NODE_ENV=development NODE_APP_INSTANCE=extension webpack serve --mode development",
     "build:ext": "NODE_ENV=production NODE_APP_INSTANCE=extension webpack --mode production",
+    "zip:ext": "cd ext-dist/ && zip build index.html index.js config.html panel.html streamer.html",
+    "cleanup:ext": "cd ext-dist/ && rm *.html *.js *.txt *.zip",
     "gql-schema": "get-graphql-schema https://api.thegraph.com/subgraphs/name/h0ppx/two > src/lib/graphql/clipit.graphql",
     "gql-types": "graphql-codegen",
     "test": "jest",
