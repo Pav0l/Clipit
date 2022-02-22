@@ -10,7 +10,7 @@ import { initExtAsync, initExtSynchronous } from "./init";
   // Twitch global var injected in index.html via <script>
   const twitchHelper = Twitch.ext;
 
-  const { model, operations, logger, sentry } = initExtSynchronous(path, twitchHelper);
+  const { model, operations, logger, sentry, storage } = initExtSynchronous(path, twitchHelper);
 
   logger.log(`Extension initialized in ${model.mode} mode.`, parseTwitchQueryParams());
 
@@ -30,6 +30,7 @@ import { initExtAsync, initExtSynchronous } from "./init";
       streamerUi: operations.streamerUi,
       twitch: twitchHelper,
       logger,
+      storage,
     });
   } catch (error) {
     logger.log("init error:", error);

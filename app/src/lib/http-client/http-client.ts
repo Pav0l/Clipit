@@ -88,4 +88,33 @@ export class HttpClient {
 
     return this.requestRaw<T>(params);
   }
+
+  async authorizedExtensionRequest<T>(
+    params: {
+      method: "get" | "post" | "put" | "delete";
+      url: string;
+      qs?: unknown;
+      body?: unknown;
+      headers?: Record<string, unknown>;
+      timeout?: number;
+    },
+    tokenKey: string
+  ): Promise<RawResponse<T>> {
+    const token = this.ls.getItem(tokenKey);
+    if (!token) {
+      return {
+        statusCode: 401,
+        statusOk: false,
+        body: null as unknown as T,
+      };
+    }
+
+    if (!params.headers) {
+      params.headers = {};
+    }
+
+    params.headers["Authorization"] = `Extension ${token}`;
+
+    return this.requestRaw<T>(params);
+  }
 }

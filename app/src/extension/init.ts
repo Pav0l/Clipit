@@ -20,10 +20,10 @@ import { ExtensionModel, IExtensionModel } from "./domains/extension/extension.m
 import { ALLOWED_PATHS } from "./domains/extension/extension.routes";
 import { StreamerUiController } from "./domains/streamer/streamer-ui.controller";
 
-export function initExtSynchronous(path: string, twitchHelper: typeof Twitch.ext) {
+export function initExtSynchronous(path: string, twitchSDK: typeof Twitch.ext) {
   let mode: ExtensionMode = "UNKNOWN";
 
-  const logger = new Logger(twitchHelper.rig);
+  const logger = new Logger(twitchSDK.rig);
   const storage = new LocalStorageClient();
   const sentry = new SentryClient(CONFIG.sentryDsn, CONFIG.isDevelopment);
   const offChainStorage = new OffChainStorage(
@@ -42,7 +42,7 @@ export function initExtSynchronous(path: string, twitchHelper: typeof Twitch.ext
 
   const model = new ExtensionModel(mode);
   const snackbar = new SnackbarController(model.snackbar);
-  const twitchApi = new TwitchApi(new HttpClient(storage, twitchApiUri), CONFIG.twitch);
+  const twitchApi = new TwitchApi(new HttpClient(storage, twitchApiUri), CONFIG.twitch, "EXTENSION");
 
   const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
   const nft = new NftController(model.nft, offChainStorage, subgraph, snackbar, sentry);
@@ -70,6 +70,7 @@ export function initExtSynchronous(path: string, twitchHelper: typeof Twitch.ext
     },
     logger,
     sentry,
+    storage,
   };
 }
 
@@ -79,20 +80,24 @@ export async function initExtAsync({
   streamerUi,
   twitch,
   logger,
+  storage,
 }: {
   model: IExtensionModel;
   web3: Web3Controller;
   streamerUi: StreamerUiController;
   twitch: typeof Twitch.ext;
   logger: Logger;
+  storage: LocalStorageClient;
 }) {
   // TODO handle auth
   twitch.onAuthorized((auth) => {
     logger.log("authorized", auth);
-    // hax to store token for httpClient.authorizedRequest in TwitchApi
-    localStorage.setItem(CONFIG.twitch.accessToken, auth.token);
+    // hax to store token for httpClient.authorizedExtensionRequest in TwitchApi
+    storage.setItem(CONFIG.twitch.accessToken, auth.helixToken);
   });
   twitch.onContext((ctx) => logger.log("ctx", ctx));
+
+  twitch.onError((err) => logger.log("twitch error", err));
 
   switch (model.mode) {
     case "STREAMER":

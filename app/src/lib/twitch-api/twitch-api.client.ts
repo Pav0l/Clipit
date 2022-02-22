@@ -15,12 +15,16 @@ export interface TwitchApiClient {
 }
 
 export class TwitchApi implements TwitchApiClient {
-  constructor(private httpClient: HttpClient, private config: TwitchConfig) {
+  constructor(
+    private httpClient: HttpClient,
+    private config: TwitchConfig,
+    private authMode: "BEARER" | "EXTENSION" = "BEARER"
+  ) {
     this.httpClient.setCustomHeader("Client-Id", this.config.clientId);
   }
 
   getUsers = async () => {
-    return this.httpClient.authorizedRequest<{ data: TwitchUserResp[] } | TwitchError>(
+    return this.makeRequest<{ data: TwitchUserResp[] } | TwitchError>(
       {
         method: "get",
         url: "/users",
@@ -38,9 +42,7 @@ export class TwitchApi implements TwitchApiClient {
       queryParams.first = "50";
     }
 
-    return this.httpClient.authorizedRequest<
-      { data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError
-    >(
+    return this.makeRequest<{ data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError>(
       {
         method: "get",
         url: "/clips",
@@ -57,9 +59,7 @@ export class TwitchApi implements TwitchApiClient {
       queryParams.after = cursor;
     }
 
-    return this.httpClient.authorizedRequest<
-      { data: TwitchGameResp[]; pagination?: TwitchPaginationResp } | TwitchError
-    >(
+    return this.makeRequest<{ data: TwitchGameResp[]; pagination?: TwitchPaginationResp } | TwitchError>(
       {
         method: "get",
         url: "/games",
@@ -72,6 +72,23 @@ export class TwitchApi implements TwitchApiClient {
   isTwitchError = <T>(body: T | TwitchError): body is TwitchError => {
     return (body as TwitchError).error !== undefined;
   };
+
+  private makeRequest<T>(
+    params: {
+      method: "get" | "post" | "put" | "delete";
+      url: string;
+      qs?: unknown;
+      body?: unknown;
+      headers?: Record<string, unknown>;
+      timeout?: number;
+    },
+    tokenKey: string
+  ) {
+    if (this.authMode === "EXTENSION") {
+      return this.httpClient.authorizedExtensionRequest<T>(params, tokenKey);
+    }
+    return this.httpClient.authorizedRequest<T>(params, tokenKey);
+  }
 }
 
 export interface TwitchError {
