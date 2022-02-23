@@ -26,7 +26,10 @@ type APIMuxConfig struct {
 	Pinata struct {
 		Jwt string
 	}
-	CorsOrigin string
+	Cors struct {
+		Origin string
+		AllowedOrigins string
+	}
 	Twitch struct {
 		ClientId string
 	}
@@ -69,7 +72,7 @@ func DebugMux(cfg DebugMuxConfig) http.Handler {
 
 func ApiHandler(cfg APIMuxConfig) http.Handler {
 
-	app := web.NewApp(cfg.Shutdown, cfg.CorsOrigin, mw.Errors(), mw.Metrics(), mw.Panics(), mw.Cors(cfg.CorsOrigin))
+	app := web.NewApp(cfg.Shutdown, cfg.Cors, mw.Errors(), mw.Metrics(), mw.Panics(), mw.Cors(cfg.Cors.Origin, cfg.Cors.AllowedOrigins))
 
 	v2Grp(app, cfg)
 

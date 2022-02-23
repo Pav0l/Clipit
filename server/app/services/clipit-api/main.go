@@ -40,6 +40,7 @@ func run() error {
 	}
 	type corsCfg struct {
 		Origin string
+		AllowedOrigins string
 	}
 	type pinataCfg struct {
 		Jwt string
@@ -72,6 +73,7 @@ func run() error {
 		},
 		CORS: corsCfg{
 			Origin: loadEnvOrDefault("CORS_ORIGIN", "http://localhost:3000"),
+			AllowedOrigins: loadEnvOrDefault("ALLOWED_ORIGINS", "http://localhost:3000 https://localhost:3001"),
 		},
 		Pinata: pinataCfg{
 			Jwt: loadEnvOrExit("PINATA_JWT"),
@@ -121,7 +123,7 @@ func run() error {
 	apiHandler := handlers.ApiHandler(handlers.APIMuxConfig{
 		Shutdown: shutdown,
 		Pinata: cfg.Pinata,
-		CorsOrigin: cfg.CORS.Origin,
+		Cors: cfg.CORS,
 		Twitch: cfg.Twitch,
 		Signer: cfg.Signer,
 	})

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"syscall"
 
 	"github.com/julienschmidt/httprouter"
@@ -19,12 +20,22 @@ type App struct {
 	mw []Middleware
 }
 
-func NewApp(shutdown chan os.Signal, origin string, mw ...Middleware) *App {
+type Cors struct {
+	Origin string
+	AllowedOrigins string
+}
+
+func NewApp(shutdown chan os.Signal, CORS Cors, mw ...Middleware) *App {
 	router := httprouter.New()
 
 	router.GlobalOPTIONS = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		reqOrigin := r.Header.Get("Origin")
+		if strings.Contains(CORS.AllowedOrigins, reqOrigin) {
+			w.Header().Set("Access-Control-Allow-Origin", reqOrigin)
+		} else {
+			w.Header().Set("Access-Control-Allow-Origin", CORS.Origin)
+		}
 		// Set the CORS headers to the response.
-		w.Header().Set("Access-Control-Allow-Origin", origin)
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 
