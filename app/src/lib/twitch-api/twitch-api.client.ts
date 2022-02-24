@@ -2,7 +2,7 @@ import { TwitchConfig } from "../../domains/app/config";
 import { HttpClient, RawResponse } from "../http-client/http-client";
 
 export interface TwitchApiClient {
-  getUsers: () => Promise<RawResponse<{ data: TwitchUserResp[] } | TwitchError>>;
+  getUsers: (qs?: { id: string }) => Promise<RawResponse<{ data: TwitchUserResp[] } | TwitchError>>;
   getClips: (
     queryParams: TwitchClipQuery,
     cursor?: string
@@ -23,11 +23,12 @@ export class TwitchApi implements TwitchApiClient {
     this.httpClient.setCustomHeader("Client-Id", this.config.clientId);
   }
 
-  getUsers = async () => {
+  getUsers = async (qs?: { id: string }) => {
     return this.makeRequest<{ data: TwitchUserResp[] } | TwitchError>(
       {
         method: "get",
         url: "/users",
+        qs,
       },
       this.config.accessToken
     );

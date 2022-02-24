@@ -34,7 +34,7 @@ export class EthereumTestProvider implements EthereumProvider {
       case "eth_chainid":
         return chainId;
       default:
-        throw new Error("uninmplemented method. please fix");
+        throw new Error(`uninmplemented method: ${args.method}. please fix`);
     }
   }
 

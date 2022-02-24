@@ -6,9 +6,15 @@ import { SentryClient } from "../../lib/sentry/sentry.client";
 export class UserController {
   constructor(private model: UserModel, private twitchApi: TwitchApiClient, private sentry: SentryClient) {}
 
-  getUser = async () => {
+  getUser = async (userId?: string) => {
     this.model.meta.setLoading(true);
-    const data = await this.twitchApi.getUsers();
+
+    let query;
+    if (userId) {
+      query = { id: userId };
+    }
+
+    const data = await this.twitchApi.getUsers(query);
 
     if (data.statusOk && !this.twitchApi.isTwitchError(data.body)) {
       this.model.setUser(data.body.data[0]);
