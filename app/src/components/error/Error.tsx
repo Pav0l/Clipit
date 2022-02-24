@@ -1,9 +1,13 @@
 import { Box, Typography, Link, makeStyles } from "@material-ui/core";
+import { ReactElement } from "react";
 import CenteredContainer from "../container/CenteredContainer";
 
 interface Props {
   text?: string;
   withRetry?: boolean;
+  withActionButton?: boolean;
+  actionButton?: ReactElement;
+  classNames?: string;
 }
 
 function PleaseTryAgain() {
@@ -32,7 +36,8 @@ function PleaseTryAgain() {
   );
 }
 
-function ErrorWithRetry({ text, withRetry }: Props) {
+// TODO refactor this to "generic `display message to user screen` and proper `error screen with retry`"
+function ErrorWithRetry({ text, withRetry, withActionButton, actionButton, classNames }: Props) {
   const classes = useStyles();
 
   if (!text) {
@@ -41,9 +46,9 @@ function ErrorWithRetry({ text, withRetry }: Props) {
   }
 
   return (
-    <CenteredContainer className={classes.container}>
+    <CenteredContainer className={`${classes.container} ${classNames ?? ""}`}>
       <Typography variant="h5">{text}</Typography>
-      {withRetry ? <PleaseTryAgain /> : <></>}
+      {withActionButton && actionButton ? actionButton : withRetry ? <PleaseTryAgain /> : <></>}
     </CenteredContainer>
   );
 }
