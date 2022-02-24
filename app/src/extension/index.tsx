@@ -7,10 +7,8 @@ import { initExtAsync, initExtSynchronous } from "./init";
 
 (async () => {
   const path = location.pathname;
-  // Twitch global var injected in index.html via <script>
-  const twitchHelper = Twitch.ext;
 
-  const { model, operations, logger, sentry, storage } = initExtSynchronous(path, twitchHelper);
+  const { model, operations, logger, sentry, storage, twitch } = initExtSynchronous(path);
 
   logger.log(`Extension initialized in ${model.mode} mode.`, parseTwitchQueryParams());
 
@@ -26,9 +24,10 @@ import { initExtAsync, initExtSynchronous } from "./init";
   try {
     await initExtAsync({
       model,
+      user: operations.user,
       web3: operations.web3,
       streamerUi: operations.streamerUi,
-      twitch: twitchHelper,
+      twitch: twitch,
       logger,
       storage,
     });

@@ -18,6 +18,11 @@ import { ClipItTestContractCreator } from "../src/lib/contracts/ClipIt/clipit-co
 import { AuctionTestContractCreator } from "../src/lib/contracts/AuctionHouse/auction-contract-test.client";
 import { IConfig } from "../src/domains/app/config";
 import { SentryClient } from "../src/lib/sentry/sentry.client";
+import { ExtensionMode } from "../src/extension/domains/extension/extension.interfaces";
+import { TwitchExtensionTestClient } from "../src/lib/twitch-extension/twitch-extension-test.client";
+import { Logger } from "../src/lib/logger/logger";
+import { ExtensionModel } from "../src/extension/domains/extension/extension.model";
+import { StreamerUiController } from "../src/extension/domains/streamer/streamer-ui.controller";
 
 export function initTestSync(testConfig: IConfig) {
   const sentry = new SentryClient("", true);
@@ -65,5 +70,52 @@ export function initTestSync(testConfig: IConfig) {
       snackbar: snackbar,
     },
     localStorage: storage,
+  };
+}
+
+export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) {
+  const twitch = new TwitchExtensionTestClient();
+  const logger = new Logger(twitch);
+  const sentry = new SentryClient("", true);
+  const storage = new LocalStorageTestClient();
+
+  const model = new ExtensionModel(mode);
+
+  const snackbar = new SnackbarController(model.snackbar);
+  const offChainStorage = new OffChainStorage(new ClipItApiTestClient(), new IpfsTestClient());
+  const twitchApi = new TwitchApiTestClient();
+  const subgraph = new SubgraphTestClient();
+
+  const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
+  const game = new GameController(model.game, twitchApi, sentry);
+  const user = new UserController(model.user, twitchApi, sentry);
+  const nft = new NftController(model.nft, offChainStorage, subgraph, snackbar, sentry);
+  const web3 = new Web3Controller(
+    model.web3,
+    offChainStorage,
+    subgraph,
+    snackbar,
+    sentry,
+    ClipItTestContractCreator,
+    AuctionTestContractCreator,
+    testConfig
+  );
+  const streamerUi = new StreamerUiController(model, clip, game, web3, nft, snackbar, logger);
+
+  return {
+    model,
+    operations: {
+      web3,
+      clip,
+      user,
+      game,
+      nft,
+      snackbar,
+      streamerUi,
+    },
+    twitch,
+    logger,
+    sentry,
+    storage,
   };
 }

@@ -1,21 +1,66 @@
+import { NftController } from "../../../domains/nfts/nft.controller";
+import { SnackbarController } from "../../../domains/snackbar/snackbar.controller";
 import { ClipController } from "../../../domains/twitch-clips/clip.controller";
 import { TwitchClipsErrors } from "../../../domains/twitch-clips/clip.errors";
+import { TwitchClip } from "../../../domains/twitch-clips/clip.model";
+import { GameController } from "../../../domains/twitch-games/game.controller";
 import { Web3Controller } from "../../../domains/web3/web3.controller";
+import { Logger } from "../../../lib/logger/logger";
 import { IExtensionModel } from "../extension/extension.model";
 
 export class StreamerUiController {
-  constructor(private model: IExtensionModel, private clip: ClipController, private web3: Web3Controller) {}
+  constructor(
+    private model: IExtensionModel,
+    private clip: ClipController,
+    private game: GameController,
+    private web3: Web3Controller,
+    private nft: NftController,
+    private snackbar: SnackbarController,
+    private logger: Logger
+  ) {}
 
   initialize() {
     if (!this.model.web3.isMetaMaskInstalled() || !this.model.web3.isProviderConnected()) {
-      this.model.streamerUi.setPage("MISSING_PROVIDER");
+      this.model.streamerUi.goToMissingProvider();
       return;
     }
 
-    this.model.streamerUi.setPage("INPUT");
+    this.model.streamerUi.goToInput();
   }
 
-  async prepareNft(url: string) {
+  async mint(clip: TwitchClip, creatorShare: string, clipTitle: string, clipDescription?: string) {
+    // we need to verify that current user is broadcaster of clip,
+    // so we do not allow other people minting streamers clips
+    if (clip.broadcasterId !== this.model.user.id) {
+      this.snackbar.sendError(TwitchClipsErrors.CLIP_DOES_NOT_BELONG_TO_USER);
+      return;
+    }
+
+    const tokenId = await this.web3.requestConnectAndMint(
+      clip.id,
+      { creatorShare, clipTitle, clipDescription },
+      { withReturn: true }
+    );
+
+    if (!tokenId) {
+      return;
+    }
+
+    // fetch tokenId metadata
+    await this.nft.getTokenMetadata(tokenId);
+
+    if (!this.model.nft.getTokenMetadata(tokenId)) {
+      return;
+    }
+
+    this.model.streamerUi.goToNft(tokenId);
+  }
+
+  validateCreatorShare = (share: string) => {
+    return this.clip.validateCreatorShare(share);
+  };
+
+  async prepareClip(url: string) {
     const clipId = this.clip.validateClipUrl(url);
     if (!clipId) {
       return;
@@ -26,12 +71,14 @@ export class StreamerUiController {
     const clip = this.model.clip.getClip(clipId);
 
     if (!clip) {
-      this.model.streamerUi.meta.setError(TwitchClipsErrors.CLIP_DOES_NOT_EXIST);
+      this.snackbar.sendError(TwitchClipsErrors.CLIP_DOES_NOT_EXIST);
       return;
     }
 
+    await this.game.getGames(clip.gameId);
+
     // we've got the clip -> display it
-    this.model.streamerUi.setPage("CLIP");
+    this.model.streamerUi.goToClip(clip.id);
   }
 
   connectMetamask = async () => {
@@ -42,6 +89,14 @@ export class StreamerUiController {
     }
 
     // provider connected -> get clip input
-    this.model.streamerUi.setPage("INPUT");
+    this.model.streamerUi.goToInput();
+  };
+
+  backToInput = () => {
+    this.model.streamerUi.goToInput();
+  };
+
+  backToClip = (clipId: string) => {
+    this.model.streamerUi.goToClip(clipId);
   };
 }

@@ -2,18 +2,14 @@ import { Button, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { observer } from "mobx-react-lite";
 import ConnectMetamask from "../../../../components/connectMetamask/ConnectMetamask";
-import ErrorWithRetry from "../../../../components/error/Error";
 import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
-import { Web3Model } from "../../../../domains/web3/web3.model";
 import { useInputData } from "../../../../lib/hooks/useInputData";
+import { ExtensionClip } from "../../../components/ExtensionClip";
+import { IExtensionModel } from "../../extension/extension.model";
 import { StreamerUiController } from "../streamer-ui.controller";
-import { StreamerUiModel } from "../streamer-ui.model";
 
 interface Props {
-  model: {
-    web3: Web3Model;
-    streamerUi: StreamerUiModel;
-  };
+  model: IExtensionModel;
   operations: {
     snackbar: SnackbarController;
     streamerUi: StreamerUiController;
@@ -26,13 +22,9 @@ export const StreamerContainer = observer(function StreamerContainer({ model, op
 
   const buttonHandler = async (event: React.MouseEvent) => {
     event.preventDefault();
-    await operations.streamerUi.prepareNft(inputData.trim());
+    await operations.streamerUi.prepareClip(inputData.trim());
     clearInput();
   };
-
-  if (model.streamerUi.meta.hasError) {
-    return <ErrorWithRetry text={model.streamerUi.meta.error} />;
-  }
 
   switch (model.streamerUi.page) {
     case "MISSING_PROVIDER":
@@ -53,15 +45,24 @@ export const StreamerContainer = observer(function StreamerContainer({ model, op
             value={inputData}
             onChange={(ev) => inputHandler(ev)}
           ></TextField>
-          <Button variant="contained" color="primary" className={classes.button} onClick={(ev) => buttonHandler(ev)}>
+          <Button variant="contained" color="primary" className={classes.button} onClick={buttonHandler}>
             Prepare NFT
           </Button>
         </div>
       );
     case "CLIP":
-      return <div>Clip Detail Page</div>;
+      return (
+        <ExtensionClip
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          clip={model.clip.getClip(model.streamerUi.clipId!)!}
+          model={{ clip: model.clip, game: model.game, web3: model.web3 }}
+          operations={{ streamerUi: operations.streamerUi }}
+        />
+      );
     case "NFT":
       return <div>Minted Nft Detail Page</div>;
+    case "AUCTION":
+      return <div>Auction Page</div>;
     default:
       // TODO
       return <div>Invalid Page</div>;

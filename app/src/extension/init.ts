@@ -2,6 +2,8 @@ import { GraphQLClient } from "graphql-request";
 import { NftController } from "../domains/nfts/nft.controller";
 import { SnackbarController } from "../domains/snackbar/snackbar.controller";
 import { ClipController } from "../domains/twitch-clips/clip.controller";
+import { GameController } from "../domains/twitch-games/game.controller";
+import { UserController } from "../domains/twitch-user/user.controller";
 import { Web3Controller } from "../domains/web3/web3.controller";
 import { ClipItApiClient } from "../lib/clipit-api/clipit-api.client";
 import { pinataGatewayUri, twitchApiUri } from "../lib/constants";
@@ -10,20 +12,25 @@ import { ClipItContractCreator } from "../lib/contracts/ClipIt/clipit-contract.c
 import { SubgraphClient } from "../lib/graphql/subgraph.client";
 import { HttpClient } from "../lib/http-client/http-client";
 import { IpfsClient } from "../lib/ipfs/ipfs.client";
-import { LocalStorageClient } from "../lib/local-storage/local-storage.client";
+import { ILocalStorage, LocalStorageClient } from "../lib/local-storage/local-storage.client";
 import { Logger } from "../lib/logger/logger";
 import { OffChainStorage } from "../lib/off-chain-storage/off-chain-storage.client";
 import { SentryClient } from "../lib/sentry/sentry.client";
 import { TwitchApi } from "../lib/twitch-api/twitch-api.client";
+import { TwitchClient, TwitchExtensionClient } from "../lib/twitch-extension/twitch-extension.client";
 import { ExtensionMode } from "./domains/extension/extension.interfaces";
 import { ExtensionModel, IExtensionModel } from "./domains/extension/extension.model";
 import { ALLOWED_PATHS } from "./domains/extension/extension.routes";
 import { StreamerUiController } from "./domains/streamer/streamer-ui.controller";
 
-export function initExtSynchronous(path: string, twitchSDK: typeof Twitch.ext) {
+export function initExtSynchronous(path: string) {
   let mode: ExtensionMode = "UNKNOWN";
 
-  const logger = new Logger(twitchSDK.rig);
+  // Twitch => global var injected in index.html via <script> tag
+  const twitch = new TwitchExtensionClient(Twitch.ext);
+  const logger = new Logger(twitch);
+  logger.log("extension config", CONFIG);
+
   const storage = new LocalStorageClient();
   const sentry = new SentryClient(CONFIG.sentryDsn, CONFIG.isDevelopment);
   const offChainStorage = new OffChainStorage(
@@ -45,6 +52,8 @@ export function initExtSynchronous(path: string, twitchSDK: typeof Twitch.ext) {
   const twitchApi = new TwitchApi(new HttpClient(storage, twitchApiUri), CONFIG.twitch, "EXTENSION");
 
   const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
+  const game = new GameController(model.game, twitchApi, sentry);
+  const user = new UserController(model.user, twitchApi, sentry);
   const nft = new NftController(model.nft, offChainStorage, subgraph, snackbar, sentry);
   const web3 = new Web3Controller(
     model.web3,
@@ -57,7 +66,7 @@ export function initExtSynchronous(path: string, twitchSDK: typeof Twitch.ext) {
     CONFIG
   );
 
-  const streamerUi = new StreamerUiController(model, clip, web3);
+  const streamerUi = new StreamerUiController(model, clip, game, web3, nft, snackbar, logger);
 
   return {
     model,
@@ -66,42 +75,40 @@ export function initExtSynchronous(path: string, twitchSDK: typeof Twitch.ext) {
       web3,
       snackbar,
       clip,
+      user,
       streamerUi,
     },
     logger,
     sentry,
     storage,
+    twitch,
   };
 }
 
 export async function initExtAsync({
   model,
   web3,
+  user,
   streamerUi,
   twitch,
   logger,
   storage,
 }: {
   model: IExtensionModel;
+  user: UserController;
   web3: Web3Controller;
   streamerUi: StreamerUiController;
-  twitch: typeof Twitch.ext;
+  twitch: TwitchClient;
   logger: Logger;
   storage: LocalStorageClient;
 }) {
-  // TODO handle auth
-  twitch.onAuthorized((auth) => {
-    logger.log("authorized", auth);
-    // hax to store token for httpClient.authorizedExtensionRequest in TwitchApi
-    storage.setItem(CONFIG.twitch.accessToken, auth.helixToken);
-  });
   twitch.onContext((ctx) => logger.log("ctx", ctx));
 
   twitch.onError((err) => logger.log("twitch error", err));
 
   switch (model.mode) {
     case "STREAMER":
-      await initStreamer(web3, streamerUi);
+      await initStreamer({ user, web3, streamerUi, twitch, storage, logger });
       break;
 
     default:
@@ -109,8 +116,42 @@ export async function initExtAsync({
   }
 }
 
-async function initStreamer(web3: Web3Controller, streamerUi: StreamerUiController) {
+async function initStreamer({
+  user,
+  web3,
+  streamerUi,
+  storage,
+  twitch,
+  logger,
+}: {
+  user: UserController;
+  web3: Web3Controller;
+  streamerUi: StreamerUiController;
+  storage: ILocalStorage;
+  logger: Logger;
+  twitch: TwitchClient;
+}) {
   await web3.connectMetaMaskIfNecessaryForConnectBtn();
 
+  // TODO handle auth
+  twitch.onAuthorized(async (auth) => {
+    logger.log("authorized", auth);
+    // hax to store token for httpClient.authorizedExtensionRequest in TwitchApi
+    storage.setItem(CONFIG.twitch.accessToken, auth.helixToken);
+    // hax no.2 to use token for EBS requests to twitch
+    storage.setItem(CONFIG.twitch.secretKey, auth.token);
+
+    // remove the first character from the auth.userId opaque userId
+    await user.getUser(getUserId(auth.userId));
+  });
+
   streamerUi.initialize();
+}
+
+// TODO this will most likely not work in prod because auth.userId is OPAQUE id and not real one!
+function getUserId(authUserId: string): string {
+  if (authUserId.startsWith("U") || authUserId.startsWith("A")) {
+    return authUserId.slice(1);
+  }
+  return authUserId;
 }
