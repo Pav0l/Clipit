@@ -6,6 +6,7 @@ import type { useInputReturn } from "../../../lib/hooks/useInputData";
 
 interface Props {
   mint: () => Promise<void>;
+  onCancel?: () => void;
   validateCreatorShare: (value: string) => boolean;
 
   titleInputHook: useInputReturn;
@@ -16,7 +17,14 @@ interface Props {
 const defHelperShareMsg = "Percentage of all future sales you'll receive as a creator";
 const defTitleMsg = "Title";
 
-function ClipCardContent({ validateCreatorShare, mint, titleInputHook, descInputHook, shareInputHook }: Props) {
+function ClipCardContent({
+  validateCreatorShare,
+  mint,
+  onCancel,
+  titleInputHook,
+  descInputHook,
+  shareInputHook,
+}: Props) {
   const [isDisabled, setDisabled] = useState(false);
 
   const [titleInput, setTitleInput] = titleInputHook;
@@ -120,17 +128,30 @@ function ClipCardContent({ validateCreatorShare, mint, titleInputHook, descInput
           variant="outlined"
         />
       </div>
-      <Button
-        size="medium"
-        color="primary"
-        variant="contained"
-        disabled={isDisabled}
-        onClick={handleMint}
-        className={classes.button}
-      >
-        {/* Mint / Create NFT */}
-        Publish
-      </Button>
+      {onCancel ? (
+        <div className={classes.buttonsWrapper}>
+          <Button size="medium" color="secondary" variant="text" disabled={false} onClick={onCancel}>
+            Cancel
+          </Button>
+
+          <Button size="medium" color="primary" variant="contained" disabled={isDisabled} onClick={handleMint}>
+            {/* Mint / Create NFT */}
+            Publish
+          </Button>
+        </div>
+      ) : (
+        <Button
+          size="medium"
+          color="primary"
+          variant="contained"
+          disabled={isDisabled}
+          onClick={handleMint}
+          className={classes.soloButton}
+        >
+          {/* Mint / Create NFT */}
+          Publish
+        </Button>
+      )}
     </CardContent>
   );
 }
@@ -151,7 +172,12 @@ const useStyles = makeStyles(() => ({
   input: {
     margin: "1rem 0",
   },
-  button: {
+  soloButton: {
     alignSelf: "flex-end",
+  },
+  buttonsWrapper: {
+    marginTop: "0.5rem",
+    display: "flex",
+    justifyContent: "space-between",
   },
 }));
