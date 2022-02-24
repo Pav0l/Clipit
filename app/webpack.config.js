@@ -8,8 +8,7 @@ const isDevelopment = process.env["NODE_ENV"] === "development";
 const mode = process.env["NODE_APP_INSTANCE"]; // app / extension
 
 console.log(`Running Webpack in ${mode} mode`);
-console.log('App config:', config);
-
+console.log("App config:", config);
 
 const appConfig = {
   entry: "./src/index.tsx",
@@ -80,9 +79,9 @@ const extensionConfig = {
     watchContentBase: true,
     historyApiFallback: true,
     https: {
-      key: fs.readFileSync('./certs/key.pem'),
-      cert: fs.readFileSync('./certs/cert.pem'),
-    }
+      key: fs.readFileSync("./certs/key.pem"),
+      cert: fs.readFileSync("./certs/cert.pem"),
+    },
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
@@ -117,23 +116,22 @@ const extensionConfig = {
   plugins: [
     new HtmlWebpackPlugin({
       template: "./src/extension/index.html",
-      publicPath: "./"
+      publicPath: "./",
     }),
     new HtmlWebpackPlugin({
       filename: "config.html",
       template: "./src/extension/public/config.html",
-      publicPath: "./"
+      publicPath: "./",
     }),
     new HtmlWebpackPlugin({
       filename: "panel.html",
       template: "./src/extension/public/panel.html",
-      publicPath: "./"
-
+      publicPath: "./",
     }),
     new HtmlWebpackPlugin({
       filename: "streamer.html",
       template: "./src/extension/public/streamer.html",
-      publicPath: "./"
+      publicPath: "./",
     }),
     new webpack.ProvidePlugin({
       Buffer: ["buffer", "Buffer"],
@@ -144,6 +142,5 @@ const extensionConfig = {
     }),
   ],
 };
-
 
 module.exports = mode === "extension" ? extensionConfig : appConfig;

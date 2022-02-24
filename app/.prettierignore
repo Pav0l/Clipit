@@ -1,3 +1,4 @@
 config
 dist
+ext-dist
 node_modules
