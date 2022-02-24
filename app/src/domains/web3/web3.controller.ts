@@ -36,10 +36,13 @@ export interface IWeb3Controller {
   // mint token
   requestConnectAndMint: (
     clipId: string,
-    creatorShare: string,
-    clipTitle: string,
-    clipDescription?: string
-  ) => Promise<void>;
+    data: {
+      creatorShare: string;
+      clipTitle: string;
+      clipDescription?: string;
+    },
+    options?: { withReturn?: boolean }
+  ) => Promise<string | undefined>;
   // open MM and call requestAccounts
   requestConnect: (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => Promise<void>;
   // get current users balance
@@ -108,7 +111,15 @@ export class Web3Controller implements IWeb3Controller {
     this.model.meta.setLoading(false);
   };
 
-  async requestConnectAndMint(clipId: string, creatorShare: string, clipTitle: string, clipDescription?: string) {
+  async requestConnectAndMint(
+    clipId: string,
+    data: {
+      creatorShare: string;
+      clipTitle: string;
+      clipDescription?: string;
+    },
+    options: { withReturn?: boolean } = {}
+  ) {
     if (!this.model.isMetaMaskInstalled()) {
       this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
       return;
@@ -117,14 +128,14 @@ export class Web3Controller implements IWeb3Controller {
     if (!this.model.isProviderConnected()) {
       await this.requestAccounts();
     }
-    const signerAddress = this.model.getAccount();
-    if (!signerAddress) {
+    const address = this.model.getAccount();
+    if (!address) {
       // requestAccounts failed (rejected/already opened, etc...) and notification to user was sent
       // just stop here
       return;
     }
 
-    await this.prepareMetadataAndMintClip(clipId, signerAddress, creatorShare, clipTitle, clipDescription);
+    return await this.prepareMetadataAndMintClip(clipId, { ...data, address }, options);
   }
 
   getBalance = async (address: string) => {
@@ -332,11 +343,15 @@ export class Web3Controller implements IWeb3Controller {
 
   private prepareMetadataAndMintClip = async (
     clipId: string,
-    address: string,
-    creatorShare: string,
-    clipTitle: string,
-    clipDescription?: string
+    data: {
+      address: string;
+      creatorShare: string;
+      clipTitle: string;
+      clipDescription?: string;
+    },
+    options: { withReturn?: boolean } = {}
   ) => {
+    const { address, creatorShare, clipTitle, clipDescription } = data;
     if (!clipId || !address || !clipTitle) {
       this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
       this.sentry.captureEvent({
@@ -407,6 +422,11 @@ export class Web3Controller implements IWeb3Controller {
       this.model.meta.setLoading(false);
 
       const tokenId = clip.id;
+
+      if (options.withReturn) {
+        return tokenId;
+      }
+
       // TODO ideally we do not want to reload the app here and just update state
       location.assign(location.origin + `/nfts/${tokenId}`);
     } else {

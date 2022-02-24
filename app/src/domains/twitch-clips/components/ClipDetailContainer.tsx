@@ -80,7 +80,11 @@ function ClipDetailContainer({ model, operations }: Props) {
     // we need to verify that current user is owner of broadcaster of clip,
     // so we do not allow other people minting streamers clips
     if (clip != null && isAllowedToMint) {
-      await operations.web3.requestConnectAndMint(clip.id, creatorShare, titleInput, descriptionInput);
+      await operations.web3.requestConnectAndMint(clip.id, {
+        creatorShare,
+        clipTitle: titleInput,
+        clipDescription: descriptionInput,
+      });
     }
   };
 

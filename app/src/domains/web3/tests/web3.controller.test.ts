@@ -39,7 +39,7 @@ describe("web3 controller", () => {
     });
 
     it("requestConnectAndMint displays INSTALL_METAMASK snack info", () => {
-      expect(ctrl.requestConnectAndMint("", "", "", "")).resolves;
+      expect(ctrl.requestConnectAndMint("", { creatorShare: "", clipTitle: "", clipDescription: "" })).resolves;
       expect(snackModel.open).toEqual(true);
       expect(snackModel.message?.text).toEqual(Web3Errors.INSTALL_METAMASK);
       expect(snackModel.message?.severity).toEqual("info");
@@ -113,7 +113,7 @@ describe("web3 controller", () => {
 
     it("requestConnectAndMint: invalid clipId => shows snackbar error", async () => {
       // invalid clipId
-      await ctrl.requestConnectAndMint("", "xx", "xx", "xx");
+      await ctrl.requestConnectAndMint("", { creatorShare: "xx", clipTitle: "xx", clipDescription: "xx" });
       expect(snackModel.open).toEqual(true);
       expect(snackModel.message?.text).toEqual(Web3Errors.SOMETHING_WENT_WRONG);
       expect(snackModel.message?.severity).toEqual("error");
@@ -121,14 +121,18 @@ describe("web3 controller", () => {
 
     it("requestConnectAndMint: invalid clipTitle => shows snackbar error", async () => {
       // invalid clipTitle
-      await ctrl.requestConnectAndMint("xx", "xx", "", "xx");
+      await ctrl.requestConnectAndMint("xx", { creatorShare: "xx", clipTitle: "", clipDescription: "xx" });
       expect(snackModel.open).toEqual(true);
       expect(snackModel.message?.text).toEqual(Web3Errors.SOMETHING_WENT_WRONG);
       expect(snackModel.message?.severity).toEqual("error");
     });
 
     it("requestConnectAndMint: creates the NFT and redirects to it", async () => {
-      await ctrl.requestConnectAndMint(twitchClip.id, "5", twitchClip.title, "");
+      await ctrl.requestConnectAndMint(twitchClip.id, {
+        creatorShare: "5",
+        clipTitle: twitchClip.title,
+        clipDescription: "",
+      });
       expect(window.location.assign).toHaveBeenCalledWith("http://localhost/nfts/1");
     });
   });
