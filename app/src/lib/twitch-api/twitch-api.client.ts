@@ -1,5 +1,7 @@
 import { TwitchConfig } from "../../domains/app/config";
+import { extensionHelixTokenKey, twitchApiAccessTokenKey } from "../constants";
 import { HttpClient, RawResponse } from "../http-client/http-client";
+import { ILocalStorage } from "../local-storage/local-storage.client";
 
 export interface TwitchApiClient {
   getUsers: (qs?: { id: string }) => Promise<RawResponse<{ data: TwitchUserResp[] } | TwitchError>>;
@@ -17,21 +19,19 @@ export interface TwitchApiClient {
 export class TwitchApi implements TwitchApiClient {
   constructor(
     private httpClient: HttpClient,
+    private storage: ILocalStorage,
     private config: TwitchConfig,
-    private authMode: "BEARER" | "EXTENSION" = "BEARER"
+    private authScheme: "Extension" | "Bearer" = "Bearer"
   ) {
     this.httpClient.setCustomHeader("Client-Id", this.config.clientId);
   }
 
   getUsers = async (qs?: { id: string }) => {
-    return this.makeRequest<{ data: TwitchUserResp[] } | TwitchError>(
-      {
-        method: "get",
-        url: "/users",
-        qs,
-      },
-      this.config.accessToken
-    );
+    return this.makeAuthorizedRequest<{ data: TwitchUserResp[] } | TwitchError>({
+      method: "get",
+      url: "/users",
+      qs,
+    });
   };
 
   getClips = async (queryParams: TwitchClipQuery, cursor?: string) => {
@@ -43,14 +43,11 @@ export class TwitchApi implements TwitchApiClient {
       queryParams.first = "50";
     }
 
-    return this.makeRequest<{ data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError>(
-      {
-        method: "get",
-        url: "/clips",
-        qs: queryParams,
-      },
-      this.config.accessToken
-    );
+    return this.makeAuthorizedRequest<{ data: TwitchClipResp[]; pagination?: TwitchPaginationResp } | TwitchError>({
+      method: "get",
+      url: "/clips",
+      qs: queryParams,
+    });
   };
 
   getGames = async (gameId: string, cursor?: string) => {
@@ -60,35 +57,25 @@ export class TwitchApi implements TwitchApiClient {
       queryParams.after = cursor;
     }
 
-    return this.makeRequest<{ data: TwitchGameResp[]; pagination?: TwitchPaginationResp } | TwitchError>(
-      {
-        method: "get",
-        url: "/games",
-        qs: queryParams,
-      },
-      this.config.accessToken
-    );
+    return this.makeAuthorizedRequest<{ data: TwitchGameResp[]; pagination?: TwitchPaginationResp } | TwitchError>({
+      method: "get",
+      url: "/games",
+      qs: queryParams,
+    });
   };
 
   isTwitchError = <T>(body: T | TwitchError): body is TwitchError => {
     return (body as TwitchError).error !== undefined;
   };
 
-  private makeRequest<T>(
-    params: {
-      method: "get" | "post" | "put" | "delete";
-      url: string;
-      qs?: unknown;
-      body?: unknown;
-      headers?: Record<string, unknown>;
-      timeout?: number;
-    },
-    tokenKey: string
-  ) {
-    if (this.authMode === "EXTENSION") {
-      return this.httpClient.authorizedExtensionRequest<T>(params, tokenKey);
-    }
-    return this.httpClient.authorizedRequest<T>(params, tokenKey);
+  private makeAuthorizedRequest<T>(params: { method: "get" | "post" | "put" | "delete"; url: string; qs?: unknown }) {
+    const key = this.authScheme === "Extension" ? extensionHelixTokenKey : twitchApiAccessTokenKey;
+    const token = this.storage.getItem(key);
+
+    const authorizationHeaderValue = `${this.authScheme} ${token}`;
+    const requestParams = { ...params, headers: { Authorization: authorizationHeaderValue } };
+
+    return this.httpClient.authorizedRequest<T>(requestParams);
   }
 }
 

@@ -6,7 +6,7 @@ import { GameController } from "../domains/twitch-games/game.controller";
 import { UserController } from "../domains/twitch-user/user.controller";
 import { Web3Controller } from "../domains/web3/web3.controller";
 import { ClipItApiClient } from "../lib/clipit-api/clipit-api.client";
-import { pinataGatewayUri, twitchApiUri } from "../lib/constants";
+import { ebsTokenKey, extensionHelixTokenKey, pinataGatewayUri, twitchApiUri } from "../lib/constants";
 import { AuctionContractCreator } from "../lib/contracts/AuctionHouse/auction-contract.client";
 import { ClipItContractCreator } from "../lib/contracts/ClipIt/clipit-contract.client";
 import { SubgraphClient } from "../lib/graphql/subgraph.client";
@@ -34,8 +34,8 @@ export function initExtSynchronous(path: string) {
   const storage = new LocalStorageClient();
   const sentry = new SentryClient(CONFIG.sentryDsn, CONFIG.isDevelopment);
   const offChainStorage = new OffChainStorage(
-    new ClipItApiClient(new HttpClient(storage, CONFIG.clipItApiUrl), CONFIG.twitch.secretKey),
-    new IpfsClient(new HttpClient(storage, pinataGatewayUri))
+    new ClipItApiClient(new HttpClient(CONFIG.clipItApiUrl), storage, "Ebs"),
+    new IpfsClient(new HttpClient(pinataGatewayUri))
   );
   const subgraph = new SubgraphClient(new GraphQLClient(CONFIG.subgraphUrl));
 
@@ -49,7 +49,7 @@ export function initExtSynchronous(path: string) {
 
   const model = new ExtensionModel(mode);
   const snackbar = new SnackbarController(model.snackbar);
-  const twitchApi = new TwitchApi(new HttpClient(storage, twitchApiUri), CONFIG.twitch, "EXTENSION");
+  const twitchApi = new TwitchApi(new HttpClient(twitchApiUri), storage, CONFIG.twitch, "Extension");
 
   const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
   const game = new GameController(model.game, twitchApi, sentry);
@@ -137,9 +137,9 @@ async function initStreamer({
   twitch.onAuthorized(async (auth) => {
     logger.log("authorized", auth);
     // hax to store token for httpClient.authorizedExtensionRequest in TwitchApi
-    storage.setItem(CONFIG.twitch.accessToken, auth.helixToken);
+    storage.setItem(extensionHelixTokenKey, auth.helixToken);
     // hax no.2 to use token for EBS requests to twitch
-    storage.setItem(CONFIG.twitch.secretKey, auth.token);
+    storage.setItem(ebsTokenKey, auth.token);
 
     // remove the first character from the auth.userId opaque userId
     await user.getUser(getUserId(auth.userId));

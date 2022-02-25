@@ -4,8 +4,6 @@
   "clipItApiUrl": "http://localhost:420/v2",
   "subgraphUrl": "http://localhost:420/subgraph",
   "twitch": {
-    "clientId": "42069",
-    "accessToken": "tokenzz",
-    "secretKey": "322"
+    "clientId": "42069"
   }
 }

@@ -10,6 +10,4 @@ export interface IConfig {
 
 export interface TwitchConfig {
   clientId: string;
-  accessToken: string;
-  secretKey: string;
 }

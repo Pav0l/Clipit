@@ -39,7 +39,7 @@ export function initTestSync(testConfig: IConfig) {
   const twitchApi = new TwitchApiTestClient();
   const subgraph = new SubgraphTestClient();
 
-  const authController = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, testConfig.twitch);
+  const authController = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, testConfig.twitch.clientId);
   const clipController = new ClipController(model.clip, snackbar, twitchApi, sentry);
   const gameController = new GameController(model.game, twitchApi, sentry);
   const userController = new UserController(model.user, twitchApi, sentry);

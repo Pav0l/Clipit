@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from "axios";
-import { ILocalStorage } from "../local-storage/local-storage.client";
 
 export interface RawResponse<T> {
   statusCode: number;
@@ -10,7 +9,7 @@ export interface RawResponse<T> {
 export class HttpClient {
   private client: AxiosInstance;
 
-  constructor(private ls: ILocalStorage, baseURL: string) {
+  constructor(baseURL: string) {
     this.client = axios.create({
       baseURL,
     });
@@ -60,60 +59,21 @@ export class HttpClient {
     }
   }
 
-  async authorizedRequest<T>(
-    params: {
-      method: "get" | "post" | "put" | "delete";
-      url: string;
-      qs?: unknown;
-      body?: unknown;
-      headers?: Record<string, unknown>;
-      timeout?: number;
-    },
-    tokenKey: string
-  ): Promise<RawResponse<T>> {
-    const token = this.ls.getItem(tokenKey);
-    if (!token) {
+  async authorizedRequest<T>(params: {
+    method: "get" | "post" | "put" | "delete";
+    url: string;
+    qs?: unknown;
+    body?: unknown;
+    headers?: Record<string, unknown>;
+    timeout?: number;
+  }): Promise<RawResponse<T>> {
+    if (!params.headers || !params.headers["Authorization"]) {
       return {
         statusCode: 401,
         statusOk: false,
         body: null as unknown as T,
       };
     }
-
-    if (!params.headers) {
-      params.headers = {};
-    }
-
-    params.headers["Authorization"] = `Bearer ${token}`;
-
-    return this.requestRaw<T>(params);
-  }
-
-  async authorizedExtensionRequest<T>(
-    params: {
-      method: "get" | "post" | "put" | "delete";
-      url: string;
-      qs?: unknown;
-      body?: unknown;
-      headers?: Record<string, unknown>;
-      timeout?: number;
-    },
-    tokenKey: string
-  ): Promise<RawResponse<T>> {
-    const token = this.ls.getItem(tokenKey);
-    if (!token) {
-      return {
-        statusCode: 401,
-        statusOk: false,
-        body: null as unknown as T,
-      };
-    }
-
-    if (!params.headers) {
-      params.headers = {};
-    }
-
-    params.headers["Authorization"] = `Extension ${token}`;
 
     return this.requestRaw<T>(params);
   }

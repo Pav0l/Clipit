@@ -33,15 +33,15 @@ export function initSynchronous() {
   const snackbar = new SnackbarController(model.snackbar);
 
   const offChainStorageApi = new OffChainStorage(
-    new ClipItApiClient(new HttpClient(storage, CONFIG.clipItApiUrl), CONFIG.twitch.accessToken),
-    new IpfsClient(new HttpClient(storage, pinataGatewayUri))
+    new ClipItApiClient(new HttpClient(CONFIG.clipItApiUrl), storage),
+    new IpfsClient(new HttpClient(pinataGatewayUri))
   );
 
-  const twitchOAuthApi = new TwitchOAuthApiClient(new HttpClient(storage, twitchOAuthUri), CONFIG.twitch.clientId);
-  const twitchApi = new TwitchApi(new HttpClient(storage, twitchApiUri), CONFIG.twitch);
+  const twitchOAuthApi = new TwitchOAuthApiClient(new HttpClient(twitchOAuthUri), CONFIG.twitch.clientId);
+  const twitchApi = new TwitchApi(new HttpClient(twitchApiUri), storage, CONFIG.twitch);
   const subgraph = new SubgraphClient(new GraphQLClient(CONFIG.subgraphUrl));
 
-  const authController = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, CONFIG.twitch);
+  const authController = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, CONFIG.twitch.clientId);
   const clipController = new ClipController(model.clip, snackbar, twitchApi, sentry);
   const gameController = new GameController(model.game, twitchApi, sentry);
   const userController = new UserController(model.user, twitchApi, sentry);

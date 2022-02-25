@@ -5,8 +5,6 @@
   "subgraphUrl": "",
   "sentryDsn": "",
   "twitch": {
-    "clientId": "",
-    "accessToken": "",
-    "secretKey": ""
+    "clientId": ""
   }
 }

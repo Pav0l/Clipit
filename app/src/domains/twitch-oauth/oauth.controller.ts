@@ -1,9 +1,8 @@
 import { OAuthModel } from "./oauth.model";
 import { ILocalStorage } from "../../lib/local-storage/local-storage.client";
-import { twitchOAuthUri, twitchScopes } from "../../lib/constants";
+import { twitchApiAccessTokenKey, twitchOAuthStateSecretKey, twitchOAuthUri, twitchScopes } from "../../lib/constants";
 import { OAuthErrors, OauthQueryParams } from "./oauth.types";
 import { IOauthApiClient } from "../../lib/twitch-oauth/twitch-oauth-api.client";
-import { TwitchConfig } from "../app/config";
 import { SentryClient } from "../../lib/sentry/sentry.client";
 
 export class OAuthController {
@@ -12,7 +11,7 @@ export class OAuthController {
     private oauthApi: IOauthApiClient,
     private storage: ILocalStorage,
     private sentry: SentryClient,
-    private config: TwitchConfig
+    private twitchClientId: string
   ) {}
 
   logout = async () => {
@@ -24,7 +23,7 @@ export class OAuthController {
 
     await this.oauthApi.revokeAccessToken(token);
 
-    this.storage.removeItem(this.config.accessToken);
+    this.storage.removeItem(twitchApiAccessTokenKey);
     location.reload();
   };
 
@@ -62,12 +61,12 @@ export class OAuthController {
   }
 
   getAccessToken = () => {
-    return this.storage.getItem(this.config.accessToken);
+    return this.storage.getItem(twitchApiAccessTokenKey);
   };
 
   getTwitchOAuth2AuthorizeUrl = () => {
     const url = new URL(`${twitchOAuthUri}/oauth2/authorize`);
-    url.searchParams.append(OauthQueryParams.CLIENT_ID, this.config.clientId);
+    url.searchParams.append(OauthQueryParams.CLIENT_ID, this.twitchClientId);
     url.searchParams.append(OauthQueryParams.REDIRECT_URI, `${location.origin}/oauth2/redirect`);
     url.searchParams.append(OauthQueryParams.RESPONSE_TYPE, "token");
     url.searchParams.append(OauthQueryParams.SCOPE, twitchScopes);
@@ -82,16 +81,16 @@ export class OAuthController {
   };
 
   private storeTokenAndRemoveSecret = (token: string) => {
-    this.storage.setItem(this.config.accessToken, token);
+    this.storage.setItem(twitchApiAccessTokenKey, token);
     this.model.setLoggedIn(true);
-    this.storage.removeItem(this.config.secretKey);
+    this.storage.removeItem(twitchOAuthStateSecretKey);
   };
 
   private verifyStateSecret = (fromUrl: string) => {
     if (!fromUrl) {
       return false;
     }
-    const original = this.storage.getItem(this.config.secretKey);
+    const original = this.storage.getItem(twitchOAuthStateSecretKey);
     return original === fromUrl;
   };
 
@@ -130,7 +129,7 @@ export class OAuthController {
 
   private generateSecretAndStore = (): string => {
     const secret = this.generateRandomString();
-    this.storage.setItem(this.config.secretKey, secret);
+    this.storage.setItem(twitchOAuthStateSecretKey, secret);
     return secret;
   };
 }
