@@ -25,7 +25,6 @@ type TwitchCfg struct {
 
 type ValidToken struct {
 	Token string
-	ClientId string
 	UserId string
 }
 
@@ -63,7 +62,6 @@ func (auth *Auth) ValidateTokenForScheme(authScheme, token string) (ValidToken, 
 		}
 		return ValidToken{
 			Token: token.Token,
-			ClientId: token.Client_id,
 			UserId: token.User_id,
 		}, nil
 
@@ -77,7 +75,7 @@ func (auth *Auth) ValidateTokenForScheme(authScheme, token string) (ValidToken, 
 		if jwtPayload.UserId == "" {
 			return ValidToken{}, errors.New("user can not be identified")
 		}
-		
+
 		// TODO log externalCall
 		appToken, err := auth.twitchOauth.RequestAppAccessToken()
 		if err != nil {
