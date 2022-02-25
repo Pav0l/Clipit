@@ -47,6 +47,8 @@ func run() error {
 	}
 	type twitchCfg struct {
 		ClientId string
+		ClientSecret string
+		EbsSecret string
 	}
 	type signerCfg struct {
 		PrivateKey string
@@ -80,6 +82,8 @@ func run() error {
 		},
 		Twitch: twitchCfg{
 			ClientId: loadEnvOrExit("TWITCH_CLIENT_ID"),
+			ClientSecret: loadEnvOrExit("TWITCH_CLIENT_SECRET"),
+			EbsSecret: loadEnvOrExit("TWITCH_EBS_SECRET"),
 		},
 		Signer: signerCfg{
 			PrivateKey: loadEnvOrExit("SIGNER_PRIVATE_KEY"),

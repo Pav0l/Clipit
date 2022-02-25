@@ -13,6 +13,7 @@ import (
 	"github.com/clip-it/server/business/core/clip"
 	"github.com/clip-it/server/business/core/game"
 	"github.com/clip-it/server/business/core/metadata"
+	"github.com/clip-it/server/business/sys/auth"
 	mw "github.com/clip-it/server/business/web/middleware"
 	"github.com/clip-it/server/foundation/pinata"
 	"github.com/clip-it/server/foundation/signer"
@@ -32,6 +33,8 @@ type APIMuxConfig struct {
 	}
 	Twitch struct {
 		ClientId string
+		ClientSecret string
+		EbsSecret string
 	}
 	Signer struct {
 		PrivateKey string
@@ -83,6 +86,7 @@ func v2Grp(app *web.App, cfg APIMuxConfig) {
 	const version = "v2"
 
 	storage := *cStore.NewStore(*pinata.NewPinata(cfg.Pinata.Jwt))
+	a := auth.NewAuth(cfg.Twitch)
 
 	cgh := clipgrp.Handlers{
 		Clip: clip.NewCore(*twitchapi.NewTwitchApi(cfg.Twitch.ClientId), *twitchgql.NewTwitchGql(), storage),
@@ -90,5 +94,5 @@ func v2Grp(app *web.App, cfg APIMuxConfig) {
 		Game: game.NewCore(*twitchapi.NewTwitchApi(cfg.Twitch.ClientId)),
 		Signer: *signer.NewSigner(cfg.Signer.PrivateKey),
 	}
-	app.Handle(http.MethodPost, version, "/clips/:clipId", cgh.Upload, mw.Authenticate(), mw.AuthorizeClip())
+	app.Handle(http.MethodPost, version, "/clips/:clipId", cgh.Upload, mw.Authenticate(a), mw.AuthorizeClip(cfg.Twitch.ClientId))
 }

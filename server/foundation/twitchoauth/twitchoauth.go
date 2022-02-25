@@ -1,9 +1,7 @@
 package twitchoauth
 
 import (
-	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,17 +9,24 @@ import (
 )
 
 
+type TwitchCfg struct {
+	ClientId string
+	ClientSecret string
+}
+
 type TwitchOauth struct {
 	client http.Client
 	host string
+	cfg TwitchCfg
 }
 
-func NewTwitchOauth() *TwitchOauth {
+func NewTwitchOauth(cfg TwitchCfg) *TwitchOauth {
 	return &TwitchOauth {
 		client: http.Client{
 			Timeout: time.Second * 10,
 		},
 		host: "https://id.twitch.tv",
+		cfg: cfg,
 	}
 }
 
@@ -67,21 +72,48 @@ func (t *TwitchOauth) ValidateToken(token string) (Token, error) {
 	return body, nil
 }
 
-type ctxKey int
-
-const key ctxKey = 1
-
-// SetToken stores token data from validating twitch access token
-func SetToken(ctx context.Context, token Token) context.Context {
-	return context.WithValue(ctx, key, token)
+type AppAccessToken struct {
+	AccessToken string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	ExpiresIn uint `json:"expires_in"`
+	Scope []string `json:"scope"`
+	TokenType string `json:"token_type"`
 }
 
-// GetToken returns token data from context set by Authenticate middleware
-func GetToken(ctx context.Context) (Token, error) {
-	t, ok := ctx.Value(key).(Token)
-	if !ok {
-		return Token{}, errors.New("token value missing from request context")
+func (t *TwitchOauth) RequestAppAccessToken() (AppAccessToken, error) {
+	url := t.host + "/oauth2/token"
+	req, err := http.NewRequest("POST", url, nil)
+	if err != nil {
+		return AppAccessToken{}, fmt.Errorf("failed to create new request: %w", err)
 	}
-	return t, nil
-}
 
+	q := req.URL.Query()
+	q.Add("client_id", t.cfg.ClientId)
+	q.Add("client_secret", t.cfg.ClientSecret)
+	q.Add("grant_type", "client_credentials")
+	req.URL.RawQuery = q.Encode()
+
+	
+	resp, err := t.client.Do(req)
+	if err != nil {
+		return AppAccessToken{}, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		msg, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return AppAccessToken{}, err
+		}
+		return AppAccessToken{}, fmt.Errorf("%d:%s - %s", resp.StatusCode, resp.Status, string(msg))
+	}
+
+	// @note - it seems refresh_token response is emprty string
+	// TODO access_token is valid for ~60 days - we should cache it to reuse until it expires
+	var appTokenResp AppAccessToken
+	if err = json.NewDecoder(resp.Body).Decode(&appTokenResp); err != nil {
+		return AppAccessToken{}, err
+	}
+
+	return appTokenResp, nil
+}

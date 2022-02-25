@@ -10,10 +10,10 @@ import (
 	"github.com/clip-it/server/business/core/game"
 	"github.com/clip-it/server/business/core/metadata"
 	cStore "github.com/clip-it/server/business/data/store/clip"
+	"github.com/clip-it/server/business/sys/auth"
 	"github.com/clip-it/server/business/sys/validate"
 	"github.com/clip-it/server/foundation/signer"
 	"github.com/clip-it/server/foundation/twitchapi"
-	"github.com/clip-it/server/foundation/twitchoauth"
 	"github.com/clip-it/server/foundation/web"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -42,14 +42,14 @@ func (h Handlers) Upload(ctx context.Context, w http.ResponseWriter, r *http.Req
 		return validate.NewRequestError(e, http.StatusFailedDependency)
 	}
 
-	t, err := twitchoauth.GetToken(ctx)
+	token, err := auth.GetToken(ctx)
 	if err != nil {
 		return web.NewShutdownError("missing twitchoauth.token value from context")
 	}
 
 	gameChan := make(chan game.Result)
 	// TODO - cache gameId - gameName map
-	go h.Game.GetGame(clip.GameId, t.Token, gameChan)
+	go h.Game.GetGame(clip.GameId, token.Token, gameChan)
 
 	uploadedClip, err := h.Clip.UploadToIpfs(clip.Id, url)
 	if err != nil {
