@@ -107,6 +107,7 @@ describe("nft model", () => {
               name: "money",
               symbol: "M",
             },
+            transactionHash: "hash",
           },
         ],
       });

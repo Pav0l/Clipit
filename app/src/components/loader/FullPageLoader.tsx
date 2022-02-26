@@ -5,7 +5,7 @@ export default function FullPageLoader() {
     <Box
       display="flex"
       alignItems="center"
-      width="100%"
+      width="100vw"
       justifyContent="center"
       flexDirection="column"
       minHeight="90vh"

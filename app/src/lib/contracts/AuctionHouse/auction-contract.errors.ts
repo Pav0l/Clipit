@@ -1,11 +1,13 @@
 export enum AuctionContractErrors {
   INVALID_CURATOR_FEE_USER_ERR = "Curator fee must be less than 100%",
   AUCTION_NOT_STARTED = "Auction has not started yet",
+  NOT_APPROVED_TO_AUCTION = "You are not approved to create Auction for this token",
   BID_NOT_HIGH_ENOUGH = "Bid is not high enough",
 
   // revert messages from contracts
   INVALID_CURATOR_FEE = "curatorFeePercentage must be less than 100",
   AUCTION_DOES_NOT_EXIST = "Auction doesn't exist",
+  NOT_ALLOWED_TO_CREATE_AUCTION = "ERC721: approve caller is not owner nor approved for all",
 
   // create bid errors
   AUCTION_NOT_APPROVED = "Auction must be approved by curator",

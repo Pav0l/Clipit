@@ -1,12 +1,18 @@
 import { clipPartialFragment } from "../../../tests/__fixtures__/clip-fragment";
+import { auctionPartialFragment } from "../../../tests/__fixtures__/auction-fragment";
 
 import { AuctionPartialFragment, ClipPartialFragment, GetClipsQuery } from "./types";
 import { ISubgraphClient, UserData } from "./subgraph.client";
 
 export class SubgraphTestClient implements ISubgraphClient {
-  fetchAuctionCached = (tokenId: string): Promise<AuctionPartialFragment | null> => {
-    throw new Error("method not implemented");
+  fetchAuctionByHashCached = async (_txHash: string): Promise<{ id: string } | null> => {
+    return { id: auctionPartialFragment.id };
   };
+
+  fetchAuctionCached = async (_tokenId: string): Promise<AuctionPartialFragment | null> => {
+    return auctionPartialFragment;
+  };
+
   fetchClipCached = async (_tokenId: string): Promise<ClipPartialFragment | null> => {
     return clipPartialFragment;
   };

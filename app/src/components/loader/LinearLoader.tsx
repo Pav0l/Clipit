@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 
 interface Props {
   text: string;
+  classNames?: string;
 }
 
-export default function LinearLoader({ text }: Props) {
+export default function LinearLoader({ text, classNames }: Props) {
   const classes = useStyles();
   const [progress, setProgress] = useState(0);
 
@@ -23,7 +24,7 @@ export default function LinearLoader({ text }: Props) {
   }, []);
 
   return (
-    <Box className={classes.container}>
+    <Box className={`${classes.container} ${classNames ? classNames : ""}`}>
       <Typography variant="h6">{text}</Typography>
       <LinearProgress variant="determinate" value={progress} />
     </Box>

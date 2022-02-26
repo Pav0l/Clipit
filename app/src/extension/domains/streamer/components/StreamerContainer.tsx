@@ -5,6 +5,7 @@ import ConnectMetamask from "../../../../components/connectMetamask/ConnectMetam
 import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
 import { useInputData } from "../../../../lib/hooks/useInputData";
 import { ExtensionClip } from "../../../components/ExtensionClip";
+import { ExtensionNft } from "../../../components/ExtensionNft";
 import { IExtensionModel } from "../../extension/extension.model";
 import { StreamerUiController } from "../streamer-ui.controller";
 
@@ -27,6 +28,8 @@ export const StreamerContainer = observer(function StreamerContainer({ model, op
   };
 
   switch (model.streamerUi.page) {
+    // TODO reconsider if we want to have this page at start
+    // ideally you might want to connect MM only once you have your clip ready
     case "MISSING_PROVIDER":
       return (
         <ConnectMetamask
@@ -59,10 +62,23 @@ export const StreamerContainer = observer(function StreamerContainer({ model, op
           operations={{ streamerUi: operations.streamerUi }}
         />
       );
-    case "NFT":
-      return <div>Minted Nft Detail Page</div>;
+    case "NFT": {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const tokenId = model.streamerUi.tokenId!;
+      return (
+        <div className={classes.container}>
+          <ExtensionNft
+            metadata={model.nft.getTokenMetadata(tokenId)}
+            tokenId={tokenId}
+            withHeader={false}
+            model={{ web3: model.web3, nft: model.nft }}
+            operations={{ streamerUi: operations.streamerUi }}
+          />
+        </div>
+      );
+    }
     case "AUCTION":
-      return <div>Auction Page</div>;
+      return <div>Auction Created Page</div>;
     default:
       // TODO
       return <div>Invalid Page</div>;

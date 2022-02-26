@@ -9,15 +9,22 @@ import LinearLoader from "../loader/LinearLoader";
 
 interface Props {
   tokenId: string;
+  withHeader?: boolean;
+  classNames?: string;
   model: {
     web3: Web3Model;
     nft: NftModel;
   };
-
   handleCreateAuction: (tokenId: string, duration: string, reservePrice: string) => Promise<void>;
 }
 
-export const AuctionCreateForm = observer(function AuctionCreateForm({ tokenId, model, handleCreateAuction }: Props) {
+export const AuctionCreateForm = observer(function AuctionCreateForm({
+  tokenId,
+  withHeader,
+  classNames,
+  model,
+  handleCreateAuction,
+}: Props) {
   const classes = useStyles();
   const [durationInput, setDuration] = useInputData("1");
   const [durationErr, setDurationErr] = useState(false);
@@ -64,18 +71,20 @@ export const AuctionCreateForm = observer(function AuctionCreateForm({ tokenId, 
   };
 
   if (model.web3.auctionLoadStatus !== undefined) {
-    return <LinearLoader text={model.web3.auctionLoadStatus} />;
+    return <LinearLoader text={model.web3.auctionLoadStatus} classNames={classNames} />;
   }
 
-  if (model.nft.meta.isLoading) {
+  if (model.nft.meta.isLoading || model.web3.meta.isLoading) {
     return <FullPageLoader />;
   }
 
   return (
-    <div className={classes.container}>
-      <Typography component="h5" variant="h5">
-        List your NFT for an auction
-      </Typography>
+    <div className={`${classes.container} ${classNames ? classNames : ""}`}>
+      {withHeader ? (
+        <Typography component="h5" variant="h5">
+          List your NFT for an auction
+        </Typography>
+      ) : null}
       <TextField
         label="Duration"
         id="duration-input"

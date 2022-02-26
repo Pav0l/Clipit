@@ -1,16 +1,17 @@
 import { metadataCid } from "../../../../tests/__fixtures__/metadata";
 import { chainId, signerAddress } from "../../../../tests/__fixtures__/ethereum";
+import { clipPartialFragment } from "../../../../tests/__fixtures__/clip-fragment";
 
 import { EthereumProvider } from "../../ethereum/ethereum.types";
 import { BidShares, IClipItContractClient, MediaData, Signature } from "./clipit-contract.client";
 import { BigNumber, ContractReceipt, ethers } from "ethers";
 
 class ClipItContractTestClient implements IClipItContractClient {
-  getApproved(tokenId: string): Promise<string> {
-    throw new Error("method not implemented");
+  async getApproved(_tokenId: string): Promise<string> {
+    return clipPartialFragment.owner.id;
   }
 
-  approve(to: string, tokenId: string): Promise<ethers.ContractTransaction> {
+  async approve(to: string, tokenId: string): Promise<ethers.ContractTransaction> {
     throw new Error("method not implemented");
   }
 

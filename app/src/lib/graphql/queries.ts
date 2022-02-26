@@ -102,6 +102,7 @@ const AUCTION_PARTIALS = gql`
     previousBids {
       ...InactiveAuctionBidPartial
     }
+    transactionHash
   }
 `;
 
@@ -187,6 +188,18 @@ export const GET_AUCTION_QUERY = gql`
 
   query getAuctionForToken($tokenIds: [BigInt!]) {
     reserveAuctions(where: { tokenId_in: $tokenIds }) {
+      ...AuctionPartial
+    }
+  }
+`;
+
+export const GET_AUCTION_BY_TX_HASH_QUERY = gql`
+  ${CURRENCY_PARTIAL}
+  ${CLIP_PARTIALS}
+  ${AUCTION_PARTIALS}
+
+  query getAuctionByTxHash($txHashes: [String!]) {
+    reserveAuctions(where: { transactionHash_in: $txHashes }) {
       ...AuctionPartial
     }
   }

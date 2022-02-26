@@ -1,4 +1,6 @@
+import { utils } from "ethers";
 import { NftController } from "../../../domains/nfts/nft.controller";
+import { NftErrors } from "../../../domains/nfts/nft.errors";
 import { SnackbarController } from "../../../domains/snackbar/snackbar.controller";
 import { ClipController } from "../../../domains/twitch-clips/clip.controller";
 import { TwitchClipsErrors } from "../../../domains/twitch-clips/clip.errors";
@@ -28,6 +30,31 @@ export class StreamerUiController {
     this.model.streamerUi.goToInput();
   }
 
+  createAuction = async (tokenId: string, duration: string, reservePrice: string) => {
+    const auctionId = await this.web3.requestConnectAndCreateAuction(
+      tokenId,
+      Number(duration) * 86400, // 1 day in seconds
+      utils.parseEther(reservePrice)
+    );
+
+    if (!auctionId) {
+      // auction was not created / we did not get data from subgraph
+      // snackbar error was sent already, just quit here
+      return;
+    }
+
+    this.logger.log("auction created: ", auctionId);
+
+    await this.nft.getAuctionForToken(tokenId, { clearCache: true });
+
+    const metadata = this.model.nft.getTokenMetadata(tokenId);
+    if (!metadata || !metadata.auction) {
+      this.snackbar.sendInfo(NftErrors.SOMETHING_WENT_WRONG);
+      return;
+    }
+    this.model.streamerUi.goToAuction(metadata.auction.id);
+  };
+
   async mint(clip: TwitchClip, creatorShare: string, clipTitle: string, clipDescription?: string) {
     // we need to verify that current user is broadcaster of clip,
     // so we do not allow other people minting streamers clips
@@ -45,6 +72,8 @@ export class StreamerUiController {
     if (!tokenId) {
       return;
     }
+
+    this.logger.log("token minted: ", tokenId);
 
     // fetch tokenId metadata
     await this.nft.getTokenMetadata(tokenId);
@@ -98,5 +127,9 @@ export class StreamerUiController {
 
   backToClip = (clipId: string) => {
     this.model.streamerUi.goToClip(clipId);
+  };
+
+  backToNft = (tokenId: string) => {
+    this.model.streamerUi.goToNft(tokenId);
   };
 }

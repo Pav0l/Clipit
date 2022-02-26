@@ -47,7 +47,10 @@ export const ExtensionClip = observer(function ExtensionClip({ model, operations
             size="medium"
             color="primary"
             variant="contained"
-            onClick={() => operations.streamerUi.backToClip(clip.id)}
+            onClick={() => {
+              model.web3.meta.setError("");
+              operations.streamerUi.backToClip(clip.id);
+            }}
             className={classes.errorBtn}
           >
             Back
@@ -62,7 +65,7 @@ export const ExtensionClip = observer(function ExtensionClip({ model, operations
   }
 
   if (model.web3.storeClipStatus) {
-    return <LinearLoader text={model.web3.storeClipStatus} />;
+    return <LinearLoader text={model.web3.storeClipStatus} classNames={classes.linearLoaderWidth} />;
   }
 
   if (model.web3.mintStatus) {
@@ -72,7 +75,7 @@ export const ExtensionClip = observer(function ExtensionClip({ model, operations
           <ErrorWithRetry text={model.web3.mintStatus} withRetry={false} classNames={classes.error}></ErrorWithRetry>
         );
       case MintStatus.WAIT_FOR_MINT_TX:
-        return <LinearLoader text={model.web3.mintStatus} />;
+        return <LinearLoader text={model.web3.mintStatus} classNames={classes.linearLoaderWidth} />;
     }
   }
 
@@ -122,5 +125,9 @@ const useStyles = makeStyles(() => ({
   },
   errorBtn: {
     margin: "1rem 0",
+  },
+  linearLoaderWidth: {
+    maxWidth: "100%",
+    width: "inherit",
   },
 }));

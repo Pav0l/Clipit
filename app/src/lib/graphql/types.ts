@@ -2516,6 +2516,7 @@ export type ClipPartialFragment = {
         approvedTimestamp?: any | null | undefined;
         reservePrice: any;
         status: ReserveAuctionStatus;
+        transactionHash: string;
         clip?: { __typename?: "Clip"; id: string } | null | undefined;
         tokenOwner: { __typename?: "User"; id: string };
         auctionCurrency: {
@@ -2585,6 +2586,7 @@ export type AuctionPartialFragment = {
   approvedTimestamp?: any | null | undefined;
   reservePrice: any;
   status: ReserveAuctionStatus;
+  transactionHash: string;
   clip?: { __typename?: "Clip"; id: string } | null | undefined;
   tokenOwner: { __typename?: "User"; id: string };
   auctionCurrency: {
@@ -2692,6 +2694,7 @@ export type GetUserDataQuery = {
             approvedTimestamp?: any | null | undefined;
             reservePrice: any;
             status: ReserveAuctionStatus;
+            transactionHash: string;
             clip?: { __typename?: "Clip"; id: string } | null | undefined;
             tokenOwner: { __typename?: "User"; id: string };
             auctionCurrency: {
@@ -2807,6 +2810,7 @@ export type GetUserDataQuery = {
                 approvedTimestamp?: any | null | undefined;
                 reservePrice: any;
                 status: ReserveAuctionStatus;
+                transactionHash: string;
                 clip?: { __typename?: "Clip"; id: string } | null | undefined;
                 tokenOwner: { __typename?: "User"; id: string };
                 auctionCurrency: {
@@ -2908,6 +2912,7 @@ export type GetUserDataQuery = {
                   approvedTimestamp?: any | null | undefined;
                   reservePrice: any;
                   status: ReserveAuctionStatus;
+                  transactionHash: string;
                   clip?: { __typename?: "Clip"; id: string } | null | undefined;
                   tokenOwner: { __typename?: "User"; id: string };
                   auctionCurrency: {
@@ -3013,6 +3018,7 @@ export type GetClipDataQuery = {
           approvedTimestamp?: any | null | undefined;
           reservePrice: any;
           status: ReserveAuctionStatus;
+          transactionHash: string;
           clip?: { __typename?: "Clip"; id: string } | null | undefined;
           tokenOwner: { __typename?: "User"; id: string };
           auctionCurrency: {
@@ -3124,6 +3130,7 @@ export type GetClipsQuery = {
           approvedTimestamp?: any | null | undefined;
           reservePrice: any;
           status: ReserveAuctionStatus;
+          transactionHash: string;
           clip?: { __typename?: "Clip"; id: string } | null | undefined;
           tokenOwner: { __typename?: "User"; id: string };
           auctionCurrency: {
@@ -3181,6 +3188,60 @@ export type GetAuctionForTokenQuery = {
     approvedTimestamp?: any | null | undefined;
     reservePrice: any;
     status: ReserveAuctionStatus;
+    transactionHash: string;
+    clip?: { __typename?: "Clip"; id: string } | null | undefined;
+    tokenOwner: { __typename?: "User"; id: string };
+    auctionCurrency: {
+      __typename?: "Currency";
+      id: string;
+      name: string;
+      symbol: string;
+      decimals?: number | null | undefined;
+    };
+    currentBid?:
+      | {
+          __typename?: "ReserveAuctionBid";
+          id: string;
+          amount: any;
+          bidType: ReserveAuctionBidType;
+          createdAtTimestamp: any;
+          reserveAuction: { __typename?: "ReserveAuction"; id: string };
+          bidder: { __typename?: "User"; id: string };
+        }
+      | null
+      | undefined;
+    previousBids?:
+      | Array<{
+          __typename?: "InactiveReserveAuctionBid";
+          id: string;
+          amount: any;
+          bidInactivatedAtTimestamp: any;
+          bidType: ReserveAuctionBidType;
+          bidder: { __typename?: "User"; id: string };
+        }>
+      | null
+      | undefined;
+  }>;
+};
+
+export type GetAuctionByTxHashQueryVariables = Exact<{
+  txHashes?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
+}>;
+
+export type GetAuctionByTxHashQuery = {
+  __typename?: "Query";
+  reserveAuctions: Array<{
+    __typename?: "ReserveAuction";
+    id: string;
+    tokenId: any;
+    approved: boolean;
+    duration: any;
+    expectedEndTimestamp?: any | null | undefined;
+    firstBidTime?: any | null | undefined;
+    approvedTimestamp?: any | null | undefined;
+    reservePrice: any;
+    status: ReserveAuctionStatus;
+    transactionHash: string;
     clip?: { __typename?: "Clip"; id: string } | null | undefined;
     tokenOwner: { __typename?: "User"; id: string };
     auctionCurrency: {

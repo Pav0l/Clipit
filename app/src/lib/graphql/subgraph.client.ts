@@ -1,6 +1,13 @@
 import DataLoader from "dataloader";
 import { GraphQLClient } from "graphql-request";
-import { GET_AUCTION_QUERY, GET_CLIPS, GET_TOKENS_QUERY, GET_TOKEN_BY_TX_HASH, GET_USER_TOKENS_QUERY } from "./queries";
+import {
+  GET_AUCTION_QUERY,
+  GET_CLIPS,
+  GET_TOKENS_QUERY,
+  GET_TOKEN_BY_TX_HASH,
+  GET_USER_TOKENS_QUERY,
+  GET_AUCTION_BY_TX_HASH_QUERY,
+} from "./queries";
 import {
   BidPartialFragment,
   ClipPartialFragment,
@@ -10,6 +17,7 @@ import {
   GetClipsQuery,
   AuctionPartialFragment,
   GetAuctionForTokenQuery,
+  GetAuctionByTxHashQuery,
 } from "./types";
 import { CLIPS_PAGINATION_SKIP_VALUE } from "../constants";
 
@@ -22,6 +30,7 @@ export interface ISubgraphClient {
     tokenId: string,
     options: { clearCache: boolean }
   ) => Promise<AuctionPartialFragment | null | SubgraphError>;
+  fetchAuctionByHashCached: (txHash: string) => Promise<{ id: string } | null | SubgraphError>;
 }
 
 interface SubgraphError {
@@ -37,12 +46,14 @@ export class SubgraphClient implements ISubgraphClient {
   private clipLoader: DataLoader<string, ClipPartialFragment | null>;
   private clipHashLoader: DataLoader<string, { id: string } | null>;
   private auctionLoader: DataLoader<string, AuctionPartialFragment | null>;
+  private auctionHashLoader: DataLoader<string, { id: string } | null>;
 
   constructor(private client: GraphQLClient) {
     this.userLoader = new DataLoader((keys) => this.getUser(keys));
     this.clipLoader = new DataLoader((keys) => this.getClip(keys));
     this.clipHashLoader = new DataLoader((keys) => this.getClipByTxHash(keys));
     this.auctionLoader = new DataLoader((keys) => this.getAuctionForToken(keys));
+    this.auctionHashLoader = new DataLoader((keys) => this.getAuctionForTxHash(keys));
   }
 
   /**
@@ -96,6 +107,15 @@ export class SubgraphClient implements ISubgraphClient {
     return auction;
   };
 
+  fetchAuctionByHashCached = async (txHash: string) => {
+    const auction = this.retryFetch<string, { id: string }>(this.auctionHashLoader, txHash, 3, 3000);
+    if (!auction) {
+      return null;
+    }
+
+    return auction;
+  };
+
   private getUser = async (addresses: readonly string[]) => {
     const resp = await this.client.request<GetUserDataQuery>(GET_USER_TOKENS_QUERY, {
       ids: addresses,
@@ -129,6 +149,17 @@ export class SubgraphClient implements ISubgraphClient {
     return tokenIds.map((tokenId) => {
       const auction = resp.reserveAuctions.find((a) => a.tokenId === tokenId);
       return auction ? auction : null;
+    });
+  };
+
+  private getAuctionForTxHash = async (txHashes: readonly string[]) => {
+    const resp = await this.client.request<GetAuctionByTxHashQuery>(GET_AUCTION_BY_TX_HASH_QUERY, {
+      txHashes: txHashes,
+    });
+
+    return txHashes.map((hash) => {
+      const auction = resp.reserveAuctions.find((a) => a.transactionHash === hash);
+      return auction ? { id: auction.id } : null;
     });
   };
 

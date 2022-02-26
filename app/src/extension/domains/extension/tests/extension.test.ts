@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { initExtensionTestSync } from "../../../../../tests/init-tests";
+import { auctionPartialFragment } from "../../../../../tests/__fixtures__/auction-fragment";
 import { clipPartialFragment } from "../../../../../tests/__fixtures__/clip-fragment";
-import { signerAddress } from "../../../../../tests/__fixtures__/ethereum";
 import { twitchClip } from "../../../../../tests/__fixtures__/twitch-api-data";
 import { EthereumTestProvider } from "../../../../lib/ethereum/ethereum-test-provider";
 import { TwitchExtensionTestClient } from "../../../../lib/twitch-extension/twitch-extension-test.client";
@@ -45,7 +45,7 @@ describe("extension", function () {
       window.ethereum = undefined;
     });
 
-    it("happy path to mint token works", async () => {
+    it("happy path of extension works", async () => {
       // at start, we need to install MM
       expect(model.web3.isMetaMaskInstalled()).toEqual(false);
       expect(model.streamerUi.page).toEqual("MISSING_PROVIDER");
@@ -75,6 +75,13 @@ describe("extension", function () {
       // we should be on NFT page
       expect(model.streamerUi.page).toEqual("NFT");
       expect(model.streamerUi.tokenId).toEqual(clipPartialFragment.id);
+
+      // fill out the auction form and submit
+      await streamerUiCtrl.createAuction(model.streamerUi.tokenId!, "1", "10");
+
+      // we should be on AUCTION page
+      expect(model.streamerUi.page).toEqual("AUCTION");
+      expect(model.streamerUi.auctionId).toEqual(auctionPartialFragment.id);
     });
 
     it("does not leaks window.ethereum across tests", async () => {

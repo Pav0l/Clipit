@@ -231,6 +231,7 @@ export enum Web3Errors {
   AUCTION_END_FAILED = "Failed to end auction",
 
   FAILED_TO_FETCH_SUBGRAPH_DATA = "There was an issue fetching your NFT data. The NFT was minted, however it may take some time to update the data. Please check your list of NFTs in couple of minutes",
+  FAILED_TO_FETCH_SUBGRAPH_AUCTION_DATA = "There was an issue fetching your Auction data. Please check your Auctions in couple of minutes",
 
   REQUEST_ALREADY_PENDING = "Request already pending. Please open your MetaMask wallet and confirm it",
 

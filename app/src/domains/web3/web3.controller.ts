@@ -47,7 +47,11 @@ export interface IWeb3Controller {
   requestConnect: (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => Promise<void>;
   // get current users balance
   getBalance: (address: string) => Promise<void>;
-  requestConnectAndCreateAuction: (tokenId: string, duration: BigNumberish, minPrice: BigNumberish) => Promise<void>;
+  requestConnectAndCreateAuction: (
+    tokenId: string,
+    duration: BigNumberish,
+    minPrice: BigNumberish
+  ) => Promise<string | undefined>;
   // Bid on token in auction
   requestConnectAndBid: (auctionId: string, amount: string) => Promise<void>;
   requestConnectAndCancelAuction: (auctionId: string) => Promise<void>;
@@ -164,7 +168,7 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    await this.createAuction(tokenId, duration, minPrice);
+    return await this.createAuction(tokenId, duration, minPrice);
   };
 
   requestConnectAndBid = async (auctionId: string, amount: string) => {
@@ -554,9 +558,13 @@ export class Web3Controller implements IWeb3Controller {
     }
   };
 
-  private createAuction = async (tokenId: string, duration: BigNumberish, minPrice: BigNumberish) => {
+  private createAuction = async (
+    tokenId: string,
+    duration: BigNumberish,
+    minPrice: BigNumberish
+  ): Promise<string | undefined> => {
     try {
-      const auction = this.createAuctionContract();
+      const auctionContract = this.createAuctionContract();
       const token = this.createTokenContract();
 
       const approved = await token.getApproved(tokenId);
@@ -574,7 +582,7 @@ export class Web3Controller implements IWeb3Controller {
 
       this.model.setAuctionCreateLoader();
 
-      const tx = await auction.createAuction(
+      const tx = await auctionContract.createAuction(
         tokenId,
         this.config.tokenAddress,
         duration,
@@ -593,7 +601,44 @@ export class Web3Controller implements IWeb3Controller {
       await tx.wait();
 
       this.model.clearAuctionLoader();
+      this.model.meta.setLoading(true);
+
+      const auction = await this.subgraph.fetchAuctionByHashCached(tx.hash);
+
+      if (!auction) {
+        this.model.meta.setError(Web3Errors.FAILED_TO_FETCH_SUBGRAPH_AUCTION_DATA);
+
+        this.sentry.captureEvent({
+          message: "empty auction from subgraph",
+          contexts: {
+            data: {
+              txHash: tx.hash,
+              tokenId,
+            },
+          },
+        });
+        return;
+      }
+
+      if (isSubgraphError(auction)) {
+        this.model.meta.setError(Web3Errors.SOMETHING_WENT_WRONG);
+
+        this.sentry.captureEvent({
+          message: "failed to fetch auction from subgraph",
+          contexts: {
+            data: {
+              txHash: tx.hash,
+              tokenId,
+              errors: JSON.stringify(auction.errors),
+            },
+          },
+        });
+        return;
+      }
+
       this.snackbar.sendSuccess(AuctionLoadStatus.CREATE_AUCTION_SUCCESS);
+
+      return auction.id;
     } catch (error) {
       console.log("[LOG]:createAuction:error", error);
       this.sentry.captureException(error);
@@ -615,6 +660,8 @@ export class Web3Controller implements IWeb3Controller {
             // contract reverts
             if (err.message.includes(AuctionContractErrors.INVALID_CURATOR_FEE)) {
               this.snackbar.sendError(AuctionContractErrors.INVALID_CURATOR_FEE_USER_ERR);
+            } else if (err.message.includes(AuctionContractErrors.NOT_ALLOWED_TO_CREATE_AUCTION)) {
+              this.snackbar.sendError(AuctionContractErrors.NOT_APPROVED_TO_AUCTION);
             }
             break;
           default:
@@ -626,7 +673,14 @@ export class Web3Controller implements IWeb3Controller {
         this.model.meta.setError(Web3Errors.AUCTION_CREATE_FAILED);
       }
 
-      return null;
+      return;
+    } finally {
+      if (this.model.auctionLoadStatus) {
+        this.model.clearAuctionLoader();
+      }
+      if (this.model.meta.isLoading) {
+        this.model.meta.setLoading(false);
+      }
     }
   };
 
