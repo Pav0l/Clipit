@@ -1,10 +1,7 @@
 import { Button, InputAdornment, makeStyles, TextField, Typography } from "@material-ui/core";
-import { utils } from "ethers";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { NftController } from "../../domains/nfts/nft.controller";
 import { NftModel } from "../../domains/nfts/nft.model";
-import { Web3Controller } from "../../domains/web3/web3.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { useInputData } from "../../lib/hooks/useInputData";
 import FullPageLoader from "../loader/FullPageLoader";
@@ -12,18 +9,15 @@ import LinearLoader from "../loader/LinearLoader";
 
 interface Props {
   tokenId: string;
-
-  operations: {
-    web3: Web3Controller;
-    nft: NftController;
-  };
   model: {
     web3: Web3Model;
     nft: NftModel;
   };
+
+  handleCreateAuction: (tokenId: string, duration: string, reservePrice: string) => Promise<void>;
 }
 
-export const AuctionCreateForm = observer(function AuctionCreateForm({ tokenId, operations, model }: Props) {
+export const AuctionCreateForm = observer(function AuctionCreateForm({ tokenId, model, handleCreateAuction }: Props) {
   const classes = useStyles();
   const [durationInput, setDuration] = useInputData("1");
   const [durationErr, setDurationErr] = useState(false);
@@ -52,13 +46,7 @@ export const AuctionCreateForm = observer(function AuctionCreateForm({ tokenId, 
       return;
     }
 
-    await operations.web3.requestConnectAndCreateAuction(
-      tokenId,
-      Number(durationInput) * 86400, // 1 day in seconds
-      utils.parseEther(reservePriceInput)
-    );
-
-    await operations.nft.getAuctionForToken(tokenId, { clearCache: true });
+    await handleCreateAuction(tokenId, durationInput, reservePriceInput);
   };
 
   const handleDurationChange = (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

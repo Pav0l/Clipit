@@ -1,3 +1,4 @@
+import { utils } from "ethers";
 import { observer } from "mobx-react-lite";
 import { NftController } from "../../domains/nfts/nft.controller";
 import { Auction, NftModel } from "../../domains/nfts/nft.model";
@@ -28,8 +29,28 @@ export const OwnerNftDetails = observer(function OwnerNftDetails({
   model,
   operations,
 }: Props) {
+  const handleCreateAuction = async (tokenId: string, duration: string, reservePrice: string) => {
+    await operations.web3.requestConnectAndCreateAuction(
+      tokenId,
+      Number(duration) * 86400, // 1 day in seconds
+      utils.parseEther(reservePrice)
+    );
+
+    await operations.nft.getAuctionForToken(tokenId, { clearCache: true });
+  };
+
+  const handleCancelAuction = async (tokenId: string, auctionId: string) => {
+    await operations.web3.requestConnectAndCancelAuction(auctionId);
+    await operations.nft.getAuctionForToken(tokenId, { clearCache: true });
+  };
+
+  const handleEndAuction = async (tokenId: string, auctionId: string) => {
+    await operations.web3.requestConnectAndEndAuction(auctionId);
+    await operations.nft.getAuctionForToken(tokenId, { clearCache: true });
+  };
+
   if (!auction || auction.isCanceled || auction.isFinished) {
-    return <AuctionCreateForm tokenId={tokenId} operations={operations} model={model} />;
+    return <AuctionCreateForm tokenId={tokenId} model={model} handleCreateAuction={handleCreateAuction} />;
   }
 
   if (auction.isActive) {
@@ -39,8 +60,9 @@ export const OwnerNftDetails = observer(function OwnerNftDetails({
         auction={auction}
         userAddress={ownerAddress}
         tokenId={tokenId}
-        operations={operations}
         model={model}
+        handleCancelAuction={handleCancelAuction}
+        handleEndAuction={handleEndAuction}
       />
     );
   }

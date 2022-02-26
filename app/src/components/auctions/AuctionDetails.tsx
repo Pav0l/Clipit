@@ -1,9 +1,7 @@
 import { Button, makeStyles, Tooltip, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
-import { NftController } from "../../domains/nfts/nft.controller";
 import { NftErrors } from "../../domains/nfts/nft.errors";
 import { Auction, DisplayAuctionStatusTitle, NftModel } from "../../domains/nfts/nft.model";
-import { Web3Controller } from "../../domains/web3/web3.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { useAuctionStatus } from "../../lib/hooks/useAuctionStatus";
 import ErrorWithRetry from "../error/Error";
@@ -15,10 +13,9 @@ interface Props {
   auction: Auction;
   tokenId: string;
 
-  operations: {
-    web3: Web3Controller;
-    nft: NftController;
-  };
+  handleCancelAuction: (tokenId: string, auctionId: string) => Promise<void>;
+  handleEndAuction: (tokenId: string, auctionId: string) => Promise<void>;
+
   model: {
     web3: Web3Model;
     nft: NftModel;
@@ -29,8 +26,9 @@ export const AuctionDetails = observer(function AuctionDetails({
   auction,
   tokenId,
   userAddress,
-  operations,
   model,
+  handleCancelAuction,
+  handleEndAuction,
 }: Props) {
   const [status] = useAuctionStatus(auction);
   const classes = useStyles();
@@ -39,16 +37,6 @@ export const AuctionDetails = observer(function AuctionDetails({
   if (!auction) {
     return <ErrorWithRetry text={NftErrors.SOMETHING_WENT_WRONG} withRetry={true} />;
   }
-
-  const handleCancelButton = async () => {
-    await operations.web3.requestConnectAndCancelAuction(auction.id);
-    await operations.nft.getAuctionForToken(tokenId, { clearCache: true });
-  };
-
-  const handleEndButton = async () => {
-    await operations.web3.requestConnectAndEndAuction(auction.id);
-    await operations.nft.getAuctionForToken(tokenId, { clearCache: true });
-  };
 
   if (model.web3.auctionCancelLoadStatus) {
     return <LinearLoader text={model.web3.auctionCancelLoadStatus} />;
@@ -80,7 +68,7 @@ export const AuctionDetails = observer(function AuctionDetails({
               </Typography>
 
               <Button
-                onClick={handleEndButton}
+                onClick={() => handleEndAuction(tokenId, auction.id)}
                 size="medium"
                 color="primary"
                 variant="contained"
@@ -99,7 +87,7 @@ export const AuctionDetails = observer(function AuctionDetails({
 
           <Tooltip title="Cancel auction to retrieve the NFT back to your wallet" arrow>
             <Button
-              onClick={handleCancelButton}
+              onClick={() => handleCancelAuction(tokenId, auction.id)}
               size="medium"
               color="primary"
               variant="contained"
