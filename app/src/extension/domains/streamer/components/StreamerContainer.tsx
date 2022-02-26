@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import ConnectMetamask from "../../../../components/connectMetamask/ConnectMetamask";
 import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
 import { useInputData } from "../../../../lib/hooks/useInputData";
+import { ExtensionAuctionCreated } from "../../../components/ExtensionAuctionCreated";
 import { ExtensionClip } from "../../../components/ExtensionClip";
 import { ExtensionNft } from "../../../components/ExtensionNft";
 import { IExtensionModel } from "../../extension/extension.model";
@@ -78,7 +79,10 @@ export const StreamerContainer = observer(function StreamerContainer({ model, op
       );
     }
     case "AUCTION":
-      return <div>Auction Created Page</div>;
+      return (
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        <ExtensionAuctionCreated tokenId={model.streamerUi.tokenId!} operations={{ snackbar: operations.snackbar }} />
+      );
     default:
       // TODO
       return <div>Invalid Page</div>;

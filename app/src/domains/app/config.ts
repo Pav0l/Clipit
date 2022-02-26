@@ -2,6 +2,8 @@ export interface IConfig {
   tokenAddress: string;
   auctionAddress: string;
   clipItApiUrl: string;
+  clipItClientUrl: string;
+  clipItExtensionUrl: string;
   subgraphUrl: string;
   twitch: TwitchConfig;
   isDevelopment: boolean;
