@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { LocalStorageTestClient } from "../../../lib/local-storage/local-storage-test.client";
 import { OAuthController } from "../oauth.controller";
 import { OAuthModel } from "../oauth.model";
 import { initTestSync } from "../../../../tests/init-tests";
 import { twitchApiAccessTokenKey, twitchOAuthStateSecretKey } from "../../../lib/constants";
+import { OAuthErrors } from "../oauth.types";
 
 describe("oauth controller", () => {
   let model: OAuthModel;
@@ -75,7 +77,7 @@ describe("oauth controller", () => {
 
     it("shows error on malformed state", async () => {
       ctrl.handleOAuth2Redirect(new URL(`https://example.com#access_token=TOKEN&state=NOT-A-JSON`));
-      expect(model.meta.hasError).toEqual(true);
+      expect(model.meta.error!.message).toEqual(OAuthErrors.INVALID_SECRET);
     });
 
     it("shows error on different secret", async () => {
@@ -84,7 +86,7 @@ describe("oauth controller", () => {
         secret: "different_secret",
       });
       ctrl.handleOAuth2Redirect(new URL(`https://example.com#access_token=TOKEN&state=${differentState}`));
-      expect(model.meta.hasError).toEqual(true);
+      expect(model.meta.error!.message).toEqual(OAuthErrors.INVALID_SECRET);
     });
 
     it("cleans up secret, stores token and updates state properly if url is correct", async () => {

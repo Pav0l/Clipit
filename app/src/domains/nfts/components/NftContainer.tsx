@@ -40,8 +40,8 @@ function NftContainer({ model, operations, sentry }: Props) {
   }, []);
 
   // MetaMask not installed
-  if (model.nft.meta.hasError) {
-    return <ErrorWithRetry text={model.nft.meta.error} withRetry={false} />;
+  if (model.nft.meta.error) {
+    return <ErrorWithRetry text={model.nft.meta.error.message} withRetry={false} />;
   }
 
   if (metadata) {

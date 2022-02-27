@@ -45,8 +45,8 @@ export const Extension = observer(function App({ model, operations }: Props) {
     <ThemeProvider theme={defaultTheme}>
       {appMetaData.isLoading ? (
         <FullPageLoader />
-      ) : appMetaData.hasError ? (
-        <ErrorWithRetry text={appMetaData.error} withRetry={true} />
+      ) : appMetaData.error ? (
+        <ErrorWithRetry text={appMetaData.error.message} withRetry={true} />
       ) : (
         <CenteredContainer>
           <>{content}</>

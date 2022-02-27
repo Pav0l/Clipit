@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import { Extension } from "./domains/extension/components/Extension";
 import { initExtAsync, initExtSynchronous } from "./init";
+import { AppError } from "../lib/errors/errors";
 
 (async () => {
   const path = location.pathname;
@@ -34,7 +35,7 @@ import { initExtAsync, initExtSynchronous } from "./init";
   } catch (error) {
     logger.log("init error:", error);
     sentry.captureException(error);
-    model.meta.setError("Error while initializing extension");
+    model.meta.setError(new AppError({ msg: "Error while initializing extension", type: "init" }));
   }
 
   model.meta.setLoading(false);

@@ -4,6 +4,7 @@ import { twitchApiAccessTokenKey, twitchOAuthStateSecretKey, twitchOAuthUri, twi
 import { OAuthErrors, OauthQueryParams } from "./oauth.types";
 import { IOauthApiClient } from "../../lib/twitch-oauth/twitch-oauth-api.client";
 import { SentryClient } from "../../lib/sentry/sentry.client";
+import { AppError } from "../../lib/errors/errors";
 
 export class OAuthController {
   constructor(
@@ -37,7 +38,7 @@ export class OAuthController {
         this.model.setReferrer(referrer);
         this.storeTokenAndRemoveSecret(access_token);
       } else {
-        this.model.meta.setError(OAuthErrors.INVALID_SECRET);
+        this.model.meta.setError(new AppError({ msg: OAuthErrors.INVALID_SECRET, type: "oauth" }));
 
         this.sentry.captureEvent({
           message: "invalid oauth2 redirect state secret",

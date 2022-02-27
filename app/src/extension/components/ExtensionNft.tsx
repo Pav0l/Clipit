@@ -24,10 +24,10 @@ interface Props {
 export const ExtensionNft = observer(function ExtensionNft({ metadata, tokenId, model, operations }: Props) {
   const classes = useStyles();
 
-  if (model.web3.meta.hasError) {
+  if (model.web3.meta.error) {
     return (
       <ErrorWithRetry
-        text={model.web3.meta.error}
+        text={model.web3.meta.error.message}
         withRetry={false}
         classNames={classes.errorBtn}
         withActionButton

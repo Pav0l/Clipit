@@ -1,12 +1,12 @@
 import { makeAutoObservable } from "mobx";
+import { AppError } from "../../lib/errors/errors";
 
 /**
  * MetaStore keeps metadata about stores (loading, error, ...)
  */
 export class MetaModel {
   isLoading = false;
-  hasError = false;
-  error = "";
+  error?: AppError;
 
   constructor() {
     makeAutoObservable(this);
@@ -16,13 +16,11 @@ export class MetaModel {
     this.isLoading = value;
   };
 
-  setError = (message: string) => {
-    this.hasError = true;
-    this.error = message;
+  setError = (err: AppError) => {
+    this.error = err;
   };
 
   resetError = () => {
-    this.hasError = false;
-    this.error = "";
+    this.error = undefined;
   };
 }

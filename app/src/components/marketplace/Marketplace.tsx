@@ -37,8 +37,8 @@ function Marketplace({ model, operations }: Props) {
     operations.getClips(clipsToSkip);
   }, [skipCount]);
 
-  if (model.nft.meta.hasError) {
-    return <ErrorWithRetry text={model.nft.meta.error} withRetry={true} />;
+  if (model.nft.meta.error) {
+    return <ErrorWithRetry text={model.nft.meta.error.message} withRetry={true} />;
   }
 
   // only show loader on the initial clip load

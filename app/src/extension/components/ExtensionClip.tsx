@@ -36,10 +36,10 @@ export const ExtensionClip = observer(function ExtensionClip({ model, operations
     await operations.streamerUi.mint(clip, creatorShare, titleInput, descriptionInput);
   };
 
-  if (model.web3.meta.hasError) {
+  if (model.web3.meta.error) {
     return (
       <ErrorWithRetry
-        text={model.web3.meta.error}
+        text={model.web3.meta.error.message}
         classNames={classes.error}
         withActionButton={true}
         actionButton={

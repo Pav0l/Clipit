@@ -17,7 +17,7 @@ describe("nft controller", () => {
     await ctrl.getCurrentSignerTokensMetadata("addressX0X0");
 
     expect(model.meta.isLoading).toEqual(false);
-    expect(model.meta.hasError).toEqual(false);
+    expect(model.meta.error).toEqual(undefined);
     expect(model.metadata.length).toBeGreaterThan(0);
     expect(model.metadata[0].tokenId).toEqual("1");
   });
@@ -26,7 +26,7 @@ describe("nft controller", () => {
     await ctrl.getTokenMetadata("1");
 
     expect(model.meta.isLoading).toEqual(false);
-    expect(model.meta.hasError).toEqual(false);
+    expect(model.meta.error).toEqual(undefined);
     expect(model.metadata.length).toBeGreaterThan(0);
     expect(model.metadata[0].tokenId).toEqual("1");
   });
@@ -35,7 +35,7 @@ describe("nft controller", () => {
     await ctrl.getClips();
 
     expect(model.meta.isLoading).toEqual(false);
-    expect(model.meta.hasError).toEqual(false);
+    expect(model.meta.error).toEqual(undefined);
     expect(model.metadata.length).toBeGreaterThan(0);
     expect(model.metadata[0].tokenId).toEqual("1");
   });

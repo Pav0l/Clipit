@@ -3,6 +3,7 @@ import { ClipModel } from "./clip.model";
 import { TwitchClipsErrors } from "./clip.errors";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { SentryClient } from "../../lib/sentry/sentry.client";
+import { AppError } from "../../lib/errors/errors";
 
 const clipPatterns = [
   // /^([A-Za-z0-9]+(?:-[A-Za-z0-9_-]{16})?)$/,
@@ -27,7 +28,7 @@ export class ClipController {
     if (data.statusOk && !this.twitchApi.isTwitchError(data.body)) {
       this.model.appendMultipleClips(data.body.data);
     } else {
-      this.model.meta.setError(TwitchClipsErrors.UNABLE_TO_GET_CLIPS);
+      this.model.meta.setError(new AppError({ msg: TwitchClipsErrors.UNABLE_TO_GET_CLIPS, type: "twitch-api-clip" }));
 
       this.sentry.captureEvent({
         message: "failed to get broadcaster clips from twitch",
@@ -56,7 +57,7 @@ export class ClipController {
         this.model.appendClip(clip);
       }
     } else {
-      this.model.meta.setError(TwitchClipsErrors.UNABLE_TO_GET_CLIPS);
+      this.model.meta.setError(new AppError({ msg: TwitchClipsErrors.UNABLE_TO_GET_CLIPS, type: "twitch-api-clip" }));
 
       this.sentry.captureEvent({
         message: "failed to get clip from twitch",

@@ -64,8 +64,8 @@ export const App = observer(function App({ model, operations, sentry }: Props) {
 
         {appMetaData.isLoading ? (
           <FullPageLoader />
-        ) : appMetaData.hasError ? (
-          <ErrorWithRetry text={appMetaData.error} withRetry={true} />
+        ) : appMetaData.error ? (
+          <ErrorWithRetry text={appMetaData.error.message} withRetry={true} />
         ) : (
           <Switch>
             <Route exact path={AppRoute.MARKETPLACE}>

@@ -26,8 +26,8 @@ const OAuth2Redirect = observer(({ controller, model }: Props) => {
     history.push(referrer);
   }, []);
 
-  if (model.meta.hasError) {
-    return <ErrorWithRetry text={model.meta.error} withRetry={false} />;
+  if (model.meta.error) {
+    return <ErrorWithRetry text={model.meta.error.message} withRetry={false} />;
   }
 
   return <FullPageLoader />;

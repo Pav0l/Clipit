@@ -41,12 +41,12 @@ function ClipsContainer({ model, operations }: Props) {
     }
   }, [model.clip.clips.length]);
 
-  if (model.user.meta.hasError) {
-    return <ErrorWithRetry text={model.user.meta.error}></ErrorWithRetry>;
+  if (model.user.meta.error) {
+    return <ErrorWithRetry text={model.user.meta.error.message}></ErrorWithRetry>;
   }
 
-  if (model.clip.meta.hasError) {
-    return <ErrorWithRetry text={model.clip.meta.error}></ErrorWithRetry>;
+  if (model.clip.meta.error) {
+    return <ErrorWithRetry text={model.clip.meta.error.message}></ErrorWithRetry>;
   }
 
   return (

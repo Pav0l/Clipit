@@ -88,16 +88,16 @@ function ClipDetailContainer({ model, operations }: Props) {
     }
   };
 
-  if (model.user.meta.hasError) {
-    return <ErrorWithRetry text={model.user.meta.error}></ErrorWithRetry>;
+  if (model.user.meta.error) {
+    return <ErrorWithRetry text={model.user.meta.error.message}></ErrorWithRetry>;
   }
 
-  if (model.clip.meta.hasError) {
-    return <ErrorWithRetry text={model.clip.meta.error}></ErrorWithRetry>;
+  if (model.clip.meta.error) {
+    return <ErrorWithRetry text={model.clip.meta.error.message}></ErrorWithRetry>;
   }
 
-  if (model.web3.meta.hasError) {
-    return <ErrorWithRetry text={model.web3.meta.error}></ErrorWithRetry>;
+  if (model.web3.meta.error) {
+    return <ErrorWithRetry text={model.web3.meta.error.message}></ErrorWithRetry>;
   }
 
   if (model.clip.meta.isLoading || model.user.meta.isLoading || model.web3.meta.isLoading) {

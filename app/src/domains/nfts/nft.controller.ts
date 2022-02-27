@@ -5,6 +5,7 @@ import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.c
 import { ClipPartialFragment } from "../../lib/graphql/types";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { SentryClient } from "../../lib/sentry/sentry.client";
+import { AppError } from "../../lib/errors/errors";
 
 export class NftController {
   constructor(
@@ -24,12 +25,12 @@ export class NftController {
 
       const clip = await this.subgraph.fetchClipCached(tokenId);
       if (!clip) {
-        this.model.meta.setError(NftErrors.CLIP_DOES_NOT_EXIST);
+        this.model.meta.setError(new AppError({ msg: NftErrors.CLIP_DOES_NOT_EXIST, type: "subgraph-clip" }));
         return;
       }
 
       if (isSubgraphError(clip)) {
-        this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+        this.model.meta.setError(new AppError({ msg: NftErrors.SOMETHING_WENT_WRONG, type: "subgraph-query" }));
 
         this.sentry.captureEvent({
           message: "failed to get clip from subgraph",
@@ -49,7 +50,7 @@ export class NftController {
       await this.getMetadataForClipFragmentAndStoreInModel(clip, { target: "metadata", shouldThrow: true });
     } catch (error) {
       console.log("[LOG]:getTokenMetadata err", error);
-      this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+      this.model.meta.setError(new AppError({ msg: NftErrors.SOMETHING_WENT_WRONG, type: "nft-unknown" }));
 
       this.sentry.captureException(error);
     }
@@ -65,7 +66,7 @@ export class NftController {
       }
 
       if (isSubgraphError(data)) {
-        this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+        this.model.meta.setError(new AppError({ msg: NftErrors.SOMETHING_WENT_WRONG, type: "subgraph-query" }));
 
         this.sentry.captureEvent({
           message: "failed to get user from subgraph",
@@ -94,7 +95,7 @@ export class NftController {
       }
     } catch (error) {
       this.sentry.captureException(error);
-      this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+      this.model.meta.setError(new AppError({ msg: NftErrors.SOMETHING_WENT_WRONG, type: "nft-unknown" }));
     } finally {
       if (this.model.meta.isLoading) {
         this.model.meta.setLoading(false);
@@ -124,7 +125,7 @@ export class NftController {
       }
 
       if (isSubgraphError(data)) {
-        this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+        this.model.meta.setError(new AppError({ msg: NftErrors.SOMETHING_WENT_WRONG, type: "subgraph-query" }));
 
         this.sentry.captureEvent({
           message: "failed to get clips from subgraph",
@@ -146,7 +147,7 @@ export class NftController {
       }
     } catch (error) {
       this.sentry.captureException(error);
-      this.model.meta.setError(NftErrors.SOMETHING_WENT_WRONG);
+      this.model.meta.setError(new AppError({ msg: NftErrors.SOMETHING_WENT_WRONG, type: "nft-unknown" }));
     } finally {
       if (this.model.meta.isLoading) {
         this.model.meta.setLoading(false);
@@ -164,7 +165,7 @@ export class NftController {
         return;
       }
       if (isSubgraphError(data)) {
-        this.model.meta.setError(NftErrors.ERROR_TRY_REFRESH);
+        this.model.meta.setError(new AppError({ msg: NftErrors.ERROR_TRY_REFRESH, type: "subgraph-query" }));
 
         this.sentry.captureEvent({
           message: "failed to get auction from subgraph",

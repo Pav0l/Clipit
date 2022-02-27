@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { initTestSync } from "../../../../tests/init-tests";
 import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
@@ -34,8 +35,8 @@ describe("web3 controller", () => {
 
     it("requestConnect sets INSTALL_METAMASK error", () => {
       expect(ctrl.requestConnect()).resolves;
-      expect(model.meta.hasError).toEqual(true);
-      expect(model.meta.error).toEqual(Web3Errors.INSTALL_METAMASK);
+      expect(model.meta.error).not.toEqual(undefined);
+      expect(model.meta.error!.message).toEqual(Web3Errors.INSTALL_METAMASK);
     });
 
     it("requestConnectAndMint displays INSTALL_METAMASK snack info", () => {
@@ -97,7 +98,7 @@ describe("web3 controller", () => {
       await ctrl.requestConnect();
       expect(model.accounts).toEqual([signerAddress]);
       expect(model.meta.isLoading).toEqual(false);
-      expect(model.meta.hasError).toEqual(false);
+      expect(model.meta.error).toEqual(undefined);
     });
 
     it("requestConnect requests user to connect account and then calls provided function with account address", async () => {
@@ -108,7 +109,7 @@ describe("web3 controller", () => {
       await ctrl.requestConnect(assertAccount);
       expect(model.accounts).toEqual([signerAddress]);
       expect(model.meta.isLoading).toEqual(false);
-      expect(model.meta.hasError).toEqual(false);
+      expect(model.meta.error).toEqual(undefined);
     });
 
     it("requestConnectAndMint: invalid clipId => shows snackbar error", async () => {

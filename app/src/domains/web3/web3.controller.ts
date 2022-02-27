@@ -23,6 +23,7 @@ import { AuctionContractErrors } from "../../lib/contracts/AuctionHouse/auction-
 import { IConfig } from "../app/config";
 import { ClipItApiErrors } from "../../lib/clipit-api/clipit-api.client";
 import { SentryClient } from "../../lib/sentry/sentry.client";
+import { AppError } from "../../lib/errors/errors";
 
 interface Signature {
   v: number;
@@ -89,7 +90,7 @@ export class Web3Controller implements IWeb3Controller {
   requestConnect = async (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => {
     // can't display this page if MM not installed
     if (!this.model.isMetaMaskInstalled()) {
-      this.model.meta.setError(Web3Errors.INSTALL_METAMASK);
+      this.model.meta.setError(new AppError({ msg: Web3Errors.INSTALL_METAMASK, type: "missing-provider" }));
       return;
     }
 
@@ -104,7 +105,7 @@ export class Web3Controller implements IWeb3Controller {
 
     const signerAddress = this.model.getAccount();
     if (!signerAddress) {
-      this.model.meta.setError(Web3Errors.CONNECT_METAMASK);
+      this.model.meta.setError(new AppError({ msg: Web3Errors.CONNECT_METAMASK, type: "connect-provider" }));
       return;
     }
 
@@ -393,7 +394,9 @@ export class Web3Controller implements IWeb3Controller {
       console.log("[LOG]:clip", clip);
 
       if (!clip) {
-        this.model.meta.setError(Web3Errors.FAILED_TO_FETCH_SUBGRAPH_DATA);
+        this.model.meta.setError(
+          new AppError({ msg: Web3Errors.FAILED_TO_FETCH_SUBGRAPH_DATA, type: "subgraph-clip" })
+        );
 
         this.sentry.captureEvent({
           message: "empty clip from subgraph",
@@ -408,7 +411,7 @@ export class Web3Controller implements IWeb3Controller {
       }
 
       if (isSubgraphError(clip)) {
-        this.model.meta.setError(Web3Errors.SOMETHING_WENT_WRONG);
+        this.model.meta.setError(new AppError({ msg: Web3Errors.SOMETHING_WENT_WRONG, type: "subgraph-query" }));
 
         this.sentry.captureEvent({
           message: "failed to fetch clip from subgraph",
@@ -508,7 +511,7 @@ export class Web3Controller implements IWeb3Controller {
         }
       } else {
         // unknown error
-        this.model.meta.setError(Web3Errors.FAILED_TO_MINT);
+        this.model.meta.setError(new AppError({ msg: Web3Errors.FAILED_TO_MINT, type: "web3-unknown" }));
       }
 
       return null;
@@ -606,7 +609,9 @@ export class Web3Controller implements IWeb3Controller {
       const auction = await this.subgraph.fetchAuctionByHashCached(tx.hash);
 
       if (!auction) {
-        this.model.meta.setError(Web3Errors.FAILED_TO_FETCH_SUBGRAPH_AUCTION_DATA);
+        this.model.meta.setError(
+          new AppError({ msg: Web3Errors.FAILED_TO_FETCH_SUBGRAPH_AUCTION_DATA, type: "subgraph-auction" })
+        );
 
         this.sentry.captureEvent({
           message: "empty auction from subgraph",
@@ -621,7 +626,7 @@ export class Web3Controller implements IWeb3Controller {
       }
 
       if (isSubgraphError(auction)) {
-        this.model.meta.setError(Web3Errors.SOMETHING_WENT_WRONG);
+        this.model.meta.setError(new AppError({ msg: Web3Errors.SOMETHING_WENT_WRONG, type: "subgraph-query" }));
 
         this.sentry.captureEvent({
           message: "failed to fetch auction from subgraph",
@@ -670,7 +675,7 @@ export class Web3Controller implements IWeb3Controller {
         }
       } else {
         // unknown error
-        this.model.meta.setError(Web3Errors.AUCTION_CREATE_FAILED);
+        this.model.meta.setError(new AppError({ msg: Web3Errors.AUCTION_CREATE_FAILED, type: "web3-unknown" }));
       }
 
       return;
