@@ -12,6 +12,7 @@ import Snackbar from "../../../../domains/snackbar/Snackbar";
 import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
 import CenteredContainer from "../../../../components/container/CenteredContainer";
 import { StreamerUiController } from "../../streamer/streamer-ui.controller";
+import { DevTools } from "../../dev-tools/components/DevTools";
 
 interface Props {
   model: IExtensionModel;
@@ -48,9 +49,14 @@ export const Extension = observer(function App({ model, operations }: Props) {
       ) : appMetaData.error ? (
         <ErrorWithRetry text={appMetaData.error.message} withRetry={true} />
       ) : (
-        <CenteredContainer>
-          <>{content}</>
-        </CenteredContainer>
+        <>
+          <CenteredContainer>
+            <>{content}</>
+          </CenteredContainer>
+          {CONFIG.isDevelopment ? (
+            <DevTools model={{ streamerUi: model.streamerUi }} operations={{ streamerUi: operations.streamerUi }} />
+          ) : null}
+        </>
       )}
 
       <Snackbar model={{ snackbar: model.snackbar }} operations={operations.snackbar} />
