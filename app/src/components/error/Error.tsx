@@ -5,12 +5,13 @@ import CenteredContainer from "../container/CenteredContainer";
 interface Props {
   text?: string;
   withRetry?: boolean;
+  retryButtonHandler?: () => void;
   withActionButton?: boolean;
   actionButton?: ReactElement;
   classNames?: string;
 }
 
-function PleaseTryAgain() {
+function PleaseTryAgain({ retryButtonHandler }: { retryButtonHandler?: () => void }) {
   const classes = useStyles();
 
   return (
@@ -21,7 +22,7 @@ function PleaseTryAgain() {
           component="button"
           variant="body1"
           className={classes.linkBtn}
-          onClick={() => window.location.reload()}
+          onClick={() => (retryButtonHandler ? retryButtonHandler() : window.location.reload())}
           underline="always"
         >
           try again
@@ -37,7 +38,7 @@ function PleaseTryAgain() {
 }
 
 // TODO refactor this to "generic `display message to user screen` and proper `error screen with retry`"
-function ErrorWithRetry({ text, withRetry, withActionButton, actionButton, classNames }: Props) {
+function ErrorWithRetry({ text, withRetry, withActionButton, actionButton, classNames, retryButtonHandler }: Props) {
   const classes = useStyles();
 
   if (!text) {
@@ -48,7 +49,13 @@ function ErrorWithRetry({ text, withRetry, withActionButton, actionButton, class
   return (
     <CenteredContainer className={`${classes.container} ${classNames ?? ""}`}>
       <Typography variant="h5">{text}</Typography>
-      {withActionButton && actionButton ? actionButton : withRetry ? <PleaseTryAgain /> : <></>}
+      {withActionButton && actionButton ? (
+        actionButton
+      ) : withRetry ? (
+        <PleaseTryAgain retryButtonHandler={retryButtonHandler} />
+      ) : (
+        <></>
+      )}
     </CenteredContainer>
   );
 }
