@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { Button, Card, CardMedia, Link, makeStyles } from "@material-ui/core";
+import { Card, CardMedia, Link, makeStyles } from "@material-ui/core";
 
 import { GameModel } from "../../domains/twitch-games/game.model";
 import { ClipModel, TwitchClip } from "../../domains/twitch-clips/clip.model";
@@ -10,6 +10,8 @@ import ErrorWithRetry from "../../components/error/Error";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import LinearLoader from "../../components/loader/LinearLoader";
 import { useInputData } from "../../lib/hooks/useInputData";
+import { ExtensionClipError } from "./ExtensionClipError";
+import { StreamerUiModel } from "../domains/streamer/streamer-ui.model";
 
 interface Props {
   clip: TwitchClip;
@@ -17,6 +19,7 @@ interface Props {
     clip: ClipModel;
     game: GameModel;
     web3: Web3Model;
+    streamerUi: StreamerUiModel;
   };
   operations: {
     streamerUi: StreamerUiController;
@@ -38,24 +41,17 @@ export const ExtensionClip = observer(function ExtensionClip({ model, operations
 
   if (model.web3.meta.error) {
     return (
-      <ErrorWithRetry
-        text={model.web3.meta.error.message}
-        classNames={classes.error}
-        withActionButton={true}
-        actionButton={
-          <Button
-            size="medium"
-            color="primary"
-            variant="contained"
-            onClick={() => {
-              model.web3.meta.resetError();
-              operations.streamerUi.backToClip(clip.id);
-            }}
-            className={classes.errorBtn}
-          >
-            Back
-          </Button>
-        }
+      <ExtensionClipError
+        error={model.web3.meta.error}
+        mintHandler={async () => {
+          model.web3.meta.resetError();
+          await mint();
+        }}
+        fetchClipFromSubgraphHandler={async () => {
+          model.web3.meta.resetError();
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          await operations.streamerUi.getTokenMetadataAndGoToNft(model.streamerUi.tokenId!);
+        }}
       />
     );
   }
