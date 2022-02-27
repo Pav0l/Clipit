@@ -31,21 +31,33 @@ export class StreamerUiModel implements IStreamerUiModel {
   }
 
   goToClip(clipId: string) {
-    this.clipId = clipId;
-    this.tokenId = undefined;
-    this.auctionId = undefined;
+    this.setClipId(clipId);
+    this.setTokenId(undefined);
+    this.setAuctionId(undefined);
     this.setPage("CLIP");
   }
 
   goToNft(tokenId: string) {
-    this.tokenId = tokenId;
-    this.auctionId = undefined;
+    this.setTokenId(tokenId);
+    this.setAuctionId(undefined);
     this.setPage("NFT");
   }
 
   goToAuction(auctionId: string) {
-    this.auctionId = auctionId;
+    this.setAuctionId(auctionId);
     this.setPage("AUCTION");
+  }
+
+  setTokenId(tokenId: string | undefined) {
+    this.tokenId = tokenId;
+  }
+
+  setAuctionId(auctionId: string | undefined) {
+    this.auctionId = auctionId;
+  }
+
+  setClipId(clipId: string | undefined) {
+    this.clipId = clipId;
   }
 
   private setPage(page: StreamerPage) {
@@ -53,8 +65,8 @@ export class StreamerUiModel implements IStreamerUiModel {
   }
 
   private clearIds() {
-    this.clipId = undefined;
-    this.tokenId = undefined;
-    this.auctionId = undefined;
+    this.setClipId(undefined);
+    this.setTokenId(undefined);
+    this.setAuctionId(undefined);
   }
 }

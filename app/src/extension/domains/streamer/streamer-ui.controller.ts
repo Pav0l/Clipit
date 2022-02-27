@@ -45,6 +45,12 @@ export class StreamerUiController {
 
     this.logger.log("auction created: ", auctionId);
 
+    this.model.streamerUi.setAuctionId(auctionId);
+
+    await this.getAuctionDataAndGoToAuction(tokenId);
+  };
+
+  getAuctionDataAndGoToAuction = async (tokenId: string) => {
     await this.nft.getAuctionForToken(tokenId, { clearCache: true });
 
     const metadata = this.model.nft.getTokenMetadata(tokenId);
@@ -52,6 +58,7 @@ export class StreamerUiController {
       this.snackbar.sendInfo(NftErrors.SOMETHING_WENT_WRONG);
       return;
     }
+
     this.model.streamerUi.goToAuction(metadata.auction.id);
   };
 
@@ -75,7 +82,12 @@ export class StreamerUiController {
 
     this.logger.log("token minted: ", tokenId);
 
-    // fetch tokenId metadata
+    this.model.streamerUi.setTokenId(tokenId);
+
+    await this.getTokenMetadataAndGoToNft(tokenId);
+  }
+
+  getTokenMetadataAndGoToNft = async (tokenId: string) => {
     await this.nft.getTokenMetadata(tokenId);
 
     if (!this.model.nft.getTokenMetadata(tokenId)) {
@@ -83,7 +95,7 @@ export class StreamerUiController {
     }
 
     this.model.streamerUi.goToNft(tokenId);
-  }
+  };
 
   validateCreatorShare = (share: string) => {
     return this.clip.validateCreatorShare(share);
@@ -95,6 +107,12 @@ export class StreamerUiController {
       return;
     }
 
+    this.model.streamerUi.setClipId(clipId);
+
+    await this.getClipDataAndGoToClip(clipId);
+  }
+
+  getClipDataAndGoToClip = async (clipId: string) => {
     await this.clip.getClip(clipId);
 
     const clip = this.model.clip.getClip(clipId);
@@ -108,7 +126,7 @@ export class StreamerUiController {
 
     // we've got the clip -> display it
     this.model.streamerUi.goToClip(clip.id);
-  }
+  };
 
   connectMetamask = async () => {
     await this.web3.requestConnect();
