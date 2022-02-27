@@ -20,4 +20,9 @@ export class MetaModel {
     this.hasError = true;
     this.error = message;
   };
+
+  resetError = () => {
+    this.hasError = false;
+    this.error = "";
+  };
 }

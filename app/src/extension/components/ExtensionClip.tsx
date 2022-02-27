@@ -48,7 +48,7 @@ export const ExtensionClip = observer(function ExtensionClip({ model, operations
             color="primary"
             variant="contained"
             onClick={() => {
-              model.web3.meta.setError("");
+              model.web3.meta.resetError();
               operations.streamerUi.backToClip(clip.id);
             }}
             className={classes.errorBtn}

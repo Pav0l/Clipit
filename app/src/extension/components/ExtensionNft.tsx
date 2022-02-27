@@ -37,7 +37,7 @@ export const ExtensionNft = observer(function ExtensionNft({ metadata, tokenId, 
             color="primary"
             variant="contained"
             onClick={() => {
-              model.web3.meta.setError("");
+              model.web3.meta.resetError();
               operations.streamerUi.backToNft(tokenId);
             }}
             className={classes.errorBtn}
