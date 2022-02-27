@@ -573,12 +573,12 @@ export class Web3Controller implements IWeb3Controller {
       const approved = await token.getApproved(tokenId);
       console.log("[LOG]:token approved", approved);
       if (!approved || approved === constants.AddressZero) {
-        this.model.setAuctionApproveTokenLoader();
+        this.model.setApproveAuctionLoader();
 
         // TODO consider using approveAll
         const tx = await token.approve(this.config.auctionAddress, tokenId);
 
-        this.model.setWaitForApproveTxLoader();
+        this.model.setWaitForApproveAuctionTxLoader();
         console.log("[LOG]:approve auction tx hash", tx.hash);
         await tx.wait();
       }

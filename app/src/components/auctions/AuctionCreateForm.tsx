@@ -70,6 +70,10 @@ export const AuctionCreateForm = observer(function AuctionCreateForm({
     }
   };
 
+  if (model.web3.approveAuctionStatus !== undefined) {
+    return <LinearLoader text={model.web3.approveAuctionStatus} classNames={classNames} />;
+  }
+
   if (model.web3.auctionLoadStatus !== undefined) {
     return <LinearLoader text={model.web3.auctionLoadStatus} classNames={classNames} />;
   }

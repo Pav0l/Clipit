@@ -13,9 +13,12 @@ enum StoreClipStatus {
   GENERATING_SIG = "Almost there, generating a signature for your clip...",
 }
 
-export enum AuctionLoadStatus {
+enum ApproveAuctionStatus {
   APPROVE_TOKEN = "Approving Auction contract to work with your NFT. Please confirm the transaction in Metamask",
   WAIT_FOR_APPROVE_TOKEN_TX = "Auction contract approved, waiting for the transaction to confirm...",
+}
+
+export enum AuctionLoadStatus {
   CONFIRM_CREATE_AUCTION = "Auction ready to be created. Please confirm the transaction in Metamask",
   WAIT_FOR_AUCTION_CREATE_TX = "Auction created, waiting for the transaction to confirm...",
   CREATE_AUCTION_SUCCESS = "Auction created successfully",
@@ -52,6 +55,8 @@ export class Web3Model {
   private storeClipTimeoutId?: number;
   // Minting NFT loader
   mintStatus?: MintStatus;
+  // Approve Auction loader
+  approveAuctionStatus?: ApproveAuctionStatus;
   // Auction loader
   auctionLoadStatus?: AuctionLoadStatus;
   // Bid on auction loader
@@ -119,15 +124,16 @@ export class Web3Model {
     this.mintStatus = MintStatus.WAIT_FOR_MINT_TX;
   }
 
-  setAuctionApproveTokenLoader() {
-    this.setAuctionLoadStatus(AuctionLoadStatus.APPROVE_TOKEN);
+  setApproveAuctionLoader() {
+    this.setApproveAuctionStatus(ApproveAuctionStatus.APPROVE_TOKEN);
   }
 
-  setWaitForApproveTxLoader() {
-    this.setAuctionLoadStatus(AuctionLoadStatus.WAIT_FOR_APPROVE_TOKEN_TX);
+  setWaitForApproveAuctionTxLoader() {
+    this.setApproveAuctionStatus(ApproveAuctionStatus.WAIT_FOR_APPROVE_TOKEN_TX);
   }
 
   setAuctionCreateLoader() {
+    this.setApproveAuctionStatus(undefined);
     this.setAuctionLoadStatus(AuctionLoadStatus.CONFIRM_CREATE_AUCTION);
   }
 
@@ -195,6 +201,10 @@ export class Web3Model {
 
   private setAuctionLoadStatus(status: AuctionLoadStatus | undefined) {
     this.auctionLoadStatus = status;
+  }
+
+  private setApproveAuctionStatus(status: ApproveAuctionStatus | undefined) {
+    this.approveAuctionStatus = status;
   }
 
   private setAuctionBidLoadStatus(status: AuctionBidLoadStatus | undefined) {

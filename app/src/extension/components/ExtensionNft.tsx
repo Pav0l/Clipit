@@ -60,7 +60,7 @@ export const ExtensionNft = observer(function ExtensionNft({ metadata, tokenId, 
       </Typography>
 
       <Card>
-        {!model.web3.auctionLoadStatus && !model.web3.meta.isLoading ? (
+        {!model.web3.auctionLoadStatus && !model.web3.approveAuctionStatus && !model.web3.meta.isLoading ? (
           <>
             <CardMedia
               component="video"
