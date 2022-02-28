@@ -144,7 +144,7 @@ function ClipDetailContainer({ model, operations }: Props) {
   // }
 
   if (model.web3.storeClipStatus) {
-    return <LinearLoader text={model.web3.storeClipStatus} />;
+    return <LinearLoader text={model.web3.storeClipStatus} classNames={classes.linLoaderWidth} />;
   }
 
   if (model.web3.mintStatus) {
@@ -152,7 +152,7 @@ function ClipDetailContainer({ model, operations }: Props) {
       case MintStatus.CONFIRM_MINT:
         return <ErrorWithRetry text={model.web3.mintStatus} withRetry={false} />;
       case MintStatus.WAIT_FOR_MINT_TX:
-        return <LinearLoader text={model.web3.mintStatus} />;
+        return <LinearLoader text={model.web3.mintStatus} classNames={classes.linLoaderWidth} />;
     }
   }
 
@@ -193,5 +193,8 @@ const useStyles = makeStyles(() => ({
     width: "80vw",
     height: "45vw",
     maxHeight: "70vh",
+  },
+  linLoaderWidth: {
+    width: "100%",
   },
 }));
