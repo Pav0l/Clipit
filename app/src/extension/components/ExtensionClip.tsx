@@ -89,7 +89,6 @@ export const ExtensionClip = observer(function ExtensionClip({ model, operations
           width="100%"
           src={clip.thumbnailUrl}
           title={"Click on the image to view the Clip"}
-          className={classes.media}
         />
       </Link>
 
@@ -109,12 +108,6 @@ const useStyles = makeStyles(() => ({
   container: {
     margin: "2rem auto",
     borderRadius: "0px",
-  },
-  media: {
-    // aspect ratio is 16:9
-    width: "80vw",
-    height: "45vw",
-    maxHeight: "70vh",
   },
   error: {
     margin: "0",
