@@ -58,7 +58,6 @@ export function initExtSynchronous(path: string) {
   const web3 = new Web3Controller(
     model.web3,
     offChainStorage,
-    subgraph,
     snackbar,
     sentry,
     ClipItContractCreator,

@@ -31,21 +31,18 @@ export class StreamerUiController {
   }
 
   createAuction = async (tokenId: string, duration: string, reservePrice: string) => {
-    const auctionId = await this.web3.requestConnectAndCreateAuction(
+    await this.web3.requestConnectAndCreateAuction(
       tokenId,
       Number(duration) * 86400, // 1 day in seconds
       utils.parseEther(reservePrice)
     );
-
-    if (!auctionId) {
-      // auction was not created / we did not get data from subgraph
-      // snackbar error was sent already, just quit here
+    const txHash = this.model.web3.createAuctionTxHash;
+    if (!txHash) {
+      // failed the tx
       return;
     }
 
-    this.logger.log("auction created: ", auctionId);
-
-    this.model.streamerUi.setAuctionId(auctionId);
+    this.logger.log("auction created: ", txHash);
 
     await this.getAuctionDataAndGoToAuction(tokenId);
   };

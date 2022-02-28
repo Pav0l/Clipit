@@ -60,6 +60,8 @@ export class Web3Model {
   approveAuctionStatus?: ApproveAuctionStatus;
   // Auction loader
   auctionLoadStatus?: AuctionLoadStatus;
+  createAuctionTxHash?: string;
+
   // Bid on auction loader
   auctionBidLoadStatus?: AuctionBidLoadStatus;
   // cancel auction loader
@@ -123,6 +125,10 @@ export class Web3Model {
 
   setMintTxHash(hash: string | undefined) {
     this.mintTxHash = hash;
+  }
+
+  setCreateAuctionTxHash(hash: string | undefined) {
+    this.createAuctionTxHash = hash;
   }
 
   setWaitForMintTx() {

@@ -11,7 +11,6 @@ import {
   AuctionCancelLoadStatus,
   AuctionEndLoadStatus,
 } from "./web3.model";
-import { isSubgraphError, ISubgraphClient } from "../../lib/graphql/subgraph.client";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { Decimal } from "../../lib/decimal/decimal";
 import { ClipItContractErrors } from "../../lib/contracts/ClipIt/clipit-contract.errors";
@@ -47,11 +46,7 @@ export interface IWeb3Controller {
   requestConnect: (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => Promise<void>;
   // get current users balance
   getBalance: (address: string) => Promise<void>;
-  requestConnectAndCreateAuction: (
-    tokenId: string,
-    duration: BigNumberish,
-    minPrice: BigNumberish
-  ) => Promise<string | undefined>;
+  requestConnectAndCreateAuction: (tokenId: string, duration: BigNumberish, minPrice: BigNumberish) => Promise<void>;
   // Bid on token in auction
   requestConnectAndBid: (auctionId: string, amount: string) => Promise<void>;
   requestConnectAndCancelAuction: (auctionId: string) => Promise<void>;
@@ -62,7 +57,6 @@ export class Web3Controller implements IWeb3Controller {
   constructor(
     private model: Web3Model,
     private offChainStorage: OffChainStorage,
-    private subgraph: ISubgraphClient,
     private snackbar: SnackbarClient,
     private sentry: SentryClient,
     private clipitContractCreator: (provider: EthereumProvider, address: string) => IClipItContractClient,
@@ -153,7 +147,7 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    return await this.createAuction(tokenId, duration, minPrice);
+    await this.createAuction(tokenId, duration, minPrice);
   };
 
   requestConnectAndBid = async (auctionId: string, amount: string) => {
@@ -530,46 +524,9 @@ export class Web3Controller implements IWeb3Controller {
       await tx.wait();
 
       this.model.clearAuctionLoader();
-      this.model.meta.setLoading(true);
-
-      const auction = await this.subgraph.fetchAuctionByHashCached(tx.hash);
-
-      if (!auction) {
-        this.model.meta.setError(
-          new AppError({ msg: Web3Errors.FAILED_TO_FETCH_SUBGRAPH_AUCTION_DATA, type: "subgraph-auction" })
-        );
-
-        this.sentry.captureEvent({
-          message: "empty auction from subgraph",
-          contexts: {
-            data: {
-              txHash: tx.hash,
-              tokenId,
-            },
-          },
-        });
-        return;
-      }
-
-      if (isSubgraphError(auction)) {
-        this.model.meta.setError(new AppError({ msg: Web3Errors.SOMETHING_WENT_WRONG, type: "subgraph-query" }));
-
-        this.sentry.captureEvent({
-          message: "failed to fetch auction from subgraph",
-          contexts: {
-            data: {
-              txHash: tx.hash,
-              tokenId,
-              errors: JSON.stringify(auction.errors),
-            },
-          },
-        });
-        return;
-      }
+      this.model.setCreateAuctionTxHash(tx.hash);
 
       this.snackbar.sendSuccess(AuctionLoadStatus.CREATE_AUCTION_SUCCESS);
-
-      return auction.id;
     } catch (error) {
       console.log("[LOG]:createAuction:error", error);
       this.sentry.captureException(error);

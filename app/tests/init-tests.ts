@@ -48,7 +48,6 @@ export function initTestSync(testConfig: IConfig) {
   const web3Controller = new Web3Controller(
     model.web3,
     offChainStorageApi,
-    subgraph,
     snackbar,
     sentry,
     ClipItTestContractCreator,
@@ -93,7 +92,6 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
   const web3 = new Web3Controller(
     model.web3,
     offChainStorage,
-    subgraph,
     snackbar,
     sentry,
     ClipItTestContractCreator,
