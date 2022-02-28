@@ -70,16 +70,20 @@ export class StreamerUiController {
       return;
     }
 
-    const tokenId = await this.web3.requestConnectAndMint(
-      clip.id,
-      { creatorShare, clipTitle, clipDescription },
-      { withReturn: true }
-    );
+    // if the subgraph request based on txHash fails, we never get tokenId back!
+    await this.web3.requestConnectAndMint(clip.id, { creatorShare, clipTitle, clipDescription });
 
-    if (!tokenId) {
+    const txHash = this.model.web3.mintTxHash;
+    if (!txHash) {
       return;
     }
 
+    const data = await this.nft.getClipIdForTxHash(txHash);
+
+    if (!data) {
+      return;
+    }
+    const tokenId = data.id;
     this.logger.log("token minted: ", tokenId);
 
     this.model.streamerUi.setTokenId(tokenId);

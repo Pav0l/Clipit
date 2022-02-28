@@ -194,6 +194,62 @@ export class NftController {
     }
   };
 
+  getClipIdForTxHash = async (txHash: string): Promise<{ id: string } | null> => {
+    this.model.meta.setLoading(true);
+
+    try {
+      const nftClip = await this.subgraph.fetchClipByHashCached(txHash);
+      console.log("[LOG]:nftClip", nftClip);
+
+      if (!nftClip) {
+        this.model.meta.setError(new AppError({ msg: NftErrors.FAILED_TO_FETCH_SUBGRAPH_DATA, type: "subgraph-clip" }));
+
+        this.sentry.captureEvent({
+          message: "empty clip from subgraph",
+          contexts: {
+            data: {
+              txHash: txHash,
+            },
+          },
+        });
+        return null;
+      }
+
+      if (isSubgraphError(nftClip)) {
+        this.model.meta.setError(new AppError({ msg: NftErrors.SOMETHING_WENT_WRONG, type: "subgraph-query" }));
+
+        this.sentry.captureEvent({
+          message: "failed to fetch clip from subgraph",
+          contexts: {
+            data: {
+              txHash: txHash,
+              errors: JSON.stringify(nftClip.errors),
+            },
+          },
+        });
+        return null;
+      }
+
+      return nftClip;
+    } catch (error) {
+      console.log("[LOG]:fetchClipByHashCached err", error);
+      this.model.meta.setError(new AppError({ msg: NftErrors.FAILED_TO_FETCH_SUBGRAPH_DATA, type: "subgraph-clip" }));
+
+      this.sentry.captureException(error, {
+        contexts: {
+          data: {
+            txHash: txHash,
+            error: JSON.stringify(error),
+          },
+        },
+      });
+
+      return null;
+    } finally {
+      this.model.meta.setLoading(false);
+    }
+  };
+
   private getMetadataForClipFragmentAndStoreInModel = async (
     clip?: ClipPartialFragment,
     options: { shouldThrow?: boolean; target: "metadata" | "auctionBid" } = { target: "metadata" }

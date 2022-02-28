@@ -1,5 +1,5 @@
 import { metadataCid } from "../../../../tests/__fixtures__/metadata";
-import { chainId, signerAddress } from "../../../../tests/__fixtures__/ethereum";
+import { chainId, signerAddress, txHash } from "../../../../tests/__fixtures__/ethereum";
 import { clipPartialFragment } from "../../../../tests/__fixtures__/clip-fragment";
 
 import { EthereumProvider } from "../../ethereum/ethereum.types";
@@ -22,7 +22,7 @@ class ClipItContractTestClient implements IClipItContractClient {
       from: CONFIG.tokenAddress,
       data: "",
       gasLimit: BigNumber.from("100000"),
-      hash: "hash",
+      hash: txHash,
       nonce: 1,
       value: BigNumber.from(0),
       wait: (confirmations?: number): Promise<ContractReceipt> => {

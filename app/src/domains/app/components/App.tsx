@@ -122,6 +122,7 @@ export const App = observer(function App({ model, operations, sentry }: Props) {
                     user: model.user,
                     game: model.game,
                     web3: model.web3,
+                    nft: model.nft,
                   }}
                   operations={operations}
                 />

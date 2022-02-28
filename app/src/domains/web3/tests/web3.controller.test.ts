@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { initTestSync } from "../../../../tests/init-tests";
-import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
+import { signerAddress, txHash } from "../../../../tests/__fixtures__/ethereum";
 import { twitchClip } from "../../../../tests/__fixtures__/twitch-api-data";
 import { EthereumTestProvider } from "../../../lib/ethereum/ethereum-test-provider";
 import { SnackbarController } from "../../snackbar/snackbar.controller";
@@ -48,18 +48,6 @@ describe("web3 controller", () => {
   });
 
   describe("with ethereum provider", () => {
-    // TODO replace this
-    const { location } = window;
-    beforeAll(() => {
-      // @ts-ignore
-      delete window.location;
-      // @ts-ignore
-      window.location = { assign: jest.fn(), origin: "http://localhost" };
-    });
-    afterAll(() => {
-      window.location = location;
-    });
-
     beforeEach(() => {
       // create eth provider on window object like a wallet extension would
       window.ethereum = new EthereumTestProvider();
@@ -128,13 +116,13 @@ describe("web3 controller", () => {
       expect(snackModel.message?.severity).toEqual("error");
     });
 
-    it("requestConnectAndMint: creates the NFT and redirects to it", async () => {
+    it("requestConnectAndMint: creates the NFT and stores txHash", async () => {
       await ctrl.requestConnectAndMint(twitchClip.id, {
         creatorShare: "5",
         clipTitle: twitchClip.title,
         clipDescription: "",
       });
-      expect(window.location.assign).toHaveBeenCalledWith("http://localhost/nfts/1");
+      expect(model.mintTxHash).toEqual(txHash);
     });
   });
 });

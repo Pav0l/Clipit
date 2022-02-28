@@ -41,9 +41,8 @@ export interface IWeb3Controller {
       creatorShare: string;
       clipTitle: string;
       clipDescription?: string;
-    },
-    options?: { withReturn?: boolean }
-  ) => Promise<string | undefined>;
+    }
+  ) => Promise<void>;
   // open MM and call requestAccounts
   requestConnect: (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => Promise<void>;
   // get current users balance
@@ -122,8 +121,7 @@ export class Web3Controller implements IWeb3Controller {
       creatorShare: string;
       clipTitle: string;
       clipDescription?: string;
-    },
-    options: { withReturn?: boolean } = {}
+    }
   ) {
     await this.requestConnectIfProviderExist();
     const address = this.model.getAccount();
@@ -133,7 +131,7 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    return await this.prepareMetadataAndMintClip(clipId, { ...data, address }, options);
+    await this.prepareMetadataAndMintClip(clipId, { ...data, address });
   }
 
   getBalance = async (address: string) => {
@@ -329,8 +327,7 @@ export class Web3Controller implements IWeb3Controller {
       creatorShare: string;
       clipTitle: string;
       clipDescription?: string;
-    },
-    options: { withReturn?: boolean } = {}
+    }
   ) => {
     const { address, creatorShare, clipTitle, clipDescription } = data;
     if (!clipId || !address || !clipTitle) {
@@ -364,54 +361,7 @@ export class Web3Controller implements IWeb3Controller {
         return;
       }
 
-      this.model.meta.setLoading(true);
-
-      const clip = await this.subgraph.fetchClipByHashCached(txHash);
-      console.log("[LOG]:clip", clip);
-
-      if (!clip) {
-        this.model.meta.setError(
-          new AppError({ msg: Web3Errors.FAILED_TO_FETCH_SUBGRAPH_DATA, type: "subgraph-clip" })
-        );
-
-        this.sentry.captureEvent({
-          message: "empty clip from subgraph",
-          contexts: {
-            data: {
-              txHash: txHash,
-              clipId,
-            },
-          },
-        });
-        return;
-      }
-
-      if (isSubgraphError(clip)) {
-        this.model.meta.setError(new AppError({ msg: Web3Errors.SOMETHING_WENT_WRONG, type: "subgraph-query" }));
-
-        this.sentry.captureEvent({
-          message: "failed to fetch clip from subgraph",
-          contexts: {
-            data: {
-              txHash: txHash,
-              clipId,
-              errors: JSON.stringify(clip.errors),
-            },
-          },
-        });
-        return;
-      }
-
-      this.model.meta.setLoading(false);
-
-      const tokenId = clip.id;
-
-      if (options.withReturn) {
-        return tokenId;
-      }
-
-      // TODO ideally we do not want to reload the app here and just update state
-      location.assign(location.origin + `/nfts/${tokenId}`);
+      this.model.setMintTxHash(txHash);
     } else {
       if (this.offChainStorage.isStoreClipError(resp.body)) {
         if (resp.statusCode === 403 && resp.body.error.includes(ClipItApiErrors.NOT_BROADCASTER)) {

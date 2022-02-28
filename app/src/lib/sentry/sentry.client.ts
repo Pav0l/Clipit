@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/react";
-
+import { CaptureContext } from "@sentry/types";
 export class SentryClient {
   constructor(dsn: string, isDevelopment: boolean) {
     Sentry.init({
@@ -9,8 +9,8 @@ export class SentryClient {
     });
   }
 
-  captureException(err: unknown) {
-    Sentry.captureException(err);
+  captureException(err: unknown, ctx?: CaptureContext) {
+    Sentry.captureException(err, ctx);
   }
 
   captureMessage(msg: string) {

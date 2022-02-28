@@ -17,6 +17,8 @@ import { useInputData } from "../../../lib/hooks/useInputData";
 import { MintStatus, Web3Model } from "../../web3/web3.model";
 import ClipCardContent from "./ClipCardContent";
 import { SnackbarController } from "../../snackbar/snackbar.controller";
+import { NftController } from "../../nfts/nft.controller";
+import { NftModel } from "../../nfts/nft.model";
 
 interface Props {
   model: {
@@ -24,9 +26,11 @@ interface Props {
     user: UserModel;
     game: GameModel;
     web3: Web3Model;
+    nft: NftModel;
   };
   operations: {
     web3: IWeb3Controller;
+    nft: NftController;
     user: UserController;
     clip: ClipController;
     game: GameController;
@@ -85,22 +89,42 @@ function ClipDetailContainer({ model, operations }: Props) {
         clipTitle: titleInput,
         clipDescription: descriptionInput,
       });
+
+      const txHash = model.web3.mintTxHash;
+      if (!txHash) {
+        // mint failed
+        return;
+      }
+
+      const clipNft = await operations.nft.getClipIdForTxHash(txHash);
+      if (!clipNft) {
+        // fetch failed, nft.error is set tho
+        return;
+      }
+
+      // TODO ideally we do not want to reload the app here and just update state
+      location.assign(location.origin + `/nfts/${clipNft.id}`);
     }
   };
 
   if (model.user.meta.error) {
-    return <ErrorWithRetry text={model.user.meta.error.message}></ErrorWithRetry>;
+    return <ErrorWithRetry text={model.user.meta.error.message} />;
   }
 
   if (model.clip.meta.error) {
-    return <ErrorWithRetry text={model.clip.meta.error.message}></ErrorWithRetry>;
+    return <ErrorWithRetry text={model.clip.meta.error.message} />;
   }
 
   if (model.web3.meta.error) {
-    return <ErrorWithRetry text={model.web3.meta.error.message}></ErrorWithRetry>;
+    return <ErrorWithRetry text={model.web3.meta.error.message} />;
   }
 
-  if (model.clip.meta.isLoading || model.user.meta.isLoading || model.web3.meta.isLoading) {
+  if (model.nft.meta.error) {
+    return <ErrorWithRetry text={model.nft.meta.error.message} />;
+  }
+
+  // TODO add nft.loading and check for errors?
+  if (model.nft.meta.isLoading || model.clip.meta.isLoading || model.user.meta.isLoading || model.web3.meta.isLoading) {
     return <FullPageLoader />;
   }
 
@@ -110,13 +134,13 @@ function ClipDetailContainer({ model, operations }: Props) {
         text="It seems we can't find the clip you are looking for. It's possible the
       clip does not belong to you, or it doesn't exist."
         withRetry={false}
-      ></ErrorWithRetry>
+      />
     );
   }
 
   // TODO add this back after tests
   // if (!isAllowedToMint) {
-  //   return <ErrorWithRetry text="You can only create clip NFTs of your own clips" withRetry={false}></ErrorWithRetry>;
+  //   return <ErrorWithRetry text="You can only create clip NFTs of your own clips" withRetry={false} />;
   // }
 
   if (model.web3.storeClipStatus) {
@@ -126,7 +150,7 @@ function ClipDetailContainer({ model, operations }: Props) {
   if (model.web3.mintStatus) {
     switch (model.web3.mintStatus) {
       case MintStatus.CONFIRM_MINT:
-        return <ErrorWithRetry text={model.web3.mintStatus} withRetry={false}></ErrorWithRetry>;
+        return <ErrorWithRetry text={model.web3.mintStatus} withRetry={false} />;
       case MintStatus.WAIT_FOR_MINT_TX:
         return <LinearLoader text={model.web3.mintStatus} />;
     }
