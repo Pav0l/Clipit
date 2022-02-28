@@ -1,12 +1,12 @@
 import { observer } from "mobx-react-lite";
-import { Button, Card, CardMedia, makeStyles, Typography } from "@material-ui/core";
+import { Card, CardMedia, makeStyles, Typography } from "@material-ui/core";
 
 import { Metadata, NftModel } from "../../domains/nfts/nft.model";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import { AuctionCreateForm } from "../../components/auctions/AuctionCreateForm";
 import { Web3Model } from "../../domains/web3/web3.model";
-import ErrorWithRetry from "../../components/error/Error";
 import { StreamerUiController } from "../domains/streamer/streamer-ui.controller";
+import { ExtensionNftError } from "./ExtensionNftError";
 
 interface Props {
   metadata: Metadata;
@@ -26,25 +26,12 @@ export const ExtensionNft = observer(function ExtensionNft({ metadata, tokenId, 
 
   if (model.web3.meta.error) {
     return (
-      <ErrorWithRetry
-        text={model.web3.meta.error.message}
-        withRetry={false}
-        classNames={classes.errorBtn}
-        withActionButton
-        actionButton={
-          <Button
-            size="medium"
-            color="primary"
-            variant="contained"
-            onClick={() => {
-              model.web3.meta.resetError();
-              operations.streamerUi.backToNft(tokenId);
-            }}
-            className={classes.errorBtn}
-          >
-            Back
-          </Button>
-        }
+      <ExtensionNftError
+        error={model.web3.meta.error}
+        createAuctionHandler={async () => {
+          model.web3.meta.resetError();
+          operations.streamerUi.backToNft(tokenId);
+        }}
       />
     );
   }
