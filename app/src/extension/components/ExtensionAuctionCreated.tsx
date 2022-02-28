@@ -35,8 +35,7 @@ export const ExtensionAuctionCreated = ({ tokenId, operations }: Props) => {
             await navigator.clipboard.writeText(tokenUrl);
             operations.snackbar.sendInfo("Link copied to your clipboard");
           } catch (error) {
-            console.log(error);
-            operations.snackbar.sendInfo("Unable to add the link to your clipboard");
+            console.log("navigation.clipboard error:", error);
           }
         }}
       >
@@ -60,6 +59,7 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    cursor: "pointer",
   },
   icon: {
     marginLeft: "0.5rem",
