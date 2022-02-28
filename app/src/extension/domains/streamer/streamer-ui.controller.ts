@@ -75,26 +75,27 @@ export class StreamerUiController {
       return;
     }
 
+    this.logger.log("token minted. fetching data based on txHash", txHash);
     const data = await this.nft.getClipIdForTxHash(txHash);
 
     if (!data) {
       return;
     }
     const tokenId = data.id;
-    this.logger.log("token minted: ", tokenId);
-
-    this.model.streamerUi.setTokenId(tokenId);
+    this.logger.log("got token id:", tokenId);
 
     await this.getTokenMetadataAndGoToNft(tokenId);
   }
 
   getTokenMetadataAndGoToNft = async (tokenId: string) => {
+    this.model.nft.meta.setLoading(true);
     await this.nft.getTokenMetadata(tokenId);
 
     if (!this.model.nft.getTokenMetadata(tokenId)) {
       return;
     }
 
+    this.model.nft.meta.setLoading(false);
     this.model.streamerUi.goToNft(tokenId);
   };
 

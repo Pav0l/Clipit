@@ -12,6 +12,7 @@ import LinearLoader from "../../components/loader/LinearLoader";
 import { useInputData } from "../../lib/hooks/useInputData";
 import { ExtensionClipError } from "./ExtensionClipError";
 import { StreamerUiModel } from "../domains/streamer/streamer-ui.model";
+import { NftModel } from "../../domains/nfts/nft.model";
 
 interface Props {
   clip: TwitchClip;
@@ -19,6 +20,7 @@ interface Props {
     clip: ClipModel;
     game: GameModel;
     web3: Web3Model;
+    nft: NftModel;
     streamerUi: StreamerUiModel;
   };
   operations: {
@@ -56,7 +58,7 @@ export const ExtensionClip = observer(function ExtensionClip({ model, operations
     );
   }
 
-  if (model.clip.meta.isLoading || model.web3.meta.isLoading) {
+  if (model.clip.meta.isLoading || model.web3.meta.isLoading || model.nft.meta.isLoading) {
     return <FullPageLoader />;
   }
 
