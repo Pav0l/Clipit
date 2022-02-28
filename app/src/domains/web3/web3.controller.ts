@@ -125,14 +125,7 @@ export class Web3Controller implements IWeb3Controller {
     },
     options: { withReturn?: boolean } = {}
   ) {
-    if (!this.model.isMetaMaskInstalled()) {
-      this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
-      return;
-    }
-
-    if (!this.model.isProviderConnected()) {
-      await this.requestAccounts();
-    }
+    await this.requestConnectIfProviderExist();
     const address = this.model.getAccount();
     if (!address) {
       // requestAccounts failed (rejected/already opened, etc...) and notification to user was sent
@@ -153,14 +146,7 @@ export class Web3Controller implements IWeb3Controller {
   };
 
   requestConnectAndCreateAuction = async (tokenId: string, duration: BigNumberish, minPrice: BigNumberish) => {
-    if (!this.model.isMetaMaskInstalled()) {
-      this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
-      return;
-    }
-
-    if (!this.model.isProviderConnected()) {
-      await this.requestAccounts();
-    }
+    await this.requestConnectIfProviderExist();
 
     const signerAddress = this.model.getAccount();
     if (!signerAddress) {
@@ -173,14 +159,7 @@ export class Web3Controller implements IWeb3Controller {
   };
 
   requestConnectAndBid = async (auctionId: string, amount: string) => {
-    if (!this.model.isMetaMaskInstalled()) {
-      this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
-      return;
-    }
-
-    if (!this.model.isProviderConnected()) {
-      await this.requestAccounts();
-    }
+    await this.requestConnectIfProviderExist();
 
     const signerAddress = this.model.getAccount();
     if (!signerAddress) {
@@ -193,14 +172,7 @@ export class Web3Controller implements IWeb3Controller {
   };
 
   requestConnectAndCancelAuction = async (auctionId: string) => {
-    if (!this.model.isMetaMaskInstalled()) {
-      this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
-      return;
-    }
-
-    if (!this.model.isProviderConnected()) {
-      await this.requestAccounts();
-    }
+    await this.requestConnectIfProviderExist();
 
     const signerAddress = this.model.getAccount();
     if (!signerAddress) {
@@ -213,14 +185,7 @@ export class Web3Controller implements IWeb3Controller {
   };
 
   requestConnectAndEndAuction = async (auctionId: string) => {
-    if (!this.model.isMetaMaskInstalled()) {
-      this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
-      return;
-    }
-
-    if (!this.model.isProviderConnected()) {
-      await this.requestAccounts();
-    }
+    await this.requestConnectIfProviderExist();
 
     const signerAddress = this.model.getAccount();
     if (!signerAddress) {
@@ -231,6 +196,17 @@ export class Web3Controller implements IWeb3Controller {
 
     await this.endAuction(auctionId);
   };
+
+  private async requestConnectIfProviderExist() {
+    if (!this.model.isMetaMaskInstalled()) {
+      this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
+      return;
+    }
+
+    if (!this.model.isProviderConnected()) {
+      await this.requestAccounts();
+    }
+  }
 
   private cancelAuction = async (auctionId: string) => {
     try {
