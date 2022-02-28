@@ -1,6 +1,5 @@
 import { utils } from "ethers";
 import { NftController } from "../../../domains/nfts/nft.controller";
-import { NftErrors } from "../../../domains/nfts/nft.errors";
 import { SnackbarController } from "../../../domains/snackbar/snackbar.controller";
 import { ClipController } from "../../../domains/twitch-clips/clip.controller";
 import { TwitchClipsErrors } from "../../../domains/twitch-clips/clip.errors";
@@ -52,7 +51,6 @@ export class StreamerUiController {
 
     const metadata = this.model.nft.getTokenMetadata(tokenId);
     if (!metadata || !metadata.auction) {
-      this.snackbar.sendInfo(NftErrors.SOMETHING_WENT_WRONG);
       return;
     }
 
