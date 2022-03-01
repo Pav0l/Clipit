@@ -7,7 +7,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const isDevelopment = process.env["NODE_ENV"] === "development";
 const mode = process.env["NODE_APP_INSTANCE"]; // app / extension
 
-console.log(`Running Webpack in ${mode} mode`);
+console.log(`Running Webpack in ${mode ?? "APP"} mode`);
 console.log("App config:", config);
 
 const appConfig = {
