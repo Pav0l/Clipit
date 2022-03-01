@@ -53,9 +53,7 @@ export const Extension = observer(function App({ model, operations }: Props) {
           <CenteredContainer>
             <>{content}</>
           </CenteredContainer>
-          {CONFIG.isDevelopment ? (
-            <DevTools model={{ streamerUi: model.streamerUi }} operations={{ streamerUi: operations.streamerUi }} />
-          ) : null}
+          {CONFIG.isDevelopment ? <DevTools model={model} operations={operations} /> : null}
         </>
       )}
 

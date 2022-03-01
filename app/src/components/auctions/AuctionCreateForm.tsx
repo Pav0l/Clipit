@@ -2,8 +2,9 @@ import { Button, InputAdornment, makeStyles, TextField, Typography } from "@mate
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { NftModel } from "../../domains/nfts/nft.model";
-import { Web3Model } from "../../domains/web3/web3.model";
+import { ApproveAuctionStatus, AuctionLoadStatus, Web3Model } from "../../domains/web3/web3.model";
 import { useInputData } from "../../lib/hooks/useInputData";
+import ErrorWithRetry from "../error/Error";
 import FullPageLoader from "../loader/FullPageLoader";
 import LinearLoader from "../loader/LinearLoader";
 
@@ -71,11 +72,25 @@ export const AuctionCreateForm = observer(function AuctionCreateForm({
   };
 
   if (model.web3.approveAuctionStatus !== undefined) {
-    return <LinearLoader text={model.web3.approveAuctionStatus} classNames={classNames} />;
+    switch (model.web3.approveAuctionStatus) {
+      case ApproveAuctionStatus.APPROVE_TOKEN:
+        return (
+          <ErrorWithRetry text={model.web3.approveAuctionStatus} withRetry={false} classNames={classes.noMargin} />
+        );
+
+      default:
+        return <LinearLoader text={model.web3.approveAuctionStatus} classNames={classNames} />;
+    }
   }
 
   if (model.web3.auctionLoadStatus !== undefined) {
-    return <LinearLoader text={model.web3.auctionLoadStatus} classNames={classNames} />;
+    switch (model.web3.auctionLoadStatus) {
+      case AuctionLoadStatus.CONFIRM_CREATE_AUCTION:
+        return <ErrorWithRetry text={model.web3.auctionLoadStatus} withRetry={false} classNames={classes.noMargin} />;
+
+      default:
+        return <LinearLoader text={model.web3.auctionLoadStatus} classNames={classNames} />;
+    }
   }
 
   if (model.nft.meta.isLoading || model.web3.meta.isLoading) {
@@ -153,6 +168,9 @@ const useStyles = makeStyles(() => ({
   text: {
     color: "rgba(0, 0, 0, 0.54)",
     fontSize: "0.9rem",
+  },
+  noMargin: {
+    margin: "0",
   },
 }));
 

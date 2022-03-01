@@ -13,7 +13,7 @@ enum StoreClipStatus {
   GENERATING_SIG = "Almost there, generating a signature for your clip...",
 }
 
-enum ApproveAuctionStatus {
+export enum ApproveAuctionStatus {
   APPROVE_TOKEN = "Approving Auction contract to work with your NFT. Please confirm the transaction in Metamask",
   WAIT_FOR_APPROVE_TOKEN_TX = "Auction contract approved, waiting for the transaction to confirm...",
 }
@@ -135,26 +135,26 @@ export class Web3Model {
     this.mintStatus = MintStatus.WAIT_FOR_MINT_TX;
   }
 
-  setApproveAuctionLoader() {
+  setApproveAuctionLoader = () => {
     this.setApproveAuctionStatus(ApproveAuctionStatus.APPROVE_TOKEN);
-  }
+  };
 
-  setWaitForApproveAuctionTxLoader() {
+  setWaitForApproveAuctionTxLoader = () => {
     this.setApproveAuctionStatus(ApproveAuctionStatus.WAIT_FOR_APPROVE_TOKEN_TX);
-  }
+  };
 
-  setAuctionCreateLoader() {
+  setAuctionCreateLoader = () => {
     this.setApproveAuctionStatus(undefined);
     this.setAuctionLoadStatus(AuctionLoadStatus.CONFIRM_CREATE_AUCTION);
-  }
+  };
 
-  setWaitForAuctionCreateTxLoader() {
+  setWaitForAuctionCreateTxLoader = () => {
     this.setAuctionLoadStatus(AuctionLoadStatus.WAIT_FOR_AUCTION_CREATE_TX);
-  }
+  };
 
-  clearAuctionLoader() {
+  clearAuctionLoader = () => {
     this.setAuctionLoadStatus(undefined);
-  }
+  };
 
   setAuctionBidLoader() {
     this.setAuctionBidLoadStatus(AuctionBidLoadStatus.CONFIRM_AUCTION_BID);
