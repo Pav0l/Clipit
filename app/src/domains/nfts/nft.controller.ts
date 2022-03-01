@@ -182,6 +182,11 @@ export class NftController {
         return;
       }
 
+      const metadata = this.model.getTokenMetadata(tokenId);
+      if (!metadata) {
+        await this.getTokenMetadata(tokenId);
+      }
+
       // update reserveAuction for token
       this.model.updateTokenAuction(tokenId, data);
     } catch (error) {
