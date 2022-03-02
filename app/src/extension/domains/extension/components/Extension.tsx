@@ -13,12 +13,15 @@ import { SnackbarController } from "../../../../domains/snackbar/snackbar.contro
 import CenteredContainer from "../../../../components/container/CenteredContainer";
 import { StreamerUiController } from "../../streamer/streamer-ui.controller";
 import { DevTools } from "../../dev-tools/components/DevTools";
+import { ConfigUiController } from "../../config/config-ui.controller";
+import { ConfigContainer } from "../../config/components/ConfigContainer";
 
 interface Props {
   model: IExtensionModel;
   operations: {
     web3: Web3Controller;
     streamerUi: StreamerUiController;
+    configUi: ConfigUiController;
     snackbar: SnackbarController;
   };
 }
@@ -29,7 +32,7 @@ export const Extension = observer(function App({ model, operations }: Props) {
   let content: string | ReactElement = "";
   switch (model.mode) {
     case "CONFIG":
-      content = "Config mode";
+      content = <ConfigContainer model={model} operations={operations} />;
       break;
     case "PANEL":
       content = "Panel mode";

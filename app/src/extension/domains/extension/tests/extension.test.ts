@@ -27,6 +27,7 @@ describe("extension", function () {
         web3: init.operations.web3,
         user: init.operations.user,
         streamerUi: init.operations.streamerUi,
+        configUi: init.operations.configUi,
         logger: init.logger,
         storage: init.storage,
         twitch: init.twitch,

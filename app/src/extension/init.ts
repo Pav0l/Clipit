@@ -18,6 +18,7 @@ import { OffChainStorage } from "../lib/off-chain-storage/off-chain-storage.clie
 import { SentryClient } from "../lib/sentry/sentry.client";
 import { TwitchApi } from "../lib/twitch-api/twitch-api.client";
 import { TwitchClient, TwitchExtensionClient } from "../lib/twitch-extension/twitch-extension.client";
+import { ConfigUiController } from "./domains/config/config-ui.controller";
 import { ExtensionMode } from "./domains/extension/extension.interfaces";
 import { ExtensionModel, IExtensionModel } from "./domains/extension/extension.model";
 import { ALLOWED_PATHS } from "./domains/extension/extension.routes";
@@ -65,6 +66,7 @@ export function initExtSynchronous(path: string) {
     CONFIG
   );
 
+  const configUi = new ConfigUiController(model, web3);
   const streamerUi = new StreamerUiController(model, clip, game, web3, nft, snackbar, logger);
 
   return {
@@ -76,6 +78,7 @@ export function initExtSynchronous(path: string) {
       clip,
       user,
       streamerUi,
+      configUi,
     },
     logger,
     sentry,
@@ -89,6 +92,7 @@ export async function initExtAsync({
   web3,
   user,
   streamerUi,
+  configUi,
   twitch,
   logger,
   storage,
@@ -97,6 +101,7 @@ export async function initExtAsync({
   user: UserController;
   web3: Web3Controller;
   streamerUi: StreamerUiController;
+  configUi: ConfigUiController;
   twitch: TwitchClient;
   logger: Logger;
   storage: LocalStorageClient;
@@ -105,27 +110,29 @@ export async function initExtAsync({
 
   twitch.onError((err) => logger.log("twitch error", err));
 
+  await broadcasterAsyncInit({ user, web3, twitch, storage, logger });
+
   switch (model.mode) {
     case "STREAMER":
-      await initStreamer({ user, web3, streamerUi, twitch, storage, logger });
+      streamerUi.initialize();
       break;
-
+    case "CONFIG":
+      configUi.initialize();
+      break;
     default:
       break;
   }
 }
 
-async function initStreamer({
+async function broadcasterAsyncInit({
   user,
   web3,
-  streamerUi,
   storage,
   twitch,
   logger,
 }: {
   user: UserController;
   web3: Web3Controller;
-  streamerUi: StreamerUiController;
   storage: ILocalStorage;
   logger: Logger;
   twitch: TwitchClient;
@@ -143,8 +150,6 @@ async function initStreamer({
     // remove the first character from the auth.userId opaque userId
     await user.getUser(getUserId(auth.userId));
   });
-
-  streamerUi.initialize();
 }
 
 // TODO this will most likely not work in prod because auth.userId is OPAQUE id and not real one!

@@ -28,6 +28,7 @@ import { AppError } from "../lib/errors/errors";
       user: operations.user,
       web3: operations.web3,
       streamerUi: operations.streamerUi,
+      configUi: operations.configUi,
       twitch: twitch,
       logger,
       storage,

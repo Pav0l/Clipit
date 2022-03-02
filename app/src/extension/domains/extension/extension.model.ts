@@ -6,6 +6,7 @@ import { ClipModel } from "../../../domains/twitch-clips/clip.model";
 import { GameModel } from "../../../domains/twitch-games/game.model";
 import { UserModel } from "../../../domains/twitch-user/user.model";
 import { Web3Model } from "../../../domains/web3/web3.model";
+import { ConfigUiModel } from "../config/config-ui.model";
 import { StreamerUiModel } from "../streamer/streamer-ui.model";
 import { ExtensionMode } from "./extension.interfaces";
 
@@ -20,6 +21,7 @@ export interface IExtensionModel {
   user: UserModel;
   snackbar: SnackbarModel;
   streamerUi: StreamerUiModel;
+  configUi: ConfigUiModel;
 }
 
 export class ExtensionModel implements IExtensionModel {
@@ -31,6 +33,7 @@ export class ExtensionModel implements IExtensionModel {
   game: GameModel;
   user: UserModel;
   streamerUi: StreamerUiModel;
+  configUi: ConfigUiModel;
 
   snackbar: SnackbarModel;
 
@@ -45,6 +48,7 @@ export class ExtensionModel implements IExtensionModel {
     this.user = new UserModel(new MetaModel());
     this.nft = new NftModel(new MetaModel());
     this.streamerUi = new StreamerUiModel(new MetaModel());
+    this.configUi = new ConfigUiModel(new MetaModel());
     this.snackbar = new SnackbarModel();
   }
 }

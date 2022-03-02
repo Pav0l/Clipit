@@ -23,6 +23,7 @@ import { TwitchExtensionTestClient } from "../src/lib/twitch-extension/twitch-ex
 import { Logger } from "../src/lib/logger/logger";
 import { ExtensionModel } from "../src/extension/domains/extension/extension.model";
 import { StreamerUiController } from "../src/extension/domains/streamer/streamer-ui.controller";
+import { ConfigUiController } from "../src/extension/domains/config/config-ui.controller";
 
 export function initTestSync(testConfig: IConfig) {
   const sentry = new SentryClient("", true);
@@ -99,6 +100,7 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
     testConfig
   );
   const streamerUi = new StreamerUiController(model, clip, game, web3, nft, snackbar, logger);
+  const configUi = new ConfigUiController(model, web3);
 
   return {
     model,
@@ -110,6 +112,7 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
       nft,
       snackbar,
       streamerUi,
+      configUi,
     },
     twitch,
     logger,
