@@ -8,6 +8,20 @@ export interface TwitchClient {
   onError: (errorCallback: (errorValue: any) => void) => void;
 }
 
+// https://dev.twitch.tv/docs/extensions/reference#jwt-schema
+export interface TwitchJWT {
+  exp: number;
+  opaque_user_id: string;
+  user_id?: string;
+  channel_id: string;
+  role: "broadcaster" | "moderator" | "viewer" | "external";
+  is_unlinked: boolean;
+  pubsub_perms: {
+    listen: string[];
+    send: string[];
+  };
+}
+
 export class TwitchExtensionClient implements TwitchClient {
   constructor(private twitch: typeof Twitch.ext) {}
 

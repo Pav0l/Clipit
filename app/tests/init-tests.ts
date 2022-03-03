@@ -24,6 +24,7 @@ import { Logger } from "../src/lib/logger/logger";
 import { ExtensionModel } from "../src/extension/domains/extension/extension.model";
 import { StreamerUiController } from "../src/extension/domains/streamer/streamer-ui.controller";
 import { ConfigUiController } from "../src/extension/domains/config/config-ui.controller";
+import { BroadcasterAuthService } from "../src/extension/domains/broadcaster-auth/broadcaster-auth.service";
 
 export function initTestSync(testConfig: IConfig) {
   const sentry = new SentryClient("", true);
@@ -81,6 +82,7 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
 
   const model = new ExtensionModel(mode);
 
+  const broadcasterAuth = new BroadcasterAuthService();
   const snackbar = new SnackbarController(model.snackbar);
   const offChainStorage = new OffChainStorage(new ClipItApiTestClient(), new IpfsTestClient());
   const twitchApi = new TwitchApiTestClient();
@@ -113,6 +115,7 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
       snackbar,
       streamerUi,
       configUi,
+      broadcasterAuth,
     },
     twitch,
     logger,

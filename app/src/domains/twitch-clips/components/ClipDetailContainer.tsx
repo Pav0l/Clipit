@@ -123,7 +123,6 @@ function ClipDetailContainer({ model, operations }: Props) {
     return <ErrorWithRetry text={model.nft.meta.error.message} />;
   }
 
-  // TODO add nft.loading and check for errors?
   if (model.nft.meta.isLoading || model.clip.meta.isLoading || model.user.meta.isLoading || model.web3.meta.isLoading) {
     return <FullPageLoader />;
   }

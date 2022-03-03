@@ -14,13 +14,18 @@ type ErrorType =
   | "twitch-api-user"
   | "twitch-api-game"
   | "twitch-api-clip"
+  | "twitch-ext-auth"
   | "oauth";
 
 export class AppError extends Error {
   type: ErrorType = "unknown";
+  isDevOnly = false;
 
-  constructor({ msg, type }: { msg: string; type: ErrorType }) {
+  constructor({ msg, type, isDevOnly }: { msg: string; type: ErrorType; isDevOnly?: boolean }) {
     super(msg);
     this.type = type;
+    if (isDevOnly !== undefined) {
+      this.isDevOnly = isDevOnly;
+    }
   }
 }

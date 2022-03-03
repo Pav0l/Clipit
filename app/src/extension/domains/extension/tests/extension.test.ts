@@ -28,6 +28,7 @@ describe("extension", function () {
         user: init.operations.user,
         streamerUi: init.operations.streamerUi,
         configUi: init.operations.configUi,
+        broadcasterAuth: init.operations.broadcasterAuth,
         logger: init.logger,
         storage: init.storage,
         twitch: init.twitch,
@@ -36,8 +37,10 @@ describe("extension", function () {
       twitch.sendAuthorized({
         channelId: twitchClip.broadcaster_id,
         clientId: "extension_clientId",
-        token: "token",
-        helixToken: "helixToken",
+        token:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NDYzNDExOTQsIm9wYXF1ZV91c2VyX2lkIjoiVTEyMzQ1Njc4OSIsInVzZXJfaWQiOiIxMjM0NTY3ODkiLCJjaGFubmVsX2lkIjoiMTIzNDU2Nzg5Iiwicm9sZSI6ImJyb2FkY2FzdGVyIiwiaXNfdW5saW5rZWQiOmZhbHNlLCJwdWJzdWJfcGVybXMiOnsibGlzdGVuIjpbImJyb2FkY2FzdCIsIndoaXNwZXItVTEyMzQ1Njc4OSIsImdsb2JhbCJdLCJzZW5kIjpbImJyb2FkY2FzdCIsIndoaXNwZXItKiJdfX0.-X2KY95K_tj3Zvk3_q9I674YJlGYscwAKYYzLnczDCo",
+        helixToken:
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcGFxdWVfdXNlcl9pZCI6IlVjZnAwOXVTOUNRN3ZZdzNhYzMxZiIsImNsaWVudF9pZCI6ImV4dGVuc2lvbl9jbGllbnRJZCIsImNyZWF0ZWRfYXQiOjE2NDYzMzc1OTR9.ttnZncz7voiacgZNGIM55wtGvCclZQmPmhe42frJdIk",
         userId: `U${twitchClip.broadcaster_id}`,
       });
     });

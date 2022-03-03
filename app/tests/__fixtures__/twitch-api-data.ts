@@ -8,7 +8,7 @@ export const twitchUser = {
   broadcaster_type: "",
   description: "channel desc",
   display_name: "test streamer",
-  id: "52374029",
+  id: "123456789",
   login: "frog",
   offline_image_url: "www.example.com/img",
   profile_image_url: "www.example.com/img",

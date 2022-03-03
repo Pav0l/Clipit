@@ -29,6 +29,7 @@ import { AppError } from "../lib/errors/errors";
       web3: operations.web3,
       streamerUi: operations.streamerUi,
       configUi: operations.configUi,
+      broadcasterAuth: operations.broadcasterAuth,
       twitch: twitch,
       logger,
       storage,
@@ -36,6 +37,13 @@ import { AppError } from "../lib/errors/errors";
   } catch (error) {
     logger.log("init error:", error);
     sentry.captureException(error);
+
+    if (error instanceof AppError) {
+      if (!error.isDevOnly) {
+        model.meta.setError(error);
+      }
+    }
+
     model.meta.setError(new AppError({ msg: "Error while initializing extension", type: "init" }));
   }
 

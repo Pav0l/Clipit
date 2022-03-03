@@ -18,6 +18,7 @@ import { OffChainStorage } from "../lib/off-chain-storage/off-chain-storage.clie
 import { SentryClient } from "../lib/sentry/sentry.client";
 import { TwitchApi } from "../lib/twitch-api/twitch-api.client";
 import { TwitchClient, TwitchExtensionClient } from "../lib/twitch-extension/twitch-extension.client";
+import { BroadcasterAuthService } from "./domains/broadcaster-auth/broadcaster-auth.service";
 import { ConfigUiController } from "./domains/config/config-ui.controller";
 import { ExtensionMode } from "./domains/extension/extension.interfaces";
 import { ExtensionModel, IExtensionModel } from "./domains/extension/extension.model";
@@ -50,6 +51,7 @@ export function initExtSynchronous(path: string) {
 
   const model = new ExtensionModel(mode);
   const snackbar = new SnackbarController(model.snackbar);
+  const broadcasterAuth = new BroadcasterAuthService();
   const twitchApi = new TwitchApi(new HttpClient(twitchApiUri), storage, CONFIG.twitch, "Extension");
 
   const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
@@ -79,6 +81,7 @@ export function initExtSynchronous(path: string) {
       user,
       streamerUi,
       configUi,
+      broadcasterAuth,
     },
     logger,
     sentry,
@@ -93,6 +96,7 @@ export async function initExtAsync({
   user,
   streamerUi,
   configUi,
+  broadcasterAuth,
   twitch,
   logger,
   storage,
@@ -102,6 +106,7 @@ export async function initExtAsync({
   web3: Web3Controller;
   streamerUi: StreamerUiController;
   configUi: ConfigUiController;
+  broadcasterAuth: BroadcasterAuthService;
   twitch: TwitchClient;
   logger: Logger;
   storage: LocalStorageClient;
@@ -110,15 +115,16 @@ export async function initExtAsync({
 
   twitch.onError((err) => logger.log("twitch error", err));
 
-  await broadcasterAsyncInit({ user, web3, twitch, storage, logger });
-
   switch (model.mode) {
     case "STREAMER":
+      await broadcasterAsyncInit({ user, web3, broadcasterAuth, twitch, storage, logger });
       streamerUi.initialize();
       break;
     case "CONFIG":
+      await broadcasterAsyncInit({ user, web3, broadcasterAuth, twitch, storage, logger });
       configUi.initialize();
       break;
+    case "PANEL": // TODO
     default:
       break;
   }
@@ -127,12 +133,14 @@ export async function initExtAsync({
 async function broadcasterAsyncInit({
   user,
   web3,
+  broadcasterAuth,
   storage,
   twitch,
   logger,
 }: {
   user: UserController;
   web3: Web3Controller;
+  broadcasterAuth: BroadcasterAuthService;
   storage: ILocalStorage;
   logger: Logger;
   twitch: TwitchClient;
@@ -147,15 +155,7 @@ async function broadcasterAsyncInit({
     // hax no.2 to use token for EBS requests to twitch
     storage.setItem(ebsTokenKey, auth.token);
 
-    // remove the first character from the auth.userId opaque userId
-    await user.getUser(getUserId(auth.userId));
+    const data = broadcasterAuth.verifyBroadcaster(auth.token);
+    await user.getUser(data.userId);
   });
-}
-
-// TODO this will most likely not work in prod because auth.userId is OPAQUE id and not real one!
-function getUserId(authUserId: string): string {
-  if (authUserId.startsWith("U") || authUserId.startsWith("A")) {
-    return authUserId.slice(1);
-  }
-  return authUserId;
 }
