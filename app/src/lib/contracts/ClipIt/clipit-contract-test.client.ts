@@ -8,7 +8,7 @@ import { BigNumber, ContractReceipt, ethers } from "ethers";
 
 class ClipItContractTestClient implements IClipItContractClient {
   async getApproved(_tokenId: string): Promise<string> {
-    return clipPartialFragment.owner.id;
+    return CONFIG.auctionAddress;
   }
 
   async approve(to: string, tokenId: string): Promise<ethers.ContractTransaction> {
