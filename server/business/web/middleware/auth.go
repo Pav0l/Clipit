@@ -5,7 +5,6 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/clip-it/server/business/sys/auth"
@@ -75,8 +74,7 @@ func AuthorizeClip(clientId string) web.Middleware {
 				return validate.NewRequestError(errors.New("unable to get twitch clip data"), http.StatusBadRequest)
 			}
 
-			// TODO remove this before release
-			if os.Getenv("ALLOW_MINT") != "ok" && clip.BroadcasterId != token.UserId {
+			if clip.BroadcasterId != token.UserId {
 				return validate.NewRequestError(errors.New("user not clip broadcaster"), http.StatusForbidden)
 			}
 
