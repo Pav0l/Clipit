@@ -331,7 +331,6 @@ contract AuctionHouse is IAuctionHouse, ReentrancyGuard {
     _cancelAuction(auctionId);
   }
 
-  // TODO write a test where you create auction in ETH but submit BID in other currency
   /**
    * @dev Given an amount and a currency, transfer the currency to this contract.
    * If the currency is ETH (0x0), attempt to wrap the amount as WETH
