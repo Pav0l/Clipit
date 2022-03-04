@@ -17,15 +17,15 @@ import { Logger } from "../lib/logger/logger";
 import { OffChainStorage } from "../lib/off-chain-storage/off-chain-storage.client";
 import { SentryClient } from "../lib/sentry/sentry.client";
 import { TwitchApi } from "../lib/twitch-api/twitch-api.client";
+import { TwitchExtensionQueryParams } from "../lib/twitch-extension/interfaces";
 import { TwitchClient, TwitchExtensionClient } from "../lib/twitch-extension/twitch-extension.client";
 import { BroadcasterAuthService } from "./domains/broadcaster-auth/broadcaster-auth.service";
 import { ConfigUiController } from "./domains/config/config-ui.controller";
 import { ExtensionMode } from "./domains/extension/extension.interfaces";
 import { ExtensionModel, IExtensionModel } from "./domains/extension/extension.model";
-import { ALLOWED_PATHS } from "./domains/extension/extension.routes";
 import { StreamerUiController } from "./domains/streamer/streamer-ui.controller";
 
-export function initExtSynchronous(path: string) {
+export function initExtSynchronous(options: TwitchExtensionQueryParams) {
   let mode: ExtensionMode = "UNKNOWN";
 
   // Twitch => global var injected in index.html via <script> tag
@@ -41,12 +41,16 @@ export function initExtSynchronous(path: string) {
   );
   const subgraph = new SubgraphClient(new GraphQLClient(CONFIG.subgraphUrl));
 
-  if (path.includes(ALLOWED_PATHS.PANEL)) {
-    mode = "PANEL";
-  } else if (path.includes(ALLOWED_PATHS.CONFIG)) {
-    mode = "CONFIG";
-  } else if (path.includes(ALLOWED_PATHS.STREAMER)) {
-    mode = "STREAMER";
+  switch (options.mode) {
+    case "viewer":
+      mode = "PANEL";
+      break;
+    case "config":
+      mode = "CONFIG";
+      break;
+    case "dashboard":
+      mode = "STREAMER";
+      break;
   }
 
   const model = new ExtensionModel(mode);

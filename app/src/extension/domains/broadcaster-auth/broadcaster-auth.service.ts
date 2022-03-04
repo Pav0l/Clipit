@@ -1,6 +1,6 @@
 import { AppError } from "../../../lib/errors/errors";
 import { parseJwt } from "../../../lib/jwt/jwt";
-import { TwitchJWT } from "../../../lib/twitch-extension/twitch-extension.client";
+import { TwitchJWT } from "../../../lib/twitch-extension/interfaces";
 
 export class BroadcasterAuthService {
   verifyBroadcaster(token: string): { userId: string } {

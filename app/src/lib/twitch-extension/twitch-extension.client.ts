@@ -1,3 +1,5 @@
+import { TwitchExtensionQueryParams } from "./interfaces";
+
 export interface TwitchClient {
   log: (msg: string) => void;
   onContext: (
@@ -8,17 +10,20 @@ export interface TwitchClient {
   onError: (errorCallback: (errorValue: any) => void) => void;
 }
 
-// https://dev.twitch.tv/docs/extensions/reference#jwt-schema
-export interface TwitchJWT {
-  exp: number;
-  opaque_user_id: string;
-  user_id?: string;
-  channel_id: string;
-  role: "broadcaster" | "moderator" | "viewer" | "external";
-  is_unlinked: boolean;
-  pubsub_perms: {
-    listen: string[];
-    send: string[];
+// https://dev.twitch.tv/docs/extensions/reference#client-query-parameters
+export function parseTwitchQueryParams(): TwitchExtensionQueryParams {
+  const searchParams = new URL(location.href).searchParams;
+
+  const mode = searchParams.get("mode");
+
+  return {
+    anchor: searchParams.get("anchor"),
+    language: searchParams.get("language"),
+    locale: searchParams.get("locale"),
+    mode: mode === "config" ? mode : mode === "dashboard" ? mode : mode === "viewer" ? mode : null,
+    platform: searchParams.get("platform"),
+    popout: searchParams.get("popout"),
+    state: searchParams.get("state"),
   };
 }
 

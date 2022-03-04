@@ -35,6 +35,7 @@ export const Extension = observer(function App({ model, operations }: Props) {
       content = <ConfigContainer model={model} operations={operations} />;
       break;
     case "PANEL":
+      // TODO
       content = "Panel mode";
       break;
     case "STREAMER":

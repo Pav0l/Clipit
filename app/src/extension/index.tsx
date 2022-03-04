@@ -5,13 +5,14 @@ import "./index.css";
 import { Extension } from "./domains/extension/components/Extension";
 import { initExtAsync, initExtSynchronous } from "./init";
 import { AppError } from "../lib/errors/errors";
+import { parseTwitchQueryParams } from "../lib/twitch-extension/twitch-extension.client";
 
 (async () => {
-  const path = location.pathname;
+  const options = parseTwitchQueryParams();
 
-  const { model, operations, logger, sentry, storage, twitch } = initExtSynchronous(path);
+  const { model, operations, logger, sentry, storage, twitch } = initExtSynchronous(options);
 
-  logger.log(`Extension initialized in ${model.mode} mode.`, parseTwitchQueryParams());
+  logger.log(`Extension initialized in ${model.mode} mode.`, options);
 
   ReactDOM.render(
     <React.StrictMode>
@@ -49,19 +50,3 @@ import { AppError } from "../lib/errors/errors";
 
   model.meta.setLoading(false);
 })();
-
-// TODO move somewhere when used
-// https://dev.twitch.tv/docs/extensions/reference#client-query-parameters
-function parseTwitchQueryParams() {
-  const searchParams = new URL(location.href).searchParams;
-
-  return {
-    anchor: searchParams.get("anchor"),
-    language: searchParams.get("language"),
-    locale: searchParams.get("locale"),
-    mode: searchParams.get("mode"),
-    platform: searchParams.get("platform"),
-    popout: searchParams.get("popout"),
-    state: searchParams.get("state"),
-  };
-}
