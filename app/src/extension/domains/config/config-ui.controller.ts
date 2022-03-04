@@ -34,4 +34,8 @@ export class ConfigUiController {
     // provider connected -> show "connected page" with option to change provider
     this.model.configUi.goToChangeProvider();
   };
+
+  goBackToProvider = () => {
+    this.model.configUi.goToMissingProvider();
+  };
 }

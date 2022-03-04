@@ -84,8 +84,8 @@ export const StreamerContainer = observer(function StreamerContainer({ model, op
         <ExtensionAuctionCreated tokenId={model.streamerUi.tokenId!} operations={{ snackbar: operations.snackbar }} />
       );
     default:
-      // TODO
-      return <div>Invalid Page</div>;
+      operations.streamerUi.backToProvider();
+      return null;
   }
 });
 

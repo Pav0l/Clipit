@@ -46,8 +46,8 @@ export const ConfigContainer = observer(function ConfigContainer({ model, operat
       );
       break;
     default:
-      // TODO
-      content = "Invalid Page";
+      operations.configUi.goBackToProvider();
+      content = "";
   }
 
   return <div className={classes.container}>{content}</div>;

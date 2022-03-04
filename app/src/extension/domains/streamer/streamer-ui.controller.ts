@@ -139,6 +139,10 @@ export class StreamerUiController {
     this.model.streamerUi.goToInput();
   };
 
+  backToProvider = () => {
+    this.model.streamerUi.goToMissingProvider();
+  };
+
   backToInput = () => {
     this.model.streamerUi.goToInput();
   };
