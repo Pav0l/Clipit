@@ -7,7 +7,7 @@ import (
 )
 
 type Core struct {
-	TwitchApi twitchapi.TwitchApi
+	TwitchApi *twitchapi.TwitchApi
 }
 
 type Result struct {
@@ -15,7 +15,7 @@ type Result struct {
 	Err error
 }
 
-func NewCore(twitchapi twitchapi.TwitchApi) Core {
+func NewCore(twitchapi *twitchapi.TwitchApi) Core {
 	return Core{
 		TwitchApi: twitchapi,
 	}

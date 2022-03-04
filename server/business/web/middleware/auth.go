@@ -50,7 +50,7 @@ func Authenticate(a *auth.Auth) web.Middleware {
 
 // AuthorizeClip verifies if caller is broadcaster of the clip, so that only broadcasters of the clip (streamer)
 // is able to mint it. If caller is not broadcaster, we return 403
-func AuthorizeClip(clientId string) web.Middleware {
+func AuthorizeClip(tapi *twitchapi.TwitchApi) web.Middleware {
 
 	m := func(handler web.Handler) web.Handler {
 
@@ -67,7 +67,7 @@ func AuthorizeClip(clientId string) web.Middleware {
 			}
 
 			// TODO log externalCall
-			clip, err := twitchapi.NewTwitchApi(clientId).GetClip(clipId, token.Token)
+			clip, err := tapi.GetClip(clipId, token.Token)
 			if err != nil {
 				// TODO log externalCallError
 				log.Println("get clip:", err)

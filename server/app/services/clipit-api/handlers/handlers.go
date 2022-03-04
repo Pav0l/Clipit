@@ -85,14 +85,15 @@ func ApiHandler(cfg APIMuxConfig) http.Handler {
 func v2Grp(app *web.App, cfg APIMuxConfig) {
 	const version = "v2"
 
-	storage := *cStore.NewStore(*pinata.NewPinata(cfg.Pinata.Jwt))
+	storage := cStore.NewStore(*pinata.NewPinata(cfg.Pinata.Jwt))
 	a := auth.NewAuth(cfg.Twitch)
+	twitchApi := twitchapi.NewTwitchApi(cfg.Twitch.ClientId)
 
 	cgh := clipgrp.Handlers{
-		Clip: clip.NewCore(*twitchapi.NewTwitchApi(cfg.Twitch.ClientId), *twitchgql.NewTwitchGql(), storage),
+		Clip: clip.NewCore(twitchApi, twitchgql.NewTwitchGql(), storage),
 		Metadata: metadata.NewCore(storage),
-		Game: game.NewCore(*twitchapi.NewTwitchApi(cfg.Twitch.ClientId)),
+		Game: game.NewCore(twitchApi),
 		Signer: *signer.NewSigner(cfg.Signer.PrivateKey),
 	}
-	app.Handle(http.MethodPost, version, "/clips/:clipId", cgh.Upload, mw.Authenticate(a), mw.AuthorizeClip(cfg.Twitch.ClientId))
+	app.Handle(http.MethodPost, version, "/clips/:clipId", cgh.Upload, mw.Authenticate(a), mw.AuthorizeClip(twitchApi))
 }

@@ -9,10 +9,10 @@ import (
 )
 
 type Core struct {
-	storage clip.Store
+	storage *clip.Store
 }
 
-func NewCore(storage clip.Store) Core {
+func NewCore(storage *clip.Store) Core {
 	return Core{
 		storage: storage,
 	}

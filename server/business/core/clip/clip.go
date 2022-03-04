@@ -15,12 +15,12 @@ import (
 )
 
 type Core struct {
-	TwitchApi twitchapi.TwitchApi
-	TwitchGql twitchgql.TwitchGql
-	Storage clip.Store
+	TwitchApi *twitchapi.TwitchApi
+	TwitchGql *twitchgql.TwitchGql
+	Storage *clip.Store
 }
 
-func NewCore(twitchapi twitchapi.TwitchApi, twitchgql twitchgql.TwitchGql, storage clip.Store) Core {
+func NewCore(twitchapi *twitchapi.TwitchApi, twitchgql *twitchgql.TwitchGql, storage *clip.Store) Core {
 	return Core{
 		TwitchApi: twitchapi,
 		TwitchGql: twitchgql,
