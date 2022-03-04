@@ -73,17 +73,14 @@ function ClipDetailContainer({ model, operations }: Props) {
   }, [model.game.games.size, model.clip.clips.length]);
 
   const mint = async () => {
-    // TODO - allow mint for tests/feedback
-    let isAllowedToMint = clip?.broadcasterId === model.user.id;
-    if (!isAllowedToMint) {
-      operations.snackbar.sendInfo(
-        "In production, you won't be able to mint other streamers clips, but here, we let it pass"
-      );
-      isAllowedToMint = true;
-    }
     // we need to verify that current user is owner of broadcaster of clip,
     // so we do not allow other people minting streamers clips
-    if (clip != null && isAllowedToMint) {
+    if (clip?.broadcasterId !== model.user.id) {
+      operations.snackbar.sendError("Only Clip broadcaster can mint Clip into NFT");
+      return;
+    }
+
+    if (clip != null) {
       await operations.web3.requestConnectAndMint(clip.id, {
         creatorShare,
         clipTitle: titleInput,
@@ -136,11 +133,6 @@ function ClipDetailContainer({ model, operations }: Props) {
       />
     );
   }
-
-  // TODO add this back after tests
-  // if (!isAllowedToMint) {
-  //   return <ErrorWithRetry text="You can only create clip NFTs of your own clips" withRetry={false} />;
-  // }
 
   if (model.web3.storeClipStatus) {
     return <LinearLoader text={model.web3.storeClipStatus} classNames={classes.linLoaderWidth} />;
