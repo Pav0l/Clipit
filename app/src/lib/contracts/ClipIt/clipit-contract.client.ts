@@ -29,6 +29,7 @@ export interface IClipItContractClient {
   getTokenOwner: (tokenId: string) => Promise<string>;
   getApproved: (tokenId: string) => Promise<string>;
   approve: (to: string, tokenId: string) => Promise<ethers.ContractTransaction>;
+  approveAll: (to: string, approved: boolean) => Promise<ethers.ContractTransaction>;
 }
 
 class ClipItContractClient implements IClipItContractClient {
@@ -43,6 +44,10 @@ class ClipItContractClient implements IClipItContractClient {
 
   async approve(to: string, tokenId: string): Promise<ethers.ContractTransaction> {
     return this.contract.approve(to, tokenId);
+  }
+
+  async approveAll(to: string, approved: boolean): Promise<ethers.ContractTransaction> {
+    return this.contract.setApprovalForAll(to, approved);
   }
 
   async getApproved(tokenId: string): Promise<string> {

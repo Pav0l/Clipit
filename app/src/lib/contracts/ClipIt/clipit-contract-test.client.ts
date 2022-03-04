@@ -15,6 +15,10 @@ class ClipItContractTestClient implements IClipItContractClient {
     throw new Error("method not implemented");
   }
 
+  async approveAll(to: string, approved: boolean): Promise<ethers.ContractTransaction> {
+    throw new Error("method not implemented");
+  }
+
   async mint(_data: MediaData, _bidShares: BidShares, _signature: Signature): Promise<ethers.ContractTransaction> {
     return {
       chainId: BigNumber.from(chainId).toNumber(),
