@@ -36,8 +36,6 @@ export const ConfigContainer = observer(function ConfigContainer({ model, operat
       );
       break;
     case "CHANGE_PROVIDER":
-      // TODO - add screenshot of where to find the extension?
-      // TODO - add button to change provider?
       content = (
         <>
           <Typography className={classes.withMargin}>Wallet connected!</Typography>

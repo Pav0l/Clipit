@@ -147,7 +147,6 @@ async function broadcasterAsyncInit({
 }) {
   await web3.connectMetaMaskIfNecessaryForConnectBtn();
 
-  // TODO handle auth
   twitch.onAuthorized(async (auth) => {
     logger.log("authorized", auth);
     // hax to store token for httpClient.authorizedExtensionRequest in TwitchApi

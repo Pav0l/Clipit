@@ -647,6 +647,7 @@ export class Web3Controller implements IWeb3Controller {
     console.log("[web3.controller]:handleAccountsChange", accounts);
     // TODO when accounts change, we should update NFT states of owners, etc
     this.model.setAccounts(accounts);
+    // TODO in ext - we need to also map account to user
     this.model.resetEthBalance();
   };
 
