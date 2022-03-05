@@ -53,6 +53,9 @@ func run() error {
 	type signerCfg struct {
 		PrivateKey string
 	}
+	type clientCfg struct {
+		Origin string
+	}
 
 	cfg := struct {
 		Version versionCfg
@@ -61,6 +64,7 @@ func run() error {
 		Pinata pinataCfg
 		Twitch twitchCfg
 		Signer signerCfg
+		Client clientCfg
 	} {
 		Version: versionCfg {
 			Build: Build,
@@ -87,6 +91,9 @@ func run() error {
 		},
 		Signer: signerCfg{
 			PrivateKey: loadEnvOrExit("SIGNER_PRIVATE_KEY"),
+		},
+		Client: clientCfg{
+			Origin: loadEnvOrExit("CLIENT_ORIGIN"),
 		},
 	}
 
@@ -130,6 +137,7 @@ func run() error {
 		Cors: cfg.CORS,
 		Twitch: cfg.Twitch,
 		Signer: cfg.Signer,
+		Client: cfg.Client,
 	})
 
 	api := http.Server{

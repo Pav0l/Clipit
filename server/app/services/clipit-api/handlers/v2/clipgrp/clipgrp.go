@@ -65,26 +65,7 @@ func (h Handlers) Upload(ctx context.Context, w http.ResponseWriter, r *http.Req
 
 	log.Println("clip cid:", uploadedClip.Cid)
 
-	mtdt := cStore.Metadata{
-		ClipCid: uploadedClip.Cid,
-		ClipId: clip.Id,
-		Name: payload.ClipTitle,
-		// TODO "ipfs://"" prefix in config?
-		ClipUri: "ipfs://" + uploadedClip.Cid,
-		Description: payload.ClipDescription,
-		ExternalUrl: "https://XXXXXXXX.YYY/nfts", // TODO update when you figure out app route for nft
-		ThumbnailUri: clip.ThumbnailUrl,
-		Attributes: []cStore.Attributes{
-			{
-				TraitType: "Game",
-				Value: game.Name,
-			},
-			{
-				TraitType: "Streamer",
-				Value: clip.BroadcasterName,
-			},
-		},
-	}
+	mtdt := h.Clip.Storage.NewClipMetadata(clip, uploadedClip, payload, game.Name)
 
 	// TODO run in go routine?
 	metadataHash, err := h.Clip.GenerateMetadataHash(mtdt)
@@ -126,7 +107,6 @@ func (h Handlers) Upload(ctx context.Context, w http.ResponseWriter, r *http.Req
 		Metadata: mtdt,
 		MediaData: cStore.MediaData{
 			TokenURI: mtdt.ClipUri,
-			// TODO "ipfs://"" prefix in config?
 			MetadataURI: "ipfs://" + mcid.Cid,
 			ContentHash: uploadedClip.ClipHash,
 			MetadataHash: metadataHash,

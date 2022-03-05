@@ -39,6 +39,9 @@ type APIMuxConfig struct {
 	Signer struct {
 		PrivateKey string
 	}
+	Client struct {
+		Origin string
+	}
 }
 
 type DebugMuxConfig struct {
@@ -85,7 +88,7 @@ func ApiHandler(cfg APIMuxConfig) http.Handler {
 func v2Grp(app *web.App, cfg APIMuxConfig) {
 	const version = "v2"
 
-	storage := cStore.NewStore(*pinata.NewPinata(cfg.Pinata.Jwt))
+	storage := cStore.NewStore(*pinata.NewPinata(cfg.Pinata.Jwt), cfg.Client.Origin)
 	a := auth.NewAuth(cfg.Twitch)
 	twitchApi := twitchapi.NewTwitchApi(cfg.Twitch.ClientId)
 
