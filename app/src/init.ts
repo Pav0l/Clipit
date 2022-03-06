@@ -96,5 +96,22 @@ export async function initAsync({
   ////////////////////////////
 
   await web3.connectMetaMaskIfNecessaryForConnectBtn();
+
+  // TODO clean this up somewhere to Nav ctrl or UI ctrl or refactor the to router based init
+  const params = new URL(location.href).searchParams;
+  const contentHash = params.get("contentHash");
+  if (contentHash) {
+    await nft.getClipByContentHashAndRedirect(contentHash);
+
+    const clip = model.nft.getContentHashMetadata(contentHash);
+    if (clip?.tokenId) {
+      // TODO do not want to location.assign, just change history state and keep app state
+      location.assign(location.origin + `/nfts/${clip.tokenId}`);
+      // just wait a second with end of init till browser reloads
+      await new Promise((res) => setTimeout(res, 1000));
+      return;
+    }
+  }
+
   await nft.getClips();
 }

@@ -3,6 +3,7 @@ import { clipCid, metadataCid } from "./metadata";
 
 export const clipPartialFragment = {
   contentURI: `ipfs://${clipCid}`,
+  contentHash: "86a4520fbba63d788b85fb6e3fbb5ffc182edf974f5a0e34ac695caacf3f3081",
   createdAtTimestamp: "1641363676",
   creator: {
     id: signerAddress,

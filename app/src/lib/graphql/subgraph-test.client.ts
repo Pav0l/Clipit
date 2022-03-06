@@ -17,6 +17,10 @@ export class SubgraphTestClient implements ISubgraphClient {
     return clipPartialFragment;
   };
 
+  fetchClipByContentHashCached = async (_contentHash: string) => {
+    return clipPartialFragment;
+  };
+
   fetchClipByHashCached = async (_txHash: string): Promise<ClipPartialFragment | null> => {
     return clipPartialFragment;
   };

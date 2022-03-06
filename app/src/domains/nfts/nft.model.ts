@@ -60,10 +60,7 @@ export class NftModel {
     this.hasAuctionBidsMetadata = {};
   }
 
-  getMetadata(clipCid: string): Metadata {
-    return this.metadata.filter((metadata) => metadata.clipCid === clipCid)[0];
-  }
-
+  // TODO this can return undefined if there is no token matching tokenId
   getTokenMetadata(tokenId: string): Metadata {
     return this.metadata.filter((metadata) => metadata.tokenId === tokenId)[0];
   }
@@ -72,6 +69,10 @@ export class NftModel {
     return this.metadata.filter(
       (metadata) => metadata.owner === userAddress || metadata.auction?.tokenOwnerId === userAddress
     );
+  }
+
+  getContentHashMetadata(contentHash: string): Metadata | null {
+    return this.metadata.filter((metadata) => metadata.contentHash === contentHash)[0] ?? null;
   }
 
   getRandomMetadata(): Metadata | null {
@@ -97,6 +98,7 @@ interface MetadataInput {
   tokenId: string;
   thumbnailUri: string;
   owner: string;
+  contentHash: string;
   currentBids?: BidPartialFragment[] | null;
   reserveAuction?: AuctionPartialFragment[] | null;
 }
@@ -108,6 +110,7 @@ export class Metadata {
   clipIpfsUri: string;
   metadataCid: string;
   tokenId: string;
+  contentHash: string;
   thumbnailUri: string;
   owner: string;
   auction: Auction | null;
@@ -123,6 +126,7 @@ export class Metadata {
     this.tokenId = this.validateField(data.tokenId);
     this.thumbnailUri = this.validateField(data.thumbnailUri);
     this.owner = this.validateField(data.owner);
+    this.contentHash = this.validateField(data.contentHash);
     this.auction = this.handleLatestAuction(this.tokenId, this.owner, data.reserveAuction);
   }
 

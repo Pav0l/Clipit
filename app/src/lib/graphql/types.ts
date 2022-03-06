@@ -2466,6 +2466,7 @@ export type ClipPartialFragment = {
   id: string;
   metadataURI: string;
   contentURI: string;
+  contentHash: any;
   transactionHash: string;
   creatorBidShare: any;
   ownerBidShare: any;
@@ -2644,6 +2645,7 @@ export type GetUserDataQuery = {
       id: string;
       metadataURI: string;
       contentURI: string;
+      contentHash: any;
       transactionHash: string;
       creatorBidShare: any;
       ownerBidShare: any;
@@ -2760,6 +2762,7 @@ export type GetUserDataQuery = {
           id: string;
           metadataURI: string;
           contentURI: string;
+          contentHash: any;
           transactionHash: string;
           creatorBidShare: any;
           ownerBidShare: any;
@@ -2862,6 +2865,7 @@ export type GetUserDataQuery = {
             id: string;
             metadataURI: string;
             contentURI: string;
+            contentHash: any;
             transactionHash: string;
             creatorBidShare: any;
             ownerBidShare: any;
@@ -2968,6 +2972,7 @@ export type GetClipDataQuery = {
     id: string;
     metadataURI: string;
     contentURI: string;
+    contentHash: any;
     transactionHash: string;
     creatorBidShare: any;
     ownerBidShare: any;
@@ -3080,6 +3085,110 @@ export type GetClipsQuery = {
     id: string;
     metadataURI: string;
     contentURI: string;
+    contentHash: any;
+    transactionHash: string;
+    creatorBidShare: any;
+    ownerBidShare: any;
+    prevOwnerBidShare: any;
+    createdAtTimestamp: any;
+    currentAsk?:
+      | {
+          __typename?: "Ask";
+          id: string;
+          amount: any;
+          createdAtTimestamp: any;
+          currency: {
+            __typename?: "Currency";
+            id: string;
+            name: string;
+            symbol: string;
+            decimals?: number | null | undefined;
+          };
+        }
+      | null
+      | undefined;
+    currentBids?:
+      | Array<{
+          __typename?: "Bid";
+          id: string;
+          amount: any;
+          clip: { __typename?: "Clip"; id: string; contentURI: string; metadataURI: string };
+          currency: {
+            __typename?: "Currency";
+            id: string;
+            name: string;
+            symbol: string;
+            decimals?: number | null | undefined;
+          };
+          bidder: { __typename?: "User"; id: string };
+        }>
+      | null
+      | undefined;
+    reserveAuctions?:
+      | Array<{
+          __typename?: "ReserveAuction";
+          id: string;
+          tokenId: any;
+          approved: boolean;
+          duration: any;
+          expectedEndTimestamp?: any | null | undefined;
+          firstBidTime?: any | null | undefined;
+          approvedTimestamp?: any | null | undefined;
+          reservePrice: any;
+          status: ReserveAuctionStatus;
+          transactionHash: string;
+          clip?: { __typename?: "Clip"; id: string } | null | undefined;
+          tokenOwner: { __typename?: "User"; id: string };
+          auctionCurrency: {
+            __typename?: "Currency";
+            id: string;
+            name: string;
+            symbol: string;
+            decimals?: number | null | undefined;
+          };
+          currentBid?:
+            | {
+                __typename?: "ReserveAuctionBid";
+                id: string;
+                amount: any;
+                bidType: ReserveAuctionBidType;
+                createdAtTimestamp: any;
+                reserveAuction: { __typename?: "ReserveAuction"; id: string };
+                bidder: { __typename?: "User"; id: string };
+              }
+            | null
+            | undefined;
+          previousBids?:
+            | Array<{
+                __typename?: "InactiveReserveAuctionBid";
+                id: string;
+                amount: any;
+                bidInactivatedAtTimestamp: any;
+                bidType: ReserveAuctionBidType;
+                bidder: { __typename?: "User"; id: string };
+              }>
+            | null
+            | undefined;
+        }>
+      | null
+      | undefined;
+    owner: { __typename?: "User"; id: string };
+    creator: { __typename?: "User"; id: string };
+  }>;
+};
+
+export type GetClipsByContentHashQueryVariables = Exact<{
+  hashes?: InputMaybe<Array<Scalars["Bytes"]> | Scalars["Bytes"]>;
+}>;
+
+export type GetClipsByContentHashQuery = {
+  __typename?: "Query";
+  clips: Array<{
+    __typename?: "Clip";
+    id: string;
+    metadataURI: string;
+    contentURI: string;
+    contentHash: any;
     transactionHash: string;
     creatorBidShare: any;
     ownerBidShare: any;

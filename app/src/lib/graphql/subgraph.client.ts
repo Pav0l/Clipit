@@ -7,6 +7,7 @@ import {
   GET_TOKEN_BY_TX_HASH,
   GET_USER_TOKENS_QUERY,
   GET_AUCTION_BY_TX_HASH_QUERY,
+  GET_CLIPS_BY_CONTENT_HASH,
 } from "./queries";
 import {
   BidPartialFragment,
@@ -18,11 +19,13 @@ import {
   AuctionPartialFragment,
   GetAuctionForTokenQuery,
   GetAuctionByTxHashQuery,
+  GetClipsByContentHashQuery,
 } from "./types";
 import { CLIPS_PAGINATION_SKIP_VALUE } from "../constants";
 
 export interface ISubgraphClient {
   fetchClipCached: (tokenId: string) => Promise<ClipPartialFragment | null | SubgraphError>;
+  fetchClipByContentHashCached: (contentHash: string) => Promise<ClipPartialFragment | null | SubgraphError>;
   fetchClipByHashCached: (txHash: string) => Promise<{ id: string } | null | SubgraphError>;
   fetchClips: (skip?: number) => Promise<GetClipsQuery | null | SubgraphError>;
   fetchUserCached: (address: string) => Promise<UserData | null | SubgraphError>;
@@ -44,14 +47,16 @@ export function isSubgraphError(value: unknown | null | SubgraphError): value is
 export class SubgraphClient implements ISubgraphClient {
   private userLoader: DataLoader<string, UserData | null>;
   private clipLoader: DataLoader<string, ClipPartialFragment | null>;
-  private clipHashLoader: DataLoader<string, { id: string } | null>;
+  private clipTxHashLoader: DataLoader<string, { id: string } | null>;
+  private clipContentHashLoader: DataLoader<string, ClipPartialFragment | null>;
   private auctionLoader: DataLoader<string, AuctionPartialFragment | null>;
   private auctionHashLoader: DataLoader<string, { id: string } | null>;
 
   constructor(private client: GraphQLClient) {
     this.userLoader = new DataLoader((keys) => this.getUser(keys));
     this.clipLoader = new DataLoader((keys) => this.getClip(keys));
-    this.clipHashLoader = new DataLoader((keys) => this.getClipByTxHash(keys));
+    this.clipTxHashLoader = new DataLoader((keys) => this.getClipByTxHash(keys));
+    this.clipContentHashLoader = new DataLoader((keys) => this.getClipByContentHash(keys));
     this.auctionLoader = new DataLoader((keys) => this.getAuctionForToken(keys));
     this.auctionHashLoader = new DataLoader((keys) => this.getAuctionForTxHash(keys));
   }
@@ -68,11 +73,19 @@ export class SubgraphClient implements ISubgraphClient {
   };
 
   fetchClipByHashCached = async (txHash: string) => {
-    const clip = this.retryFetch<string, { id: string }>(this.clipHashLoader, txHash, 3, 5000);
+    const clip = this.retryFetch<string, { id: string }>(this.clipTxHashLoader, txHash, 3, 5000);
     if (!clip) {
       return null;
     }
 
+    return clip;
+  };
+
+  fetchClipByContentHashCached = async (contentHash: string) => {
+    const clip = await this.clipContentHashLoader.load(contentHash);
+    if (!clip) {
+      return null;
+    }
     return clip;
   };
 
@@ -138,7 +151,15 @@ export class SubgraphClient implements ISubgraphClient {
       hashes: txHashes,
     });
 
-    return txHashes.map((hash) => transformClipDataFromHash(resp, hash));
+    return txHashes.map((hash) => transformClipDataFromTxHash(resp, hash));
+  };
+
+  private getClipByContentHash = async (contentHashes: readonly string[]) => {
+    const resp = await this.client.request<GetClipsByContentHashQuery>(GET_CLIPS_BY_CONTENT_HASH, {
+      hashes: contentHashes,
+    });
+
+    return contentHashes.map((hash) => transformClipDataFromContentHash(resp, hash));
   };
 
   private getAuctionForToken = async (tokenIds: readonly string[]) => {
@@ -247,8 +268,17 @@ function transformClipData(data: GetClipDataQuery, key: string): ClipPartialFrag
   return clip;
 }
 
-function transformClipDataFromHash(data: GetTokenByTxHashQuery, key: string): { id: string } | null {
+function transformClipDataFromTxHash(data: GetTokenByTxHashQuery, key: string): { id: string } | null {
   const clip = data.clips.find((clip) => clip.transactionHash === key);
+  if (!clip) {
+    return null;
+  }
+
+  return clip;
+}
+
+function transformClipDataFromContentHash(data: GetClipsByContentHashQuery, key: string): ClipPartialFragment | null {
+  const clip = data.clips.find((clip) => clip.contentHash === key);
   if (!clip) {
     return null;
   }

@@ -30,6 +30,7 @@ const CLIP_PARTIALS = gql`
     id
     metadataURI
     contentURI
+    contentHash
     transactionHash
     currentAsk {
       ...AskPartial
@@ -176,6 +177,18 @@ export const GET_CLIPS = gql`
 
   query getClips($first: Int!, $skip: Int) {
     clips(first: $first, skip: $skip) {
+      ...ClipPartial
+    }
+  }
+`;
+
+export const GET_CLIPS_BY_CONTENT_HASH = gql`
+  ${CURRENCY_PARTIAL}
+  ${CLIP_PARTIALS}
+  ${AUCTION_PARTIALS}
+
+  query getClipsByContentHash($hashes: [Bytes!]) {
+    clips(where: { contentHash_in: $hashes }) {
       ...ClipPartial
     }
   }

@@ -66,6 +66,7 @@ describe("nft model", () => {
           description: "description",
           metadataCid: "metadataCid",
           tokenId: "tokenId",
+          contentHash: "hash",
           thumbnailUri: "thumbnailUri",
           owner: "owner",
           currentBids: null,
@@ -91,6 +92,7 @@ describe("nft model", () => {
         description: "description",
         metadataCid: "metadataCid",
         tokenId: "tokenId",
+        contentHash: "hash",
         thumbnailUri: "thumbnailUri",
         owner: "owner",
         reserveAuction: [

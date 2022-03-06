@@ -255,6 +255,41 @@ export class NftController {
     }
   };
 
+  getClipByContentHashAndRedirect = async (contentHash: string) => {
+    try {
+      const clip = await this.subgraph.fetchClipByContentHashCached(contentHash);
+      if (!clip) {
+        this.model.meta.setError(new AppError({ msg: NftErrors.CLIP_DOES_NOT_EXIST, type: "subgraph-clip" }));
+        return;
+      }
+
+      if (isSubgraphError(clip)) {
+        this.model.meta.setError(new AppError({ msg: NftErrors.SOMETHING_WENT_WRONG, type: "subgraph-query" }));
+
+        this.sentry.captureEvent({
+          message: "failed to get clip from subgraph",
+          contexts: {
+            data: {
+              contentHash,
+            },
+            error: {
+              errors: JSON.stringify(clip.errors),
+            },
+          },
+        });
+
+        return;
+      }
+
+      await this.getMetadataForClipFragmentAndStoreInModel(clip, { target: "metadata", shouldThrow: true });
+    } catch (error) {
+      console.log("[LOG]:getClipByContentHash err", error);
+      this.model.meta.setError(new AppError({ msg: NftErrors.SOMETHING_WENT_WRONG, type: "nft-unknown" }));
+
+      this.sentry.captureException(error);
+    }
+  };
+
   private getMetadataForClipFragmentAndStoreInModel = async (
     clip?: ClipPartialFragment,
     options: { shouldThrow?: boolean; target: "metadata" | "auctionBid" } = { target: "metadata" }
@@ -306,6 +341,7 @@ export class NftController {
       metadataCid,
       tokenId: clip.id,
       owner: clip.owner.id,
+      contentHash: clip.contentHash,
       currentBids: clip.currentBids,
       reserveAuction: clip.reserveAuctions,
     };
