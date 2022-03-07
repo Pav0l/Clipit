@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "clipit": "clipit-30b85",
+    "default": "clipit-30b85"
+  },
+  "targets": {
+    "clipit-30b85": {
+      "hosting": {
+        "app": [
+          "clipit"
+        ],
+        "test": [
+          "test-clipit"
+        ]
+      }
+    }
+  }
+}
