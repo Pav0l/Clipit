@@ -1,5 +1,6 @@
 import { Box, Typography, Link, makeStyles } from "@material-ui/core";
 import { ReactElement } from "react";
+import { useSupportWidget } from "../../domains/support-widget/components/SupportWidgetProvider";
 import CenteredContainer from "../container/CenteredContainer";
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
 
 function PleaseTryAgain({ retryButtonHandler }: { retryButtonHandler?: () => void }) {
   const classes = useStyles();
+  const widget = useSupportWidget();
 
   return (
     <Box>
@@ -27,8 +29,8 @@ function PleaseTryAgain({ retryButtonHandler }: { retryButtonHandler?: () => voi
         >
           try again
         </Link>{" "}
-        or {/* TODO implement 'contact us' form */}
-        <Link href="mailto:support@clipit.auction" underline="always" target="_blank" rel="noreferrer">
+        or{" "}
+        <Link component="button" variant="body1" className={classes.linkBtn} onClick={widget.open} underline="always">
           contact us
         </Link>
         .
