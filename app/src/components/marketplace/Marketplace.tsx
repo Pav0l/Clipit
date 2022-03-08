@@ -7,7 +7,7 @@ import FullPageLoader from "../../components/loader/FullPageLoader";
 import ErrorWithRetry from "../../components/error/Error";
 import { NftController } from "../../domains/nfts/nft.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
-import { CLIPS_PAGINATION_SKIP_VALUE } from "../../lib/constants";
+import { CLIPS_PAGINATION_SKIP_VALUE, DEFAULT_SKIP_COUNT_VALUE } from "../../lib/constants";
 import ListOfCardsWithThumbnail from "../nfts/ListOfCardsWithThumbnail";
 
 interface Props {
@@ -19,7 +19,7 @@ interface Props {
 }
 
 function Marketplace({ model, operations }: Props) {
-  const [skipCount, setSkipCount] = useState(0);
+  const [skipCount, setSkipCount] = useState(DEFAULT_SKIP_COUNT_VALUE);
 
   const metadata = model.nft.metadataForMarketplace;
 
@@ -28,13 +28,16 @@ function Marketplace({ model, operations }: Props) {
   }
 
   useEffect(() => {
-    // skip passing the skipCount on mount
-    operations.getClips();
+    if (metadata.length === 0) {
+      operations.getClips(DEFAULT_SKIP_COUNT_VALUE);
+    }
   }, []);
 
   useEffect(() => {
-    const clipsToSkip = skipCount * CLIPS_PAGINATION_SKIP_VALUE;
-    operations.getClips(clipsToSkip);
+    if (skipCount !== DEFAULT_SKIP_COUNT_VALUE) {
+      const clipsToSkip = skipCount * CLIPS_PAGINATION_SKIP_VALUE;
+      operations.getClips(clipsToSkip);
+    }
   }, [skipCount]);
 
   if (model.nft.meta.error) {

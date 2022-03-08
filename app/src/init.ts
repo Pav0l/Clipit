@@ -95,8 +95,6 @@ export async function initAsync({
   // web3 init
   ////////////////////////////
 
-  await web3.connectMetaMaskIfNecessaryForConnectBtn();
-
   // TODO clean this up somewhere to Nav ctrl or UI ctrl or refactor the to router based init
   const params = new URL(location.href).searchParams;
   const contentHash = params.get("contentHash");
@@ -113,5 +111,6 @@ export async function initAsync({
     }
   }
 
+  await web3.connectMetaMaskIfNecessaryForConnectBtn();
   await nft.getClips();
 }

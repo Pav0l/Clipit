@@ -143,7 +143,9 @@ export class NftController {
 
       for (const clip of data.clips) {
         await this.getMetadataForClipFragmentAndStoreInModel(clip, { target: "metadata" });
-        this.model.meta.setLoading(false);
+        if (this.model.meta.isLoading) {
+          this.model.meta.setLoading(false);
+        }
       }
     } catch (error) {
       this.sentry.captureException(error);
