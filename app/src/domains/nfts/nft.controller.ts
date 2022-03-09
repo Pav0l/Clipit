@@ -257,7 +257,7 @@ export class NftController {
     }
   };
 
-  getClipByContentHashAndRedirect = async (contentHash: string) => {
+  getClipByContentHash = async (contentHash: string) => {
     try {
       const clip = await this.subgraph.fetchClipByContentHashCached(contentHash);
       if (!clip) {

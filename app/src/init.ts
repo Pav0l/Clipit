@@ -99,7 +99,7 @@ export async function initAsync({
   const params = new URL(location.href).searchParams;
   const contentHash = params.get("contentHash");
   if (contentHash) {
-    await nft.getClipByContentHashAndRedirect(contentHash);
+    await nft.getClipByContentHash(contentHash);
 
     const clip = model.nft.getContentHashMetadata(contentHash);
     if (clip?.tokenId) {
