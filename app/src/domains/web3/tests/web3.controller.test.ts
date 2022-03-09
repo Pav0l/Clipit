@@ -28,8 +28,8 @@ describe("web3 controller", () => {
       expect(model.isMetaMaskInstalled()).toEqual(false);
     });
 
-    it("connectMetaMaskIfNecessaryForConnectBtn does nothing without eth provider", () => {
-      expect(ctrl.connectMetaMaskIfNecessaryForConnectBtn()).resolves;
+    it("requestEthAccounts does nothing without eth provider", () => {
+      expect(ctrl.requestEthAccounts()).resolves;
       expect(model.accounts).toEqual([]);
     });
 
@@ -59,16 +59,16 @@ describe("web3 controller", () => {
       delete window.ethereum;
     });
 
-    it("connectMetaMaskIfNecessaryForConnectBtn asks for users address", async () => {
-      await ctrl.connectMetaMaskIfNecessaryForConnectBtn();
+    it("requestEthAccounts asks for users address", async () => {
+      await ctrl.requestEthAccounts();
       expect(model.accounts).toEqual([signerAddress]);
     });
 
-    it("connectMetaMaskIfNecessaryForConnectBtn does not overwrite already existing account", async () => {
+    it("requestEthAccounts does not overwrite already existing account", async () => {
       model.setAccounts(["foo"]);
 
       // if this would call eth_accounts, it would return [signerAddress] fixture
-      await ctrl.connectMetaMaskIfNecessaryForConnectBtn();
+      await ctrl.requestEthAccounts();
 
       expect(model.accounts).toEqual(["foo"]);
     });

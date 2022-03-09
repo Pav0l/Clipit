@@ -149,7 +149,7 @@ async function broadcasterAsyncInit({
   logger: Logger;
   twitch: TwitchClient;
 }) {
-  await web3.connectMetaMaskIfNecessaryForConnectBtn();
+  await web3.requestEthAccounts();
 
   twitch.onAuthorized(async (auth) => {
     logger.log("authorized", auth);

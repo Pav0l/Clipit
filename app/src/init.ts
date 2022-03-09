@@ -111,6 +111,6 @@ export async function initAsync({
     }
   }
 
-  await web3.connectMetaMaskIfNecessaryForConnectBtn();
+  await web3.requestEthAccounts();
   await nft.getClips();
 }

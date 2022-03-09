@@ -32,7 +32,7 @@ interface Signature {
 
 export interface IWeb3Controller {
   // silently try to get ethAccounts
-  connectMetaMaskIfNecessaryForConnectBtn: () => Promise<void>;
+  requestEthAccounts: () => Promise<void>;
   // mint token
   requestConnectAndMint: (
     clipId: string,
@@ -64,11 +64,8 @@ export class Web3Controller implements IWeb3Controller {
     private config: IConfig
   ) {}
 
-  async connectMetaMaskIfNecessaryForConnectBtn() {
+  async requestEthAccounts() {
     if (!this.model.isMetaMaskInstalled()) {
-      // TODO maybe the button text handling should live somewhere here
-      // so this controller does not have to rely on the button logic
-      // if MM is not installed, do nothing. the button will prompt for installation
       return;
     }
 
