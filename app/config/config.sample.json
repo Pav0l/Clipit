@@ -2,6 +2,8 @@
   "tokenAddress": "",
   "auctionAddress": "",
   "clipItApiUrl": "",
+  "clipItClientUrl": "",
+  "clipItExtensionUrl": "",
   "subgraphUrl": "",
   "sentryDsn": "",
   "twitch": {
