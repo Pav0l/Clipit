@@ -89,7 +89,7 @@ func v2Grp(app *web.App, cfg APIMuxConfig) {
 	const version = "v2"
 
 	storage := cStore.NewStore(*pinata.NewPinata(cfg.Pinata.Jwt), cfg.Client.Origin)
-	a := auth.NewAuth(cfg.Twitch)
+	auth := auth.NewAuth(cfg.Twitch)
 	twitchApi := twitchapi.NewTwitchApi(cfg.Twitch.ClientId)
 
 	cgh := clipgrp.Handlers{
@@ -98,5 +98,5 @@ func v2Grp(app *web.App, cfg APIMuxConfig) {
 		Game: game.NewCore(twitchApi),
 		Signer: *signer.NewSigner(cfg.Signer.PrivateKey),
 	}
-	app.Handle(http.MethodPost, version, "/clips/:clipId", cgh.Upload, mw.Authenticate(a), mw.AuthorizeClip(twitchApi))
+	app.Handle(http.MethodPost, version, "/clips/:clipId", cgh.Upload, mw.Authenticate(auth), mw.AuthorizeClip(twitchApi))
 }

@@ -11,7 +11,6 @@ import (
 )
 
 type Auth struct {
-	cfg TwitchCfg
 	parser *jwt.Parser
 	keyFunc jwt.Keyfunc
 	twitchOauth *twitchoauth.TwitchOauth
@@ -41,7 +40,6 @@ func NewAuth(cfg TwitchCfg) *Auth {
 	}
 
 	return &Auth{
-		cfg: cfg,
 		parser: parser,
 		keyFunc: keyFunc,
 		twitchOauth: twitchoauth.NewTwitchOauth(twitchoauth.TwitchCfg{
