@@ -9,7 +9,7 @@
         "app": [
           "clipit"
         ],
-        "test": [
+        "stage": [
           "test-clipit"
         ]
       }

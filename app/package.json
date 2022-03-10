@@ -6,6 +6,7 @@
   "scripts": {
     "start": "NODE_ENV=development webpack serve --mode development",
     "build": "rm -rf dist/ && NODE_ENV=production webpack --mode production",
+    "build:stage": "rm -rf dist/ && NODE_ENV=staging webpack --mode production",
     "start:ext": "NODE_ENV=development NODE_APP_INSTANCE=extension webpack serve --mode development",
     "build:ext": "NODE_ENV=production NODE_APP_INSTANCE=extension webpack --mode production",
     "zip:ext": "cd ext-dist/ && zip build index.html index.js config.html panel.html streamer.html",
@@ -17,9 +18,9 @@
     "format": "prettier -w .",
     "fb:login": "firebase login",
     "fb:init": "firebase init",
-    "fb:emulate:test": "firebase emulators:start --only hosting:test",
+    "fb:emulate:stage": "firebase emulators:start --only hosting:stage",
     "fb:emulate:app": "firebase emulators:start --only hosting:app",
-    "fb:deploy:test": "firebase deploy --only hosting:test",
+    "fb:deploy:stage": "firebase deploy --only hosting:stage",
     "fb:deploy:app": "firebase deploy --only hosting:app"
   },
   "author": "h0ppx",

@@ -4,10 +4,11 @@ const config = require("config");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-const isDevelopment = process.env["NODE_ENV"] === "development";
+const nodeEnv = process.env["NODE_ENV"]
+const isDevelopment = nodeEnv === "development";
 const mode = process.env["NODE_APP_INSTANCE"]; // app / extension
 
-console.log(`Running Webpack in ${mode ?? "APP"} mode`);
+console.log(`Running Webpack in ${mode ?? "APP"} mode and ${nodeEnv.toUpperCase()} env`);
 console.log("App config:", config);
 
 const appConfig = {
