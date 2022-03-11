@@ -7,6 +7,7 @@ import (
 
 	"github.com/clip-it/server/app/services/clipit-api/handlers/debuggrp"
 	"github.com/clip-it/server/app/services/clipit-api/handlers/v2/clipgrp"
+	cloudrun_debuggrp "github.com/clip-it/server/app/services/clipit-api/handlers/v2/cloudrun-debuggrp"
 
 	cStore "github.com/clip-it/server/business/data/store/clip"
 
@@ -42,6 +43,7 @@ type APIMuxConfig struct {
 	Client struct {
 		Origin string
 	}
+	Build string
 }
 
 type DebugMuxConfig struct {
@@ -98,5 +100,11 @@ func v2Grp(app *web.App, cfg APIMuxConfig) {
 		Game: game.NewCore(twitchApi),
 		Signer: *signer.NewSigner(cfg.Signer.PrivateKey),
 	}
+	// this exist so that we can have some debug endpoint when running on Cloud Run, where we can't run processes on multiple ports
+	cloudrunDebuggrp := cloudrun_debuggrp.Handlers{
+		Build: cfg.Build,
+	}
+
 	app.Handle(http.MethodPost, version, "/clips/:clipId", cgh.Upload, mw.Authenticate(auth), mw.AuthorizeClip(twitchApi))
+	app.Handle(http.MethodGet, version, "/debug/ping", cloudrunDebuggrp.Ping)
 }

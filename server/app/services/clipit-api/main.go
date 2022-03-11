@@ -138,6 +138,7 @@ func run() error {
 		Twitch: cfg.Twitch,
 		Signer: cfg.Signer,
 		Client: cfg.Client,
+		Build: cfg.Version.Build,
 	})
 
 	api := http.Server{
