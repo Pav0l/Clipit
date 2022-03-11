@@ -44,18 +44,42 @@ run-dev:
 	go run ./app/services/clipit-api/main.go
 
 LOCATION=europe-west1
-gcp-deploy-stage:
-	gcloud run deploy $(SERVICE_NAME_STAGE) \
+gcp-deploy-stage-no-traffic:
+	gcloud run deploy $(SERVICE_NAME) \
 	--region $(LOCATION) \
 	--allow-unauthenticated \
 	--set-env-vars BUILD_COMMIT=$(GIT_COMMIT),TWITCH_CLIENT_ID=$(TWITCH_CLIENT_ID_STAGE),CORS_ORIGIN=$(CORS_ORIGIN_STAGE),ALLOWED_ORIGINS=$(ALLOWED_ORIGINS_STAGE),CLIENT_ORIGIN=$(CLIENT_ORIGIN_STAGE) \
 	--update-secrets PINATA_JWT=PINATA_JWT:1,TWITCH_CLIENT_SECRET=TWITCH_CLIENT_SECRET:1,TWITCH_EBS_SECRET=TWITCH_EBS_SECRET:1,SIGNER_PRIVATE_KEY=SIGNER_PRIVATE_KEY:1 \
+	--revision-suffix $(GIT_COMMIT) \
+	--tag stage \
+	--no-traffic \
 	--source . 
 
-gcp-deploy-prod:
-	gcloud run deploy $(SERVICE_NAME_PROD) \
+gcp-deploy-prod-no-traffic:
+	gcloud run deploy $(SERVICE_NAME) \
 	--region $(LOCATION) \
 	--allow-unauthenticated \
 	--set-env-vars BUILD_COMMIT=$(GIT_COMMIT),TWITCH_CLIENT_ID=$(TWITCH_CLIENT_ID_PROD),CORS_ORIGIN=$(CORS_ORIGIN_PROD),ALLOWED_ORIGINS=$(ALLOWED_ORIGINS_PROD),CLIENT_ORIGIN=$(CLIENT_ORIGIN_PROD) \
 	--update-secrets PINATA_JWT=PINATA_JWT:1,TWITCH_CLIENT_SECRET=TWITCH_CLIENT_SECRET:1,TWITCH_EBS_SECRET=TWITCH_EBS_SECRET:1,SIGNER_PRIVATE_KEY=SIGNER_PRIVATE_KEY:1 \
+	--revision-suffix $(GIT_COMMIT) \
+	--tag prod \
+	--no-traffic \
 	--source . 
+
+
+# number between 1 - 100
+TRAFFIC_PERCENT=100
+
+# roll back to a previous revision
+REVISION_NAME=$(SERVICE_NAME)-# <ADD REVISION COMMIT>
+gcp-rollback:
+	gcloud run services update-traffic $(SERVICE_NAME) \
+	--to-revisions $(REVISION_NAME)=$(TRAFFIC_PERCENT)
+
+
+# migrate traffic to a specific tagged revision
+TAG_NAME=
+gcp-traffic-to-tag:
+	gcloud run services update-traffic $(SERVICE_NAME) \
+	--to-tags $(TAG_NAME)=$(TRAFFIC_PERCENT)
+
