@@ -14,6 +14,7 @@ import (
 	"github.com/clip-it/server/app/services/clipit-api/handlers"
 )
 
+// Build variable is overwritten to git commit when running the go build commadn with -ldflags (check Dockerfile)
 var Build = "development"
 
 func main() {
