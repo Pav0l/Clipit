@@ -9,10 +9,6 @@ export class SubgraphTestClient implements ISubgraphClient {
     return { id: auctionPartialFragment.id };
   };
 
-  fetchAuctionCached = async (_tokenId: string): Promise<AuctionPartialFragment | null> => {
-    return auctionPartialFragment;
-  };
-
   fetchClipCached = async (_tokenId: string): Promise<ClipPartialFragment | null> => {
     return clipPartialFragment;
   };

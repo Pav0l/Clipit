@@ -3280,59 +3280,6 @@ export type GetClipsByContentHashQuery = {
   }>;
 };
 
-export type GetAuctionForTokenQueryVariables = Exact<{
-  tokenIds?: InputMaybe<Array<Scalars["BigInt"]> | Scalars["BigInt"]>;
-}>;
-
-export type GetAuctionForTokenQuery = {
-  __typename?: "Query";
-  reserveAuctions: Array<{
-    __typename?: "ReserveAuction";
-    id: string;
-    tokenId: any;
-    approved: boolean;
-    duration: any;
-    expectedEndTimestamp?: any | null | undefined;
-    firstBidTime?: any | null | undefined;
-    approvedTimestamp?: any | null | undefined;
-    reservePrice: any;
-    status: ReserveAuctionStatus;
-    transactionHash: string;
-    clip?: { __typename?: "Clip"; id: string } | null | undefined;
-    tokenOwner: { __typename?: "User"; id: string };
-    auctionCurrency: {
-      __typename?: "Currency";
-      id: string;
-      name: string;
-      symbol: string;
-      decimals?: number | null | undefined;
-    };
-    currentBid?:
-      | {
-          __typename?: "ReserveAuctionBid";
-          id: string;
-          amount: any;
-          bidType: ReserveAuctionBidType;
-          createdAtTimestamp: any;
-          reserveAuction: { __typename?: "ReserveAuction"; id: string };
-          bidder: { __typename?: "User"; id: string };
-        }
-      | null
-      | undefined;
-    previousBids?:
-      | Array<{
-          __typename?: "InactiveReserveAuctionBid";
-          id: string;
-          amount: any;
-          bidInactivatedAtTimestamp: any;
-          bidType: ReserveAuctionBidType;
-          bidder: { __typename?: "User"; id: string };
-        }>
-      | null
-      | undefined;
-  }>;
-};
-
 export type GetAuctionByTxHashQueryVariables = Exact<{
   txHashes?: InputMaybe<Array<Scalars["String"]> | Scalars["String"]>;
 }>;

@@ -194,18 +194,6 @@ export const GET_CLIPS_BY_CONTENT_HASH = gql`
   }
 `;
 
-export const GET_AUCTION_QUERY = gql`
-  ${CURRENCY_PARTIAL}
-  ${CLIP_PARTIALS}
-  ${AUCTION_PARTIALS}
-
-  query getAuctionForToken($tokenIds: [BigInt!]) {
-    reserveAuctions(where: { tokenId_in: $tokenIds }) {
-      ...AuctionPartial
-    }
-  }
-`;
-
 export const GET_AUCTION_BY_TX_HASH_QUERY = gql`
   ${CURRENCY_PARTIAL}
   ${CLIP_PARTIALS}

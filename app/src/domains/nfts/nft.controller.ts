@@ -161,36 +161,34 @@ export class NftController {
     try {
       this.model.meta.setLoading(true);
 
-      const data = await this.subgraph.fetchAuctionCached(tokenId, options);
-
-      if (data === null) {
+      const clip = await this.subgraph.fetchClipCached(tokenId, options);
+      if (clip === null) {
         return;
       }
-      if (isSubgraphError(data)) {
+      if (isSubgraphError(clip)) {
         this.model.meta.setError(new AppError({ msg: NftErrors.ERROR_TRY_REFRESH, type: "subgraph-query" }));
 
         this.sentry.captureEvent({
-          message: "failed to get auction from subgraph",
+          message: "failed to get clip from subgraph",
           contexts: {
             data: {
               tokenId,
               cleareCache: options.clearCache,
             },
             error: {
-              errors: JSON.stringify(data.errors),
+              errors: JSON.stringify(clip.errors),
             },
           },
         });
         return;
       }
 
-      const metadata = this.model.getTokenMetadata(tokenId);
-      if (!metadata) {
-        await this.getTokenMetadata(tokenId);
-      }
-
       // update reserveAuction for token
-      this.model.updateTokenAuction(tokenId, data);
+      await this.getMetadataForClipFragmentAndStoreInModel(clip, {
+        target: "metadata",
+        shouldThrow: true,
+        replace: true,
+      });
     } catch (error) {
       this.sentry.captureException(error);
       this.snackbar.sendError(NftErrors.ERROR_TRY_REFRESH);
@@ -294,15 +292,15 @@ export class NftController {
 
   private getMetadataForClipFragmentAndStoreInModel = async (
     clip?: ClipPartialFragment,
-    options: { shouldThrow?: boolean; target: "metadata" | "auctionBid" } = { target: "metadata" }
-  ) => {
-    const { shouldThrow, target } = options;
-
+    options: { shouldThrow?: boolean; target: "metadata" | "auctionBid"; replace?: boolean } = { target: "metadata" }
+  ): Promise<void> => {
+    const { shouldThrow, target, replace } = options;
     if (clip == null) {
       return;
     }
 
-    if (target === "metadata" && this.model.hasMetadata[clip.id]) {
+    // if we're replacing metadata, make sure to refetch them
+    if (target === "metadata" && this.model.hasMetadata[clip.id] && !replace) {
       // we already have metadata for this clip
       return;
     }
@@ -349,6 +347,9 @@ export class NftController {
     };
 
     if (target === "metadata") {
+      if (replace) {
+        return this.model.replaceMetadata(metadataForModel);
+      }
       this.model.addMetadata(metadataForModel);
     } else if (target === "auctionBid") {
       this.model.addAuctionBidMetadata(metadataForModel);

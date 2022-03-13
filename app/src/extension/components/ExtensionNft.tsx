@@ -9,7 +9,7 @@ import { StreamerUiController } from "../domains/streamer/streamer-ui.controller
 import { ExtensionNftError } from "./ExtensionNftError";
 
 interface Props {
-  metadata: Metadata;
+  metadata: Metadata | null;
   tokenId: string;
   withHeader?: boolean;
   model: {

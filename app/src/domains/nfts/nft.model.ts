@@ -40,17 +40,22 @@ export class NftModel {
     this.hasMetadata[data.tokenId] = true;
   }
 
+  replaceMetadata(data: MetadataInput): void {
+    const original = this.getTokenMetadata(data.tokenId);
+    if (!original) {
+      this.addMetadata(data);
+      return;
+    }
+    const idx = this.metadata.indexOf(original);
+    this.metadata[idx] = new Metadata(data);
+  }
+
   addAuctionBidMetadata(data: MetadataInput): void {
     if (this.hasAuctionBidsMetadata[data.tokenId]) {
       return;
     }
     this.activeAuctionBidsMetadata.push(new Metadata(data));
     this.hasAuctionBidsMetadata[data.tokenId] = true;
-  }
-
-  updateTokenAuction(tokenId: string, auction: AuctionPartialFragment): void {
-    const metadata = this.getTokenMetadata(tokenId);
-    metadata.auction = new Auction(auction, metadata.owner);
   }
 
   resetMetadata(): void {
@@ -60,9 +65,8 @@ export class NftModel {
     this.hasAuctionBidsMetadata = {};
   }
 
-  // TODO this can return undefined if there is no token matching tokenId
-  getTokenMetadata(tokenId: string): Metadata {
-    return this.metadata.filter((metadata) => metadata.tokenId === tokenId)[0];
+  getTokenMetadata(tokenId: string): Metadata | null {
+    return this.metadata.filter((metadata) => metadata.tokenId === tokenId)[0] ?? null;
   }
 
   getOwnMetadata(userAddress: string | null): Metadata[] {

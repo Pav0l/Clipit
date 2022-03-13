@@ -1,7 +1,6 @@
 import DataLoader from "dataloader";
 import { GraphQLClient } from "graphql-request";
 import {
-  GET_AUCTION_QUERY,
   GET_CLIPS,
   GET_TOKENS_QUERY,
   GET_TOKEN_BY_TX_HASH,
@@ -16,23 +15,20 @@ import {
   GetUserDataQuery,
   GetTokenByTxHashQuery,
   GetClipsQuery,
-  AuctionPartialFragment,
-  GetAuctionForTokenQuery,
   GetAuctionByTxHashQuery,
   GetClipsByContentHashQuery,
 } from "./types";
 import { CLIPS_PAGINATION_SKIP_VALUE } from "../constants";
 
 export interface ISubgraphClient {
-  fetchClipCached: (tokenId: string) => Promise<ClipPartialFragment | null | SubgraphError>;
+  fetchClipCached: (
+    tokenId: string,
+    options?: { clearCache: boolean }
+  ) => Promise<ClipPartialFragment | null | SubgraphError>;
   fetchClipByContentHashCached: (contentHash: string) => Promise<ClipPartialFragment | null | SubgraphError>;
   fetchClipByHashCached: (txHash: string) => Promise<{ id: string } | null | SubgraphError>;
   fetchClips: (skip?: number) => Promise<GetClipsQuery | null | SubgraphError>;
   fetchUserCached: (address: string) => Promise<UserData | null | SubgraphError>;
-  fetchAuctionCached: (
-    tokenId: string,
-    options: { clearCache: boolean }
-  ) => Promise<AuctionPartialFragment | null | SubgraphError>;
   fetchAuctionByHashCached: (txHash: string) => Promise<{ id: string } | null | SubgraphError>;
 }
 
@@ -49,7 +45,6 @@ export class SubgraphClient implements ISubgraphClient {
   private clipLoader: DataLoader<string, ClipPartialFragment | null>;
   private clipTxHashLoader: DataLoader<string, { id: string } | null>;
   private clipContentHashLoader: DataLoader<string, ClipPartialFragment | null>;
-  private auctionLoader: DataLoader<string, AuctionPartialFragment | null>;
   private auctionHashLoader: DataLoader<string, { id: string } | null>;
 
   constructor(private client: GraphQLClient) {
@@ -57,14 +52,17 @@ export class SubgraphClient implements ISubgraphClient {
     this.clipLoader = new DataLoader((keys) => this.getClip(keys));
     this.clipTxHashLoader = new DataLoader((keys) => this.getClipByTxHash(keys));
     this.clipContentHashLoader = new DataLoader((keys) => this.getClipByContentHash(keys));
-    this.auctionLoader = new DataLoader((keys) => this.getAuctionForToken(keys));
     this.auctionHashLoader = new DataLoader((keys) => this.getAuctionForTxHash(keys));
   }
 
   /**
    * fetchClipCached fetches Clip (NFT) data from the subgraph based on its id
    */
-  fetchClipCached = async (tokenId: string) => {
+  fetchClipCached = async (tokenId: string, options: { clearCache: boolean } = { clearCache: false }) => {
+    if (options.clearCache) {
+      this.clipLoader.clear(tokenId);
+    }
+
     const clip = await this.clipLoader.load(tokenId);
     if (!clip) {
       return null;
@@ -107,19 +105,6 @@ export class SubgraphClient implements ISubgraphClient {
     return user;
   };
 
-  fetchAuctionCached = async (tokenId: string, options: { clearCache: boolean } = { clearCache: false }) => {
-    if (options.clearCache) {
-      this.auctionLoader.clear(tokenId);
-    }
-
-    const auction = this.retryFetch<string, AuctionPartialFragment>(this.auctionLoader, tokenId, 3, 3000);
-    if (!auction) {
-      return null;
-    }
-
-    return auction;
-  };
-
   fetchAuctionByHashCached = async (txHash: string) => {
     const auction = this.retryFetch<string, { id: string }>(this.auctionHashLoader, txHash, 3, 3000);
     if (!auction) {
@@ -160,17 +145,6 @@ export class SubgraphClient implements ISubgraphClient {
     });
 
     return contentHashes.map((hash) => transformClipDataFromContentHash(resp, hash));
-  };
-
-  private getAuctionForToken = async (tokenIds: readonly string[]) => {
-    const resp = await this.client.request<GetAuctionForTokenQuery>(GET_AUCTION_QUERY, {
-      tokenIds: tokenIds,
-    });
-
-    return tokenIds.map((tokenId) => {
-      const auction = resp.reserveAuctions.find((a) => a.tokenId === tokenId);
-      return auction ? auction : null;
-    });
   };
 
   private getAuctionForTxHash = async (txHashes: readonly string[]) => {
