@@ -3,10 +3,12 @@ import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { makeStyles, Theme } from "@material-ui/core";
 import { NftModel } from "../nfts/nft.model";
 import { IWeb3Controller } from "../web3/web3.controller";
+import { TestStore } from "./playground.store";
 
 interface Props {
   model: {
     nft: NftModel;
+    testStore: TestStore;
   };
   operations: {
     web3: IWeb3Controller;
@@ -14,7 +16,7 @@ interface Props {
   };
 }
 
-const Playground = observer(function Playground({ operations }: Props) {
+const Playground = observer(function Playground({ model, operations }: Props) {
   const classes = useStyles();
 
   const onClick = async () => {
@@ -31,19 +33,22 @@ const Playground = observer(function Playground({ operations }: Props) {
       <button onClick={onClick}>Do something!</button>
       <button
         className={classes.btn}
-        onClick={() => operations.snackbar.sendError(`text is here: ${Math.random() * 1000}`)}
+        onClick={() => {
+          model.testStore.addData({ id: 1, text: `text is here: ${Math.random() * 1000}` });
+          model.testStore.addData({ id: 2, text: `text is here: ${Math.random() * 1000}` });
+          model.testStore.addData({ id: 3, text: `text is here: ${Math.random() * 1000}` });
+        }}
       >
-        SET ERROR
+        add data
       </button>
-      <button
-        className={classes.btn2}
-        onClick={() => operations.snackbar.sendSuccess(`yes yes yes: ${Math.random() * 1000}`)}
-      >
-        SET SUCCESS
-      </button>
+      <button onClick={() => model.testStore.replaceData({ id: 2, text: `wauza` })}>replace data</button>
       <button className={classes.btn} onClick={() => operations.snackbar.sendInfo(`infoo: ${Math.random() * 1000}`)}>
         SET INFO
       </button>
+      <div>
+        data: <br />
+        {JSON.stringify(model.testStore.data)}
+      </div>
     </div>
   );
 });

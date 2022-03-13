@@ -134,15 +134,7 @@ export const App = observer(function App({ model, operations, sentry }: Props) {
                 <OAuth2Redirect controller={operations.auth} model={model.auth} />
               </Route>
               <Route exact path={AppRoute.ABOUT}>
-                <Playground
-                  model={{
-                    nft: model.nft,
-                  }}
-                  operations={{
-                    web3: operations.web3,
-                    snackbar: operations.snackbar,
-                  }}
-                />
+                <Playground model={model} operations={operations} />
               </Route>
 
               <Route exact path={AppRoute.TERMS}>
