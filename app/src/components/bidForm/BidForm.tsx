@@ -96,6 +96,9 @@ export const BidForm = observer(function BidForm({ metadata, operations, model }
 
   return (
     <div className={classes.container}>
+      {metadata.auction?.highestBid?.bidderAddress === signer ? (
+        <Typography className={classes.highestBidder}>You are the highest bidder!</Typography>
+      ) : null}
       <div className={classes.title}>
         <Typography>Enter your Bid</Typography>
         {model.web3.displayBalance ? <Typography>Balance: {model.web3.displayBalance} ETH</Typography> : null}
@@ -152,5 +155,10 @@ const useStyles = makeStyles(() => ({
   text: {
     color: "rgba(0, 0, 0, 0.54)",
     fontSize: "0.9rem",
+  },
+  highestBidder: {
+    textAlign: "center",
+    margin: "1rem 0",
+    fontWeight: "bold",
   },
 }));

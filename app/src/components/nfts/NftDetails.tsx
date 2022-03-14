@@ -51,6 +51,8 @@ export const NftDetails = observer(function NftDetails({ tokenId, metadata, mode
   // auction status:
   // active:
   if (auction && auction.isActive) {
+    // FYI: if user is highest bidder, we show BidForm again
+
     // -> either running auction or active auction with no bids yet
     if (auction.displayAuctionStatus.title === DisplayAuctionStatusTitle.ENDS_IN || auction.firstBidTime === "0") {
       return <BidForm metadata={metadata} operations={operations} model={{ web3: model.web3 }} />;
