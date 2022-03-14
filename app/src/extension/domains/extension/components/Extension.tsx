@@ -1,7 +1,6 @@
 import { observer } from "mobx-react-lite";
 
-import ThemeProvider from "../../../../components/themeProvider/ThemeProvider";
-import { defaultTheme } from "../../../../components/themeProvider/theme";
+import ThemeProvider from "../../../../domains/theme/components/ThemeProvider";
 import ErrorWithRetry from "../../../../components/error/Error";
 import FullPageLoader from "../../../../components/loader/FullPageLoader";
 import { IExtensionModel } from "../extension.model";
@@ -15,6 +14,7 @@ import { StreamerUiController } from "../../streamer/streamer-ui.controller";
 import { DevTools } from "../../dev-tools/components/DevTools";
 import { ConfigUiController } from "../../config/config-ui.controller";
 import { ConfigContainer } from "../../config/components/ConfigContainer";
+import { ThemeName } from "../../../../domains/theme/theme.constants";
 
 interface Props {
   model: IExtensionModel;
@@ -47,7 +47,8 @@ export const Extension = observer(function App({ model, operations }: Props) {
   }
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    // TODO theme
+    <ThemeProvider themeName={ThemeName.Light}>
       {appMetaData.isLoading ? (
         <FullPageLoader />
       ) : appMetaData.error ? (

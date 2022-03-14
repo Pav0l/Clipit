@@ -8,6 +8,7 @@ import { UserModel } from "../twitch-user/user.model";
 import { OAuthModel } from "../twitch-oauth/oauth.model";
 import { Web3Model } from "../web3/web3.model";
 import { NavigationModel } from "../navigation/navigation.model";
+import { ThemeModel } from "../theme/theme.model";
 
 export interface IAppModel {
   meta: MetaModel;
@@ -17,6 +18,7 @@ export interface IAppModel {
   nft: NftModel;
   web3: Web3Model;
 
+  theme: ThemeModel;
   auth: OAuthModel;
   snackbar: SnackbarModel;
   navigation: NavigationModel;
@@ -35,6 +37,7 @@ export class AppModel implements IAppModel {
   auth: OAuthModel;
   web3: Web3Model;
   navigation: NavigationModel;
+  theme: ThemeModel;
 
   testStore: TestStore;
 
@@ -48,6 +51,7 @@ export class AppModel implements IAppModel {
     this.web3 = new Web3Model(new MetaModel());
     this.auth = new OAuthModel(new MetaModel());
 
+    this.theme = new ThemeModel();
     this.navigation = new NavigationModel();
     this.snackbar = new SnackbarModel();
 

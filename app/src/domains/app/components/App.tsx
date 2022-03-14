@@ -14,8 +14,7 @@ import Marketplace from "../../../components/marketplace/Marketplace";
 import Navbar from "../../navigation/components/Navbar";
 import ErrorBoundary from "../../../components/error/ErrorBoundry";
 import Playground from "../../playground/Playground";
-import ThemeProvider from "../../../components/themeProvider/ThemeProvider";
-import { defaultTheme } from "../../../components/themeProvider/theme";
+import ThemeProvider from "../../theme/components/ThemeProvider";
 import OAuthProtectedRoute from "../../twitch-oauth/OAuthProtected/OAuthProtectedRoute";
 import ErrorWithRetry from "../../../components/error/Error";
 import Footer from "../../../components/footer/Footer";
@@ -50,7 +49,7 @@ export const App = observer(function App({ model, operations, sentry }: Props) {
 
   return (
     <SupportWidgetProvider>
-      <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider themeName={model.theme.theme}>
         <Router basename={AppRoute.HOME}>
           <Navbar
             model={{ web3: model.web3, auth: model.auth, navigation: model.navigation }}
