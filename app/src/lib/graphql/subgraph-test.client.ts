@@ -1,7 +1,7 @@
 import { clipPartialFragment } from "../../../tests/__fixtures__/clip-fragment";
 import { auctionPartialFragment } from "../../../tests/__fixtures__/auction-fragment";
 
-import { AuctionPartialFragment, ClipPartialFragment, GetClipsQuery } from "./types";
+import { ClipPartialFragment, GetClipsQuery } from "./types";
 import { ISubgraphClient, UserData } from "./subgraph.client";
 
 export class SubgraphTestClient implements ISubgraphClient {
@@ -10,7 +10,7 @@ export class SubgraphTestClient implements ISubgraphClient {
   };
 
   fetchClipCached = async (_tokenId: string): Promise<ClipPartialFragment | null> => {
-    return clipPartialFragment;
+    return { ...clipPartialFragment, reserveAuctions: [auctionPartialFragment] };
   };
 
   fetchClipByContentHashCached = async (_contentHash: string) => {
