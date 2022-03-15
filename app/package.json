@@ -21,7 +21,8 @@
     "fb:emulate:stage": "firebase emulators:start --only hosting:stage",
     "fb:emulate:app": "firebase emulators:start --only hosting:app",
     "fb:deploy:stage": "firebase deploy --only hosting:stage",
-    "fb:deploy:app": "firebase deploy --only hosting:app"
+    "fb:deploy:app": "firebase deploy --only hosting:app",
+    "analyze": "NODE_ENV=development webpack --profile --json > stats.json && webpack-bundle-analyzer stats.json ./dist/"
   },
   "author": "h0ppx",
   "license": "ISC",
@@ -83,6 +84,7 @@
     "style-loader": "^3.2.1",
     "ts-loader": "^9.2.5",
     "webpack": "^5.48.0",
+    "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "^4.7.2",
     "webpack-dev-server": "^3.11.2"
   }
