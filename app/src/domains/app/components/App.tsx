@@ -49,7 +49,7 @@ export const App = observer(function App({ model, operations, sentry }: Props) {
 
   return (
     <SupportWidgetProvider>
-      <ThemeProvider themeName={model.theme.theme}>
+      <ThemeProvider model={model.theme}>
         <Router basename={AppRoute.HOME}>
           <Navbar
             model={{ web3: model.web3, auth: model.auth, navigation: model.navigation }}

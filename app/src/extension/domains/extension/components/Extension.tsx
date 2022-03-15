@@ -48,7 +48,14 @@ export const Extension = observer(function App({ model, operations }: Props) {
 
   return (
     // TODO theme
-    <ThemeProvider themeName={ThemeName.Light}>
+    <ThemeProvider
+      model={{
+        theme: ThemeName.Light,
+        setTheme: () => {
+          /** mock for theme for now */
+        },
+      }}
+    >
       {appMetaData.isLoading ? (
         <FullPageLoader />
       ) : appMetaData.error ? (

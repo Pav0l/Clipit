@@ -135,7 +135,7 @@ export const BidForm = observer(function BidForm({ metadata, operations, model }
   );
 });
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     margin: "1rem",
     maxWidth: "35vw",
@@ -153,7 +153,7 @@ const useStyles = makeStyles(() => ({
     justifyContent: "space-between",
   },
   text: {
-    color: "rgba(0, 0, 0, 0.54)",
+    color: theme.palette.text.secondary,
     fontSize: "0.9rem",
   },
   highestBidder: {

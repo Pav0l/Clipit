@@ -161,14 +161,6 @@ const useStyles = makeStyles(() => ({
     width: "100%",
     margin: "0.8rem 0 0.5rem 0",
   },
-  title: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
-  text: {
-    color: "rgba(0, 0, 0, 0.54)",
-    fontSize: "0.9rem",
-  },
   noMargin: {
     margin: "0",
   },

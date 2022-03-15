@@ -77,16 +77,4 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
     margin: 0,
   },
-  li: {
-    display: "block",
-    padding: "0.5rem 1rem",
-    color: theme.palette.text.primary,
-    borderBottom: "1px solid white",
-    "&:hover": {
-      borderBottom: `1px solid black`,
-    },
-  },
-  active: {
-    borderBottom: "1px solid black",
-  },
 }));
