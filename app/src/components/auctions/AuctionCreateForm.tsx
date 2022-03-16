@@ -1,7 +1,8 @@
-import { Button, InputAdornment, makeStyles, TextField, Typography } from "@material-ui/core";
+import { Button, InputAdornment, TextField, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { NftModel } from "../../domains/nfts/nft.model";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { ApproveAuctionStatus, AuctionLoadStatus, Web3Model } from "../../domains/web3/web3.model";
 import { useInputData } from "../../lib/hooks/useInputData";
 import ErrorWithRetry from "../error/Error";
@@ -148,7 +149,7 @@ export const AuctionCreateForm = observer(function AuctionCreateForm({
   );
 });
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   container: {
     margin: "1rem",
     maxWidth: "50vw",

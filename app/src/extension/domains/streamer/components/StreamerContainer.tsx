@@ -1,8 +1,8 @@
 import { Button, TextField } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
 import { observer } from "mobx-react-lite";
 import ConnectMetamask from "../../../../components/connectMetamask/ConnectMetamask";
 import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
+import { makeAppStyles } from "../../../../domains/theme/theme.constants";
 import { useInputData } from "../../../../lib/hooks/useInputData";
 import { ExtensionAuctionCreated } from "../../../components/ExtensionAuctionCreated";
 import { ExtensionClip } from "../../../components/ExtensionClip";
@@ -89,7 +89,7 @@ export const StreamerContainer = observer(function StreamerContainer({ model, op
   }
 });
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   container: {
     display: "flex",
     justifyContent: "center",

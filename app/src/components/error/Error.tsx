@@ -1,6 +1,7 @@
-import { Box, Typography, Link, makeStyles } from "@material-ui/core";
+import { Box, Typography, Link } from "@material-ui/core";
 import { ReactElement } from "react";
 import { useSupportWidget } from "../../domains/support-widget/components/SupportWidgetProvider";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 import CenteredContainer from "../container/CenteredContainer";
 
 interface Props {
@@ -64,7 +65,7 @@ function ErrorWithRetry({ text, withRetry, withActionButton, actionButton, class
 
 export default ErrorWithRetry;
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   container: {
     flexDirection: "column",
     margin: "0 10rem",

@@ -1,7 +1,8 @@
-import { Link, makeStyles, Typography } from "@material-ui/core";
+import { Link, Typography } from "@material-ui/core";
 import FileCopyIcon from "@material-ui/icons/FileCopyOutlined";
 
 import { SnackbarController } from "../../domains/snackbar/snackbar.controller";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 
 interface Props {
   tokenId: string;
@@ -46,7 +47,7 @@ export const ExtensionAuctionCreated = ({ tokenId, operations }: Props) => {
   );
 };
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   container: {
     textAlign: "center",
   },

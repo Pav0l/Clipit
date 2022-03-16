@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
-import { Card, CardMedia, makeStyles } from "@material-ui/core";
+import { Card, CardMedia } from "@material-ui/core";
 
 import ErrorWithRetry from "../../../components/error/Error";
 import { ClipModel } from "../clip.model";
@@ -19,6 +19,7 @@ import ClipCardContent from "./ClipCardContent";
 import { SnackbarController } from "../../snackbar/snackbar.controller";
 import { NftController } from "../../nfts/nft.controller";
 import { NftModel } from "../../nfts/nft.model";
+import { makeAppStyles } from "../../theme/theme.constants";
 
 interface Props {
   model: {
@@ -174,7 +175,7 @@ function ClipDetailContainer({ model, operations }: Props) {
 
 export default observer(ClipDetailContainer);
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   container: {
     margin: "2rem auto",
     borderRadius: "0px",

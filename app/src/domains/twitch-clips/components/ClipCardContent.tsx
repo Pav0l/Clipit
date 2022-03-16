@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { observer } from "mobx-react-lite";
-import { CardContent, Button, makeStyles, TextField, InputAdornment } from "@material-ui/core";
+import { CardContent, Button, TextField, InputAdornment } from "@material-ui/core";
 
 import type { useInputReturn } from "../../../lib/hooks/useInputData";
+import { makeAppStyles } from "../../theme/theme.constants";
 
 interface Props {
   mint: () => Promise<void>;
@@ -158,7 +159,7 @@ function ClipCardContent({
 
 export default observer(ClipCardContent);
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   content: {
     display: "flex",
     flexDirection: "column",

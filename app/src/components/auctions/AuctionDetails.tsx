@@ -1,7 +1,8 @@
-import { Button, makeStyles, Tooltip, Typography } from "@material-ui/core";
+import { Button, Tooltip, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { NftErrors } from "../../domains/nfts/nft.errors";
 import { Auction, DisplayAuctionStatusTitle, NftModel } from "../../domains/nfts/nft.model";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { useAuctionStatus } from "../../lib/hooks/useAuctionStatus";
 import ErrorWithRetry from "../error/Error";
@@ -102,7 +103,7 @@ export const AuctionDetails = observer(function AuctionDetails({
   );
 });
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   container: {
     margin: "1rem",
     maxWidth: "50vw",

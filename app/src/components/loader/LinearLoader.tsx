@@ -1,5 +1,6 @@
-import { Box, LinearProgress, makeStyles, Typography } from "@material-ui/core";
+import { Box, LinearProgress, Typography } from "@material-ui/core";
 import { useEffect, useState } from "react";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 
 interface Props {
   text: string;
@@ -31,7 +32,7 @@ export default function LinearLoader({ text, classNames }: Props) {
   );
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   container: {
     display: "flex",
     justifyContent: "center",

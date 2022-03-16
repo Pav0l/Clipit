@@ -1,4 +1,5 @@
-import { Box, makeStyles } from "@material-ui/core";
+import { Box } from "@material-ui/core";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 
 interface Props {
   children: JSX.Element | JSX.Element[];
@@ -13,7 +14,7 @@ function CenteredContainer({ children, className }: Props) {
 
 export default CenteredContainer;
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   container: {
     display: "flex",
     alignItems: "center",

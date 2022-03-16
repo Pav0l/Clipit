@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 
 import { ClipCard } from "./ClipCard";
 import VideoList from "../../../components/videoList/VideoList";
 import CenteredContainer from "../../../components/container/CenteredContainer";
+import { makeAppStyles } from "../../theme/theme.constants";
 
 interface Props {
   clipList: Clip[];
@@ -48,7 +49,7 @@ export default function ClipList({ clipList }: Props) {
   );
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   link: {
     textDecoration: "none",
     margin: "1rem",

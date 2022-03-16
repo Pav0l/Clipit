@@ -1,6 +1,7 @@
-import { Button, makeStyles } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import ErrorWithRetry from "../../components/error/Error";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { AppError } from "../../lib/errors/errors";
 
 interface Props {
@@ -60,7 +61,7 @@ export const ExtensionNftError = observer(function ExtensionNftError({ error, cr
   );
 });
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   error: {
     margin: "0",
   },

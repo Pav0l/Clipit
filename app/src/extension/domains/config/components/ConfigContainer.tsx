@@ -1,9 +1,9 @@
 import { Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
 import { observer } from "mobx-react-lite";
 import { ReactElement } from "react";
 import ConnectMetamask from "../../../../components/connectMetamask/ConnectMetamask";
 import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
+import { makeAppStyles } from "../../../../domains/theme/theme.constants";
 import { IExtensionModel } from "../../extension/extension.model";
 import { ConfigUiController } from "../config-ui.controller";
 
@@ -53,7 +53,7 @@ export const ConfigContainer = observer(function ConfigContainer({ model, operat
   return <div className={classes.container}>{content}</div>;
 });
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   container: {
     display: "flex",
     justifyContent: "center",

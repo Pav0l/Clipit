@@ -1,4 +1,5 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 
 interface Props {
   text: string | JSX.Element;
@@ -25,7 +26,7 @@ export function SectionParagraph({ text, marginTop }: Props) {
   );
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   section: {
     margin: "1rem 0",
   },

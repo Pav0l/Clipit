@@ -5,22 +5,25 @@ import { BrowserRouter } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { initTestSync } from "../../../../tests/init-tests";
 import { AppRoute } from "../../../lib/constants";
+import ThemeProvider from "../../theme/components/ThemeProvider";
 
 describe("Navbar component", function () {
   it("renders navbar links properly when clicking/mouse-overing them", async () => {
     const init = initTestSync(CONFIG);
     const component = (
-      <BrowserRouter>
-        <Navbar
-          model={{ web3: init.model.web3, auth: init.model.auth, navigation: init.model.navigation }}
-          isDevelopment={true}
-          operations={{
-            web3: init.operations.web3,
-            auth: init.operations.auth,
-            snackbar: init.operations.snackbar,
-          }}
-        />
-      </BrowserRouter>
+      <ThemeProvider model={init.model.theme}>
+        <BrowserRouter>
+          <Navbar
+            model={{ web3: init.model.web3, auth: init.model.auth, navigation: init.model.navigation }}
+            isDevelopment={true}
+            operations={{
+              web3: init.operations.web3,
+              auth: init.operations.auth,
+              snackbar: init.operations.snackbar,
+            }}
+          />
+        </BrowserRouter>
+      </ThemeProvider>
     );
 
     const { getByText } = render(component);

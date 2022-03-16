@@ -1,5 +1,6 @@
-import { CardMedia, Card, makeStyles, CardActionArea } from "@material-ui/core";
+import { CardMedia, Card, CardActionArea } from "@material-ui/core";
 import { Metadata } from "../../domains/nfts/nft.model";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { NftCardContent } from "./NftCardContent";
 
 interface Props {
@@ -30,7 +31,7 @@ export function NftCard({ metadata }: Props) {
   );
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   card: {
     margin: "1rem",
     width: "50vw",

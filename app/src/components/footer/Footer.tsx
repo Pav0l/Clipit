@@ -1,4 +1,5 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { AppRoute } from "../../lib/constants";
 import { LinkButton } from "../linkButton/LinkButton";
 
@@ -18,7 +19,7 @@ export default function Footer() {
   );
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   footer: {
     margin: "auto 2rem 1rem",
     display: "flex",

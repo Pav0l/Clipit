@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { Card, CardMedia, Link, makeStyles } from "@material-ui/core";
+import { Card, CardMedia, Link } from "@material-ui/core";
 
 import { GameModel } from "../../domains/twitch-games/game.model";
 import { ClipModel, TwitchClip } from "../../domains/twitch-clips/clip.model";
@@ -13,6 +13,7 @@ import { useInputData } from "../../lib/hooks/useInputData";
 import { ExtensionClipError } from "./ExtensionClipError";
 import { StreamerUiModel } from "../domains/streamer/streamer-ui.model";
 import { NftModel } from "../../domains/nfts/nft.model";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 
 interface Props {
   clip: TwitchClip;
@@ -106,7 +107,7 @@ export const ExtensionClip = observer(function ExtensionClip({ model, operations
   );
 });
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   container: {
     margin: "2rem auto",
     borderRadius: "0px",

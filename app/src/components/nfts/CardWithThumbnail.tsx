@@ -1,5 +1,6 @@
-import { makeStyles, Card, CardActionArea, CardMedia } from "@material-ui/core";
+import { Card, CardActionArea, CardMedia } from "@material-ui/core";
 import { Metadata } from "../../domains/nfts/nft.model";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { NftCardContent } from "./NftCardContent";
 
 interface Props {
@@ -19,7 +20,7 @@ export function CardWithThumbnail({ metadata }: Props) {
   );
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   card: {
     width: "25vw",
     maxWidth: "480px",

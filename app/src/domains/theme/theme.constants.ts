@@ -1,4 +1,4 @@
-import { ThemeOptions, Theme, makeStyles, createTheme } from "@material-ui/core";
+import { ThemeOptions, Theme, createTheme, makeStyles } from "@material-ui/core";
 import { Styles } from "@material-ui/core/styles/withStyles";
 import { ColorTokens, darkColors, lightColors } from "./color.constants";
 

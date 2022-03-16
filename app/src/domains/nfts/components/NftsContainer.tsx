@@ -7,12 +7,12 @@ import { NftController } from "../nft.controller";
 import { NftModel } from "../nft.model";
 import { NavigationModel } from "../../navigation/navigation.model";
 import NftsPage from "./NftsPage";
-import { makeStyles } from "@material-ui/styles";
 import ActiveBidsPage from "./ActiveBidsPage";
 import FullPageLoader from "../../../components/loader/FullPageLoader";
 import ErrorWithRetry from "../../../components/error/Error";
 import { Web3Model, Web3Errors } from "../../web3/web3.model";
 import ReceivedBids from "./ReceivedBids";
+import { makeAppStyles } from "../../theme/theme.constants";
 
 interface Props {
   model: {
@@ -91,7 +91,7 @@ function NftsContainer({ model, operations }: Props) {
 
 export default observer(NftsContainer);
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   container: {
     margin: "0 2rem",
   },

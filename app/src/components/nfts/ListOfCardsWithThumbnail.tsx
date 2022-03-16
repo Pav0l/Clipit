@@ -1,6 +1,6 @@
-import { makeStyles } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { Metadata } from "../../domains/nfts/nft.model";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 import VideoList from "../videoList/VideoList";
 import { CardWithThumbnail } from "./CardWithThumbnail";
 
@@ -22,7 +22,7 @@ export default function ListOfCardsWithThumbnail({ metadata }: Props) {
   );
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   link: {
     textDecoration: "none",
     margin: "1rem",

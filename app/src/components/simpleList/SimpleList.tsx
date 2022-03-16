@@ -1,4 +1,5 @@
-import { makeStyles, List, ListItem, ListItemText } from "@material-ui/core";
+import { List, ListItem, ListItemText } from "@material-ui/core";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 
 interface Props {
   listItemTexts: string[];
@@ -18,7 +19,7 @@ export function SimpleList({ listItemTexts }: Props) {
   );
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles(() => ({
   list: {
     listStyleType: "disc",
     listStylePosition: "outside",
