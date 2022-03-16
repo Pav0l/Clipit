@@ -1,8 +1,9 @@
-import { Button, InputAdornment, makeStyles, TextField, Typography } from "@material-ui/core";
+import { Button, InputAdornment, TextField, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { NftController } from "../../domains/nfts/nft.controller";
 import { Metadata } from "../../domains/nfts/nft.model";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { Web3Controller } from "../../domains/web3/web3.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { useInputData } from "../../lib/hooks/useInputData";
@@ -135,7 +136,7 @@ export const BidForm = observer(function BidForm({ metadata, operations, model }
   );
 });
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeAppStyles((theme) => ({
   container: {
     margin: "1rem",
     maxWidth: "35vw",
@@ -153,7 +154,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
   },
   text: {
-    color: theme.palette.text.secondary,
+    color: theme.colors.text_ternary,
     fontSize: "0.9rem",
   },
   highestBidder: {

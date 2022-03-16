@@ -1,6 +1,8 @@
-import { makeStyles, CardContent, Typography } from "@material-ui/core";
+import { CardContent, Typography } from "@material-ui/core";
+
 import { Auction } from "../../domains/nfts/nft.model";
 import { useAuctionStatus } from "../../lib/hooks/useAuctionStatus";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 
 interface Props {
   title: string;
@@ -58,10 +60,10 @@ export function NftCardContent(props: Props) {
   );
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles((theme) => ({
   title: {
     fontWeight: 600,
-    color: "#31393C",
+    color: theme.colors.text_primary,
     fontSize: "1rem",
   },
   content: {
@@ -70,7 +72,7 @@ const useStyles = makeStyles(() => ({
     justifyContent: "space-between",
   },
   glow: {
-    color: "#2176FF",
+    color: theme.colors.text_primary,
   },
   alignRight: {
     textAlign: "right",

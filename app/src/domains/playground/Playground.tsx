@@ -1,9 +1,9 @@
 import { observer } from "mobx-react-lite";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
-import { makeStyles, Theme } from "@material-ui/core";
 import { NftModel } from "../nfts/nft.model";
 import { IWeb3Controller } from "../web3/web3.controller";
 import { TestStore } from "./playground.store";
+import { makeAppStyles } from "../theme/theme.constants";
 
 interface Props {
   model: {
@@ -55,13 +55,13 @@ const Playground = observer(function Playground({ model, operations }: Props) {
 
 export default Playground;
 
-const useStyles = makeStyles<Theme>((theme) => ({
+const useStyles = makeAppStyles((theme) => ({
   btn: {
-    background: theme.palette.background.default,
-    color: theme.palette.text.primary,
+    background: theme.colors.background_primary,
+    color: theme.colors.text_primary,
   },
   btn2: {
-    background: theme.palette.background.default,
-    color: theme.palette.text.secondary,
+    background: theme.colors.background_primary,
+    color: theme.colors.text_secondary,
   },
 }));

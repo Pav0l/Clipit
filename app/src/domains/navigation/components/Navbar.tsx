@@ -1,4 +1,4 @@
-import { makeStyles, AppBar, Toolbar } from "@material-ui/core";
+import { AppBar, Toolbar } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { IWeb3Controller } from "../../web3/web3.controller";
 import { AppRoute } from "../../../lib/constants";
@@ -10,6 +10,7 @@ import { OAuthModel } from "../../twitch-oauth/oauth.model";
 import ConnectMetamaskButton from "../../../components/connectMetamask/ConnectMetamask";
 import { NavigationModel } from "../../navigation/navigation.model";
 import NavLink from "./NavLink";
+import { makeAppStyles } from "../../theme/theme.constants";
 
 interface Props {
   model: {
@@ -59,9 +60,9 @@ export default observer(function Navbar({ model, operations, isDevelopment }: Pr
   );
 });
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeAppStyles((theme) => ({
   appbar: {
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.background_primary,
     boxShadow: "none",
     marginBottom: "0.5rem",
   },

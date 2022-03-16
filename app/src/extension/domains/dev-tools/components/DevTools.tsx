@@ -1,6 +1,7 @@
-import { Button, makeStyles, MenuItem, Select, TextField } from "@material-ui/core";
+import { Button, MenuItem, Select, TextField } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import { makeAppStyles } from "../../../../domains/theme/theme.constants";
 import { Web3Model } from "../../../../domains/web3/web3.model";
 import { useInputData } from "../../../../lib/hooks/useInputData";
 import { StreamerUiController } from "../../streamer/streamer-ui.controller";
@@ -74,14 +75,14 @@ export const DevTools = observer(function DevTools({ model, operations }: Props)
   );
 });
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles((theme) => ({
   container: {
     display: "flex",
     justifyContent: "space-around",
     flexDirection: "row",
     alignItems: "center",
 
-    border: "1px solid black",
+    border: `1px solid ${theme.colors.border_primary}`,
     borderRadius: "4px",
 
     padding: "4px",

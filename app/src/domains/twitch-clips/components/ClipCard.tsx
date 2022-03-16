@@ -1,4 +1,5 @@
-import { makeStyles, Card, CardActionArea, CardContent, CardMedia, Typography } from "@material-ui/core";
+import { Card, CardActionArea, CardContent, CardMedia, Typography } from "@material-ui/core";
+import { makeAppStyles } from "../../theme/theme.constants";
 
 interface Props {
   title: string;
@@ -22,14 +23,14 @@ export function ClipCard(props: Props) {
   );
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles((theme) => ({
   card: {
     width: "25vw",
     maxWidth: "350px",
   },
   title: {
     fontWeight: 600,
-    color: "#31393C",
+    color: theme.colors.text_secondary,
     fontSize: "1rem",
   },
 }));

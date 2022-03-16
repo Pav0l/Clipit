@@ -1,8 +1,9 @@
-import { makeStyles, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { AppRoute } from "../../../lib/constants";
 import { NavigationModel } from "../navigation.model";
 import { LinkButton } from "../../../components/linkButton/LinkButton";
+import { makeAppStyles } from "../../theme/theme.constants";
 
 interface Props {
   model: {
@@ -36,17 +37,17 @@ export default observer(function NavLink({ to, text, model }: Props) {
   );
 });
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeAppStyles((theme) => ({
   li: {
     display: "block",
     padding: "0.5rem 1rem",
-    color: theme.palette.text.primary,
-    borderBottom: "1px solid white",
+    color: theme.colors.text_secondary,
+    borderBottom: `1px solid ${theme.colors.border_secondary}`,
     "&:hover": {
-      borderBottom: `1px solid black`,
+      borderBottom: `1px solid ${theme.colors.border_primary}`,
     },
   },
   active: {
-    borderBottom: "1px solid black",
+    borderBottom: `1px solid ${theme.colors.border_primary}`,
   },
 }));

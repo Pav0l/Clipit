@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Button, makeStyles, TextField, Typography } from "@material-ui/core";
+import { Button, TextField, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useInputData } from "../../lib/hooks/useInputData";
 import { Link, useHistory } from "react-router-dom";
@@ -12,6 +12,7 @@ import SplitContainer from "../container/SplitContainer";
 import LoginWithTwitch from "../../domains/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
 import { OAuthModel } from "../../domains/twitch-oauth/oauth.model";
 import { OAuthController } from "../../domains/twitch-oauth/oauth.controller";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 
 interface Props {
   model: {
@@ -92,11 +93,11 @@ function Home({ model, operations }: Props) {
 
 export default observer(Home);
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeAppStyles((theme) => ({
   title: {
     textAlign: "center",
     cursor: "default",
-    color: "#2176FF",
+    color: theme.colors.text_primary,
     textDecoration: "none",
     margin: "1rem 0",
     fontWeight: "bolder",
@@ -104,11 +105,12 @@ const useStyles = makeStyles((theme) => ({
   input: {
     width: "inherit",
     margin: "1.8rem 0",
-    color: theme.palette.text.hint,
+    color: theme.colors.text_hint,
   },
   description: {
     maxWidth: "38vw",
     fontWeight: 600,
+    color: theme.colors.text_secondary,
   },
   button: {
     alignSelf: "flex-end",

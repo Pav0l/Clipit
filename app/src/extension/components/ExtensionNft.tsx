@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { Card, CardMedia, makeStyles, Typography } from "@material-ui/core";
+import { Card, CardMedia, Typography } from "@material-ui/core";
 
 import { Metadata, NftModel } from "../../domains/nfts/nft.model";
 import FullPageLoader from "../../components/loader/FullPageLoader";
@@ -7,6 +7,7 @@ import { AuctionCreateForm } from "../../components/auctions/AuctionCreateForm";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { StreamerUiController } from "../domains/streamer/streamer-ui.controller";
 import { ExtensionNftError } from "./ExtensionNftError";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 
 interface Props {
   metadata: Metadata | null;
@@ -84,7 +85,7 @@ export const ExtensionNft = observer(function ExtensionNft({ metadata, tokenId, 
   );
 });
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles((theme) => ({
   content: {
     margin: "1rem 1rem 0",
   },
@@ -96,7 +97,7 @@ const useStyles = makeStyles(() => ({
   },
   clipTitle: {
     fontWeight: 600,
-    color: "#31393C",
+    color: theme.colors.text_secondary,
     fontSize: "1rem",
   },
   auctionWidth: {

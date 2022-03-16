@@ -1,5 +1,6 @@
-import { Button, makeStyles } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
+import { makeAppStyles } from "../../theme/theme.constants";
 import { OAuthController } from "../oauth.controller";
 import { OAuthModel } from "../oauth.model";
 
@@ -26,27 +27,27 @@ function LoginWithTwitch({ model, operations }: Props) {
 
 export default observer(LoginWithTwitch);
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeAppStyles((theme) => ({
   button: {
-    backgroundColor: "#9147ff",
+    backgroundColor: theme.colors.twitch_bg_primary,
     borderRadius: "4px",
-    color: "#fff",
+    color: theme.colors.twitch_text_primary,
     border: "none",
     textTransform: "none",
     padding: "6px 18px",
     marginRight: "0.5rem",
     fontWeight: 600,
     "&:hover": {
-      backgroundColor: "#772ce8",
-      color: "#fff",
+      backgroundColor: theme.colors.twitch_bg_hover,
+      color: theme.colors.twitch_text_primary,
     },
   },
   logOut: {
-    backgroundColor: "rgba(0, 0, 0, 0.05)",
-    color: "#000",
+    backgroundColor: theme.colors.twitch_bg_secondary,
+    color: theme.colors.twitch_text_secondary,
     "&:hover": {
-      backgroundColor: "rgba(0, 0, 0, 0.1)",
-      color: "#000",
+      backgroundColor: theme.colors.twitch_bg_secondary_hover,
+      color: theme.colors.twitch_text_secondary,
     },
   },
 }));

@@ -9,19 +9,25 @@ export enum ThemeName {
 
 const commonThemeOpts: ThemeOptions = {};
 const darkOpts: ThemeOptions = {
+  palette: {
+    type: "light", // TODO replace with "dark" once ready
+  },
   overrides: {
     MuiButton: {
       containedPrimary: {
-        backgroundColor: darkColors.primaryBlue,
+        backgroundColor: darkColors.text_primary,
       },
     },
   },
 };
 const lightOpts: ThemeOptions = {
+  palette: {
+    type: "light",
+  },
   overrides: {
     MuiButton: {
       containedPrimary: {
-        backgroundColor: lightColors.primaryBlue,
+        backgroundColor: lightColors.text_primary,
       },
     },
   },
