@@ -3,9 +3,9 @@ const fs = require("fs");
 const config = require("config");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
-const nodeEnv = process.env["NODE_ENV"]
+const nodeEnv = process.env["NODE_ENV"];
 const isDevelopment = nodeEnv === "development";
 const mode = process.env["NODE_APP_INSTANCE"]; // app / extension
 
@@ -70,7 +70,7 @@ const appConfig = {
 };
 
 if (isDevelopment) {
-  appConfig.plugins.push(new BundleAnalyzerPlugin())
+  appConfig.plugins.push(new BundleAnalyzerPlugin());
 }
 
 const extensionConfig = {

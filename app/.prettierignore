@@ -2,3 +2,4 @@ config
 dist
 ext-dist
 node_modules
+stats.json
