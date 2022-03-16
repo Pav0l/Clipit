@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { ThemeName } from "./theme.constants";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getBrowserTheme = (): ThemeName => {
   let hasDarkMode;
   if (window && window.matchMedia) {
@@ -10,7 +11,7 @@ const getBrowserTheme = (): ThemeName => {
 };
 
 export class ThemeModel {
-  theme: ThemeName = getBrowserTheme();
+  theme: ThemeName = ThemeName.Light; // getBrowserTheme();
 
   constructor() {
     makeAutoObservable(this);
