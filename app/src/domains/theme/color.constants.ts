@@ -12,6 +12,7 @@ export interface ColorTokens {
   text_ternary: string;
   text_hint: string;
   background_primary: string;
+  background_secondary: string;
   border_primary: string;
   border_secondary: string;
 }
@@ -46,6 +47,7 @@ export const lightColors: ColorTokens = {
   text_hint: black_38,
 
   background_primary: white,
+  background_secondary: white,
 
   border_primary: black,
   border_secondary: white,
@@ -62,11 +64,12 @@ export const darkColors: ColorTokens = {
 
   text_primary: blue_primary,
   text_secondary: white,
-  text_ternary: black_54,
-  text_hint: black_38,
+  text_ternary: white,
+  text_hint: white,
 
   // TODO tmp "dark mode" background color
   background_primary: "rgb(24, 24, 27)",
+  background_secondary: black_54,
 
   border_primary: white,
   border_secondary: "rgb(24, 24, 27)",

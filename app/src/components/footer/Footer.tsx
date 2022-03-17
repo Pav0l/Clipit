@@ -21,7 +21,7 @@ export default function Footer() {
 
 const useStyles = makeAppStyles(() => ({
   footer: {
-    margin: "auto 2rem 1rem",
+    margin: "1rem 2rem",
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",

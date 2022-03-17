@@ -38,7 +38,6 @@ const useStyles = makeAppStyles(() => ({
     justifyContent: "center",
     flexDirection: "column",
     textAlign: "center",
-    minHeight: "90vh",
     margin: "0 1rem",
     width: "48vw",
   },

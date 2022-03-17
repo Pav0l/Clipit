@@ -29,6 +29,7 @@ import { GameController } from "../../twitch-games/game.controller";
 import { UserController } from "../../twitch-user/user.controller";
 import FullPageLoader from "../../../components/loader/FullPageLoader";
 import { SupportWidgetProvider } from "../../support-widget/components/SupportWidgetProvider";
+import { makeAppStyles } from "../../theme/theme.constants";
 
 interface Props {
   model: AppModel;
@@ -44,117 +45,136 @@ interface Props {
   sentry: SentryClient;
 }
 
-export const App = observer(function App({ model, operations, sentry }: Props) {
-  const appMetaData = model.meta;
-
+export const App = observer(function App(props: Props) {
   return (
     <SupportWidgetProvider>
-      <ThemeProvider model={model.theme}>
-        <Router basename={AppRoute.HOME}>
-          <Navbar
-            model={{ web3: model.web3, auth: model.auth, navigation: model.navigation }}
-            operations={{
-              web3: operations.web3,
-              auth: operations.auth,
-              snackbar: operations.snackbar,
-            }}
-            isDevelopment={CONFIG.isDevelopment}
-          />
-
-          <Snackbar model={{ snackbar: model.snackbar }} operations={operations.snackbar} />
-
-          {appMetaData.isLoading ? (
-            <FullPageLoader />
-          ) : appMetaData.error ? (
-            <ErrorWithRetry text={appMetaData.error.message} withRetry={true} />
-          ) : (
-            <Switch>
-              <Route exact path={AppRoute.MARKETPLACE}>
-                <Marketplace model={{ nft: model.nft, web3: model.web3 }} operations={operations.nft} />
-              </Route>
-
-              <Route exact path={AppRoute.NFTS}>
-                <ErrorBoundary sentry={sentry}>
-                  <NftsContainer
-                    model={{ nft: model.nft, web3: model.web3, navigation: model.navigation }}
-                    operations={{ web3: operations.web3, nft: operations.nft }}
-                  />
-                </ErrorBoundary>
-              </Route>
-
-              <Route exact path={AppRoute.NFT}>
-                <NftContainer
-                  model={{ nft: model.nft, web3: model.web3 }}
-                  operations={{ web3: operations.web3, nft: operations.nft }}
-                  sentry={sentry}
-                />
-              </Route>
-
-              <OAuthProtectedRoute
-                exact
-                path={AppRoute.CLIPS}
-                model={{ auth: model.auth }}
-                operations={{ auth: operations.auth }}
-              >
-                <ErrorBoundary sentry={sentry}>
-                  <ClipsContainer
-                    model={{
-                      clip: model.clip,
-                      user: model.user,
-                    }}
-                    operations={{
-                      clip: operations.clip,
-                      game: operations.game,
-                      user: operations.user,
-                    }}
-                  />
-                </ErrorBoundary>
-              </OAuthProtectedRoute>
-              <OAuthProtectedRoute
-                exact
-                path={AppRoute.CLIP}
-                model={{ auth: model.auth }}
-                operations={{ auth: operations.auth }}
-              >
-                <ErrorBoundary sentry={sentry}>
-                  <ClipDetailContainer
-                    model={{
-                      clip: model.clip,
-                      user: model.user,
-                      game: model.game,
-                      web3: model.web3,
-                      nft: model.nft,
-                    }}
-                    operations={operations}
-                  />
-                </ErrorBoundary>
-              </OAuthProtectedRoute>
-              <Route exact path={AppRoute.OAUTH_REDIRECT}>
-                <OAuth2Redirect controller={operations.auth} model={model.auth} />
-              </Route>
-              <Route exact path={AppRoute.ABOUT}>
-                <Playground model={model} operations={operations} />
-              </Route>
-
-              <Route exact path={AppRoute.TERMS}>
-                <TermsOfService />
-              </Route>
-
-              <Route path={AppRoute.HOME}>
-                <Home
-                  model={{ clip: model.clip, nft: model.nft, auth: model.auth }}
-                  operations={{ clip: operations.clip, auth: operations.auth }}
-                />
-              </Route>
-
-              {/* fallback route */}
-              <Redirect to={AppRoute.HOME} />
-            </Switch>
-          )}
-
-          <Footer />
-        </Router>
+      <ThemeProvider model={props.model.theme}>
+        <StyledApp {...props} />
       </ThemeProvider>
     </SupportWidgetProvider>
   );
 });
+
+const StyledApp = observer(function App({ model, operations, sentry }: Props) {
+  const classes = useStyles();
+  const appMetaData = model.meta;
+
+  return (
+    <div className={classes.app}>
+      <Router basename={AppRoute.HOME}>
+        <Navbar
+          model={{ web3: model.web3, auth: model.auth, navigation: model.navigation }}
+          operations={{
+            web3: operations.web3,
+            auth: operations.auth,
+            snackbar: operations.snackbar,
+          }}
+          isDevelopment={CONFIG.isDevelopment}
+        />
+
+        <Snackbar model={{ snackbar: model.snackbar }} operations={operations.snackbar} />
+
+        {appMetaData.isLoading ? (
+          <FullPageLoader />
+        ) : appMetaData.error ? (
+          <ErrorWithRetry text={appMetaData.error.message} withRetry={true} />
+        ) : (
+          <Switch>
+            <Route exact path={AppRoute.MARKETPLACE}>
+              <Marketplace model={{ nft: model.nft, web3: model.web3 }} operations={operations.nft} />
+            </Route>
+
+            <Route exact path={AppRoute.NFTS}>
+              <ErrorBoundary sentry={sentry}>
+                <NftsContainer
+                  model={{ nft: model.nft, web3: model.web3, navigation: model.navigation }}
+                  operations={{ web3: operations.web3, nft: operations.nft }}
+                />
+              </ErrorBoundary>
+            </Route>
+
+            <Route exact path={AppRoute.NFT}>
+              <NftContainer
+                model={{ nft: model.nft, web3: model.web3 }}
+                operations={{ web3: operations.web3, nft: operations.nft }}
+                sentry={sentry}
+              />
+            </Route>
+
+            <OAuthProtectedRoute
+              exact
+              path={AppRoute.CLIPS}
+              model={{ auth: model.auth }}
+              operations={{ auth: operations.auth }}
+            >
+              <ErrorBoundary sentry={sentry}>
+                <ClipsContainer
+                  model={{
+                    clip: model.clip,
+                    user: model.user,
+                  }}
+                  operations={{
+                    clip: operations.clip,
+                    game: operations.game,
+                    user: operations.user,
+                  }}
+                />
+              </ErrorBoundary>
+            </OAuthProtectedRoute>
+            <OAuthProtectedRoute
+              exact
+              path={AppRoute.CLIP}
+              model={{ auth: model.auth }}
+              operations={{ auth: operations.auth }}
+            >
+              <ErrorBoundary sentry={sentry}>
+                <ClipDetailContainer
+                  model={{
+                    clip: model.clip,
+                    user: model.user,
+                    game: model.game,
+                    web3: model.web3,
+                    nft: model.nft,
+                  }}
+                  operations={operations}
+                />
+              </ErrorBoundary>
+            </OAuthProtectedRoute>
+            <Route exact path={AppRoute.OAUTH_REDIRECT}>
+              <OAuth2Redirect controller={operations.auth} model={model.auth} />
+            </Route>
+            <Route exact path={AppRoute.ABOUT}>
+              <Playground model={model} operations={operations} />
+            </Route>
+
+            <Route exact path={AppRoute.TERMS}>
+              <TermsOfService />
+            </Route>
+
+            <Route path={AppRoute.HOME}>
+              <Home
+                model={{ clip: model.clip, nft: model.nft, auth: model.auth }}
+                operations={{ clip: operations.clip, auth: operations.auth }}
+              />
+            </Route>
+
+            {/* fallback route */}
+            <Redirect to={AppRoute.HOME} />
+          </Switch>
+        )}
+
+        <Footer />
+      </Router>
+    </div>
+  );
+});
+
+const useStyles = makeAppStyles((theme) => ({
+  app: {
+    backgroundColor: theme.colors.background_primary,
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+  },
+}));

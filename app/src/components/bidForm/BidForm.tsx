@@ -38,15 +38,10 @@ const calcMinBid = (metadata: Metadata) => {
 export const BidForm = observer(function BidForm({ metadata, operations, model }: Props) {
   const [isDisabled, setDisabled] = useState(false);
   const [isInputErr, setInputErr] = useState(false);
-
   const minimalBid = calcMinBid(metadata);
-
   const [input, setInput] = useInputData(minimalBid);
-
   const classes = useStyles();
-
   const signer = model.web3.getAccount();
-  const helperInputText = `Your bid must be at least ${minimalBid} ETH.`;
 
   useEffect(() => {
     if (!model.web3.isProviderConnected()) {
@@ -98,9 +93,9 @@ export const BidForm = observer(function BidForm({ metadata, operations, model }
   return (
     <div className={classes.container}>
       {metadata.auction?.highestBid?.bidderAddress === signer ? (
-        <Typography className={classes.highestBidder}>You are the highest bidder!</Typography>
+        <Typography className={`${classes.highestBidder} ${classes.textColor}`}>You are the highest bidder!</Typography>
       ) : null}
-      <div className={classes.title}>
+      <div className={`${classes.title} ${classes.textColor}`}>
         <Typography>Enter your Bid</Typography>
         {model.web3.displayBalance ? <Typography>Balance: {model.web3.displayBalance} ETH</Typography> : null}
       </div>
@@ -111,12 +106,16 @@ export const BidForm = observer(function BidForm({ metadata, operations, model }
         size="small"
         onChange={handleBidChange}
         InputProps={{
-          endAdornment: <InputAdornment position="end">ETH</InputAdornment>,
+          endAdornment: (
+            <InputAdornment position="end" className={classes.textColor}>
+              ETH
+            </InputAdornment>
+          ),
         }}
-        helperText={helperInputText}
+        helperText={`Your bid must be at least ${minimalBid} ETH.`}
         variant="outlined"
         error={isInputErr}
-        className={classes.input}
+        className={`${classes.input} ${classes.textColor}`}
       ></TextField>
       <Button
         size="medium"
@@ -128,8 +127,10 @@ export const BidForm = observer(function BidForm({ metadata, operations, model }
       >
         Enter Bid
       </Button>
-      <Typography className={classes.text}>Once submitted, you can not withdraw your bid.</Typography>
-      <Typography className={classes.text}>
+      <Typography className={`${classes.text} ${classes.textColor}`}>
+        Once submitted, you can not withdraw your bid.
+      </Typography>
+      <Typography className={`${classes.text} ${classes.textColor}`}>
         If you get outbidded, your bid will be automatically returned to your wallet.
       </Typography>
     </div>
@@ -154,12 +155,14 @@ const useStyles = makeAppStyles((theme) => ({
     justifyContent: "space-between",
   },
   text: {
-    color: theme.colors.text_ternary,
     fontSize: "0.9rem",
   },
   highestBidder: {
     textAlign: "center",
     margin: "1rem 0",
     fontWeight: "bold",
+  },
+  textColor: {
+    color: theme.colors.text_ternary,
   },
 }));

@@ -19,6 +19,6 @@ const useStyles = makeAppStyles(() => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    minHeight: "90vh",
+    margin: "auto",
   },
 }));

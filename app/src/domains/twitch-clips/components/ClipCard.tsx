@@ -13,7 +13,7 @@ export function ClipCard(props: Props) {
     <Card className={classes.card}>
       <CardActionArea>
         <CardMedia component="img" alt="Clip thumbnail" image={props.thumbnailUrl} />
-        <CardContent>
+        <CardContent className={classes.cardContent}>
           <Typography variant="subtitle1" component="p" noWrap className={classes.title}>
             {props.title}
           </Typography>
@@ -32,5 +32,8 @@ const useStyles = makeAppStyles((theme) => ({
     fontWeight: 600,
     color: theme.colors.text_secondary,
     fontSize: "1rem",
+  },
+  cardContent: {
+    backgroundColor: theme.colors.background_secondary,
   },
 }));

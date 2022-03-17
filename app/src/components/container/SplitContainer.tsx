@@ -20,6 +20,5 @@ const useStyles = makeAppStyles(() => ({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    minHeight: "90vh",
   },
 }));

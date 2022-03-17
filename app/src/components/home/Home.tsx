@@ -116,7 +116,7 @@ const useStyles = makeAppStyles((theme) => ({
     alignSelf: "flex-end",
   },
   main: {
-    margin: "0 2rem",
+    margin: "auto 2rem",
   },
   section: {
     padding: "5rem 0",

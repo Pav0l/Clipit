@@ -175,16 +175,15 @@ function ClipDetailContainer({ model, operations }: Props) {
 
 export default observer(ClipDetailContainer);
 
-const useStyles = makeAppStyles(() => ({
+const useStyles = makeAppStyles((theme) => ({
   container: {
-    margin: "2rem auto",
-    borderRadius: "0px",
+    margin: "2rem",
+    backgroundColor: theme.colors.background_secondary,
   },
   iframe: {
-    // video aspect ratio is 16:9
-    width: "80vw",
     height: "45vw",
     maxHeight: "70vh",
+    margin: "0.5rem auto",
   },
   linLoaderWidth: {
     width: "100%",

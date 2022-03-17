@@ -68,7 +68,6 @@ export default ErrorWithRetry;
 const useStyles = makeAppStyles(() => ({
   container: {
     flexDirection: "column",
-    margin: "0 10rem",
     textAlign: "center",
   },
   bodyP: {
