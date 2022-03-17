@@ -559,6 +559,10 @@ export class Web3Controller implements IWeb3Controller {
 
       return;
     } finally {
+      if (this.model.approveAuctionStatus) {
+        this.model.clearAuctionApproveStatus();
+      }
+
       if (this.model.auctionLoadStatus) {
         this.model.clearAuctionLoader();
       }

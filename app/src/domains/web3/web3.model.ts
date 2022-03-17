@@ -144,12 +144,16 @@ export class Web3Model {
   };
 
   setAuctionCreateLoader = () => {
-    this.setApproveAuctionStatus(undefined);
+    this.clearAuctionApproveStatus();
     this.setAuctionLoadStatus(AuctionLoadStatus.CONFIRM_CREATE_AUCTION);
   };
 
   setWaitForAuctionCreateTxLoader = () => {
     this.setAuctionLoadStatus(AuctionLoadStatus.WAIT_FOR_AUCTION_CREATE_TX);
+  };
+
+  clearAuctionApproveStatus = () => {
+    this.setApproveAuctionStatus(undefined);
   };
 
   clearAuctionLoader = () => {
