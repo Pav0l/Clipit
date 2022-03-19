@@ -1,4 +1,4 @@
-import { Button } from "@material-ui/core";
+import { Button, Tooltip } from "@material-ui/core";
 import MetaMaskOnboarding from "@metamask/onboarding";
 import { observer } from "mobx-react-lite";
 import { useState, useRef, useEffect } from "react";
@@ -55,9 +55,18 @@ function ConnectMetamaskButton({ model, onClick, onClickError }: Props) {
   };
 
   return (
-    <Button startIcon={<MetamaskIcon />} className={classes.button} disabled={isDisabled} onClick={onClickHandler}>
-      {model.web3.connectStatus}
-    </Button>
+    <Tooltip title={model.web3.ensName ?? ""} placement="bottom">
+      {/* 
+        when the Button is disabled, it is not firing DOM Events, 
+        which are required by the Tooltip component to display the tooltip.
+        that's why it's wrapped in <span>
+      */}
+      <span>
+        <Button startIcon={<MetamaskIcon />} className={classes.button} disabled={isDisabled} onClick={onClickHandler}>
+          {model.web3.connectStatus}
+        </Button>
+      </span>
+    </Tooltip>
   );
 }
 

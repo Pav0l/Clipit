@@ -1,6 +1,7 @@
 import { BigNumber } from "ethers";
 import { makeAutoObservable } from "mobx";
 import { formatCurrencyAmountToDisplayAmount } from "../../lib/ethereum/currency";
+import { truncate } from "../../lib/strings/truncate";
 import { MetaModel } from "../app/meta.model";
 
 export class Web3Model {
@@ -19,7 +20,7 @@ export class Web3Model {
   }
 
   get connectStatus(): string {
-    return this.ensName ? this.ensName : this.walletStatus;
+    return this.ensName ? truncate(this.ensName, 10) : this.walletStatus;
   }
 
   setAccounts(accounts: string[]) {
