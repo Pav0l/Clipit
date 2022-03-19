@@ -9,6 +9,7 @@ import { OAuthModel } from "../twitch-oauth/oauth.model";
 import { Web3Model } from "../web3/web3.model";
 import { NavigationModel } from "../navigation/navigation.model";
 import { ThemeModel } from "../theme/theme.model";
+import { MintModel } from "../mint/mint.model";
 
 export interface IAppModel {
   meta: MetaModel;
@@ -17,6 +18,7 @@ export interface IAppModel {
   game: GameModel;
   nft: NftModel;
   web3: Web3Model;
+  mint: MintModel;
 
   theme: ThemeModel;
   auth: OAuthModel;
@@ -38,6 +40,7 @@ export class AppModel implements IAppModel {
   web3: Web3Model;
   navigation: NavigationModel;
   theme: ThemeModel;
+  mint: MintModel;
 
   testStore: TestStore;
 
@@ -50,6 +53,8 @@ export class AppModel implements IAppModel {
     this.nft = new NftModel(new MetaModel());
     this.web3 = new Web3Model(new MetaModel());
     this.auth = new OAuthModel(new MetaModel());
+
+    this.mint = new MintModel();
 
     this.theme = new ThemeModel();
     this.navigation = new NavigationModel();

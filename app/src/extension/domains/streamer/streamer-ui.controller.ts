@@ -68,7 +68,7 @@ export class StreamerUiController {
     // if the subgraph request based on txHash fails, we never get tokenId back!
     await this.web3.requestConnectAndMint(clip.id, { creatorShare, clipTitle, clipDescription });
 
-    const txHash = this.model.web3.mintTxHash;
+    const txHash = this.model.mint.mintTxHash;
     if (!txHash) {
       return;
     }

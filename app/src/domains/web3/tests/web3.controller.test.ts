@@ -4,7 +4,7 @@ import { initTestSync } from "../../../../tests/init-tests";
 import { signerAddress, txHash } from "../../../../tests/__fixtures__/ethereum";
 import { twitchClip } from "../../../../tests/__fixtures__/twitch-api-data";
 import { EthereumTestProvider } from "../../../lib/ethereum/ethereum-test-provider";
-import { SnackbarController } from "../../snackbar/snackbar.controller";
+import { MintModel } from "../../mint/mint.model";
 import { SnackbarModel } from "../../snackbar/snackbar.model";
 import { Web3Controller } from "../web3.controller";
 import { Web3Errors, Web3Model } from "../web3.model";
@@ -13,13 +13,13 @@ describe("web3 controller", () => {
   let model: Web3Model;
   let ctrl: Web3Controller;
   let snackModel: SnackbarModel;
-  let snackbar: SnackbarController;
+  let mintModel: MintModel;
 
   beforeEach(() => {
     const init = initTestSync(CONFIG);
     model = init.model.web3;
+    mintModel = init.model.mint;
     snackModel = init.model.snackbar;
-    snackbar = init.operations.snackbar;
     ctrl = init.operations.web3;
   });
 
@@ -122,7 +122,7 @@ describe("web3 controller", () => {
         clipTitle: twitchClip.title,
         clipDescription: "",
       });
-      expect(model.mintTxHash).toEqual(txHash);
+      expect(mintModel.mintTxHash).toEqual(txHash);
     });
   });
 });

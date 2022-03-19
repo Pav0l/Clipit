@@ -48,6 +48,7 @@ export function initSynchronous() {
   const nftController = new NftController(model.nft, offChainStorageApi, subgraph, snackbar, sentry);
   const web3Controller = new Web3Controller(
     model.web3,
+    model.mint,
     offChainStorageApi,
     snackbar,
     sentry,

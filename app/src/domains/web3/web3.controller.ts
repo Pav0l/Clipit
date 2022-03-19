@@ -23,6 +23,7 @@ import { IConfig } from "../app/config";
 import { ClipItApiErrors } from "../../lib/clipit-api/clipit-api.client";
 import { SentryClient } from "../../lib/sentry/sentry.client";
 import { AppError } from "../../lib/errors/errors";
+import { MintModel } from "../mint/mint.model";
 
 interface Signature {
   v: number;
@@ -56,6 +57,8 @@ export interface IWeb3Controller {
 export class Web3Controller implements IWeb3Controller {
   constructor(
     private model: Web3Model,
+    // TODO abstract into UI ctrl
+    private mintModel: MintModel,
     private offChainStorage: OffChainStorage,
     private snackbar: SnackbarClient,
     private sentry: SentryClient,
@@ -336,7 +339,7 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    this.model.startClipStoreLoader();
+    this.mintModel.startClipStoreLoader();
 
     const resp = await this.offChainStorage.saveClipAndCreateMetadata(clipId, {
       address,
@@ -345,14 +348,14 @@ export class Web3Controller implements IWeb3Controller {
     });
 
     if (resp.statusOk && !this.offChainStorage.isStoreClipError(resp.body)) {
-      this.model.stopClipStoreLoaderAndStartMintLoader();
+      this.mintModel.stopClipStoreLoaderAndStartMintLoader();
 
       const txHash = await this.mintNFT(resp.body.mediadata, resp.body.signature, creatorShare);
       if (!txHash) {
         return;
       }
 
-      this.model.setMintTxHash(txHash);
+      this.mintModel.setMintTxHash(txHash);
     } else {
       if (this.offChainStorage.isStoreClipError(resp.body)) {
         if (resp.statusCode === 403 && resp.body.error.includes(ClipItApiErrors.NOT_BROADCASTER)) {
@@ -362,7 +365,7 @@ export class Web3Controller implements IWeb3Controller {
         this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
       }
 
-      this.model.stopClipStoreLoader();
+      this.mintModel.stopClipStoreLoader();
     }
   };
 
@@ -388,7 +391,7 @@ export class Web3Controller implements IWeb3Controller {
       const tx = await contract.mint(data, defaultBidshares, signature);
       console.log("[LOG]:minting NFT in tx", tx.hash);
 
-      this.model.setWaitForMintTx();
+      this.mintModel.setWaitForMintTx();
 
       const receipt = await tx.wait();
       console.log("[LOG]:mint:done! gas used to mint:", receipt.gasUsed.toString());
@@ -434,7 +437,7 @@ export class Web3Controller implements IWeb3Controller {
       return null;
     } finally {
       // clean the loading screen
-      this.model.stopMintLoader();
+      this.mintModel.stopMintLoader();
     }
   };
 

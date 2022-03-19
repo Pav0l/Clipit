@@ -49,6 +49,7 @@ export function initTestSync(testConfig: IConfig) {
 
   const web3Controller = new Web3Controller(
     model.web3,
+    model.mint,
     offChainStorageApi,
     snackbar,
     sentry,
@@ -94,6 +95,7 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
   const nft = new NftController(model.nft, offChainStorage, subgraph, snackbar, sentry);
   const web3 = new Web3Controller(
     model.web3,
+    model.mint,
     offChainStorage,
     snackbar,
     sentry,

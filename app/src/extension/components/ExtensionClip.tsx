@@ -5,7 +5,7 @@ import { GameModel } from "../../domains/twitch-games/game.model";
 import { ClipModel, TwitchClip } from "../../domains/twitch-clips/clip.model";
 import ClipCardContent from "../../domains/twitch-clips/components/ClipCardContent";
 import { StreamerUiController } from "../domains/streamer/streamer-ui.controller";
-import { MintStatus, Web3Model } from "../../domains/web3/web3.model";
+import { Web3Model } from "../../domains/web3/web3.model";
 import ErrorWithRetry from "../../components/error/Error";
 import FullPageLoader from "../../components/loader/FullPageLoader";
 import LinearLoader from "../../components/loader/LinearLoader";
@@ -14,6 +14,7 @@ import { ExtensionClipError } from "./ExtensionClipError";
 import { StreamerUiModel } from "../domains/streamer/streamer-ui.model";
 import { NftModel } from "../../domains/nfts/nft.model";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
+import { MintModel, MintStatus } from "../../domains/mint/mint.model";
 
 interface Props {
   clip: TwitchClip;
@@ -23,6 +24,7 @@ interface Props {
     web3: Web3Model;
     nft: NftModel;
     streamerUi: StreamerUiModel;
+    mint: MintModel;
   };
   operations: {
     streamerUi: StreamerUiController;
@@ -63,18 +65,18 @@ export const ExtensionClip = observer(function ExtensionClip({ model, operations
     return <FullPageLoader />;
   }
 
-  if (model.web3.storeClipStatus) {
-    return <LinearLoader text={model.web3.storeClipStatus} classNames={classes.linearLoaderWidth} />;
+  if (model.mint.storeClipStatus) {
+    return <LinearLoader text={model.mint.storeClipStatus} classNames={classes.linearLoaderWidth} />;
   }
 
-  if (model.web3.mintStatus) {
-    switch (model.web3.mintStatus) {
+  if (model.mint.mintStatus) {
+    switch (model.mint.mintStatus) {
       case MintStatus.CONFIRM_MINT:
         return (
-          <ErrorWithRetry text={model.web3.mintStatus} withRetry={false} classNames={classes.error}></ErrorWithRetry>
+          <ErrorWithRetry text={model.mint.mintStatus} withRetry={false} classNames={classes.error}></ErrorWithRetry>
         );
       case MintStatus.WAIT_FOR_MINT_TX:
-        return <LinearLoader text={model.web3.mintStatus} classNames={classes.linearLoaderWidth} />;
+        return <LinearLoader text={model.mint.mintStatus} classNames={classes.linearLoaderWidth} />;
     }
   }
 

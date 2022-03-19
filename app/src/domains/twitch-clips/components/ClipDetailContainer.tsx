@@ -14,12 +14,13 @@ import { UserController } from "../../twitch-user/user.controller";
 import { ClipController } from "../clip.controller";
 import { GameController } from "../../twitch-games/game.controller";
 import { useInputData } from "../../../lib/hooks/useInputData";
-import { MintStatus, Web3Model } from "../../web3/web3.model";
+import { Web3Model } from "../../web3/web3.model";
 import ClipCardContent from "./ClipCardContent";
 import { SnackbarController } from "../../snackbar/snackbar.controller";
 import { NftController } from "../../nfts/nft.controller";
 import { NftModel } from "../../nfts/nft.model";
 import { makeAppStyles } from "../../theme/theme.constants";
+import { MintModel, MintStatus } from "../../mint/mint.model";
 
 interface Props {
   model: {
@@ -28,6 +29,7 @@ interface Props {
     game: GameModel;
     web3: Web3Model;
     nft: NftModel;
+    mint: MintModel;
   };
   operations: {
     web3: IWeb3Controller;
@@ -88,7 +90,7 @@ function ClipDetailContainer({ model, operations }: Props) {
         clipDescription: descriptionInput,
       });
 
-      const txHash = model.web3.mintTxHash;
+      const txHash = model.mint.mintTxHash;
       if (!txHash) {
         // mint failed
         return;
@@ -135,16 +137,16 @@ function ClipDetailContainer({ model, operations }: Props) {
     );
   }
 
-  if (model.web3.storeClipStatus) {
-    return <LinearLoader text={model.web3.storeClipStatus} classNames={classes.linLoaderWidth} />;
+  if (model.mint.storeClipStatus) {
+    return <LinearLoader text={model.mint.storeClipStatus} classNames={classes.linLoaderWidth} />;
   }
 
-  if (model.web3.mintStatus) {
-    switch (model.web3.mintStatus) {
+  if (model.mint.mintStatus) {
+    switch (model.mint.mintStatus) {
       case MintStatus.CONFIRM_MINT:
-        return <ErrorWithRetry text={model.web3.mintStatus} withRetry={false} />;
+        return <ErrorWithRetry text={model.mint.mintStatus} withRetry={false} />;
       case MintStatus.WAIT_FOR_MINT_TX:
-        return <LinearLoader text={model.web3.mintStatus} classNames={classes.linLoaderWidth} />;
+        return <LinearLoader text={model.mint.mintStatus} classNames={classes.linLoaderWidth} />;
     }
   }
 
@@ -186,6 +188,6 @@ const useStyles = makeAppStyles((theme) => ({
     margin: "0.5rem auto",
   },
   linLoaderWidth: {
-    width: "100%",
+    width: "inherit",
   },
 }));

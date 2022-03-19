@@ -135,6 +135,7 @@ const StyledApp = observer(function App({ model, operations, sentry }: Props) {
                     game: model.game,
                     web3: model.web3,
                     nft: model.nft,
+                    mint: model.mint,
                   }}
                   operations={operations}
                 />

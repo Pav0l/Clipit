@@ -59,7 +59,14 @@ export const StreamerContainer = observer(function StreamerContainer({ model, op
         <ExtensionClip
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           clip={model.clip.getClip(model.streamerUi.clipId!)!}
-          model={{ clip: model.clip, game: model.game, web3: model.web3, streamerUi: model.streamerUi, nft: model.nft }}
+          model={{
+            clip: model.clip,
+            game: model.game,
+            web3: model.web3,
+            streamerUi: model.streamerUi,
+            nft: model.nft,
+            mint: model.mint,
+          }}
           operations={{ streamerUi: operations.streamerUi }}
         />
       );

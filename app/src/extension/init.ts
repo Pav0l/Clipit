@@ -64,6 +64,7 @@ export function initExtSynchronous(options: TwitchExtensionQueryParams) {
   const nft = new NftController(model.nft, offChainStorage, subgraph, snackbar, sentry);
   const web3 = new Web3Controller(
     model.web3,
+    model.mint,
     offChainStorage,
     snackbar,
     sentry,
