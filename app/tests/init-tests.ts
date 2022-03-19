@@ -26,6 +26,7 @@ import { StreamerUiController } from "../src/extension/domains/streamer/streamer
 import { ConfigUiController } from "../src/extension/domains/config/config-ui.controller";
 import { BroadcasterAuthService } from "../src/extension/domains/broadcaster-auth/broadcaster-auth.service";
 import { AuctionController } from "../src/domains/auction/auction.controller";
+import { MintController } from "../src/domains/mint/mint.controller";
 
 export function initTestSync(testConfig: IConfig) {
   const sentry = new SentryClient("", true);
@@ -36,42 +37,42 @@ export function initTestSync(testConfig: IConfig) {
 
   const snackbar = new SnackbarController(model.snackbar);
 
-  const offChainStorageApi = new OffChainStorage(new ClipItApiTestClient(), new IpfsTestClient());
+  const offChainStorage = new OffChainStorage(new ClipItApiTestClient(), new IpfsTestClient());
 
   const twitchOAuthApi = new TwitchOAuthApiTestClient();
   const twitchApi = new TwitchApiTestClient();
   const subgraph = new SubgraphTestClient();
 
-  const authController = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, testConfig.twitch.clientId);
-  const clipController = new ClipController(model.clip, snackbar, twitchApi, sentry);
-  const gameController = new GameController(model.game, twitchApi, sentry);
-  const userController = new UserController(model.user, twitchApi, sentry);
-  const nftController = new NftController(model.nft, offChainStorageApi, subgraph, snackbar, sentry);
-  const auctionController = new AuctionController(model.auction, AuctionTestContractCreator, snackbar, sentry, CONFIG);
+  const auth = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, testConfig.twitch.clientId);
+  const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
+  const game = new GameController(model.game, twitchApi, sentry);
+  const user = new UserController(model.user, twitchApi, sentry);
+  const nft = new NftController(model.nft, offChainStorage, subgraph, snackbar, sentry);
+  const auction = new AuctionController(model.auction, AuctionTestContractCreator, snackbar, sentry, CONFIG);
+  const mint = new MintController(model.mint, ClipItTestContractCreator, offChainStorage, snackbar, sentry, CONFIG);
 
-  const web3Controller = new Web3Controller(
+  const web3 = new Web3Controller(
     model.web3,
-    model.mint,
+    mint,
     model.auction,
-    auctionController,
-    offChainStorageApi,
+    auction,
     snackbar,
     sentry,
     ClipItTestContractCreator,
     testConfig
   );
 
-  authController.checkTokenInStorage();
+  auth.checkTokenInStorage();
 
   return {
     model,
     operations: {
-      web3: web3Controller,
-      clip: clipController,
-      user: userController,
-      game: gameController,
-      auth: authController,
-      nft: nftController,
+      web3,
+      clip,
+      user,
+      game,
+      auth,
+      nft,
       snackbar: snackbar,
     },
     localStorage: storage,
@@ -97,13 +98,13 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
   const user = new UserController(model.user, twitchApi, sentry);
   const nft = new NftController(model.nft, offChainStorage, subgraph, snackbar, sentry);
   const auctionController = new AuctionController(model.auction, AuctionTestContractCreator, snackbar, sentry, CONFIG);
+  const mint = new MintController(model.mint, ClipItTestContractCreator, offChainStorage, snackbar, sentry, CONFIG);
 
   const web3 = new Web3Controller(
     model.web3,
-    model.mint,
+    mint,
     model.auction,
     auctionController,
-    offChainStorage,
     snackbar,
     sentry,
     ClipItTestContractCreator,
@@ -124,6 +125,7 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
       streamerUi,
       configUi,
       broadcasterAuth,
+      mint,
     },
     twitch,
     logger,

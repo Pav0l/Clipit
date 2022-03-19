@@ -1,4 +1,11 @@
 import { makeAutoObservable } from "mobx";
+import { MetaModel } from "../app/meta.model";
+
+export enum MintErrors {
+  FAILED_TO_MINT = "Failed to generate the NFT",
+  MINT_REJECTED = "Mint transaction rejected",
+  SOMETHING_WENT_WRONG = "Something went wrong",
+}
 
 export enum MintStatus {
   CONFIRM_MINT = "Clip ready to be turned into an NFT! Please confirm the transaction in MetaMask",
@@ -11,6 +18,8 @@ enum StoreClipStatus {
 }
 
 export class MintModel {
+  meta: MetaModel;
+
   // Saving clip & generating signature loader
   storeClipStatus?: StoreClipStatus;
   private storeClipTimeoutId?: number;
@@ -19,8 +28,9 @@ export class MintModel {
   mintStatus?: MintStatus;
   mintTxHash?: string;
 
-  constructor() {
+  constructor(meta: MetaModel) {
     makeAutoObservable(this);
+    this.meta = meta;
   }
 
   startClipStoreLoader() {

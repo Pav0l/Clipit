@@ -56,7 +56,7 @@ export class ExtensionModel implements IExtensionModel {
     this.streamerUi = new StreamerUiModel(new MetaModel());
     this.configUi = new ConfigUiModel(new MetaModel());
     this.auction = new AuctionModel(new MetaModel());
+    this.mint = new MintModel(new MetaModel());
     this.snackbar = new SnackbarModel();
-    this.mint = new MintModel();
   }
 }

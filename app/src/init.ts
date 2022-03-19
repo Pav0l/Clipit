@@ -22,6 +22,7 @@ import { ClipItContractCreator } from "./lib/contracts/ClipIt/clipit-contract.cl
 import { AuctionContractCreator } from "./lib/contracts/AuctionHouse/auction-contract.client";
 import { SentryClient } from "./lib/sentry/sentry.client";
 import { AuctionController } from "./domains/auction/auction.controller";
+import { MintController } from "./domains/mint/mint.controller";
 
 export function initSynchronous() {
   const sentry = new SentryClient(CONFIG.sentryDsn, CONFIG.isDevelopment);
@@ -33,7 +34,7 @@ export function initSynchronous() {
 
   const snackbar = new SnackbarController(model.snackbar);
 
-  const offChainStorageApi = new OffChainStorage(
+  const offChainStorage = new OffChainStorage(
     new ClipItApiClient(new HttpClient(CONFIG.clipItApiUrl), storage),
     new IpfsClient(new HttpClient(pinataGatewayUri))
   );
@@ -42,37 +43,38 @@ export function initSynchronous() {
   const twitchApi = new TwitchApi(new HttpClient(twitchApiUri), storage, CONFIG.twitch);
   const subgraph = new SubgraphClient(new GraphQLClient(CONFIG.subgraphUrl));
 
-  const authController = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, CONFIG.twitch.clientId);
-  const clipController = new ClipController(model.clip, snackbar, twitchApi, sentry);
-  const gameController = new GameController(model.game, twitchApi, sentry);
-  const userController = new UserController(model.user, twitchApi, sentry);
-  const nftController = new NftController(model.nft, offChainStorageApi, subgraph, snackbar, sentry);
-  const auctionController = new AuctionController(model.auction, AuctionContractCreator, snackbar, sentry, CONFIG);
-  const web3Controller = new Web3Controller(
+  const auth = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, CONFIG.twitch.clientId);
+  const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
+  const game = new GameController(model.game, twitchApi, sentry);
+  const user = new UserController(model.user, twitchApi, sentry);
+  const nft = new NftController(model.nft, offChainStorage, subgraph, snackbar, sentry);
+  const auction = new AuctionController(model.auction, AuctionContractCreator, snackbar, sentry, CONFIG);
+  const mint = new MintController(model.mint, ClipItContractCreator, offChainStorage, snackbar, sentry, CONFIG);
+  const web3 = new Web3Controller(
     model.web3,
-    model.mint,
+    mint,
     model.auction,
-    auctionController,
-    offChainStorageApi,
+    auction,
     snackbar,
     sentry,
     ClipItContractCreator,
     CONFIG
   );
 
-  authController.checkTokenInStorage();
+  auth.checkTokenInStorage();
 
   return {
     model,
     operations: {
-      web3: web3Controller,
-      clip: clipController,
-      user: userController,
-      game: gameController,
-      auth: authController,
-      nft: nftController,
-      auction: auctionController,
-      snackbar: snackbar,
+      web3,
+      clip,
+      user,
+      game,
+      auth,
+      nft,
+      mint,
+      auction,
+      snackbar,
     },
     sentry,
   };

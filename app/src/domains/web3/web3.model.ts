@@ -75,10 +75,6 @@ export enum Web3Errors {
   CONNECT_METAMASK = "Connect your MetaMask wallet to view or create Clip NFTs",
   CONNECT_MM_WARNING = "Request to connect MetaMask was rejected",
 
-  // TODO move these
-  FAILED_TO_MINT = "Failed to generate the NFT",
-  MINT_REJECTED = "Mint transaction rejected",
-
   REQUEST_ALREADY_PENDING = "Request already pending. Please open your MetaMask wallet and confirm it",
 
   SOMETHING_WENT_WRONG = "Something went wrong",

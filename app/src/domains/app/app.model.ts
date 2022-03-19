@@ -58,7 +58,7 @@ export class AppModel implements IAppModel {
     this.auth = new OAuthModel(new MetaModel());
     this.auction = new AuctionModel(new MetaModel());
 
-    this.mint = new MintModel();
+    this.mint = new MintModel(new MetaModel());
 
     this.theme = new ThemeModel();
     this.navigation = new NavigationModel();

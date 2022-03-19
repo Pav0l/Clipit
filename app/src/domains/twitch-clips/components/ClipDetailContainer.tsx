@@ -115,6 +115,10 @@ function ClipDetailContainer({ model, operations }: Props) {
     return <ErrorWithRetry text={model.clip.meta.error.message} />;
   }
 
+  if (model.mint.meta.error) {
+    return <ErrorWithRetry text={model.mint.meta.error.message} />;
+  }
+
   if (model.web3.meta.error) {
     return <ErrorWithRetry text={model.web3.meta.error.message} />;
   }
@@ -123,7 +127,13 @@ function ClipDetailContainer({ model, operations }: Props) {
     return <ErrorWithRetry text={model.nft.meta.error.message} />;
   }
 
-  if (model.nft.meta.isLoading || model.clip.meta.isLoading || model.user.meta.isLoading || model.web3.meta.isLoading) {
+  if (
+    model.nft.meta.isLoading ||
+    model.clip.meta.isLoading ||
+    model.user.meta.isLoading ||
+    model.mint.meta.isLoading ||
+    model.web3.meta.isLoading
+  ) {
     return <FullPageLoader />;
   }
 

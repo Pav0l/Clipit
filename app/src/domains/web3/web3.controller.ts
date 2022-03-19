@@ -1,28 +1,17 @@
-import { BigNumber, BigNumberish, BytesLike } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 
 import { IClipItContractClient } from "../../lib/contracts/ClipIt/clipit-contract.client";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
 import { Web3Model, Web3Errors } from "./web3.model";
-import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
-import { Decimal } from "../../lib/decimal/decimal";
-import { ClipItContractErrors } from "../../lib/contracts/ClipIt/clipit-contract.errors";
-import { isEthersJsonRpcError } from "../../lib/contracts/jsonRpc.errors";
 import { isRpcError, RpcErrors } from "../../lib/ethereum/rpc.errors";
 import EthereumClient from "../../lib/ethereum/ethereum.client";
 import { IConfig } from "../app/config";
-import { ClipItApiErrors } from "../../lib/clipit-api/clipit-api.client";
 import { SentryClient } from "../../lib/sentry/sentry.client";
 import { AppError } from "../../lib/errors/errors";
-import { MintModel } from "../mint/mint.model";
 import { AuctionModel } from "../auction/auction.model";
 import { AuctionController } from "../auction/auction.controller";
-
-interface Signature {
-  v: number;
-  r: string;
-  s: string;
-}
+import { MintController } from "../mint/mint.controller";
 
 export interface IWeb3Controller {
   // silently try to get ethAccounts
@@ -51,11 +40,10 @@ export class Web3Controller implements IWeb3Controller {
   constructor(
     private model: Web3Model,
     // TODO abstract into UI ctrl
-    private mintModel: MintModel,
+    private mintController: MintController,
     private auctionModel: AuctionModel,
     private auctionController: AuctionController,
     // end TODO
-    private offChainStorage: OffChainStorage,
     private snackbar: SnackbarClient,
     private sentry: SentryClient,
     private clipitContractCreator: (provider: EthereumProvider, address: string) => IClipItContractClient,
@@ -120,7 +108,7 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    await this.prepareMetadataAndMintClip(clipId, { ...data, address });
+    await this.mintController.prepareMetadataAndMintClip(clipId, { ...data, address });
   }
 
   getBalance = async (address: string) => {
@@ -209,133 +197,6 @@ export class Web3Controller implements IWeb3Controller {
       await this.requestAccounts();
     }
   }
-
-  private prepareMetadataAndMintClip = async (
-    clipId: string,
-    data: {
-      address: string;
-      creatorShare: string;
-      clipTitle: string;
-      clipDescription?: string;
-    }
-  ) => {
-    const { address, creatorShare, clipTitle, clipDescription } = data;
-    if (!clipId || !address || !clipTitle) {
-      this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
-      this.sentry.captureEvent({
-        message: "missing data to mint clip",
-        contexts: {
-          data: {
-            clipId,
-            address,
-            clipTitle,
-          },
-        },
-      });
-      return;
-    }
-
-    this.mintModel.startClipStoreLoader();
-
-    const resp = await this.offChainStorage.saveClipAndCreateMetadata(clipId, {
-      address,
-      clipTitle,
-      clipDescription,
-    });
-
-    if (resp.statusOk && !this.offChainStorage.isStoreClipError(resp.body)) {
-      this.mintModel.stopClipStoreLoaderAndStartMintLoader();
-
-      const txHash = await this.mintNFT(resp.body.mediadata, resp.body.signature, creatorShare);
-      if (!txHash) {
-        return;
-      }
-
-      this.mintModel.setMintTxHash(txHash);
-    } else {
-      if (this.offChainStorage.isStoreClipError(resp.body)) {
-        if (resp.statusCode === 403 && resp.body.error.includes(ClipItApiErrors.NOT_BROADCASTER)) {
-          this.snackbar.sendError(ClipItApiErrors.DISPLAY_NOT_BROADCASTER);
-        }
-      } else {
-        this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
-      }
-
-      this.mintModel.stopClipStoreLoader();
-    }
-  };
-
-  private mintNFT = async (
-    data: {
-      tokenURI: string;
-      metadataURI: string;
-      contentHash: BytesLike;
-      metadataHash: BytesLike;
-    },
-    signature: Signature,
-    creatorShare: string
-  ) => {
-    const forCreator = Number(creatorShare); // if creatorShare is '' it's converted to 0 here
-    const defaultBidshares = {
-      creator: Decimal.from(forCreator),
-      owner: Decimal.from(100 - forCreator),
-      prevOwner: Decimal.from(0),
-    };
-
-    try {
-      const contract = this.createTokenContract();
-      const tx = await contract.mint(data, defaultBidshares, signature);
-      console.log("[LOG]:minting NFT in tx", tx.hash);
-
-      this.mintModel.setWaitForMintTx();
-
-      const receipt = await tx.wait();
-      console.log("[LOG]:mint:done! gas used to mint:", receipt.gasUsed.toString());
-
-      return tx.hash;
-    } catch (error) {
-      console.log("[LOG]:mint:error", error);
-      this.sentry.captureException(error);
-
-      let err = error;
-      if (isEthersJsonRpcError(err)) {
-        // take out Rpc error from Ethers error
-        if (err.error) {
-          err = err.error;
-        }
-      }
-
-      if (isRpcError(err)) {
-        switch (err.code) {
-          case RpcErrors.USER_REJECTED_REQUEST:
-            this.snackbar.sendInfo(Web3Errors.MINT_REJECTED);
-            break;
-          case RpcErrors.INTERNAL_ERROR:
-            // contract reverts
-            if (
-              err.message.includes(ClipItContractErrors.ERC721_TOKEN_MINTED) ||
-              err.message.includes(ClipItContractErrors.CLIPIT_TOKEN_EXIST)
-            ) {
-              this.snackbar.sendError(ClipItContractErrors.TOKEN_ALREADY_MINTED);
-            } else if (err.message.includes(ClipItContractErrors.CLIPIT_INVALID_ADDRESS)) {
-              this.snackbar.sendError(ClipItContractErrors.ADDRESS_NOT_ALLOWED);
-            }
-            break;
-          default:
-            this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
-            break;
-        }
-      } else {
-        // unknown error
-        this.model.meta.setError(new AppError({ msg: Web3Errors.FAILED_TO_MINT, type: "web3-unknown" }));
-      }
-
-      return null;
-    } finally {
-      // clean the loading screen
-      this.mintModel.stopMintLoader();
-    }
-  };
 
   private requestAccounts = async () => {
     try {
