@@ -1,15 +1,11 @@
 import { observer } from "mobx-react-lite";
-import { SnackbarClient } from "../snackbar/snackbar.controller";
-import { NftModel } from "../nfts/nft.model";
-import { IWeb3Controller } from "../web3/web3.controller";
-import { TestStore } from "./playground.store";
 import { makeAppStyles } from "../theme/theme.constants";
+import { SnackbarClient } from "../snackbar/snackbar.controller";
+import { IWeb3Controller } from "../web3/web3.controller";
+import { AppModel } from "../app/app.model";
 
 interface Props {
-  model: {
-    nft: NftModel;
-    testStore: TestStore;
-  };
+  model: AppModel;
   operations: {
     web3: IWeb3Controller;
     snackbar: SnackbarClient;
@@ -30,6 +26,7 @@ const Playground = observer(function Playground({ model, operations }: Props) {
 
   return (
     <div>
+      <div>ENS name: {model.web3.ensName}</div>
       <button onClick={onClick}>Do something!</button>
       <button
         className={classes.btn}

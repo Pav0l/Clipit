@@ -443,7 +443,7 @@ export class Web3Controller implements IWeb3Controller {
       const accounts = await this.initEthClient().requestAccounts();
       console.log("[ethereum.controller]:requestAccounts:accounts", accounts);
 
-      this.model.setAccounts(accounts);
+      await this.updateAccounts(accounts);
     } catch (error) {
       console.log("[ethereum.controller]:requestAccounts:error", error);
 
@@ -471,7 +471,7 @@ export class Web3Controller implements IWeb3Controller {
       const accounts = await this.initEthClient().ethAccounts();
       console.log("[ethereum.controller]:ethAccounts:accounts", accounts);
 
-      this.model.setAccounts(accounts);
+      await this.updateAccounts(accounts);
     } catch (error) {
       console.log("[ethereum.controller]:ethAccounts:error", error);
       this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
@@ -644,12 +644,23 @@ export class Web3Controller implements IWeb3Controller {
     return client;
   };
 
-  private handleAccountsChange = (accounts: string[]) => {
+  private handleAccountsChange = async (accounts: string[]) => {
     console.log("[web3.controller]:handleAccountsChange", accounts);
     // TODO when accounts change, we should update NFT states of owners, etc
-    this.model.setAccounts(accounts);
+    await this.updateAccounts(accounts);
     // TODO in ext - we need to also map account to user
     this.model.resetEthBalance();
+  };
+
+  private updateAccounts = async (accounts: string[]) => {
+    this.model.setAccounts(accounts);
+    const address = this.model.getAccount();
+    if (!address) {
+      return;
+    }
+
+    const name = await this.initEthClient().resolveEnsName(address);
+    this.model.setEnsName(name);
   };
 
   private handleChainChanged(chainId: ChainId) {

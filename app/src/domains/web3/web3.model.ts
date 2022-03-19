@@ -48,6 +48,7 @@ export class Web3Model {
   accounts: string[] = [];
   balance?: BigNumber;
   displayBalance?: string;
+  ensName: string | null = null;
   chainId?: string;
 
   // Saving clip & generating signature loader
@@ -76,6 +77,10 @@ export class Web3Model {
 
   setAccounts(accounts: string[]) {
     this.accounts = accounts.map((address) => address.toLowerCase());
+  }
+
+  setEnsName(name: string | null) {
+    this.ensName = name;
   }
 
   setChainId(chainId: string) {

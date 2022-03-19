@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { EthereumProvider, EthereumEvents, EthereumEventData } from "./ethereum.types";
 
 export interface IEthClient {
@@ -5,6 +6,7 @@ export interface IEthClient {
   ethAccounts: () => Promise<string[]>;
   chainId: () => Promise<string>;
   registerEventHandler: (event: EthereumEvents, handler: (data: EthereumEventData) => void) => void;
+  resolveEnsName: (address: string) => Promise<string | null>;
 }
 
 export default class EthereumClient implements IEthClient {
@@ -26,6 +28,10 @@ export default class EthereumClient implements IEthClient {
    */
   ethAccounts = async () => {
     return this.provider.request<Promise<string[]>>({ method: "eth_accounts" });
+  };
+
+  resolveEnsName = (address: string): Promise<string | null> => {
+    return new ethers.providers.Web3Provider(this.provider).lookupAddress(address);
   };
 
   getBalance = async (address: string) => {
