@@ -25,6 +25,7 @@ import { ExtensionModel } from "../src/extension/domains/extension/extension.mod
 import { StreamerUiController } from "../src/extension/domains/streamer/streamer-ui.controller";
 import { ConfigUiController } from "../src/extension/domains/config/config-ui.controller";
 import { BroadcasterAuthService } from "../src/extension/domains/broadcaster-auth/broadcaster-auth.service";
+import { AuctionController } from "../src/domains/auction/auction.controller";
 
 export function initTestSync(testConfig: IConfig) {
   const sentry = new SentryClient("", true);
@@ -46,16 +47,17 @@ export function initTestSync(testConfig: IConfig) {
   const gameController = new GameController(model.game, twitchApi, sentry);
   const userController = new UserController(model.user, twitchApi, sentry);
   const nftController = new NftController(model.nft, offChainStorageApi, subgraph, snackbar, sentry);
+  const auctionController = new AuctionController(model.auction, AuctionTestContractCreator, snackbar, sentry, CONFIG);
 
   const web3Controller = new Web3Controller(
     model.web3,
     model.mint,
     model.auction,
+    auctionController,
     offChainStorageApi,
     snackbar,
     sentry,
     ClipItTestContractCreator,
-    AuctionTestContractCreator,
     testConfig
   );
 
@@ -94,15 +96,17 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
   const game = new GameController(model.game, twitchApi, sentry);
   const user = new UserController(model.user, twitchApi, sentry);
   const nft = new NftController(model.nft, offChainStorage, subgraph, snackbar, sentry);
+  const auctionController = new AuctionController(model.auction, AuctionTestContractCreator, snackbar, sentry, CONFIG);
+
   const web3 = new Web3Controller(
     model.web3,
     model.mint,
     model.auction,
+    auctionController,
     offChainStorage,
     snackbar,
     sentry,
     ClipItTestContractCreator,
-    AuctionTestContractCreator,
     testConfig
   );
   const streamerUi = new StreamerUiController(model, clip, game, web3, nft, snackbar, logger);

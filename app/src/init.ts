@@ -21,6 +21,7 @@ import { IpfsClient } from "./lib/ipfs/ipfs.client";
 import { ClipItContractCreator } from "./lib/contracts/ClipIt/clipit-contract.client";
 import { AuctionContractCreator } from "./lib/contracts/AuctionHouse/auction-contract.client";
 import { SentryClient } from "./lib/sentry/sentry.client";
+import { AuctionController } from "./domains/auction/auction.controller";
 
 export function initSynchronous() {
   const sentry = new SentryClient(CONFIG.sentryDsn, CONFIG.isDevelopment);
@@ -46,15 +47,16 @@ export function initSynchronous() {
   const gameController = new GameController(model.game, twitchApi, sentry);
   const userController = new UserController(model.user, twitchApi, sentry);
   const nftController = new NftController(model.nft, offChainStorageApi, subgraph, snackbar, sentry);
+  const auctionController = new AuctionController(model.auction, AuctionContractCreator, snackbar, sentry, CONFIG);
   const web3Controller = new Web3Controller(
     model.web3,
     model.mint,
     model.auction,
+    auctionController,
     offChainStorageApi,
     snackbar,
     sentry,
     ClipItContractCreator,
-    AuctionContractCreator,
     CONFIG
   );
 
@@ -69,6 +71,7 @@ export function initSynchronous() {
       game: gameController,
       auth: authController,
       nft: nftController,
+      auction: auctionController,
       snackbar: snackbar,
     },
     sentry,

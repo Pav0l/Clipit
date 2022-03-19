@@ -1,4 +1,25 @@
 import { makeAutoObservable } from "mobx";
+import { MetaModel } from "../app/meta.model";
+
+export enum AuctionErrors {
+  AUCTION_CREATE_REJECTED = "Transaction to create auction rejected",
+  AUCTION_CREATE_FAILED = "Failed to create auction",
+
+  AUCTION_BID_REJECTED = "Transaction to create auction bid rejected",
+  AUCTION_BID_FAILED = "Failed to bid on auction",
+
+  AUCTION_CANCEL_REJECTED = "Transaction to cancel auction rejected",
+  AUCTION_CANCEL_FAILED = "Failed to cancel auction",
+
+  AUCTION_END_REJECTED = "Transaction to end auction rejected",
+  AUCTION_END_FAILED = "Failed to end auction",
+
+  FAILED_TO_FETCH_SUBGRAPH_AUCTION_DATA = "There was an issue fetching your Auction data. Please check your Auctions in couple of minutes",
+
+  REQUEST_ALREADY_PENDING = "Request already pending. Please open your MetaMask wallet and confirm it",
+
+  SOMETHING_WENT_WRONG = "Something went wrong",
+}
 
 export enum ApproveAuctionStatus {
   APPROVE_TOKEN = "Approving Auction contract to work with your NFT. Please confirm the transaction in Metamask",
@@ -30,6 +51,8 @@ export enum AuctionEndLoadStatus {
 }
 
 export class AuctionModel {
+  meta: MetaModel;
+
   // Approve Auction loader
   approveAuctionStatus?: ApproveAuctionStatus;
   // Auction loader
@@ -43,8 +66,9 @@ export class AuctionModel {
   // end auction loader
   auctionEndLoadStatus?: AuctionEndLoadStatus;
 
-  constructor() {
+  constructor(meta: MetaModel) {
     makeAutoObservable(this);
+    this.meta = meta;
   }
 
   setCreateAuctionTxHash(hash: string | undefined) {

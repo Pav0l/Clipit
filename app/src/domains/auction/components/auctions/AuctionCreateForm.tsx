@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { ApproveAuctionStatus, AuctionLoadStatus, AuctionModel } from "../../auction.model";
 import { NftModel } from "../../../nfts/nft.model";
 import { makeAppStyles } from "../../../theme/theme.constants";
-import { Web3Model } from "../../../web3/web3.model";
 import { useInputData } from "../../../../lib/hooks/useInputData";
 import ErrorWithRetry from "../../../../components/error/Error";
 import FullPageLoader from "../../../../components/loader/FullPageLoader";
@@ -15,14 +14,12 @@ interface Props {
   withHeader?: boolean;
   classNames?: string;
   model: {
-    web3: Web3Model;
     nft: NftModel;
     auction: AuctionModel;
   };
   handleCreateAuction: (tokenId: string, duration: string, reservePrice: string) => Promise<void>;
 }
 
-// TODO into auction domain
 export const AuctionCreateForm = observer(function AuctionCreateForm({
   tokenId,
   withHeader,
@@ -99,8 +96,7 @@ export const AuctionCreateForm = observer(function AuctionCreateForm({
     }
   }
 
-  // TODO replace dep on web3 model loading for auction
-  if (model.nft.meta.isLoading || model.web3.meta.isLoading) {
+  if (model.nft.meta.isLoading || model.auction.meta.isLoading) {
     return <FullPageLoader />;
   }
 

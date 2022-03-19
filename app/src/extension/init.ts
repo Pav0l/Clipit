@@ -1,4 +1,5 @@
 import { GraphQLClient } from "graphql-request";
+import { AuctionController } from "../domains/auction/auction.controller";
 import { NftController } from "../domains/nfts/nft.controller";
 import { SnackbarController } from "../domains/snackbar/snackbar.controller";
 import { ClipController } from "../domains/twitch-clips/clip.controller";
@@ -62,15 +63,16 @@ export function initExtSynchronous(options: TwitchExtensionQueryParams) {
   const game = new GameController(model.game, twitchApi, sentry);
   const user = new UserController(model.user, twitchApi, sentry);
   const nft = new NftController(model.nft, offChainStorage, subgraph, snackbar, sentry);
+  const auction = new AuctionController(model.auction, AuctionContractCreator, snackbar, sentry, CONFIG);
   const web3 = new Web3Controller(
     model.web3,
     model.mint,
     model.auction,
+    auction,
     offChainStorage,
     snackbar,
     sentry,
     ClipItContractCreator,
-    AuctionContractCreator,
     CONFIG
   );
 
@@ -88,6 +90,7 @@ export function initExtSynchronous(options: TwitchExtensionQueryParams) {
       streamerUi,
       configUi,
       broadcasterAuth,
+      auction,
     },
     logger,
     sentry,

@@ -55,8 +55,8 @@ export class ExtensionModel implements IExtensionModel {
     this.nft = new NftModel(new MetaModel());
     this.streamerUi = new StreamerUiModel(new MetaModel());
     this.configUi = new ConfigUiModel(new MetaModel());
+    this.auction = new AuctionModel(new MetaModel());
     this.snackbar = new SnackbarModel();
     this.mint = new MintModel();
-    this.auction = new AuctionModel();
   }
 }

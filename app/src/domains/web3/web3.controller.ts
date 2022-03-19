@@ -1,4 +1,4 @@
-import { BigNumber, BigNumberish, BytesLike, constants, utils } from "ethers";
+import { BigNumber, BigNumberish, BytesLike } from "ethers";
 
 import { IClipItContractClient } from "../../lib/contracts/ClipIt/clipit-contract.client";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
@@ -10,20 +10,13 @@ import { ClipItContractErrors } from "../../lib/contracts/ClipIt/clipit-contract
 import { isEthersJsonRpcError } from "../../lib/contracts/jsonRpc.errors";
 import { isRpcError, RpcErrors } from "../../lib/ethereum/rpc.errors";
 import EthereumClient from "../../lib/ethereum/ethereum.client";
-import { IAuctionContractClient } from "../../lib/contracts/AuctionHouse/auction-contract.client";
-import { AuctionContractErrors } from "../../lib/contracts/AuctionHouse/auction-contract.errors";
 import { IConfig } from "../app/config";
 import { ClipItApiErrors } from "../../lib/clipit-api/clipit-api.client";
 import { SentryClient } from "../../lib/sentry/sentry.client";
 import { AppError } from "../../lib/errors/errors";
 import { MintModel } from "../mint/mint.model";
-import {
-  AuctionBidLoadStatus,
-  AuctionCancelLoadStatus,
-  AuctionEndLoadStatus,
-  AuctionLoadStatus,
-  AuctionModel,
-} from "../auction/auction.model";
+import { AuctionModel } from "../auction/auction.model";
+import { AuctionController } from "../auction/auction.controller";
 
 interface Signature {
   v: number;
@@ -60,11 +53,12 @@ export class Web3Controller implements IWeb3Controller {
     // TODO abstract into UI ctrl
     private mintModel: MintModel,
     private auctionModel: AuctionModel,
+    private auctionController: AuctionController,
+    // end TODO
     private offChainStorage: OffChainStorage,
     private snackbar: SnackbarClient,
     private sentry: SentryClient,
     private clipitContractCreator: (provider: EthereumProvider, address: string) => IClipItContractClient,
-    private auctionContractCreator: (provider: EthereumProvider, address: string) => IAuctionContractClient,
     private config: IConfig
   ) {}
 
@@ -148,7 +142,22 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    await this.createAuction(tokenId, duration, minPrice);
+    // TODO this should not be here
+    const token = this.createTokenContract();
+    const approved = await token.getApproved(tokenId);
+
+    console.log("[LOG]:token approved", approved);
+    if (approved !== this.config.auctionAddress) {
+      this.auctionModel.setApproveAuctionLoader();
+
+      const tx = await token.approveAll(this.config.auctionAddress, true);
+
+      this.auctionModel.setWaitForApproveAuctionTxLoader();
+      console.log("[LOG]:approve auction tx hash", tx.hash);
+      await tx.wait();
+    }
+
+    await this.auctionController.createAuction(tokenId, duration, minPrice);
   };
 
   requestConnectAndBid = async (auctionId: string, amount: string) => {
@@ -161,7 +170,7 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    await this.bidOnAuction(auctionId, amount);
+    await this.auctionController.bidOnAuction(auctionId, amount);
   };
 
   requestConnectAndCancelAuction = async (auctionId: string) => {
@@ -174,7 +183,7 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    await this.cancelAuction(auctionId);
+    await this.auctionController.cancelAuction(auctionId);
   };
 
   requestConnectAndEndAuction = async (auctionId: string) => {
@@ -187,7 +196,7 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    await this.endAuction(auctionId);
+    await this.auctionController.endAuction(auctionId);
   };
 
   private async requestConnectIfProviderExist() {
@@ -200,120 +209,6 @@ export class Web3Controller implements IWeb3Controller {
       await this.requestAccounts();
     }
   }
-
-  private cancelAuction = async (auctionId: string) => {
-    try {
-      const auction = this.createAuctionContract();
-
-      this.auctionModel.setAuctionCancelLoader();
-
-      const tx = await auction.cancelAuction(auctionId);
-
-      this.auctionModel.setWaitForAuctionCancelTxLoader();
-
-      console.log("[LOG]:cancel auction tx hash", tx.hash);
-
-      await tx.wait();
-
-      this.snackbar.sendSuccess(AuctionCancelLoadStatus.AUCTION_CANCEL_SUCCESS);
-    } catch (error) {
-      console.log("[LOG]:cancel auction:error", error);
-      this.sentry.captureException(error);
-
-      let err = error;
-      if (isEthersJsonRpcError(err)) {
-        // take out Rpc error from Ethers error
-        if (err.error) {
-          err = err.error;
-        }
-      }
-
-      if (isRpcError(err)) {
-        switch (err.code) {
-          case RpcErrors.USER_REJECTED_REQUEST:
-            this.snackbar.sendInfo(Web3Errors.AUCTION_CANCEL_REJECTED);
-            break;
-          case RpcErrors.INTERNAL_ERROR:
-            // contract reverts
-            if (err.message.includes(AuctionContractErrors.AUCTION_DOES_NOT_EXIST)) {
-              this.snackbar.sendError(AuctionContractErrors.AUCTION_DOES_NOT_EXIST);
-            } else if (err.message.includes(AuctionContractErrors.AUCTION_CANCEL_INVALID_CALLER)) {
-              this.snackbar.sendError(AuctionContractErrors.AUCTION_CANCEL_INVALID_CALLER);
-            } else if (err.message.includes(AuctionContractErrors.AUCTION_CANCEL_RUNNING)) {
-              this.snackbar.sendError(AuctionContractErrors.AUCTION_CANCEL_RUNNING);
-            }
-            break;
-          default:
-            this.snackbar.sendError(Web3Errors.AUCTION_CANCEL_FAILED);
-            break;
-        }
-      } else {
-        // unknown error
-        this.snackbar.sendError(Web3Errors.AUCTION_CANCEL_FAILED);
-      }
-
-      return null;
-    } finally {
-      this.auctionModel.clearAuctionCancelLoader();
-    }
-  };
-
-  private endAuction = async (auctionId: string) => {
-    try {
-      const auction = this.createAuctionContract();
-
-      this.auctionModel.setAuctionEndLoader();
-
-      const tx = await auction.endAuction(auctionId);
-
-      this.auctionModel.setWaitForAuctionEndTxLoader();
-
-      console.log("[LOG]:end auction tx hash", tx.hash);
-
-      await tx.wait();
-
-      this.snackbar.sendSuccess(AuctionEndLoadStatus.AUCTION_END_SUCCESS);
-    } catch (error) {
-      console.log("[LOG]:end auction:error", error);
-      this.sentry.captureException(error);
-
-      let err = error;
-      if (isEthersJsonRpcError(err)) {
-        // take out Rpc err from Ethers error
-        if (err.error) {
-          err = err.error;
-        }
-      }
-
-      if (isRpcError(err)) {
-        switch (err.code) {
-          case RpcErrors.USER_REJECTED_REQUEST:
-            this.snackbar.sendInfo(Web3Errors.AUCTION_END_REJECTED);
-            break;
-          case RpcErrors.INTERNAL_ERROR:
-            // contract reverts
-            if (err.message.includes(AuctionContractErrors.AUCTION_DOES_NOT_EXIST)) {
-              this.snackbar.sendError(AuctionContractErrors.AUCTION_DOES_NOT_EXIST);
-            } else if (err.message.includes(AuctionContractErrors.AUCTION_END_HAS_NOT_STARTED)) {
-              this.snackbar.sendError(AuctionContractErrors.AUCTION_END_HAS_NOT_STARTED);
-            } else if (err.message.includes(AuctionContractErrors.AUCTION_END_HAS_NOT_COMPLETED)) {
-              this.snackbar.sendError(AuctionContractErrors.AUCTION_END_HAS_NOT_COMPLETED);
-            }
-            break;
-          default:
-            this.snackbar.sendError(Web3Errors.AUCTION_END_FAILED);
-            break;
-        }
-      } else {
-        // unknown error
-        this.snackbar.sendError(Web3Errors.AUCTION_END_FAILED);
-      }
-
-      return null;
-    } finally {
-      this.auctionModel.clearAuctionEndLoader();
-    }
-  };
 
   private prepareMetadataAndMintClip = async (
     clipId: string,
@@ -482,165 +377,6 @@ export class Web3Controller implements IWeb3Controller {
     }
   };
 
-  private createAuction = async (
-    tokenId: string,
-    duration: BigNumberish,
-    minPrice: BigNumberish
-  ): Promise<string | undefined> => {
-    try {
-      const auctionContract = this.createAuctionContract();
-      const token = this.createTokenContract();
-
-      const approved = await token.getApproved(tokenId);
-      console.log("[LOG]:token approved", approved);
-      if (approved !== this.config.auctionAddress) {
-        this.auctionModel.setApproveAuctionLoader();
-
-        const tx = await token.approveAll(this.config.auctionAddress, true);
-
-        this.auctionModel.setWaitForApproveAuctionTxLoader();
-        console.log("[LOG]:approve auction tx hash", tx.hash);
-        await tx.wait();
-      }
-
-      this.auctionModel.setAuctionCreateLoader();
-
-      const tx = await auctionContract.createAuction(
-        tokenId,
-        this.config.tokenAddress,
-        duration,
-        minPrice,
-        // TODO - support currators
-        constants.AddressZero,
-        0,
-        // TODO - support other currencies
-        constants.AddressZero
-      );
-
-      this.auctionModel.setWaitForAuctionCreateTxLoader();
-
-      console.log("[LOG]:auction create tx hash", tx.hash);
-
-      await tx.wait();
-
-      this.auctionModel.clearAuctionLoader();
-      this.auctionModel.setCreateAuctionTxHash(tx.hash);
-
-      this.snackbar.sendSuccess(AuctionLoadStatus.CREATE_AUCTION_SUCCESS);
-    } catch (error) {
-      console.log("[LOG]:createAuction:error", error);
-      this.sentry.captureException(error);
-
-      let err = error;
-      if (isEthersJsonRpcError(err)) {
-        // take out Rpc error from Ethers error
-        if (err.error) {
-          err = err.error;
-        }
-      }
-
-      if (isRpcError(err)) {
-        switch (err.code) {
-          case RpcErrors.USER_REJECTED_REQUEST:
-            this.snackbar.sendInfo(Web3Errors.AUCTION_CREATE_REJECTED);
-            break;
-          case RpcErrors.INTERNAL_ERROR:
-            // contract reverts
-            if (err.message.includes(AuctionContractErrors.INVALID_CURATOR_FEE)) {
-              this.snackbar.sendError(AuctionContractErrors.INVALID_CURATOR_FEE_USER_ERR);
-            } else if (err.message.includes(AuctionContractErrors.NOT_ALLOWED_TO_CREATE_AUCTION)) {
-              this.snackbar.sendError(AuctionContractErrors.NOT_APPROVED_TO_AUCTION);
-            }
-            break;
-          default:
-            this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
-            break;
-        }
-      } else {
-        // unknown error
-        this.model.meta.setError(new AppError({ msg: Web3Errors.AUCTION_CREATE_FAILED, type: "web3-unknown" }));
-      }
-
-      return;
-    } finally {
-      if (this.auctionModel.approveAuctionStatus) {
-        this.auctionModel.clearAuctionApproveStatus();
-      }
-
-      if (this.auctionModel.auctionLoadStatus) {
-        this.auctionModel.clearAuctionLoader();
-      }
-      if (this.model.meta.isLoading) {
-        this.model.meta.setLoading(false);
-      }
-    }
-  };
-
-  private bidOnAuction = async (auctionId: string, amount: string) => {
-    try {
-      const auction = this.createAuctionContract();
-
-      this.auctionModel.setAuctionBidLoader();
-
-      const etherAmount = utils.parseEther(amount);
-      const tx = await auction.createBid(auctionId, etherAmount);
-
-      this.auctionModel.setWaitForAuctionBidTxLoader();
-
-      console.log("[LOG]:auction bid tx hash", tx.hash);
-
-      await tx.wait();
-
-      this.snackbar.sendSuccess(AuctionBidLoadStatus.AUCTION_BID_SUCCESS);
-    } catch (error) {
-      console.log("[LOG]:bid auction:error", error);
-      this.sentry.captureException(error);
-
-      let err = error;
-      if (isEthersJsonRpcError(err)) {
-        // take out Rpc error from Ethers error
-        if (err.error) {
-          err = err.error;
-        }
-      }
-
-      if (isRpcError(err)) {
-        switch (err.code) {
-          case RpcErrors.USER_REJECTED_REQUEST:
-            this.snackbar.sendInfo(Web3Errors.AUCTION_BID_REJECTED);
-            break;
-          case RpcErrors.INTERNAL_ERROR:
-            // contract reverts
-            if (err.message.includes(AuctionContractErrors.AUCTION_DOES_NOT_EXIST)) {
-              this.snackbar.sendError(AuctionContractErrors.AUCTION_DOES_NOT_EXIST);
-            } else if (err.message.includes(AuctionContractErrors.AUCTION_NOT_APPROVED)) {
-              this.snackbar.sendError(AuctionContractErrors.AUCTION_NOT_STARTED);
-            } else if (err.message.includes(AuctionContractErrors.AUCTION_EXPIRED)) {
-              this.snackbar.sendError(AuctionContractErrors.AUCTION_EXPIRED);
-            } else if (err.message.includes(AuctionContractErrors.AUCTION_BID_LOWER_THAN_RESERVE_PRICE)) {
-              // TODO send displayReservePrice here as well
-              this.snackbar.sendError(AuctionContractErrors.BID_NOT_HIGH_ENOUGH);
-            } else if (err.message.includes(AuctionContractErrors.AUCTION_BID_LOWER_THAN_PREVIOUS_BID)) {
-              // TODO send minBidIncrementPercentage here as well
-              this.snackbar.sendError(AuctionContractErrors.BID_NOT_HIGH_ENOUGH);
-            }
-            // TODO handle AUCTION_BID_INVALID_FOR_SHARE_SPLITTING
-            break;
-          default:
-            this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
-            break;
-        }
-      } else {
-        // unknown error
-        this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
-      }
-
-      return null;
-    } finally {
-      this.auctionModel.clearAuctionBidLoader();
-    }
-  };
-
   private initEthClient = () => {
     const client = new EthereumClient(window.ethereum as EthereumProvider);
     client.registerEventHandler("chainChanged", this.handleChainChanged);
@@ -671,10 +407,6 @@ export class Web3Controller implements IWeb3Controller {
     console.log("[web3.controller]::chainChanged", chainId);
     window.location.reload();
   }
-
-  private createAuctionContract = () => {
-    return this.auctionContractCreator(window.ethereum as EthereumProvider, this.config.auctionAddress);
-  };
 
   private createTokenContract = () => {
     return this.clipitContractCreator(window.ethereum as EthereumProvider, this.config.tokenAddress);

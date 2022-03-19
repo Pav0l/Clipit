@@ -56,9 +56,9 @@ export class AppModel implements IAppModel {
     this.nft = new NftModel(new MetaModel());
     this.web3 = new Web3Model(new MetaModel());
     this.auth = new OAuthModel(new MetaModel());
+    this.auction = new AuctionModel(new MetaModel());
 
     this.mint = new MintModel();
-    this.auction = new AuctionModel();
 
     this.theme = new ThemeModel();
     this.navigation = new NavigationModel();

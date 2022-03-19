@@ -75,22 +75,9 @@ export enum Web3Errors {
   CONNECT_METAMASK = "Connect your MetaMask wallet to view or create Clip NFTs",
   CONNECT_MM_WARNING = "Request to connect MetaMask was rejected",
 
+  // TODO move these
   FAILED_TO_MINT = "Failed to generate the NFT",
   MINT_REJECTED = "Mint transaction rejected",
-
-  AUCTION_CREATE_REJECTED = "Transaction to create auction rejected",
-  AUCTION_CREATE_FAILED = "Failed to create auction",
-
-  AUCTION_BID_REJECTED = "Transaction to create auction bid rejected",
-  AUCTION_BID_FAILED = "Failed to bid on auction",
-
-  AUCTION_CANCEL_REJECTED = "Transaction to cancel auction rejected",
-  AUCTION_CANCEL_FAILED = "Failed to cancel auction",
-
-  AUCTION_END_REJECTED = "Transaction to end auction rejected",
-  AUCTION_END_FAILED = "Failed to end auction",
-
-  FAILED_TO_FETCH_SUBGRAPH_AUCTION_DATA = "There was an issue fetching your Auction data. Please check your Auctions in couple of minutes",
 
   REQUEST_ALREADY_PENDING = "Request already pending. Please open your MetaMask wallet and confirm it",
 
