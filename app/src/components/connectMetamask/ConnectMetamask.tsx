@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 
 import MetamaskIcon from "../../assets/metamask.svg";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
-import { Web3Model, MetamaskButton } from "../../domains/web3/web3.model";
+import { Web3Model } from "../../domains/web3/web3.model";
 
 interface Props {
   model: {
@@ -17,7 +17,6 @@ interface Props {
 }
 
 function ConnectMetamaskButton({ model, onClick, onClickError }: Props) {
-  const [buttonText, setButtonText] = useState(MetamaskButton.INSTALL);
   const [isDisabled, setDisabled] = useState(false);
 
   const onboarding = useRef<MetaMaskOnboarding>();
@@ -32,11 +31,11 @@ function ConnectMetamaskButton({ model, onClick, onClickError }: Props) {
   useEffect(() => {
     if (model.web3.isMetaMaskInstalled()) {
       if (model.web3.isProviderConnected()) {
-        setButtonText(MetamaskButton.CONNECTED);
+        model.web3.setConnected();
         setDisabled(true);
         onboarding.current!.stopOnboarding();
       } else {
-        setButtonText(MetamaskButton.CONNECT);
+        model.web3.setConnect();
         setDisabled(false);
       }
     }
@@ -57,7 +56,7 @@ function ConnectMetamaskButton({ model, onClick, onClickError }: Props) {
 
   return (
     <Button startIcon={<MetamaskIcon />} className={classes.button} disabled={isDisabled} onClick={onClickHandler}>
-      {buttonText}
+      {model.web3.walletStatus}
     </Button>
   );
 }

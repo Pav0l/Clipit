@@ -6,6 +6,7 @@ import { MetaModel } from "../app/meta.model";
 export class Web3Model {
   meta: MetaModel;
 
+  walletStatus: WalletStatus = WalletStatus.INSTALL;
   accounts: string[] = [];
   balance?: BigNumber;
   displayBalance?: string;
@@ -50,6 +51,18 @@ export class Web3Model {
   isMetaMaskInstalled(): boolean {
     return Boolean(window.ethereum && window.ethereum.isMetaMask);
   }
+
+  setConnected() {
+    this.setWalletStatus(WalletStatus.CONNECTED);
+  }
+
+  setConnect() {
+    this.setWalletStatus(WalletStatus.CONNECT);
+  }
+
+  private setWalletStatus(status: WalletStatus) {
+    this.walletStatus = status;
+  }
 }
 
 export enum Web3Errors {
@@ -79,7 +92,7 @@ export enum Web3Errors {
   SOMETHING_WENT_WRONG = "Something went wrong",
 }
 
-export enum MetamaskButton {
+export enum WalletStatus {
   INSTALL = "Install MetaMask",
   CONNECT = "Connect",
   CONNECTED = "Connected",
