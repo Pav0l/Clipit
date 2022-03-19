@@ -3,11 +3,12 @@ import { Card, CardMedia, Typography } from "@material-ui/core";
 
 import { Metadata, NftModel } from "../../domains/nfts/nft.model";
 import FullPageLoader from "../../components/loader/FullPageLoader";
-import { AuctionCreateForm } from "../../components/auctions/AuctionCreateForm";
+import { AuctionCreateForm } from "../../domains/auction/components/auctions/AuctionCreateForm";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { StreamerUiController } from "../domains/streamer/streamer-ui.controller";
 import { ExtensionNftError } from "./ExtensionNftError";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
+import { AuctionModel } from "../../domains/auction/auction.model";
 
 interface Props {
   metadata: Metadata | null;
@@ -16,6 +17,7 @@ interface Props {
   model: {
     web3: Web3Model;
     nft: NftModel;
+    auction: AuctionModel;
   };
   operations: {
     streamerUi: StreamerUiController;
@@ -48,8 +50,9 @@ export const ExtensionNft = observer(function ExtensionNft({ metadata, tokenId, 
       </Typography>
 
       <Card>
-        {!model.web3.auctionLoadStatus &&
-        !model.web3.approveAuctionStatus &&
+        {!model.auction.auctionLoadStatus &&
+        !model.auction.approveAuctionStatus &&
+        // TODO replace web3 loader with auction
         !model.web3.meta.isLoading &&
         !model.nft.meta.isLoading ? (
           <>

@@ -35,7 +35,7 @@ export class StreamerUiController {
       Number(duration) * 86400, // 1 day in seconds
       utils.parseEther(reservePrice)
     );
-    const txHash = this.model.web3.createAuctionTxHash;
+    const txHash = this.model.auction.createAuctionTxHash;
     if (!txHash) {
       // failed the tx
       return;

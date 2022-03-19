@@ -50,6 +50,7 @@ export function initTestSync(testConfig: IConfig) {
   const web3Controller = new Web3Controller(
     model.web3,
     model.mint,
+    model.auction,
     offChainStorageApi,
     snackbar,
     sentry,
@@ -96,6 +97,7 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
   const web3 = new Web3Controller(
     model.web3,
     model.mint,
+    model.auction,
     offChainStorage,
     snackbar,
     sentry,

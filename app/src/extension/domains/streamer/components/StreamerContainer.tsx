@@ -79,7 +79,7 @@ export const StreamerContainer = observer(function StreamerContainer({ model, op
             metadata={model.nft.getTokenMetadata(tokenId)}
             tokenId={tokenId}
             withHeader={false}
-            model={{ web3: model.web3, nft: model.nft }}
+            model={{ web3: model.web3, nft: model.nft, auction: model.auction }}
             operations={{ streamerUi: operations.streamerUi }}
           />
         </div>

@@ -3,14 +3,7 @@ import { BigNumber, BigNumberish, BytesLike, constants, utils } from "ethers";
 import { IClipItContractClient } from "../../lib/contracts/ClipIt/clipit-contract.client";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
-import {
-  Web3Model,
-  Web3Errors,
-  AuctionLoadStatus,
-  AuctionBidLoadStatus,
-  AuctionCancelLoadStatus,
-  AuctionEndLoadStatus,
-} from "./web3.model";
+import { Web3Model, Web3Errors } from "./web3.model";
 import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { Decimal } from "../../lib/decimal/decimal";
 import { ClipItContractErrors } from "../../lib/contracts/ClipIt/clipit-contract.errors";
@@ -24,6 +17,13 @@ import { ClipItApiErrors } from "../../lib/clipit-api/clipit-api.client";
 import { SentryClient } from "../../lib/sentry/sentry.client";
 import { AppError } from "../../lib/errors/errors";
 import { MintModel } from "../mint/mint.model";
+import {
+  AuctionBidLoadStatus,
+  AuctionCancelLoadStatus,
+  AuctionEndLoadStatus,
+  AuctionLoadStatus,
+  AuctionModel,
+} from "../auction/auction.model";
 
 interface Signature {
   v: number;
@@ -59,6 +59,7 @@ export class Web3Controller implements IWeb3Controller {
     private model: Web3Model,
     // TODO abstract into UI ctrl
     private mintModel: MintModel,
+    private auctionModel: AuctionModel,
     private offChainStorage: OffChainStorage,
     private snackbar: SnackbarClient,
     private sentry: SentryClient,
@@ -204,11 +205,11 @@ export class Web3Controller implements IWeb3Controller {
     try {
       const auction = this.createAuctionContract();
 
-      this.model.setAuctionCancelLoader();
+      this.auctionModel.setAuctionCancelLoader();
 
       const tx = await auction.cancelAuction(auctionId);
 
-      this.model.setWaitForAuctionCancelTxLoader();
+      this.auctionModel.setWaitForAuctionCancelTxLoader();
 
       console.log("[LOG]:cancel auction tx hash", tx.hash);
 
@@ -253,7 +254,7 @@ export class Web3Controller implements IWeb3Controller {
 
       return null;
     } finally {
-      this.model.clearAuctionCancelLoader();
+      this.auctionModel.clearAuctionCancelLoader();
     }
   };
 
@@ -261,11 +262,11 @@ export class Web3Controller implements IWeb3Controller {
     try {
       const auction = this.createAuctionContract();
 
-      this.model.setAuctionEndLoader();
+      this.auctionModel.setAuctionEndLoader();
 
       const tx = await auction.endAuction(auctionId);
 
-      this.model.setWaitForAuctionEndTxLoader();
+      this.auctionModel.setWaitForAuctionEndTxLoader();
 
       console.log("[LOG]:end auction tx hash", tx.hash);
 
@@ -310,7 +311,7 @@ export class Web3Controller implements IWeb3Controller {
 
       return null;
     } finally {
-      this.model.clearAuctionEndLoader();
+      this.auctionModel.clearAuctionEndLoader();
     }
   };
 
@@ -493,16 +494,16 @@ export class Web3Controller implements IWeb3Controller {
       const approved = await token.getApproved(tokenId);
       console.log("[LOG]:token approved", approved);
       if (approved !== this.config.auctionAddress) {
-        this.model.setApproveAuctionLoader();
+        this.auctionModel.setApproveAuctionLoader();
 
         const tx = await token.approveAll(this.config.auctionAddress, true);
 
-        this.model.setWaitForApproveAuctionTxLoader();
+        this.auctionModel.setWaitForApproveAuctionTxLoader();
         console.log("[LOG]:approve auction tx hash", tx.hash);
         await tx.wait();
       }
 
-      this.model.setAuctionCreateLoader();
+      this.auctionModel.setAuctionCreateLoader();
 
       const tx = await auctionContract.createAuction(
         tokenId,
@@ -516,14 +517,14 @@ export class Web3Controller implements IWeb3Controller {
         constants.AddressZero
       );
 
-      this.model.setWaitForAuctionCreateTxLoader();
+      this.auctionModel.setWaitForAuctionCreateTxLoader();
 
       console.log("[LOG]:auction create tx hash", tx.hash);
 
       await tx.wait();
 
-      this.model.clearAuctionLoader();
-      this.model.setCreateAuctionTxHash(tx.hash);
+      this.auctionModel.clearAuctionLoader();
+      this.auctionModel.setCreateAuctionTxHash(tx.hash);
 
       this.snackbar.sendSuccess(AuctionLoadStatus.CREATE_AUCTION_SUCCESS);
     } catch (error) {
@@ -562,12 +563,12 @@ export class Web3Controller implements IWeb3Controller {
 
       return;
     } finally {
-      if (this.model.approveAuctionStatus) {
-        this.model.clearAuctionApproveStatus();
+      if (this.auctionModel.approveAuctionStatus) {
+        this.auctionModel.clearAuctionApproveStatus();
       }
 
-      if (this.model.auctionLoadStatus) {
-        this.model.clearAuctionLoader();
+      if (this.auctionModel.auctionLoadStatus) {
+        this.auctionModel.clearAuctionLoader();
       }
       if (this.model.meta.isLoading) {
         this.model.meta.setLoading(false);
@@ -579,12 +580,12 @@ export class Web3Controller implements IWeb3Controller {
     try {
       const auction = this.createAuctionContract();
 
-      this.model.setAuctionBidLoader();
+      this.auctionModel.setAuctionBidLoader();
 
       const etherAmount = utils.parseEther(amount);
       const tx = await auction.createBid(auctionId, etherAmount);
 
-      this.model.setWaitForAuctionBidTxLoader();
+      this.auctionModel.setWaitForAuctionBidTxLoader();
 
       console.log("[LOG]:auction bid tx hash", tx.hash);
 
@@ -636,7 +637,7 @@ export class Web3Controller implements IWeb3Controller {
 
       return null;
     } finally {
-      this.model.clearAuctionBidLoader();
+      this.auctionModel.clearAuctionBidLoader();
     }
   };
 

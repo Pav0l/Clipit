@@ -1,9 +1,10 @@
 import { observer } from "mobx-react-lite";
+import { AuctionModel } from "../../domains/auction/auction.model";
 import { NftController } from "../../domains/nfts/nft.controller";
 import { DisplayAuctionStatusTitle, Metadata, NftModel } from "../../domains/nfts/nft.model";
 import { Web3Controller } from "../../domains/web3/web3.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
-import { BidForm } from "../bidForm/BidForm";
+import { BidForm } from "../../domains/auction/components/bid/BidForm";
 import { OwnerNftDetails } from "./OwnerNftDetails";
 
 interface Props {
@@ -17,6 +18,7 @@ interface Props {
   model: {
     web3: Web3Model;
     nft: NftModel;
+    auction: AuctionModel;
   };
 }
 
@@ -55,7 +57,9 @@ export const NftDetails = observer(function NftDetails({ tokenId, metadata, mode
 
     // -> either running auction or active auction with no bids yet
     if (auction.displayAuctionStatus.title === DisplayAuctionStatusTitle.ENDS_IN || auction.firstBidTime === "0") {
-      return <BidForm metadata={metadata} operations={operations} model={{ web3: model.web3 }} />;
+      return (
+        <BidForm metadata={metadata} operations={operations} model={{ web3: model.web3, auction: model.auction }} />
+      );
     }
   }
 

@@ -1,11 +1,12 @@
 import { utils } from "ethers";
 import { observer } from "mobx-react-lite";
+import { AuctionModel } from "../../domains/auction/auction.model";
 import { NftController } from "../../domains/nfts/nft.controller";
 import { Auction, NftModel } from "../../domains/nfts/nft.model";
 import { Web3Controller } from "../../domains/web3/web3.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
-import { AuctionCreateForm } from "../auctions/AuctionCreateForm";
-import { AuctionDetails } from "../auctions/AuctionDetails";
+import { AuctionCreateForm } from "../../domains/auction/components/auctions/AuctionCreateForm";
+import { AuctionDetails } from "../../domains/auction/components/auctions/AuctionDetails";
 
 interface Props {
   tokenId: string;
@@ -19,6 +20,7 @@ interface Props {
   model: {
     web3: Web3Model;
     nft: NftModel;
+    auction: AuctionModel;
   };
 }
 

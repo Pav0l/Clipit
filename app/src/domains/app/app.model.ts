@@ -10,6 +10,7 @@ import { Web3Model } from "../web3/web3.model";
 import { NavigationModel } from "../navigation/navigation.model";
 import { ThemeModel } from "../theme/theme.model";
 import { MintModel } from "../mint/mint.model";
+import { AuctionModel } from "../auction/auction.model";
 
 export interface IAppModel {
   meta: MetaModel;
@@ -19,6 +20,7 @@ export interface IAppModel {
   nft: NftModel;
   web3: Web3Model;
   mint: MintModel;
+  auction: AuctionModel;
 
   theme: ThemeModel;
   auth: OAuthModel;
@@ -41,6 +43,7 @@ export class AppModel implements IAppModel {
   navigation: NavigationModel;
   theme: ThemeModel;
   mint: MintModel;
+  auction: AuctionModel;
 
   testStore: TestStore;
 
@@ -55,6 +58,7 @@ export class AppModel implements IAppModel {
     this.auth = new OAuthModel(new MetaModel());
 
     this.mint = new MintModel();
+    this.auction = new AuctionModel();
 
     this.theme = new ThemeModel();
     this.navigation = new NavigationModel();

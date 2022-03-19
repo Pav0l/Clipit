@@ -65,6 +65,7 @@ export function initExtSynchronous(options: TwitchExtensionQueryParams) {
   const web3 = new Web3Controller(
     model.web3,
     model.mint,
+    model.auction,
     offChainStorage,
     snackbar,
     sentry,

@@ -1,13 +1,14 @@
 import { Button, InputAdornment, TextField, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { NftController } from "../../domains/nfts/nft.controller";
-import { Metadata } from "../../domains/nfts/nft.model";
-import { makeAppStyles } from "../../domains/theme/theme.constants";
-import { Web3Controller } from "../../domains/web3/web3.controller";
-import { Web3Model } from "../../domains/web3/web3.model";
-import { useInputData } from "../../lib/hooks/useInputData";
-import LinearLoader from "../loader/LinearLoader";
+import { AuctionModel } from "../../auction.model";
+import { NftController } from "../../../nfts/nft.controller";
+import { Metadata } from "../../../nfts/nft.model";
+import { makeAppStyles } from "../../../theme/theme.constants";
+import { Web3Controller } from "../../../web3/web3.controller";
+import { Web3Model } from "../../../web3/web3.model";
+import { useInputData } from "../../../../lib/hooks/useInputData";
+import LinearLoader from "../../../../components/loader/LinearLoader";
 
 interface Props {
   metadata: Metadata;
@@ -19,6 +20,7 @@ interface Props {
 
   model: {
     web3: Web3Model;
+    auction: AuctionModel;
   };
 }
 
@@ -35,6 +37,7 @@ const calcMinBid = (metadata: Metadata) => {
   return auction.displayReservePrice ? auction.displayReservePrice : "0";
 };
 
+// TODO move to auction domain
 export const BidForm = observer(function BidForm({ metadata, operations, model }: Props) {
   const [isDisabled, setDisabled] = useState(false);
   const [isInputErr, setInputErr] = useState(false);
@@ -86,8 +89,8 @@ export const BidForm = observer(function BidForm({ metadata, operations, model }
     setInput(ev.target.value);
   };
 
-  if (model.web3.auctionBidLoadStatus) {
-    return <LinearLoader text={model.web3.auctionBidLoadStatus} />;
+  if (model.auction.auctionBidLoadStatus) {
+    return <LinearLoader text={model.auction.auctionBidLoadStatus} />;
   }
 
   return (

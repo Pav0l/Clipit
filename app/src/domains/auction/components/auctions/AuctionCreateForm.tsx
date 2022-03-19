@@ -1,13 +1,14 @@
 import { Button, InputAdornment, TextField, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { NftModel } from "../../domains/nfts/nft.model";
-import { makeAppStyles } from "../../domains/theme/theme.constants";
-import { ApproveAuctionStatus, AuctionLoadStatus, Web3Model } from "../../domains/web3/web3.model";
-import { useInputData } from "../../lib/hooks/useInputData";
-import ErrorWithRetry from "../error/Error";
-import FullPageLoader from "../loader/FullPageLoader";
-import LinearLoader from "../loader/LinearLoader";
+import { ApproveAuctionStatus, AuctionLoadStatus, AuctionModel } from "../../auction.model";
+import { NftModel } from "../../../nfts/nft.model";
+import { makeAppStyles } from "../../../theme/theme.constants";
+import { Web3Model } from "../../../web3/web3.model";
+import { useInputData } from "../../../../lib/hooks/useInputData";
+import ErrorWithRetry from "../../../../components/error/Error";
+import FullPageLoader from "../../../../components/loader/FullPageLoader";
+import LinearLoader from "../../../../components/loader/LinearLoader";
 
 interface Props {
   tokenId: string;
@@ -16,10 +17,12 @@ interface Props {
   model: {
     web3: Web3Model;
     nft: NftModel;
+    auction: AuctionModel;
   };
   handleCreateAuction: (tokenId: string, duration: string, reservePrice: string) => Promise<void>;
 }
 
+// TODO into auction domain
 export const AuctionCreateForm = observer(function AuctionCreateForm({
   tokenId,
   withHeader,
@@ -72,28 +75,31 @@ export const AuctionCreateForm = observer(function AuctionCreateForm({
     }
   };
 
-  if (model.web3.approveAuctionStatus !== undefined) {
-    switch (model.web3.approveAuctionStatus) {
+  if (model.auction.approveAuctionStatus !== undefined) {
+    switch (model.auction.approveAuctionStatus) {
       case ApproveAuctionStatus.APPROVE_TOKEN:
         return (
-          <ErrorWithRetry text={model.web3.approveAuctionStatus} withRetry={false} classNames={classes.noMargin} />
+          <ErrorWithRetry text={model.auction.approveAuctionStatus} withRetry={false} classNames={classes.noMargin} />
         );
 
       default:
-        return <LinearLoader text={model.web3.approveAuctionStatus} classNames={classNames} />;
+        return <LinearLoader text={model.auction.approveAuctionStatus} classNames={classNames} />;
     }
   }
 
-  if (model.web3.auctionLoadStatus !== undefined) {
-    switch (model.web3.auctionLoadStatus) {
+  if (model.auction.auctionLoadStatus !== undefined) {
+    switch (model.auction.auctionLoadStatus) {
       case AuctionLoadStatus.CONFIRM_CREATE_AUCTION:
-        return <ErrorWithRetry text={model.web3.auctionLoadStatus} withRetry={false} classNames={classes.noMargin} />;
+        return (
+          <ErrorWithRetry text={model.auction.auctionLoadStatus} withRetry={false} classNames={classes.noMargin} />
+        );
 
       default:
-        return <LinearLoader text={model.web3.auctionLoadStatus} classNames={classNames} />;
+        return <LinearLoader text={model.auction.auctionLoadStatus} classNames={classNames} />;
     }
   }
 
+  // TODO replace dep on web3 model loading for auction
   if (model.nft.meta.isLoading || model.web3.meta.isLoading) {
     return <FullPageLoader />;
   }

@@ -1,13 +1,13 @@
 import { Button, Tooltip, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
-import { NftErrors } from "../../domains/nfts/nft.errors";
-import { Auction, DisplayAuctionStatusTitle, NftModel } from "../../domains/nfts/nft.model";
-import { makeAppStyles } from "../../domains/theme/theme.constants";
-import { Web3Model } from "../../domains/web3/web3.model";
-import { useAuctionStatus } from "../../lib/hooks/useAuctionStatus";
-import ErrorWithRetry from "../error/Error";
-import FullPageLoader from "../loader/FullPageLoader";
-import LinearLoader from "../loader/LinearLoader";
+import { AuctionModel } from "../../auction.model";
+import { NftErrors } from "../../../nfts/nft.errors";
+import { Auction, DisplayAuctionStatusTitle, NftModel } from "../../../nfts/nft.model";
+import { makeAppStyles } from "../../../theme/theme.constants";
+import { useAuctionStatus } from "../../../../lib/hooks/useAuctionStatus";
+import ErrorWithRetry from "../../../../components/error/Error";
+import FullPageLoader from "../../../../components/loader/FullPageLoader";
+import LinearLoader from "../../../../components/loader/LinearLoader";
 
 interface Props {
   userAddress: string;
@@ -18,11 +18,12 @@ interface Props {
   handleEndAuction: (tokenId: string, auctionId: string) => Promise<void>;
 
   model: {
-    web3: Web3Model;
     nft: NftModel;
+    auction: AuctionModel;
   };
 }
 
+// TODO this into auction domain
 export const AuctionDetails = observer(function AuctionDetails({
   auction,
   tokenId,
@@ -39,12 +40,12 @@ export const AuctionDetails = observer(function AuctionDetails({
     return <ErrorWithRetry text={NftErrors.SOMETHING_WENT_WRONG} withRetry={true} />;
   }
 
-  if (model.web3.auctionCancelLoadStatus) {
-    return <LinearLoader text={model.web3.auctionCancelLoadStatus} />;
+  if (model.auction.auctionCancelLoadStatus) {
+    return <LinearLoader text={model.auction.auctionCancelLoadStatus} />;
   }
 
-  if (model.web3.auctionEndLoadStatus) {
-    return <LinearLoader text={model.web3.auctionEndLoadStatus} />;
+  if (model.auction.auctionEndLoadStatus) {
+    return <LinearLoader text={model.auction.auctionEndLoadStatus} />;
   }
 
   if (model.nft.meta.isLoading) {

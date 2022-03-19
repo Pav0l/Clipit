@@ -49,6 +49,7 @@ export function initSynchronous() {
   const web3Controller = new Web3Controller(
     model.web3,
     model.mint,
+    model.auction,
     offChainStorageApi,
     snackbar,
     sentry,

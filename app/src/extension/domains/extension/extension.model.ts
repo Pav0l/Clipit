@@ -1,5 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { MetaModel } from "../../../domains/app/meta.model";
+import { AuctionModel } from "../../../domains/auction/auction.model";
 import { MintModel } from "../../../domains/mint/mint.model";
 import { NftModel } from "../../../domains/nfts/nft.model";
 import { SnackbarModel } from "../../../domains/snackbar/snackbar.model";
@@ -24,6 +25,7 @@ export interface IExtensionModel {
   streamerUi: StreamerUiModel;
   configUi: ConfigUiModel;
   mint: MintModel;
+  auction: AuctionModel;
 }
 
 export class ExtensionModel implements IExtensionModel {
@@ -37,6 +39,7 @@ export class ExtensionModel implements IExtensionModel {
   streamerUi: StreamerUiModel;
   configUi: ConfigUiModel;
   mint: MintModel;
+  auction: AuctionModel;
 
   snackbar: SnackbarModel;
 
@@ -54,5 +57,6 @@ export class ExtensionModel implements IExtensionModel {
     this.configUi = new ConfigUiModel(new MetaModel());
     this.snackbar = new SnackbarModel();
     this.mint = new MintModel();
+    this.auction = new AuctionModel();
   }
 }
