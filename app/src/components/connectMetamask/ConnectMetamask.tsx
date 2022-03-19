@@ -56,7 +56,7 @@ function ConnectMetamaskButton({ model, onClick, onClickError }: Props) {
 
   return (
     <Button startIcon={<MetamaskIcon />} className={classes.button} disabled={isDisabled} onClick={onClickHandler}>
-      {model.web3.walletStatus}
+      {model.web3.connectStatus}
     </Button>
   );
 }

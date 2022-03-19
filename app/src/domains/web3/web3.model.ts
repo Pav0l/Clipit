@@ -18,6 +18,10 @@ export class Web3Model {
     this.meta = meta;
   }
 
+  get connectStatus(): string {
+    return this.ensName ? this.ensName : this.walletStatus;
+  }
+
   setAccounts(accounts: string[]) {
     this.accounts = accounts.map((address) => address.toLowerCase());
   }
