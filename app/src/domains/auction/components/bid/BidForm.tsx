@@ -2,20 +2,20 @@ import { Button, InputAdornment, TextField, Typography } from "@material-ui/core
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { AuctionModel } from "../../auction.model";
-import { NftController } from "../../../nfts/nft.controller";
 import { Metadata } from "../../../nfts/nft.model";
 import { makeAppStyles } from "../../../theme/theme.constants";
 import { Web3Controller } from "../../../web3/web3.controller";
 import { Web3Model } from "../../../web3/web3.model";
 import { useInputData } from "../../../../lib/hooks/useInputData";
 import LinearLoader from "../../../../components/loader/LinearLoader";
+import { UiController } from "../../../app/ui.controller";
 
 interface Props {
   metadata: Metadata;
 
   operations: {
     web3: Web3Controller;
-    nft: NftController;
+    ui: UiController;
   };
 
   model: {
@@ -71,10 +71,7 @@ export const BidForm = observer(function BidForm({ metadata, operations, model }
       return;
     }
 
-    await operations.web3.requestConnectAndBid(metadata.auction?.id, input);
-    await operations.nft.getAuctionForToken(metadata.tokenId, {
-      clearCache: true,
-    });
+    await operations.ui.createAuctionBid(metadata.auction.id, input, metadata.tokenId);
   };
 
   const handleBidChange = (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

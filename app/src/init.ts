@@ -46,18 +46,16 @@ export function initSynchronous() {
   const game = new GameController(model.game, twitchApi, sentry);
   const user = new UserController(model.user, twitchApi, sentry);
   const nft = new NftController(model.nft, ipfs, subgraph, snackbar, sentry);
-  const auction = new AuctionController(model.auction, AuctionContractCreator, snackbar, sentry, CONFIG);
-  const mint = new MintController(model.mint, ClipItContractCreator, clipit, snackbar, sentry, CONFIG);
-  const web3 = new Web3Controller(
-    model.web3,
+  const auction = new AuctionController(
     model.auction,
-    auction,
-    EthereumClientCreator,
+    AuctionContractCreator,
+    ClipItContractCreator,
     snackbar,
     sentry,
-    ClipItContractCreator,
     CONFIG
   );
+  const mint = new MintController(model.mint, ClipItContractCreator, clipit, snackbar, sentry, CONFIG);
+  const web3 = new Web3Controller(model.web3, EthereumClientCreator, snackbar, sentry);
 
   const ui = new UiController(model, web3, auction, mint, nft, snackbar);
 

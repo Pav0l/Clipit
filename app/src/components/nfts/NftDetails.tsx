@@ -1,18 +1,18 @@
 import { observer } from "mobx-react-lite";
 import { AuctionModel } from "../../domains/auction/auction.model";
-import { NftController } from "../../domains/nfts/nft.controller";
 import { DisplayAuctionStatusTitle, Metadata, NftModel } from "../../domains/nfts/nft.model";
 import { Web3Controller } from "../../domains/web3/web3.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { BidForm } from "../../domains/auction/components/bid/BidForm";
 import { OwnerNftDetails } from "./OwnerNftDetails";
+import { UiController } from "../../domains/app/ui.controller";
 
 interface Props {
   tokenId: string;
   metadata: Metadata;
 
   operations: {
-    nft: NftController;
+    ui: UiController;
     web3: Web3Controller;
   };
   model: {

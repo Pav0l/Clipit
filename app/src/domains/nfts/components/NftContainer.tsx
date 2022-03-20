@@ -13,6 +13,7 @@ import { Web3Controller } from "../../web3/web3.controller";
 import { NftDetails } from "../../../components/nfts/NftDetails";
 import { SentryClient } from "../../../lib/sentry/sentry.client";
 import { AuctionModel } from "../../auction/auction.model";
+import { UiController } from "../../app/ui.controller";
 
 interface Props {
   model: {
@@ -23,6 +24,7 @@ interface Props {
   operations: {
     nft: NftController;
     web3: Web3Controller;
+    ui: UiController;
   };
   sentry: SentryClient;
 }
@@ -50,7 +52,12 @@ function NftContainer({ model, operations, sentry }: Props) {
     return (
       <SplitContainer>
         <NftCard metadata={metadata} />
-        <NftDetails metadata={metadata} tokenId={tokenId} operations={operations} model={model} />
+        <NftDetails
+          metadata={metadata}
+          tokenId={tokenId}
+          operations={{ web3: operations.web3, ui: operations.ui }}
+          model={model}
+        />
       </SplitContainer>
     );
   }

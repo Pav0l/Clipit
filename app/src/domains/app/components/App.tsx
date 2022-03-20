@@ -98,7 +98,7 @@ const StyledApp = observer(function App({ model, operations, sentry }: Props) {
             <Route exact path={AppRoute.NFT}>
               <NftContainer
                 model={{ nft: model.nft, web3: model.web3, auction: model.auction }}
-                operations={{ web3: operations.web3, nft: operations.nft }}
+                operations={{ web3: operations.web3, nft: operations.nft, ui: operations.ui }}
                 sentry={sentry}
               />
             </Route>

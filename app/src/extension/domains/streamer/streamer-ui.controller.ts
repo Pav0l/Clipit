@@ -1,4 +1,5 @@
 import { utils } from "ethers";
+import { AuctionController } from "../../../domains/auction/auction.controller";
 import { MintController } from "../../../domains/mint/mint.controller";
 import { NftController } from "../../../domains/nfts/nft.controller";
 import { SnackbarController } from "../../../domains/snackbar/snackbar.controller";
@@ -17,6 +18,7 @@ export class StreamerUiController {
     private game: GameController,
     private web3: Web3Controller,
     private mintC: MintController,
+    private auction: AuctionController,
     private nft: NftController,
     private snackbar: SnackbarController,
     private logger: Logger
@@ -32,7 +34,16 @@ export class StreamerUiController {
   }
 
   createAuction = async (tokenId: string, duration: string, reservePrice: string) => {
-    await this.web3.requestConnectAndCreateAuction(
+    await this.web3.requestConnectIfProviderExist();
+
+    const address = this.model.web3.getAccount();
+    if (!address) {
+      return;
+    }
+
+    await this.auction.approveTokenForAuction(tokenId);
+
+    await this.auction.createAuction(
       tokenId,
       Number(duration) * 86400, // 1 day in seconds
       utils.parseEther(reservePrice)
@@ -42,9 +53,7 @@ export class StreamerUiController {
       // failed the tx
       return;
     }
-
     this.logger.log("auction created: ", txHash);
-
     await this.getAuctionDataAndGoToAuction(tokenId);
   };
 

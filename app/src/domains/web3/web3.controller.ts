@@ -1,16 +1,12 @@
-import { BigNumber, BigNumberish } from "ethers";
+import { BigNumber } from "ethers";
 
-import { IClipItContractClient } from "../../lib/contracts/ClipIt/clipit-contract.client";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
 import { Web3Model, Web3Errors } from "./web3.model";
 import { isRpcError, RpcErrors } from "../../lib/ethereum/rpc.errors";
 import { IEthClient } from "../../lib/ethereum/ethereum.client";
-import { IConfig } from "../app/config";
 import { SentryClient } from "../../lib/sentry/sentry.client";
 import { AppError } from "../../lib/errors/errors";
-import { AuctionModel } from "../auction/auction.model";
-import { AuctionController } from "../auction/auction.controller";
 
 export interface IWeb3Controller {
   // silently try to get ethAccounts
@@ -19,26 +15,14 @@ export interface IWeb3Controller {
   requestConnect: (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => Promise<void>;
   // get current users balance
   getBalance: (address: string) => Promise<void>;
-
-  requestConnectAndCreateAuction: (tokenId: string, duration: BigNumberish, minPrice: BigNumberish) => Promise<void>;
-  // Bid on token in auction
-  requestConnectAndBid: (auctionId: string, amount: string) => Promise<void>;
-  requestConnectAndCancelAuction: (auctionId: string) => Promise<void>;
-  requestConnectAndEndAuction: (auctionId: string) => Promise<void>;
 }
 
 export class Web3Controller implements IWeb3Controller {
   constructor(
     private model: Web3Model,
-    // TODO abstract into UI ctrl
-    private auctionModel: AuctionModel,
-    private auctionController: AuctionController,
-    // end TODO
     private ethClientCreator: (provider: EthereumProvider) => IEthClient,
     private snackbar: SnackbarClient,
-    private sentry: SentryClient,
-    private clipitContractCreator: (provider: EthereumProvider, address: string) => IClipItContractClient,
-    private config: IConfig
+    private sentry: SentryClient
   ) {}
 
   async requestEthAccounts() {
@@ -92,74 +76,7 @@ export class Web3Controller implements IWeb3Controller {
     }
   };
 
-  requestConnectAndCreateAuction = async (tokenId: string, duration: BigNumberish, minPrice: BigNumberish) => {
-    await this.requestConnectIfProviderExist();
-
-    const signerAddress = this.model.getAccount();
-    if (!signerAddress) {
-      // requestAccounts failed (rejected/already opened, etc...) and notification to user was sent
-      // just stop here
-      return;
-    }
-
-    // TODO this should not be here
-    const token = this.createTokenContract();
-    const approved = await token.getApproved(tokenId);
-
-    console.log("[LOG]:token approved", approved);
-    if (approved !== this.config.auctionAddress) {
-      this.auctionModel.setApproveAuctionLoader();
-
-      const tx = await token.approveAll(this.config.auctionAddress, true);
-
-      this.auctionModel.setWaitForApproveAuctionTxLoader();
-      console.log("[LOG]:approve auction tx hash", tx.hash);
-      await tx.wait();
-    }
-
-    await this.auctionController.createAuction(tokenId, duration, minPrice);
-  };
-
-  requestConnectAndBid = async (auctionId: string, amount: string) => {
-    await this.requestConnectIfProviderExist();
-
-    const signerAddress = this.model.getAccount();
-    if (!signerAddress) {
-      // requestAccounts failed (rejected/already opened, etc...) and notification to user was sent
-      // just stop here
-      return;
-    }
-
-    await this.auctionController.bidOnAuction(auctionId, amount);
-  };
-
-  requestConnectAndCancelAuction = async (auctionId: string) => {
-    await this.requestConnectIfProviderExist();
-
-    const signerAddress = this.model.getAccount();
-    if (!signerAddress) {
-      // requestAccounts failed (rejected/already opened, etc...) and notification to user was sent
-      // just stop here
-      return;
-    }
-
-    await this.auctionController.cancelAuction(auctionId);
-  };
-
-  requestConnectAndEndAuction = async (auctionId: string) => {
-    await this.requestConnectIfProviderExist();
-
-    const signerAddress = this.model.getAccount();
-    if (!signerAddress) {
-      // requestAccounts failed (rejected/already opened, etc...) and notification to user was sent
-      // just stop here
-      return;
-    }
-
-    await this.auctionController.endAuction(auctionId);
-  };
-
-  private async requestConnectIfProviderExist() {
+  async requestConnectIfProviderExist() {
     if (!this.model.isMetaMaskInstalled()) {
       this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
       return;
@@ -242,8 +159,4 @@ export class Web3Controller implements IWeb3Controller {
     client.registerEventHandler("accountsChanged", this.handleAccountsChange);
     return client;
   }
-
-  private createTokenContract = () => {
-    return this.clipitContractCreator(window.ethereum as EthereumProvider, this.config.tokenAddress);
-  };
 }

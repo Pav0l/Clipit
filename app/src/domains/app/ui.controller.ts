@@ -1,3 +1,4 @@
+import { BigNumberish } from "ethers";
 import { AuctionController } from "../auction/auction.controller";
 import { MintController } from "../mint/mint.controller";
 import { NftController } from "../nfts/nft.controller";
@@ -14,7 +15,6 @@ export class UiController {
     private auction: AuctionController,
     private mintCtrl: MintController,
     private nft: NftController,
-
     private snackbar: SnackbarController
   ) {}
 
@@ -54,5 +54,58 @@ export class UiController {
 
     // TODO ideally we do not want to reload the app here and just update state
     location.assign(location.origin + `/nfts/${clipNft.id}`);
+  }
+
+  async createAuction(tokenId: string, duration: BigNumberish, minPrice: BigNumberish) {
+    await this.web3.requestConnectIfProviderExist();
+
+    const address = this.model.web3.getAccount();
+    if (!address) {
+      return;
+    }
+
+    await this.auction.approveTokenForAuction(tokenId);
+
+    await this.auction.createAuction(tokenId, duration, minPrice);
+
+    await this.nft.getAuctionForToken(tokenId, { clearCache: true });
+  }
+
+  async createAuctionBid(auctionId: string, amount: string, tokenId: string) {
+    await this.web3.requestConnectIfProviderExist();
+
+    const address = this.model.web3.getAccount();
+    if (!address) {
+      return;
+    }
+
+    await this.auction.bidOnAuction(auctionId, amount);
+
+    await this.nft.getAuctionForToken(tokenId, {
+      clearCache: true,
+    });
+  }
+
+  async endAuction(auctionId: string, tokenId: string) {
+    await this.web3.requestConnectIfProviderExist();
+
+    const address = this.model.web3.getAccount();
+    if (!address) {
+      return;
+    }
+
+    await this.auction.endAuction(auctionId);
+    await this.nft.getAuctionForToken(tokenId, { clearCache: true });
+  }
+  async cancelAuction(auctionId: string, tokenId: string) {
+    await this.web3.requestConnectIfProviderExist();
+
+    const address = this.model.web3.getAccount();
+    if (!address) {
+      return;
+    }
+
+    await this.auction.cancelAuction(auctionId);
+    await this.nft.getAuctionForToken(tokenId, { clearCache: true });
   }
 }

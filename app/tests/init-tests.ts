@@ -22,12 +22,12 @@ import { TwitchExtensionTestClient } from "../src/lib/twitch-extension/twitch-ex
 import { Logger } from "../src/lib/logger/logger";
 import { ExtensionModel } from "../src/extension/domains/extension/extension.model";
 import { UiController } from "../src/domains/app/ui.controller";
-import { StreamerUiController } from "../src/extension/domains/streamer/streamer-ui.controller";
 import { ConfigUiController } from "../src/extension/domains/config/config-ui.controller";
 import { BroadcasterAuthService } from "../src/extension/domains/broadcaster-auth/broadcaster-auth.service";
 import { AuctionController } from "../src/domains/auction/auction.controller";
 import { MintController } from "../src/domains/mint/mint.controller";
 import { EthereumTestClientCreator } from "../src/lib/ethereum/ethereum-test.client";
+import { StreamerUiController } from "../src/extension/domains/streamer/streamer-ui.controller";
 
 export function initTestSync(testConfig: IConfig) {
   const sentry = new SentryClient("", true);
@@ -50,19 +50,16 @@ export function initTestSync(testConfig: IConfig) {
   const game = new GameController(model.game, twitchApi, sentry);
   const user = new UserController(model.user, twitchApi, sentry);
   const nft = new NftController(model.nft, ipfs, subgraph, snackbar, sentry);
-  const auction = new AuctionController(model.auction, AuctionTestContractCreator, snackbar, sentry, CONFIG);
-  const mint = new MintController(model.mint, ClipItTestContractCreator, clipit, snackbar, sentry, CONFIG);
-
-  const web3 = new Web3Controller(
-    model.web3,
+  const auction = new AuctionController(
     model.auction,
-    auction,
-    EthereumTestClientCreator,
+    AuctionTestContractCreator,
+    ClipItTestContractCreator,
     snackbar,
     sentry,
-    ClipItTestContractCreator,
-    testConfig
+    CONFIG
   );
+  const mint = new MintController(model.mint, ClipItTestContractCreator, clipit, snackbar, sentry, CONFIG);
+  const web3 = new Web3Controller(model.web3, EthereumTestClientCreator, snackbar, sentry);
 
   const ui = new UiController(model, web3, auction, mint, nft, snackbar);
 
@@ -105,22 +102,19 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
   const game = new GameController(model.game, twitchApi, sentry);
   const user = new UserController(model.user, twitchApi, sentry);
   const nft = new NftController(model.nft, ipfs, subgraph, snackbar, sentry);
-  const auction = new AuctionController(model.auction, AuctionTestContractCreator, snackbar, sentry, CONFIG);
-  const mint = new MintController(model.mint, ClipItTestContractCreator, clipit, snackbar, sentry, CONFIG);
-
-  const web3 = new Web3Controller(
-    model.web3,
+  const auction = new AuctionController(
     model.auction,
-    auction,
-    EthereumTestClientCreator,
+    AuctionTestContractCreator,
+    ClipItTestContractCreator,
     snackbar,
     sentry,
-    ClipItTestContractCreator,
-    testConfig
+    CONFIG
   );
-  const streamerUi = new StreamerUiController(model, clip, game, web3, mint, nft, snackbar, logger);
-  const configUi = new ConfigUiController(model, web3);
+  const mint = new MintController(model.mint, ClipItTestContractCreator, clipit, snackbar, sentry, CONFIG);
 
+  const web3 = new Web3Controller(model.web3, EthereumTestClientCreator, snackbar, sentry);
+  const streamerUi = new StreamerUiController(model, clip, game, web3, mint, auction, nft, snackbar, logger);
+  const configUi = new ConfigUiController(model, web3);
   return {
     model,
     operations: {

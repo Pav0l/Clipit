@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { initTestSync } from "../../../../tests/init-tests";
-import { signerAddress, txHash } from "../../../../tests/__fixtures__/ethereum";
-import { twitchClip } from "../../../../tests/__fixtures__/twitch-api-data";
+import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
 import { EthereumTestProvider } from "../../../lib/ethereum/ethereum-test-provider";
 import { MintModel } from "../../mint/mint.model";
 import { SnackbarModel } from "../../snackbar/snackbar.model";
@@ -36,7 +33,7 @@ describe("web3 controller", () => {
     it("requestConnect sets INSTALL_METAMASK error", () => {
       expect(ctrl.requestConnect()).resolves;
       expect(model.meta.error).not.toEqual(undefined);
-      expect(model.meta.error!.message).toEqual(Web3Errors.INSTALL_METAMASK);
+      expect(model.meta.error?.message).toEqual(Web3Errors.INSTALL_METAMASK);
     });
   });
 

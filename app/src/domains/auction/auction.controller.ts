@@ -1,6 +1,7 @@
 import { BigNumberish, constants, utils } from "ethers";
 import { IAuctionContractClient } from "../../lib/contracts/AuctionHouse/auction-contract.client";
 import { AuctionContractErrors } from "../../lib/contracts/AuctionHouse/auction-contract.errors";
+import { IClipItContractClient } from "../../lib/contracts/ClipIt/clipit-contract.client";
 import { isEthersJsonRpcError } from "../../lib/contracts/jsonRpc.errors";
 import { AppError } from "../../lib/errors/errors";
 import { EthereumProvider } from "../../lib/ethereum/ethereum.types";
@@ -21,6 +22,7 @@ export class AuctionController {
   constructor(
     private model: AuctionModel,
     private auctionContractCreator: (provider: EthereumProvider, address: string) => IAuctionContractClient,
+    private clipitContractCreator: (provider: EthereumProvider, address: string) => IClipItContractClient,
     private snackbar: SnackbarClient,
     private sentry: SentryClient,
     private config: IConfig
@@ -283,7 +285,27 @@ export class AuctionController {
     }
   };
 
+  approveTokenForAuction = async (tokenId: string) => {
+    const token = this.createTokenContract();
+    const approved = await token.getApproved(tokenId);
+
+    console.log("[LOG]:token approved", approved);
+    if (approved !== this.config.auctionAddress) {
+      this.model.setApproveAuctionLoader();
+
+      const tx = await token.approveAll(this.config.auctionAddress, true);
+
+      this.model.setWaitForApproveAuctionTxLoader();
+      console.log("[LOG]:approve auction tx hash", tx.hash);
+      await tx.wait();
+    }
+  };
+
   private createAuctionContract = () => {
     return this.auctionContractCreator(window.ethereum as EthereumProvider, this.config.auctionAddress);
+  };
+
+  private createTokenContract = () => {
+    return this.clipitContractCreator(window.ethereum as EthereumProvider, this.config.tokenAddress);
   };
 }
