@@ -5,7 +5,7 @@ import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { ChainId, EthereumProvider } from "../../lib/ethereum/ethereum.types";
 import { Web3Model, Web3Errors } from "./web3.model";
 import { isRpcError, RpcErrors } from "../../lib/ethereum/rpc.errors";
-import EthereumClient from "../../lib/ethereum/ethereum.client";
+import { IEthClient } from "../../lib/ethereum/ethereum.client";
 import { IConfig } from "../app/config";
 import { SentryClient } from "../../lib/sentry/sentry.client";
 import { AppError } from "../../lib/errors/errors";
@@ -16,6 +16,11 @@ import { MintController } from "../mint/mint.controller";
 export interface IWeb3Controller {
   // silently try to get ethAccounts
   requestEthAccounts: () => Promise<void>;
+  // open MM and call requestAccounts
+  requestConnect: (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => Promise<void>;
+  // get current users balance
+  getBalance: (address: string) => Promise<void>;
+
   // mint token
   requestConnectAndMint: (
     clipId: string,
@@ -25,10 +30,6 @@ export interface IWeb3Controller {
       clipDescription?: string;
     }
   ) => Promise<void>;
-  // open MM and call requestAccounts
-  requestConnect: (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => Promise<void>;
-  // get current users balance
-  getBalance: (address: string) => Promise<void>;
   requestConnectAndCreateAuction: (tokenId: string, duration: BigNumberish, minPrice: BigNumberish) => Promise<void>;
   // Bid on token in auction
   requestConnectAndBid: (auctionId: string, amount: string) => Promise<void>;
@@ -44,6 +45,7 @@ export class Web3Controller implements IWeb3Controller {
     private auctionModel: AuctionModel,
     private auctionController: AuctionController,
     // end TODO
+    private ethClientCreator: (provider: EthereumProvider) => IEthClient,
     private snackbar: SnackbarClient,
     private sentry: SentryClient,
     private clipitContractCreator: (provider: EthereumProvider, address: string) => IClipItContractClient,
@@ -113,7 +115,7 @@ export class Web3Controller implements IWeb3Controller {
 
   getBalance = async (address: string) => {
     try {
-      const balance = await this.initEthClient().getBalance(address);
+      const balance = await this.ethClient.getBalance(address);
       this.model.setEthBalance(BigNumber.from(balance));
     } catch (error) {
       this.sentry.captureException(error);
@@ -200,7 +202,7 @@ export class Web3Controller implements IWeb3Controller {
 
   private requestAccounts = async () => {
     try {
-      const accounts = await this.initEthClient().requestAccounts();
+      const accounts = await this.ethClient.requestAccounts();
       console.log("[ethereum.controller]:requestAccounts:accounts", accounts);
 
       await this.updateAccounts(accounts);
@@ -228,7 +230,7 @@ export class Web3Controller implements IWeb3Controller {
 
   private ethAccounts = async () => {
     try {
-      const accounts = await this.initEthClient().ethAccounts();
+      const accounts = await this.ethClient.ethAccounts();
       console.log("[ethereum.controller]:ethAccounts:accounts", accounts);
 
       await this.updateAccounts(accounts);
@@ -236,13 +238,6 @@ export class Web3Controller implements IWeb3Controller {
       console.log("[ethereum.controller]:ethAccounts:error", error);
       this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
     }
-  };
-
-  private initEthClient = () => {
-    const client = new EthereumClient(window.ethereum as EthereumProvider);
-    client.registerEventHandler("chainChanged", this.handleChainChanged);
-    client.registerEventHandler("accountsChanged", this.handleAccountsChange);
-    return client;
   };
 
   private handleAccountsChange = async (accounts: string[]) => {
@@ -260,13 +255,20 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    const name = await this.initEthClient().resolveEnsName(address);
+    const name = await this.ethClient.resolveEnsName(address);
     this.model.setEnsName(name);
   };
 
   private handleChainChanged(chainId: ChainId) {
     console.log("[web3.controller]::chainChanged", chainId);
     window.location.reload();
+  }
+
+  private get ethClient() {
+    const client = this.ethClientCreator(window.ethereum as EthereumProvider);
+    client.registerEventHandler("chainChanged", this.handleChainChanged);
+    client.registerEventHandler("accountsChanged", this.handleAccountsChange);
+    return client;
   }
 
   private createTokenContract = () => {

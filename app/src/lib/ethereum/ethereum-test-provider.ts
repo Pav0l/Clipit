@@ -1,4 +1,4 @@
-import { signerAddress, chainId } from "../../../tests/__fixtures__/ethereum";
+import { signerAddress, chainId, signerBalance } from "../../../tests/__fixtures__/ethereum";
 
 import { EthereumProvider, EthereumEvents, EthereumEventData, RequestArguments } from "./ethereum.types";
 
@@ -33,6 +33,8 @@ export class EthereumTestProvider implements EthereumProvider {
         return [signerAddress];
       case "eth_chainid":
         return chainId;
+      case "eth_getBalance":
+        return signerBalance;
       default:
         throw new Error(`uninmplemented method: ${args.method}. please fix`);
     }

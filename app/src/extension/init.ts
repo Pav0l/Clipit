@@ -11,6 +11,7 @@ import { ClipItApiClient } from "../lib/clipit-api/clipit-api.client";
 import { ebsTokenKey, extensionHelixTokenKey, pinataGatewayUri, twitchApiUri } from "../lib/constants";
 import { AuctionContractCreator } from "../lib/contracts/AuctionHouse/auction-contract.client";
 import { ClipItContractCreator } from "../lib/contracts/ClipIt/clipit-contract.client";
+import { EthereumClientCreator } from "../lib/ethereum/ethereum.client";
 import { SubgraphClient } from "../lib/graphql/subgraph.client";
 import { HttpClient } from "../lib/http-client/http-client";
 import { IpfsClient } from "../lib/ipfs/ipfs.client";
@@ -69,6 +70,7 @@ export function initExtSynchronous(options: TwitchExtensionQueryParams) {
     mint,
     model.auction,
     auction,
+    EthereumClientCreator,
     snackbar,
     sentry,
     ClipItContractCreator,

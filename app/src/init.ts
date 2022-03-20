@@ -22,6 +22,7 @@ import { AuctionContractCreator } from "./lib/contracts/AuctionHouse/auction-con
 import { SentryClient } from "./lib/sentry/sentry.client";
 import { AuctionController } from "./domains/auction/auction.controller";
 import { MintController } from "./domains/mint/mint.controller";
+import { EthereumClientCreator } from "./lib/ethereum/ethereum.client";
 
 export function initSynchronous() {
   const sentry = new SentryClient(CONFIG.sentryDsn, CONFIG.isDevelopment);
@@ -36,7 +37,6 @@ export function initSynchronous() {
   const clipit = new ClipItApiClient(new HttpClient(CONFIG.clipItApiUrl), storage);
   const ipfs = new IpfsClient(new HttpClient(pinataGatewayUri));
   const subgraph = new SubgraphClient(new GraphQLClient(CONFIG.subgraphUrl));
-
   const twitchOAuthApi = new TwitchOAuthApiClient(new HttpClient(twitchOAuthUri), CONFIG.twitch.clientId);
   const twitchApi = new TwitchApi(new HttpClient(twitchApiUri), storage, CONFIG.twitch);
 
@@ -52,6 +52,7 @@ export function initSynchronous() {
     mint,
     model.auction,
     auction,
+    EthereumClientCreator,
     snackbar,
     sentry,
     ClipItContractCreator,

@@ -26,6 +26,7 @@ import { ConfigUiController } from "../src/extension/domains/config/config-ui.co
 import { BroadcasterAuthService } from "../src/extension/domains/broadcaster-auth/broadcaster-auth.service";
 import { AuctionController } from "../src/domains/auction/auction.controller";
 import { MintController } from "../src/domains/mint/mint.controller";
+import { EthereumTestClientCreator } from "../src/lib/ethereum/ethereum-test.client";
 
 export function initTestSync(testConfig: IConfig) {
   const sentry = new SentryClient("", true);
@@ -56,6 +57,7 @@ export function initTestSync(testConfig: IConfig) {
     mint,
     model.auction,
     auction,
+    EthereumTestClientCreator,
     snackbar,
     sentry,
     ClipItTestContractCreator,
@@ -108,6 +110,7 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
     mint,
     model.auction,
     auction,
+    EthereumTestClientCreator,
     snackbar,
     sentry,
     ClipItTestContractCreator,

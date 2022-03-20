@@ -5,11 +5,16 @@ export interface IEthClient {
   requestAccounts: () => Promise<string[]>;
   ethAccounts: () => Promise<string[]>;
   chainId: () => Promise<string>;
+  getBalance: (address: string) => Promise<string>;
   registerEventHandler: (event: EthereumEvents, handler: (data: EthereumEventData) => void) => void;
   resolveEnsName: (address: string) => Promise<string | null>;
 }
 
-export default class EthereumClient implements IEthClient {
+export function EthereumClientCreator(provider: EthereumProvider): IEthClient {
+  return new EthereumClient(provider);
+}
+
+class EthereumClient implements IEthClient {
   constructor(private provider: EthereumProvider) {}
 
   /**

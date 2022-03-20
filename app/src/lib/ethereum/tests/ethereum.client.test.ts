@@ -1,5 +1,5 @@
 import { EthereumTestProvider } from "../ethereum-test-provider";
-import EthereumClient, { IEthClient } from "../ethereum.client";
+import { IEthClient, EthereumClientCreator } from "../ethereum.client";
 
 describe("ethereum.client", () => {
   let client: IEthClient;
@@ -7,7 +7,7 @@ describe("ethereum.client", () => {
 
   beforeEach(() => {
     provider = new EthereumTestProvider();
-    client = new EthereumClient(provider);
+    client = EthereumClientCreator(provider);
   });
 
   it("does not register the same handler for an event twice", () => {
