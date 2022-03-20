@@ -61,10 +61,6 @@ export class OAuthController {
     }
   }
 
-  getAccessToken = () => {
-    return this.storage.getItem(twitchApiAccessTokenKey);
-  };
-
   getTwitchOAuth2AuthorizeUrl = () => {
     const url = new URL(`${twitchOAuthUri}/oauth2/authorize`);
     url.searchParams.append(OauthQueryParams.CLIENT_ID, this.twitchClientId);
@@ -79,6 +75,10 @@ export class OAuthController {
       })
     );
     return url.href;
+  };
+
+  private getAccessToken = () => {
+    return this.storage.getItem(twitchApiAccessTokenKey);
   };
 
   private storeTokenAndRemoveSecret = (token: string) => {

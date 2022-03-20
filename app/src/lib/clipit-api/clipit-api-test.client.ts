@@ -1,9 +1,13 @@
 import { signerAddress } from "../../../tests/__fixtures__/ethereum";
 import { clipCid, metadata, metadataCid } from "../../../tests/__fixtures__/metadata";
 
-import { IClipItApiClient, ClipPayload } from "./clipit-api.client";
+import { IClipItApiClient, ClipPayload, ClipItApiError } from "./clipit-api.client";
 
 export class ClipItApiTestClient implements IClipItApiClient {
+  isClipItApiError(body: ClipItApiError | unknown): body is ClipItApiError {
+    return false;
+  }
+
   storeClip = async <V>(clipId: string, _payload: ClipPayload) => {
     return {
       statusCode: 200,

@@ -75,13 +75,6 @@ export class ClipController {
     this.model.meta.setLoading(false);
   };
 
-  validateUrlAndGetClip = (url: string) => {
-    const clipId = this.validateClipUrl(url);
-    if (clipId) {
-      this.getClip(clipId);
-    }
-  };
-
   validateClipUrl = (url: string) => {
     const clipId = this.getSlugFromUrl(url);
 

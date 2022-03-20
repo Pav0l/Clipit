@@ -16,7 +16,6 @@ import { HttpClient } from "../lib/http-client/http-client";
 import { IpfsClient } from "../lib/ipfs/ipfs.client";
 import { ILocalStorage, LocalStorageClient } from "../lib/local-storage/local-storage.client";
 import { Logger } from "../lib/logger/logger";
-import { OffChainStorage } from "../lib/off-chain-storage/off-chain-storage.client";
 import { SentryClient } from "../lib/sentry/sentry.client";
 import { TwitchApi } from "../lib/twitch-api/twitch-api.client";
 import { TwitchExtensionQueryParams } from "../lib/twitch-extension/interfaces";
@@ -37,10 +36,9 @@ export function initExtSynchronous(options: TwitchExtensionQueryParams) {
 
   const storage = new LocalStorageClient();
   const sentry = new SentryClient(CONFIG.sentryDsn, CONFIG.isDevelopment);
-  const offChainStorage = new OffChainStorage(
-    new ClipItApiClient(new HttpClient(CONFIG.clipItApiUrl), storage, "Ebs"),
-    new IpfsClient(new HttpClient(pinataGatewayUri))
-  );
+
+  const clipit = new ClipItApiClient(new HttpClient(CONFIG.clipItApiUrl), storage, "Ebs");
+  const ipfs = new IpfsClient(new HttpClient(pinataGatewayUri));
   const subgraph = new SubgraphClient(new GraphQLClient(CONFIG.subgraphUrl));
 
   switch (options.mode) {
@@ -63,9 +61,9 @@ export function initExtSynchronous(options: TwitchExtensionQueryParams) {
   const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
   const game = new GameController(model.game, twitchApi, sentry);
   const user = new UserController(model.user, twitchApi, sentry);
-  const nft = new NftController(model.nft, offChainStorage, subgraph, snackbar, sentry);
+  const nft = new NftController(model.nft, ipfs, subgraph, snackbar, sentry);
   const auction = new AuctionController(model.auction, AuctionContractCreator, snackbar, sentry, CONFIG);
-  const mint = new MintController(model.mint, ClipItContractCreator, offChainStorage, snackbar, sentry, CONFIG);
+  const mint = new MintController(model.mint, ClipItContractCreator, clipit, snackbar, sentry, CONFIG);
   const web3 = new Web3Controller(
     model.web3,
     mint,

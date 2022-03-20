@@ -13,7 +13,6 @@ import { GameController } from "./domains/twitch-games/game.controller";
 import { UserController } from "./domains/twitch-user/user.controller";
 import { TwitchOAuthApiClient } from "./lib/twitch-oauth/twitch-oauth-api.client";
 import { SubgraphClient } from "./lib/graphql/subgraph.client";
-import { OffChainStorage } from "./lib/off-chain-storage/off-chain-storage.client";
 import { NftController } from "./domains/nfts/nft.controller";
 import { SnackbarController } from "./domains/snackbar/snackbar.controller";
 import { ClipItApiClient } from "./lib/clipit-api/clipit-api.client";
@@ -34,22 +33,20 @@ export function initSynchronous() {
 
   const snackbar = new SnackbarController(model.snackbar);
 
-  const offChainStorage = new OffChainStorage(
-    new ClipItApiClient(new HttpClient(CONFIG.clipItApiUrl), storage),
-    new IpfsClient(new HttpClient(pinataGatewayUri))
-  );
+  const clipit = new ClipItApiClient(new HttpClient(CONFIG.clipItApiUrl), storage);
+  const ipfs = new IpfsClient(new HttpClient(pinataGatewayUri));
+  const subgraph = new SubgraphClient(new GraphQLClient(CONFIG.subgraphUrl));
 
   const twitchOAuthApi = new TwitchOAuthApiClient(new HttpClient(twitchOAuthUri), CONFIG.twitch.clientId);
   const twitchApi = new TwitchApi(new HttpClient(twitchApiUri), storage, CONFIG.twitch);
-  const subgraph = new SubgraphClient(new GraphQLClient(CONFIG.subgraphUrl));
 
   const auth = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, CONFIG.twitch.clientId);
   const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
   const game = new GameController(model.game, twitchApi, sentry);
   const user = new UserController(model.user, twitchApi, sentry);
-  const nft = new NftController(model.nft, offChainStorage, subgraph, snackbar, sentry);
+  const nft = new NftController(model.nft, ipfs, subgraph, snackbar, sentry);
   const auction = new AuctionController(model.auction, AuctionContractCreator, snackbar, sentry, CONFIG);
-  const mint = new MintController(model.mint, ClipItContractCreator, offChainStorage, snackbar, sentry, CONFIG);
+  const mint = new MintController(model.mint, ClipItContractCreator, clipit, snackbar, sentry, CONFIG);
   const web3 = new Web3Controller(
     model.web3,
     mint,

@@ -1,5 +1,5 @@
 import { BytesLike } from "ethers";
-import { ClipItApiErrors } from "../../lib/clipit-api/clipit-api.client";
+import { IClipItApiClient, ClipItApiErrors } from "../../lib/clipit-api/clipit-api.client";
 import { IClipItContractClient, Signature } from "../../lib/contracts/ClipIt/clipit-contract.client";
 import { ClipItContractErrors } from "../../lib/contracts/ClipIt/clipit-contract.errors";
 import { isEthersJsonRpcError } from "../../lib/contracts/jsonRpc.errors";
@@ -7,7 +7,6 @@ import { Decimal } from "../../lib/decimal/decimal";
 import { AppError } from "../../lib/errors/errors";
 import { EthereumProvider } from "../../lib/ethereum/ethereum.types";
 import { isRpcError, RpcErrors } from "../../lib/ethereum/rpc.errors";
-import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { SentryClient } from "../../lib/sentry/sentry.client";
 import { IConfig } from "../app/config";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
@@ -17,7 +16,7 @@ export class MintController {
   constructor(
     private model: MintModel,
     private clipitContractCreator: (provider: EthereumProvider, address: string) => IClipItContractClient,
-    private offChainStorage: OffChainStorage,
+    private clipit: IClipItApiClient,
     private snackbar: SnackbarClient,
     private sentry: SentryClient,
     private config: IConfig
@@ -50,13 +49,13 @@ export class MintController {
 
     this.model.startClipStoreLoader();
 
-    const resp = await this.offChainStorage.saveClipAndCreateMetadata(clipId, {
+    const resp = await this.clipit.storeClip(clipId, {
       address,
       clipTitle,
       clipDescription,
     });
 
-    if (resp.statusOk && !this.offChainStorage.isStoreClipError(resp.body)) {
+    if (resp.statusOk && !this.clipit.isClipItApiError(resp.body)) {
       this.model.stopClipStoreLoaderAndStartMintLoader();
 
       const txHash = await this.mintNFT(resp.body.mediadata, resp.body.signature, creatorShare);
@@ -66,7 +65,7 @@ export class MintController {
 
       this.model.setMintTxHash(txHash);
     } else {
-      if (this.offChainStorage.isStoreClipError(resp.body)) {
+      if (this.clipit.isClipItApiError(resp.body)) {
         if (resp.statusCode === 403 && resp.body.error.includes(ClipItApiErrors.NOT_BROADCASTER)) {
           this.snackbar.sendError(ClipItApiErrors.DISPLAY_NOT_BROADCASTER);
         }

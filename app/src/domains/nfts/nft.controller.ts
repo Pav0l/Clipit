@@ -1,16 +1,16 @@
 import type { NftModel } from "./nft.model";
 import { NftErrors } from "./nft.errors";
 import { isSubgraphError, ISubgraphClient } from "../../lib/graphql/subgraph.client";
-import { OffChainStorage } from "../../lib/off-chain-storage/off-chain-storage.client";
 import { ClipPartialFragment } from "../../lib/graphql/types";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { SentryClient } from "../../lib/sentry/sentry.client";
 import { AppError } from "../../lib/errors/errors";
+import { IIpfsClient } from "../../lib/ipfs/ipfs.client";
 
 export class NftController {
   constructor(
     private model: NftModel,
-    private offChainStorage: OffChainStorage,
+    private ipfs: IIpfsClient,
     private subgraph: ISubgraphClient,
     private snackbar: SnackbarClient,
     private sentry: SentryClient
@@ -366,8 +366,8 @@ export class NftController {
   };
 
   private getMetadataFromIpfs = async (cid: string) => {
-    const resp = await this.offChainStorage.getMetadata(cid);
-    if (resp.statusOk && this.offChainStorage.isIpfsMetadata(resp.body)) {
+    const resp = await this.ipfs.getMetadata(cid);
+    if (resp.statusOk && this.ipfs.isIpfsMetadata(resp.body)) {
       return resp.body;
     }
 
