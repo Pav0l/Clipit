@@ -67,7 +67,6 @@ export function initExtSynchronous(options: TwitchExtensionQueryParams) {
   const mint = new MintController(model.mint, ClipItContractCreator, clipit, snackbar, sentry, CONFIG);
   const web3 = new Web3Controller(
     model.web3,
-    mint,
     model.auction,
     auction,
     EthereumClientCreator,
@@ -78,7 +77,7 @@ export function initExtSynchronous(options: TwitchExtensionQueryParams) {
   );
 
   const configUi = new ConfigUiController(model, web3);
-  const streamerUi = new StreamerUiController(model, clip, game, web3, nft, snackbar, logger);
+  const streamerUi = new StreamerUiController(model, clip, game, web3, mint, nft, snackbar, logger);
 
   return {
     model,

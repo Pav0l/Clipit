@@ -17,6 +17,7 @@ import { NftController } from "./domains/nfts/nft.controller";
 import { SnackbarController } from "./domains/snackbar/snackbar.controller";
 import { ClipItApiClient } from "./lib/clipit-api/clipit-api.client";
 import { IpfsClient } from "./lib/ipfs/ipfs.client";
+import { UiController } from "./domains/app/ui.controller";
 import { ClipItContractCreator } from "./lib/contracts/ClipIt/clipit-contract.client";
 import { AuctionContractCreator } from "./lib/contracts/AuctionHouse/auction-contract.client";
 import { SentryClient } from "./lib/sentry/sentry.client";
@@ -49,7 +50,6 @@ export function initSynchronous() {
   const mint = new MintController(model.mint, ClipItContractCreator, clipit, snackbar, sentry, CONFIG);
   const web3 = new Web3Controller(
     model.web3,
-    mint,
     model.auction,
     auction,
     EthereumClientCreator,
@@ -59,11 +59,14 @@ export function initSynchronous() {
     CONFIG
   );
 
+  const ui = new UiController(model, web3, auction, mint, nft, snackbar);
+
   auth.checkTokenInStorage();
 
   return {
     model,
     operations: {
+      ui,
       web3,
       clip,
       user,

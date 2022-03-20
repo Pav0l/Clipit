@@ -30,6 +30,7 @@ import { UserController } from "../../twitch-user/user.controller";
 import FullPageLoader from "../../../components/loader/FullPageLoader";
 import { SupportWidgetProvider } from "../../support-widget/components/SupportWidgetProvider";
 import { makeAppStyles } from "../../theme/theme.constants";
+import { UiController } from "../ui.controller";
 
 interface Props {
   model: AppModel;
@@ -41,6 +42,7 @@ interface Props {
     clip: ClipController;
     game: GameController;
     user: UserController;
+    ui: UiController;
   };
   sentry: SentryClient;
 }

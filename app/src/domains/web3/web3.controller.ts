@@ -11,7 +11,6 @@ import { SentryClient } from "../../lib/sentry/sentry.client";
 import { AppError } from "../../lib/errors/errors";
 import { AuctionModel } from "../auction/auction.model";
 import { AuctionController } from "../auction/auction.controller";
-import { MintController } from "../mint/mint.controller";
 
 export interface IWeb3Controller {
   // silently try to get ethAccounts
@@ -21,15 +20,6 @@ export interface IWeb3Controller {
   // get current users balance
   getBalance: (address: string) => Promise<void>;
 
-  // mint token
-  requestConnectAndMint: (
-    clipId: string,
-    data: {
-      creatorShare: string;
-      clipTitle: string;
-      clipDescription?: string;
-    }
-  ) => Promise<void>;
   requestConnectAndCreateAuction: (tokenId: string, duration: BigNumberish, minPrice: BigNumberish) => Promise<void>;
   // Bid on token in auction
   requestConnectAndBid: (auctionId: string, amount: string) => Promise<void>;
@@ -41,7 +31,6 @@ export class Web3Controller implements IWeb3Controller {
   constructor(
     private model: Web3Model,
     // TODO abstract into UI ctrl
-    private mintController: MintController,
     private auctionModel: AuctionModel,
     private auctionController: AuctionController,
     // end TODO
@@ -93,25 +82,6 @@ export class Web3Controller implements IWeb3Controller {
 
     this.model.meta.setLoading(false);
   };
-
-  async requestConnectAndMint(
-    clipId: string,
-    data: {
-      creatorShare: string;
-      clipTitle: string;
-      clipDescription?: string;
-    }
-  ) {
-    await this.requestConnectIfProviderExist();
-    const address = this.model.getAccount();
-    if (!address) {
-      // requestAccounts failed (rejected/already opened, etc...) and notification to user was sent
-      // just stop here
-      return;
-    }
-
-    await this.mintController.prepareMetadataAndMintClip(clipId, { ...data, address });
-  }
 
   getBalance = async (address: string) => {
     try {
@@ -254,6 +224,8 @@ export class Web3Controller implements IWeb3Controller {
     if (!address) {
       return;
     }
+
+    this.model.setConnected();
 
     const name = await this.ethClient.resolveEnsName(address);
     this.model.setEnsName(name);

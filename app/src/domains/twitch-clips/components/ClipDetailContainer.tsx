@@ -7,7 +7,6 @@ import ErrorWithRetry from "../../../components/error/Error";
 import { ClipModel } from "../clip.model";
 import { UserModel } from "../../twitch-user/user.model";
 import { GameModel } from "../../twitch-games/game.model";
-import { IWeb3Controller } from "../../web3/web3.controller";
 import FullPageLoader from "../../../components/loader/FullPageLoader";
 import LinearLoader from "../../../components/loader/LinearLoader";
 import { UserController } from "../../twitch-user/user.controller";
@@ -16,11 +15,10 @@ import { GameController } from "../../twitch-games/game.controller";
 import { useInputData } from "../../../lib/hooks/useInputData";
 import { Web3Model } from "../../web3/web3.model";
 import ClipCardContent from "./ClipCardContent";
-import { SnackbarController } from "../../snackbar/snackbar.controller";
-import { NftController } from "../../nfts/nft.controller";
 import { NftModel } from "../../nfts/nft.model";
 import { makeAppStyles } from "../../theme/theme.constants";
 import { MintModel, MintStatus } from "../../mint/mint.model";
+import { UiController } from "../../app/ui.controller";
 
 interface Props {
   model: {
@@ -32,12 +30,10 @@ interface Props {
     mint: MintModel;
   };
   operations: {
-    web3: IWeb3Controller;
-    nft: NftController;
-    user: UserController;
+    ui: UiController;
     clip: ClipController;
+    user: UserController;
     game: GameController;
-    snackbar: SnackbarController;
   };
 }
 
@@ -76,35 +72,7 @@ function ClipDetailContainer({ model, operations }: Props) {
   }, [model.game.games.size, model.clip.clips.length]);
 
   const mint = async () => {
-    // we need to verify that current user is owner of broadcaster of clip,
-    // so we do not allow other people minting streamers clips
-    if (clip?.broadcasterId !== model.user.id) {
-      operations.snackbar.sendError("Only Clip broadcaster can mint Clip into NFT");
-      return;
-    }
-
-    if (clip != null) {
-      await operations.web3.requestConnectAndMint(clip.id, {
-        creatorShare,
-        clipTitle: titleInput,
-        clipDescription: descriptionInput,
-      });
-
-      const txHash = model.mint.mintTxHash;
-      if (!txHash) {
-        // mint failed
-        return;
-      }
-
-      const clipNft = await operations.nft.getClipIdForTxHash(txHash);
-      if (!clipNft) {
-        // fetch failed, nft.error is set tho
-        return;
-      }
-
-      // TODO ideally we do not want to reload the app here and just update state
-      location.assign(location.origin + `/nfts/${clipNft.id}`);
-    }
+    await operations.ui.mint(clip!, creatorShare, titleInput, descriptionInput);
   };
 
   if (model.user.meta.error) {

@@ -21,6 +21,7 @@ import { ExtensionMode } from "../src/extension/domains/extension/extension.inte
 import { TwitchExtensionTestClient } from "../src/lib/twitch-extension/twitch-extension-test.client";
 import { Logger } from "../src/lib/logger/logger";
 import { ExtensionModel } from "../src/extension/domains/extension/extension.model";
+import { UiController } from "../src/domains/app/ui.controller";
 import { StreamerUiController } from "../src/extension/domains/streamer/streamer-ui.controller";
 import { ConfigUiController } from "../src/extension/domains/config/config-ui.controller";
 import { BroadcasterAuthService } from "../src/extension/domains/broadcaster-auth/broadcaster-auth.service";
@@ -54,7 +55,6 @@ export function initTestSync(testConfig: IConfig) {
 
   const web3 = new Web3Controller(
     model.web3,
-    mint,
     model.auction,
     auction,
     EthereumTestClientCreator,
@@ -63,6 +63,8 @@ export function initTestSync(testConfig: IConfig) {
     ClipItTestContractCreator,
     testConfig
   );
+
+  const ui = new UiController(model, web3, auction, mint, nft, snackbar);
 
   auth.checkTokenInStorage();
 
@@ -77,7 +79,8 @@ export function initTestSync(testConfig: IConfig) {
       nft,
       mint,
       auction,
-      snackbar: snackbar,
+      snackbar,
+      ui,
     },
     localStorage: storage,
   };
@@ -107,7 +110,6 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
 
   const web3 = new Web3Controller(
     model.web3,
-    mint,
     model.auction,
     auction,
     EthereumTestClientCreator,
@@ -116,7 +118,7 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
     ClipItTestContractCreator,
     testConfig
   );
-  const streamerUi = new StreamerUiController(model, clip, game, web3, nft, snackbar, logger);
+  const streamerUi = new StreamerUiController(model, clip, game, web3, mint, nft, snackbar, logger);
   const configUi = new ConfigUiController(model, web3);
 
   return {

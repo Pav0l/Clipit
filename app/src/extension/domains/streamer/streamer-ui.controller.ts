@@ -1,4 +1,5 @@
 import { utils } from "ethers";
+import { MintController } from "../../../domains/mint/mint.controller";
 import { NftController } from "../../../domains/nfts/nft.controller";
 import { SnackbarController } from "../../../domains/snackbar/snackbar.controller";
 import { ClipController } from "../../../domains/twitch-clips/clip.controller";
@@ -15,6 +16,7 @@ export class StreamerUiController {
     private clip: ClipController,
     private game: GameController,
     private web3: Web3Controller,
+    private mintC: MintController,
     private nft: NftController,
     private snackbar: SnackbarController,
     private logger: Logger
@@ -65,8 +67,17 @@ export class StreamerUiController {
       return;
     }
 
-    // if the subgraph request based on txHash fails, we never get tokenId back!
-    await this.web3.requestConnectAndMint(clip.id, { creatorShare, clipTitle, clipDescription });
+    const address = this.model.web3.getAccount();
+    if (!address) {
+      return;
+    }
+
+    await this.mintC.prepareMetadataAndMintClip(clip.id, {
+      address,
+      creatorShare,
+      clipTitle,
+      clipDescription,
+    });
 
     const txHash = this.model.mint.mintTxHash;
     if (!txHash) {
