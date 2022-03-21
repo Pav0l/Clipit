@@ -19,6 +19,9 @@ import {
 } from "./auction.model";
 
 export class AuctionController {
+  private tokenContractClient?: IClipItContractClient;
+  private auctionContractClient?: IAuctionContractClient;
+
   constructor(
     private model: AuctionModel,
     private auctionContractCreator: (provider: EthereumProvider, address: string) => IAuctionContractClient,
@@ -34,11 +37,9 @@ export class AuctionController {
     minPrice: BigNumberish
   ): Promise<string | undefined> => {
     try {
-      const auctionContract = this.createAuctionContract();
-
       this.model.setAuctionCreateLoader();
 
-      const tx = await auctionContract.createAuction(
+      const tx = await this.auctionContract.createAuction(
         tokenId,
         this.config.tokenAddress,
         duration,
@@ -72,6 +73,7 @@ export class AuctionController {
         }
       }
 
+      // TODO errors into snackbar/Apperror should be AuctionErrors
       if (isRpcError(err)) {
         switch (err.code) {
           case RpcErrors.USER_REJECTED_REQUEST:
@@ -86,7 +88,7 @@ export class AuctionController {
             }
             break;
           default:
-            this.snackbar.sendError(AuctionErrors.SOMETHING_WENT_WRONG);
+            this.snackbar.sendError(AuctionErrors.AUCTION_CREATE_FAILED);
             break;
         }
       } else {
@@ -110,11 +112,9 @@ export class AuctionController {
 
   endAuction = async (auctionId: string) => {
     try {
-      const auction = this.createAuctionContract();
-
       this.model.setAuctionEndLoader();
 
-      const tx = await auction.endAuction(auctionId);
+      const tx = await this.auctionContract.endAuction(auctionId);
 
       this.model.setWaitForAuctionEndTxLoader();
 
@@ -167,11 +167,9 @@ export class AuctionController {
 
   cancelAuction = async (auctionId: string) => {
     try {
-      const auction = this.createAuctionContract();
-
       this.model.setAuctionCancelLoader();
 
-      const tx = await auction.cancelAuction(auctionId);
+      const tx = await this.auctionContract.cancelAuction(auctionId);
 
       this.model.setWaitForAuctionCancelTxLoader();
 
@@ -224,12 +222,10 @@ export class AuctionController {
 
   bidOnAuction = async (auctionId: string, amount: string) => {
     try {
-      const auction = this.createAuctionContract();
-
       this.model.setAuctionBidLoader();
 
       const etherAmount = utils.parseEther(amount);
-      const tx = await auction.createBid(auctionId, etherAmount);
+      const tx = await this.auctionContract.createBid(auctionId, etherAmount);
 
       this.model.setWaitForAuctionBidTxLoader();
 
@@ -273,12 +269,12 @@ export class AuctionController {
             // TODO handle AUCTION_BID_INVALID_FOR_SHARE_SPLITTING
             break;
           default:
-            this.snackbar.sendError(AuctionErrors.SOMETHING_WENT_WRONG);
+            this.snackbar.sendError(AuctionErrors.AUCTION_BID_FAILED);
             break;
         }
       } else {
         // unknown error
-        this.snackbar.sendError(AuctionErrors.SOMETHING_WENT_WRONG);
+        this.snackbar.sendError(AuctionErrors.AUCTION_BID_FAILED);
       }
     } finally {
       this.model.clearAuctionBidLoader();
@@ -286,14 +282,13 @@ export class AuctionController {
   };
 
   approveTokenForAuction = async (tokenId: string) => {
-    const token = this.createTokenContract();
-    const approved = await token.getApproved(tokenId);
+    const approved = await this.tokenContract.getApproved(tokenId);
 
     console.log("[LOG]:token approved", approved);
     if (approved !== this.config.auctionAddress) {
       this.model.setApproveAuctionLoader();
 
-      const tx = await token.approveAll(this.config.auctionAddress, true);
+      const tx = await this.tokenContract.approveAll(this.config.auctionAddress, true);
 
       this.model.setWaitForApproveAuctionTxLoader();
       console.log("[LOG]:approve auction tx hash", tx.hash);
@@ -301,11 +296,27 @@ export class AuctionController {
     }
   };
 
-  private createAuctionContract = () => {
-    return this.auctionContractCreator(window.ethereum as EthereumProvider, this.config.auctionAddress);
-  };
+  private get auctionContract() {
+    if (this.auctionContractClient) {
+      return this.auctionContractClient;
+    }
 
-  private createTokenContract = () => {
-    return this.clipitContractCreator(window.ethereum as EthereumProvider, this.config.tokenAddress);
-  };
+    this.auctionContractClient = this.auctionContractCreator(
+      window.ethereum as EthereumProvider,
+      this.config.auctionAddress
+    );
+    return this.auctionContractClient;
+  }
+
+  private get tokenContract() {
+    if (this.tokenContractClient) {
+      return this.tokenContractClient;
+    }
+
+    this.tokenContractClient = this.clipitContractCreator(
+      window.ethereum as EthereumProvider,
+      this.config.tokenAddress
+    );
+    return this.tokenContractClient;
+  }
 }
