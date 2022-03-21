@@ -18,7 +18,7 @@ export function isRpcError(error: ProviderRpcError | unknown): error is Provider
   );
 }
 
-export class TEST_RpcErrorGenerator implements ProviderRpcError {
+export class RpcErrorForTests implements ProviderRpcError {
   message: string;
   code: number;
   name = "RpcErrorForTests";

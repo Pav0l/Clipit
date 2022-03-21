@@ -6,7 +6,7 @@ import { ClipItApiTestClient } from "../../../lib/clipit-api/clipit-api-test.cli
 import { ClipItApiErrors } from "../../../lib/clipit-api/clipit-api.client";
 import { IClipItContractClient } from "../../../lib/contracts/ClipIt/clipit-contract.client";
 import { ClipItContractErrors } from "../../../lib/contracts/ClipIt/clipit-contract.errors";
-import { RpcErrors, TEST_RpcErrorGenerator } from "../../../lib/ethereum/rpc.errors";
+import { RpcErrors, RpcErrorForTests } from "../../../lib/ethereum/rpc.errors";
 import { AppModel } from "../../app/app.model";
 import { TwitchClip } from "../../twitch-clips/clip.model";
 import { MintController } from "../mint.controller";
@@ -144,7 +144,7 @@ describe("mint controller", function () {
 
   it("rpc error: token already minted", async () => {
     contractMintMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(ClipItContractErrors.CLIPIT_TOKEN_EXIST, RpcErrors.INTERNAL_ERROR);
+      throw new RpcErrorForTests(ClipItContractErrors.CLIPIT_TOKEN_EXIST, RpcErrors.INTERNAL_ERROR);
     });
 
     await mint.prepareMetadataAndMintClip(clip.id, {
@@ -165,7 +165,7 @@ describe("mint controller", function () {
 
   it("rpc error: invalid address trying to mint", async () => {
     contractMintMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(ClipItContractErrors.CLIPIT_INVALID_ADDRESS, RpcErrors.INTERNAL_ERROR);
+      throw new RpcErrorForTests(ClipItContractErrors.CLIPIT_INVALID_ADDRESS, RpcErrors.INTERNAL_ERROR);
     });
 
     await mint.prepareMetadataAndMintClip(clip.id, {
@@ -184,7 +184,7 @@ describe("mint controller", function () {
 
   it("rpc error: user rejected mint", async () => {
     contractMintMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator("", RpcErrors.USER_REJECTED_REQUEST);
+      throw new RpcErrorForTests("", RpcErrors.USER_REJECTED_REQUEST);
     });
 
     await mint.prepareMetadataAndMintClip(clip.id, {
@@ -203,7 +203,7 @@ describe("mint controller", function () {
 
   it("rpc error: unknown rpc error", async () => {
     contractMintMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator("", 123456);
+      throw new RpcErrorForTests("", 123456);
     });
 
     await mint.prepareMetadataAndMintClip(clip.id, {

@@ -5,7 +5,7 @@ import { auctionPartialFragment } from "../../../../tests/__fixtures__/auction-f
 import { txHash } from "../../../../tests/__fixtures__/ethereum";
 import { IAuctionContractClient } from "../../../lib/contracts/AuctionHouse/auction-contract.client";
 import { AuctionContractErrors } from "../../../lib/contracts/AuctionHouse/auction-contract.errors";
-import { RpcErrors, TEST_RpcErrorGenerator } from "../../../lib/ethereum/rpc.errors";
+import { RpcErrors, RpcErrorForTests } from "../../../lib/ethereum/rpc.errors";
 import { AppModel } from "../../app/app.model";
 import { AuctionController } from "../auction.controller";
 import { AuctionBidLoadStatus, AuctionCancelLoadStatus, AuctionEndLoadStatus, AuctionErrors } from "../auction.model";
@@ -53,7 +53,7 @@ describe("aution controller", function () {
 
   it("createAuction: user rejects tx", async () => {
     createAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator("", RpcErrors.USER_REJECTED_REQUEST);
+      throw new RpcErrorForTests("", RpcErrors.USER_REJECTED_REQUEST);
     });
 
     await auction.createAuction(auctionPartialFragment.tokenId, ONE_DAY, ONE_ETHER);
@@ -69,7 +69,7 @@ describe("aution controller", function () {
 
   it("createAuction: invalid curator fee", async () => {
     createAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(AuctionContractErrors.INVALID_CURATOR_FEE, RpcErrors.INTERNAL_ERROR);
+      throw new RpcErrorForTests(AuctionContractErrors.INVALID_CURATOR_FEE, RpcErrors.INTERNAL_ERROR);
     });
 
     await auction.createAuction(auctionPartialFragment.tokenId, ONE_DAY, ONE_ETHER);
@@ -85,7 +85,7 @@ describe("aution controller", function () {
 
   it("createAuction: user not allowed to create auction", async () => {
     createAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(AuctionContractErrors.NOT_ALLOWED_TO_CREATE_AUCTION, RpcErrors.INTERNAL_ERROR);
+      throw new RpcErrorForTests(AuctionContractErrors.NOT_ALLOWED_TO_CREATE_AUCTION, RpcErrors.INTERNAL_ERROR);
     });
 
     await auction.createAuction(auctionPartialFragment.tokenId, ONE_DAY, ONE_ETHER);
@@ -101,7 +101,7 @@ describe("aution controller", function () {
 
   it("createAuction: generic rpc eror", async () => {
     createAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator("", 999);
+      throw new RpcErrorForTests("", 999);
     });
 
     await auction.createAuction(auctionPartialFragment.tokenId, ONE_DAY, ONE_ETHER);
@@ -142,7 +142,7 @@ describe("aution controller", function () {
 
   it("endAuction: user rejects tx", async () => {
     endAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator("", RpcErrors.USER_REJECTED_REQUEST);
+      throw new RpcErrorForTests("", RpcErrors.USER_REJECTED_REQUEST);
     });
 
     await auction.endAuction(auctionPartialFragment.id);
@@ -157,7 +157,7 @@ describe("aution controller", function () {
 
   it("endAuction: auction does not exist", async () => {
     endAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(AuctionContractErrors.AUCTION_DOES_NOT_EXIST, RpcErrors.INTERNAL_ERROR);
+      throw new RpcErrorForTests(AuctionContractErrors.AUCTION_DOES_NOT_EXIST, RpcErrors.INTERNAL_ERROR);
     });
 
     await auction.endAuction("xxx");
@@ -172,7 +172,7 @@ describe("aution controller", function () {
 
   it("endAuction: auction has not started", async () => {
     endAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(AuctionContractErrors.AUCTION_END_HAS_NOT_STARTED, RpcErrors.INTERNAL_ERROR);
+      throw new RpcErrorForTests(AuctionContractErrors.AUCTION_END_HAS_NOT_STARTED, RpcErrors.INTERNAL_ERROR);
     });
 
     await auction.endAuction(auctionPartialFragment.id);
@@ -187,7 +187,7 @@ describe("aution controller", function () {
 
   it("endAuction: auction has not completed yet", async () => {
     endAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(AuctionContractErrors.AUCTION_END_HAS_NOT_COMPLETED, RpcErrors.INTERNAL_ERROR);
+      throw new RpcErrorForTests(AuctionContractErrors.AUCTION_END_HAS_NOT_COMPLETED, RpcErrors.INTERNAL_ERROR);
     });
 
     await auction.endAuction(auctionPartialFragment.id);
@@ -202,7 +202,7 @@ describe("aution controller", function () {
 
   it("endAuction: generic rpc eror", async () => {
     endAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator("", 999);
+      throw new RpcErrorForTests("", 999);
     });
 
     await auction.endAuction(auctionPartialFragment.id);
@@ -243,7 +243,7 @@ describe("aution controller", function () {
 
   it("cancelAuction: user rejects tx", async () => {
     cancelAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator("", RpcErrors.USER_REJECTED_REQUEST);
+      throw new RpcErrorForTests("", RpcErrors.USER_REJECTED_REQUEST);
     });
 
     await auction.cancelAuction(auctionPartialFragment.id);
@@ -258,7 +258,7 @@ describe("aution controller", function () {
 
   it("cancelAuction: auction does not exist", async () => {
     cancelAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(AuctionContractErrors.AUCTION_DOES_NOT_EXIST, RpcErrors.INTERNAL_ERROR);
+      throw new RpcErrorForTests(AuctionContractErrors.AUCTION_DOES_NOT_EXIST, RpcErrors.INTERNAL_ERROR);
     });
 
     await auction.cancelAuction("xxx");
@@ -273,7 +273,7 @@ describe("aution controller", function () {
 
   it("cancelAuction: caller is not auction owner/curator", async () => {
     cancelAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(AuctionContractErrors.AUCTION_CANCEL_INVALID_CALLER, RpcErrors.INTERNAL_ERROR);
+      throw new RpcErrorForTests(AuctionContractErrors.AUCTION_CANCEL_INVALID_CALLER, RpcErrors.INTERNAL_ERROR);
     });
 
     await auction.cancelAuction(auctionPartialFragment.id);
@@ -288,7 +288,7 @@ describe("aution controller", function () {
 
   it("cancelAuction: can not cancel active auction", async () => {
     cancelAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(AuctionContractErrors.AUCTION_CANCEL_RUNNING, RpcErrors.INTERNAL_ERROR);
+      throw new RpcErrorForTests(AuctionContractErrors.AUCTION_CANCEL_RUNNING, RpcErrors.INTERNAL_ERROR);
     });
 
     await auction.cancelAuction(auctionPartialFragment.id);
@@ -303,7 +303,7 @@ describe("aution controller", function () {
 
   it("cancelAuction: generic rpc eror", async () => {
     cancelAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator("", 999);
+      throw new RpcErrorForTests("", 999);
     });
 
     await auction.cancelAuction(auctionPartialFragment.id);
@@ -344,7 +344,7 @@ describe("aution controller", function () {
 
   it("bidOnAuction: user rejects tx", async () => {
     bidOnAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator("", RpcErrors.USER_REJECTED_REQUEST);
+      throw new RpcErrorForTests("", RpcErrors.USER_REJECTED_REQUEST);
     });
 
     await auction.bidOnAuction(auctionPartialFragment.id, "1");
@@ -359,7 +359,7 @@ describe("aution controller", function () {
 
   it("bidOnAuction: auction does not exist", async () => {
     bidOnAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(AuctionContractErrors.AUCTION_DOES_NOT_EXIST, RpcErrors.INTERNAL_ERROR);
+      throw new RpcErrorForTests(AuctionContractErrors.AUCTION_DOES_NOT_EXIST, RpcErrors.INTERNAL_ERROR);
     });
 
     await auction.bidOnAuction("xxx", "1");
@@ -374,7 +374,7 @@ describe("aution controller", function () {
 
   it("bidOnAuction: auction is not active yet", async () => {
     bidOnAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(AuctionContractErrors.AUCTION_NOT_APPROVED, RpcErrors.INTERNAL_ERROR);
+      throw new RpcErrorForTests(AuctionContractErrors.AUCTION_NOT_APPROVED, RpcErrors.INTERNAL_ERROR);
     });
 
     await auction.bidOnAuction(auctionPartialFragment.id, "1");
@@ -389,7 +389,7 @@ describe("aution controller", function () {
 
   it("bidOnAuction: auction expired", async () => {
     bidOnAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(AuctionContractErrors.AUCTION_EXPIRED, RpcErrors.INTERNAL_ERROR);
+      throw new RpcErrorForTests(AuctionContractErrors.AUCTION_EXPIRED, RpcErrors.INTERNAL_ERROR);
     });
 
     await auction.bidOnAuction(auctionPartialFragment.id, "1");
@@ -404,10 +404,7 @@ describe("aution controller", function () {
 
   it("bidOnAuction: too low bid - reserve price not met", async () => {
     bidOnAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(
-        AuctionContractErrors.AUCTION_BID_LOWER_THAN_RESERVE_PRICE,
-        RpcErrors.INTERNAL_ERROR
-      );
+      throw new RpcErrorForTests(AuctionContractErrors.AUCTION_BID_LOWER_THAN_RESERVE_PRICE, RpcErrors.INTERNAL_ERROR);
     });
 
     await auction.bidOnAuction(auctionPartialFragment.id, "1");
@@ -422,10 +419,7 @@ describe("aution controller", function () {
 
   it("bidOnAuction: too low bid - not sufficient increase compared to last bid", async () => {
     bidOnAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator(
-        AuctionContractErrors.AUCTION_BID_LOWER_THAN_PREVIOUS_BID,
-        RpcErrors.INTERNAL_ERROR
-      );
+      throw new RpcErrorForTests(AuctionContractErrors.AUCTION_BID_LOWER_THAN_PREVIOUS_BID, RpcErrors.INTERNAL_ERROR);
     });
 
     await auction.bidOnAuction(auctionPartialFragment.id, "1");
@@ -440,7 +434,7 @@ describe("aution controller", function () {
 
   it("bidOnAuction: generic rpc eror", async () => {
     bidOnAuctionMock.mockImplementation(() => {
-      throw new TEST_RpcErrorGenerator("", 999);
+      throw new RpcErrorForTests("", 999);
     });
 
     await auction.bidOnAuction(auctionPartialFragment.id, "1");

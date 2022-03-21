@@ -1,7 +1,7 @@
 import { initTestSync } from "../../../../tests/init-tests";
 import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
 import { EthereumTestProvider } from "../../../lib/ethereum/ethereum-test-provider";
-import { RpcErrors, TEST_RpcErrorGenerator } from "../../../lib/ethereum/rpc.errors";
+import { RpcErrors, RpcErrorForTests } from "../../../lib/ethereum/rpc.errors";
 import { AppModel } from "../../app/app.model";
 import { Web3Controller } from "../web3.controller";
 import { Web3Errors } from "../web3.model";
@@ -107,7 +107,7 @@ describe("web3 controller", () => {
 
     it("requestConnect: request to connect already pending", async () => {
       requestAccountsMock.mockImplementation(() => {
-        throw new TEST_RpcErrorGenerator("", RpcErrors.REQUEST_ALREADY_PENDING);
+        throw new RpcErrorForTests("", RpcErrors.REQUEST_ALREADY_PENDING);
       });
 
       await ctrl.requestConnect();
@@ -119,7 +119,7 @@ describe("web3 controller", () => {
 
     it("requestConnect: user rejected request", async () => {
       requestAccountsMock.mockImplementation(() => {
-        throw new TEST_RpcErrorGenerator("", RpcErrors.USER_REJECTED_REQUEST);
+        throw new RpcErrorForTests("", RpcErrors.USER_REJECTED_REQUEST);
       });
 
       await ctrl.requestConnect();
@@ -131,7 +131,7 @@ describe("web3 controller", () => {
 
     it("requestConnect: unexpected RPC error handled", async () => {
       requestAccountsMock.mockImplementation(() => {
-        throw new TEST_RpcErrorGenerator("", 999);
+        throw new RpcErrorForTests("", 999);
       });
 
       await ctrl.requestConnect();

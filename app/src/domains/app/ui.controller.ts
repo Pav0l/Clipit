@@ -25,6 +25,7 @@ export class UiController {
       this.snackbar.sendError(TwitchClipsErrors.CLIP_DOES_NOT_BELONG_TO_USER);
       return;
     }
+
     await this.web3.requestConnectIfProviderExist();
     const address = this.model.web3.getAccount();
     if (!address) {
@@ -56,7 +57,6 @@ export class UiController {
 
   async createAuction(tokenId: string, duration: BigNumberish, minPrice: BigNumberish) {
     await this.web3.requestConnectIfProviderExist();
-
     const address = this.model.web3.getAccount();
     if (!address) {
       return;
@@ -71,7 +71,6 @@ export class UiController {
 
   async createAuctionBid(auctionId: string, amount: string, tokenId: string) {
     await this.web3.requestConnectIfProviderExist();
-
     const address = this.model.web3.getAccount();
     if (!address) {
       return;
@@ -86,7 +85,6 @@ export class UiController {
 
   async endAuction(auctionId: string, tokenId: string) {
     await this.web3.requestConnectIfProviderExist();
-
     const address = this.model.web3.getAccount();
     if (!address) {
       return;
@@ -95,9 +93,9 @@ export class UiController {
     await this.auction.endAuction(auctionId);
     await this.nft.getAuctionForToken(tokenId, { clearCache: true });
   }
+
   async cancelAuction(auctionId: string, tokenId: string) {
     await this.web3.requestConnectIfProviderExist();
-
     const address = this.model.web3.getAccount();
     if (!address) {
       return;
