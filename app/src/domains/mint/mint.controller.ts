@@ -116,7 +116,7 @@ export class MintController {
           err = err.error;
         }
       }
-
+      // TODO messages sent into snackbar/errors should only be `MintErros`
       if (isRpcError(err)) {
         switch (err.code) {
           case RpcErrors.USER_REJECTED_REQUEST:

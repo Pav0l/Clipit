@@ -73,6 +73,6 @@ class ClipItContractTestClient implements IClipItContractClient {
   }
 }
 
-export function ClipItTestContractCreator(_provider: EthereumProvider): IClipItContractClient {
+export function ClipItTestContractCreator(_provider: EthereumProvider): ClipItContractTestClient {
   return new ClipItContractTestClient();
 }
