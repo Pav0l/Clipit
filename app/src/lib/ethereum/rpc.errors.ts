@@ -18,6 +18,16 @@ export function isRpcError(error: ProviderRpcError | unknown): error is Provider
   );
 }
 
+export class TEST_RpcErrorGenerator implements ProviderRpcError {
+  message: string;
+  code: number;
+  name = "RpcErrorForTests";
+  constructor(message: string, code: number) {
+    this.message = message;
+    this.code = code;
+  }
+}
+
 export interface ProviderRpcError extends Error {
   message: string;
   code: number;

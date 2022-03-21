@@ -1,14 +1,33 @@
 import { signerAddress } from "../../../tests/__fixtures__/ethereum";
 import { clipCid, metadata, metadataCid } from "../../../tests/__fixtures__/metadata";
+import { RawResponse } from "../http-client/http-client";
 
-import { IClipItApiClient, ClipPayload, ClipItApiError } from "./clipit-api.client";
+import { IClipItApiClient, ClipPayload, ClipItApiError, StoreClipResp } from "./clipit-api.client";
 
 export class ClipItApiTestClient implements IClipItApiClient {
+  private isResponseSuccessful = true;
+  private respGenerator?: (...args: any) => any;
+
   isClipItApiError(body: ClipItApiError | unknown): body is ClipItApiError {
-    return false;
+    return this.isResponseSuccessful ? false : true;
   }
 
-  storeClip = async <V>(clipId: string, _payload: ClipPayload) => {
+  storeClip = async (clipId: string, _payload: ClipPayload): Promise<RawResponse<StoreClipResp | ClipItApiError>> => {
+    return this.isResponseSuccessful
+      ? this.createDefaultSuccessResp(clipId)
+      : this.respGenerator
+      ? this.respGenerator(clipId, _payload)
+      : this.createDefaultFailResp();
+  };
+
+  mockResponse(isRespSuccess: boolean, respGenerator?: (args?: any) => any) {
+    this.isResponseSuccessful = isRespSuccess;
+    if (respGenerator) {
+      this.respGenerator = respGenerator;
+    }
+  }
+
+  private createDefaultSuccessResp(clipId: string) {
     return {
       statusCode: 200,
       statusOk: true,
@@ -28,7 +47,17 @@ export class ClipItApiTestClient implements IClipItApiClient {
           contentHash: Array.from(Array(32).keys()),
           metadataHash: Array.from(Array(32).keys()),
         },
-      } as unknown as V,
+      },
     };
-  };
+  }
+
+  private createDefaultFailResp() {
+    return {
+      statusCode: 400,
+      statusOk: false,
+      body: {
+        error: "Something went wrong",
+      },
+    };
+  }
 }

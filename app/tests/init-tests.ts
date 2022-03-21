@@ -80,6 +80,7 @@ export function initTestSync(testConfig: IConfig) {
       ui,
     },
     localStorage: storage,
+    clipitApi: clipit,
   };
 }
 

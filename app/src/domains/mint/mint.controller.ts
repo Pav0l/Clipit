@@ -13,6 +13,8 @@ import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { MintErrors, MintModel } from "./mint.model";
 
 export class MintController {
+  private clipitContract?: IClipItContractClient;
+
   constructor(
     private model: MintModel,
     private clipitContractCreator: (provider: EthereumProvider, address: string) => IClipItContractClient,
@@ -67,12 +69,11 @@ export class MintController {
     } else {
       if (this.clipit.isClipItApiError(resp.body)) {
         if (resp.statusCode === 403 && resp.body.error.includes(ClipItApiErrors.NOT_BROADCASTER)) {
-          this.snackbar.sendError(ClipItApiErrors.DISPLAY_NOT_BROADCASTER);
+          return this.snackbar.sendError(ClipItApiErrors.DISPLAY_NOT_BROADCASTER);
         }
-      } else {
-        this.snackbar.sendError(MintErrors.SOMETHING_WENT_WRONG);
       }
 
+      this.snackbar.sendError(MintErrors.SOMETHING_WENT_WRONG);
       this.model.stopClipStoreLoader();
     }
   };
@@ -95,8 +96,7 @@ export class MintController {
     };
 
     try {
-      const contract = this.createTokenContract();
-      const tx = await contract.mint(data, defaultBidshares, signature);
+      const tx = await this.contract.mint(data, defaultBidshares, signature);
       console.log("[LOG]:minting NFT in tx", tx.hash);
 
       this.model.setWaitForMintTx();
@@ -149,7 +149,12 @@ export class MintController {
     }
   };
 
-  private createTokenContract = () => {
-    return this.clipitContractCreator(window.ethereum as EthereumProvider, this.config.tokenAddress);
-  };
+  private get contract() {
+    if (this.clipitContract) {
+      return this.clipitContract;
+    }
+
+    this.clipitContract = this.clipitContractCreator(window.ethereum as EthereumProvider, this.config.tokenAddress);
+    return this.clipitContract;
+  }
 }

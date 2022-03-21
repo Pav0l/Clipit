@@ -55,7 +55,7 @@ export interface ClipItApiError {
   error: string;
 }
 
-interface StoreClipResp {
+export interface StoreClipResp {
   metadataCid: string;
   id: string; // clip id
   address: string; //compare with current user address to double check if it didn't change in the meantime

@@ -1,6 +1,5 @@
 import { metadataCid } from "../../../../tests/__fixtures__/metadata";
 import { chainId, signerAddress, txHash } from "../../../../tests/__fixtures__/ethereum";
-import { clipPartialFragment } from "../../../../tests/__fixtures__/clip-fragment";
 
 import { EthereumProvider } from "../../ethereum/ethereum.types";
 import { BidShares, IClipItContractClient, MediaData, Signature } from "./clipit-contract.client";
