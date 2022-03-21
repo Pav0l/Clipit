@@ -12,12 +12,15 @@ export interface IWeb3Controller {
   // silently try to get ethAccounts
   requestEthAccounts: () => Promise<void>;
   // open MM and call requestAccounts
-  requestConnect: (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => Promise<void>;
+  requestConnect: () => Promise<void>;
   // get current users balance
   getBalance: (address: string) => Promise<void>;
+  requestConnectIfProviderExist: () => Promise<void>;
 }
 
 export class Web3Controller implements IWeb3Controller {
+  private ethClient?: IEthClient;
+
   constructor(
     private model: Web3Model,
     private ethClientCreator: (provider: EthereumProvider) => IEthClient,
@@ -25,7 +28,7 @@ export class Web3Controller implements IWeb3Controller {
     private sentry: SentryClient
   ) {}
 
-  async requestEthAccounts() {
+  requestEthAccounts = async () => {
     if (!this.model.isMetaMaskInstalled()) {
       return;
     }
@@ -36,10 +39,10 @@ export class Web3Controller implements IWeb3Controller {
     }
 
     await this.ethAccounts();
-  }
+  };
 
-  requestConnect = async (andThenCallThisWithSignerAddress?: (addr: string) => Promise<void>) => {
-    // can't display this page if MM not installed
+  requestConnect = async () => {
+    // TODO consider if we even need these model.meta.setErrors or this method
     if (!this.model.isMetaMaskInstalled()) {
       this.model.meta.setError(new AppError({ msg: Web3Errors.INSTALL_METAMASK, type: "missing-provider" }));
       return;
@@ -50,8 +53,6 @@ export class Web3Controller implements IWeb3Controller {
       return;
     }
 
-    this.model.meta.setLoading(true);
-
     await this.requestAccounts();
 
     const signerAddress = this.model.getAccount();
@@ -59,42 +60,38 @@ export class Web3Controller implements IWeb3Controller {
       this.model.meta.setError(new AppError({ msg: Web3Errors.CONNECT_METAMASK, type: "connect-provider" }));
       return;
     }
-
-    if (andThenCallThisWithSignerAddress) {
-      await andThenCallThisWithSignerAddress(signerAddress);
-    }
-
-    this.model.meta.setLoading(false);
   };
 
   getBalance = async (address: string) => {
     try {
-      const balance = await this.ethClient.getBalance(address);
+      const balance = await this.ethereum.getBalance(address);
       this.model.setEthBalance(BigNumber.from(balance));
     } catch (error) {
       this.sentry.captureException(error);
     }
   };
 
-  async requestConnectIfProviderExist() {
+  requestConnectIfProviderExist = async () => {
     if (!this.model.isMetaMaskInstalled()) {
       this.snackbar.sendInfo(Web3Errors.INSTALL_METAMASK);
       return;
     }
 
-    if (!this.model.isProviderConnected()) {
-      await this.requestAccounts();
+    if (this.model.isProviderConnected()) {
+      return;
     }
-  }
+
+    await this.requestAccounts();
+  };
 
   private requestAccounts = async () => {
     try {
-      const accounts = await this.ethClient.requestAccounts();
-      console.log("[ethereum.controller]:requestAccounts:accounts", accounts);
+      const accounts = await this.ethereum.requestAccounts();
+      console.log("[web3]:requestAccounts:accounts", accounts);
 
       await this.updateAccounts(accounts);
     } catch (error) {
-      console.log("[ethereum.controller]:requestAccounts:error", error);
+      console.log("[web3]:requestAccounts:error", error);
 
       if (!isRpcError(error)) {
         this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
@@ -106,7 +103,7 @@ export class Web3Controller implements IWeb3Controller {
           this.snackbar.sendInfo(Web3Errors.REQUEST_ALREADY_PENDING);
           break;
         case RpcErrors.USER_REJECTED_REQUEST:
-          this.snackbar.sendInfo(Web3Errors.CONNECT_MM_WARNING);
+          this.snackbar.sendInfo(Web3Errors.REQUEST_REJECTED);
           break;
         default:
           this.snackbar.sendError(Web3Errors.CONNECT_METAMASK);
@@ -117,18 +114,17 @@ export class Web3Controller implements IWeb3Controller {
 
   private ethAccounts = async () => {
     try {
-      const accounts = await this.ethClient.ethAccounts();
-      console.log("[ethereum.controller]:ethAccounts:accounts", accounts);
+      const accounts = await this.ethereum.ethAccounts();
+      console.log("[web3]:eth_accounts", accounts);
 
       await this.updateAccounts(accounts);
     } catch (error) {
-      console.log("[ethereum.controller]:ethAccounts:error", error);
-      this.snackbar.sendError(Web3Errors.SOMETHING_WENT_WRONG);
+      console.log("[web3]:eth_accounts:error", error);
     }
   };
 
   private handleAccountsChange = async (accounts: string[]) => {
-    console.log("[web3.controller]:handleAccountsChange", accounts);
+    console.log("[web3]:handleAccountsChange", accounts);
     // TODO when accounts change, we should update NFT states of owners, etc
     await this.updateAccounts(accounts);
     // TODO in ext - we need to also map account to user
@@ -144,19 +140,23 @@ export class Web3Controller implements IWeb3Controller {
 
     this.model.setConnected();
 
-    const name = await this.ethClient.resolveEnsName(address);
+    const name = await this.ethereum.resolveEnsName(address);
     this.model.setEnsName(name);
   };
 
   private handleChainChanged(chainId: ChainId) {
-    console.log("[web3.controller]::chainChanged", chainId);
+    console.log("[web3]::chainChanged", chainId);
     window.location.reload();
   }
 
-  private get ethClient() {
-    const client = this.ethClientCreator(window.ethereum as EthereumProvider);
-    client.registerEventHandler("chainChanged", this.handleChainChanged);
-    client.registerEventHandler("accountsChanged", this.handleAccountsChange);
-    return client;
+  private get ethereum() {
+    if (this.ethClient) {
+      return this.ethClient;
+    }
+
+    this.ethClient = this.ethClientCreator(window.ethereum as EthereumProvider);
+    this.ethClient.registerEventHandler("chainChanged", this.handleChainChanged);
+    this.ethClient.registerEventHandler("accountsChanged", this.handleAccountsChange);
+    return this.ethClient;
   }
 }

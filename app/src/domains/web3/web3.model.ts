@@ -73,7 +73,7 @@ export class Web3Model {
 export enum Web3Errors {
   INSTALL_METAMASK = "Please install MetaMask extension and click the Connect button to view or create Clip NFTs",
   CONNECT_METAMASK = "Connect your MetaMask wallet to view or create Clip NFTs",
-  CONNECT_MM_WARNING = "Request to connect MetaMask was rejected",
+  REQUEST_REJECTED = "Request to connect MetaMask was rejected",
 
   REQUEST_ALREADY_PENDING = "Request already pending. Please open your MetaMask wallet and confirm it",
 

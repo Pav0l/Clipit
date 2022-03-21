@@ -30,6 +30,7 @@ describe("mint controller", function () {
     await init.operations.clip.getClip(clipId);
     clip = init.model.clip.getClip(clipId)!;
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore `contract` is private property of mint object -> TS no like
     clipitContract = mint.contract;
     contractMintMock = jest.spyOn(clipitContract, "mint");

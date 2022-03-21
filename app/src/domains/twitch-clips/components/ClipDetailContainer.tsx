@@ -87,10 +87,6 @@ function ClipDetailContainer({ model, operations }: Props) {
     return <ErrorWithRetry text={model.mint.meta.error.message} />;
   }
 
-  if (model.web3.meta.error) {
-    return <ErrorWithRetry text={model.web3.meta.error.message} />;
-  }
-
   if (model.nft.meta.error) {
     return <ErrorWithRetry text={model.nft.meta.error.message} />;
   }

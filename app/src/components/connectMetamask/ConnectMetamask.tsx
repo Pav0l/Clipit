@@ -13,7 +13,7 @@ interface Props {
   };
 
   onClick: () => Promise<void>;
-  onClickError: (msg: string) => void;
+  onClickError?: (msg: string) => void;
 }
 
 function ConnectMetamaskButton({ model, onClick, onClickError }: Props) {
@@ -46,7 +46,9 @@ function ConnectMetamaskButton({ model, onClick, onClickError }: Props) {
       try {
         onClick();
       } catch (error) {
-        onClickError((error as Error).message);
+        if (onClickError) {
+          onClickError((error as Error).message);
+        }
         return;
       }
     } else {

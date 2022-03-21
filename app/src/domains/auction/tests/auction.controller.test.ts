@@ -13,7 +13,6 @@ import { AuctionBidLoadStatus, AuctionCancelLoadStatus, AuctionEndLoadStatus, Au
 describe("aution controller", function () {
   let model: AppModel;
   let auction: AuctionController;
-  let auctionContract: IAuctionContractClient;
   let createAuctionMock: jest.SpyInstance;
   let endAuctionMock: jest.SpyInstance;
   let cancelAuctionMock: jest.SpyInstance;
@@ -27,8 +26,9 @@ describe("aution controller", function () {
     model = init.model;
     auction = init.operations.auction;
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    auctionContract = auction.auctionContract;
+    const auctionContract = auction.auctionContract;
     createAuctionMock = jest.spyOn(auctionContract, "createAuction");
     endAuctionMock = jest.spyOn(auctionContract, "endAuction");
     cancelAuctionMock = jest.spyOn(auctionContract, "cancelAuction");

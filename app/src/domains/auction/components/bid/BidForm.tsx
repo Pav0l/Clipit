@@ -47,15 +47,18 @@ export const BidForm = observer(function BidForm({ metadata, operations, model }
   const signer = model.web3.getAccount();
 
   useEffect(() => {
+    // TODO
+    // model.web3.isProviderConnected() should be called somewhere higher and `signerAddress` just passed down by props
     if (!model.web3.isProviderConnected()) {
       model.web3.resetEthBalance();
-      operations.web3.requestConnect(operations.web3.getBalance);
     }
+  }, []);
 
+  useEffect(() => {
     if (signer) {
       operations.web3.getBalance(signer);
     }
-  }, []);
+  }, [model.web3.accounts]);
 
   const handleBid = async () => {
     // bid input must be higher than minimalBid

@@ -45,7 +45,6 @@ function NftsContainer({ model, operations }: Props) {
     if (!model.web3.isProviderConnected()) {
       // MM was not connected -> no reason to keep some previous NFTs on state
       model.nft.resetMetadata();
-      operations.web3.requestConnect(operations.nft.getCurrentSignerTokensMetadata);
     }
 
     if (signer) {
@@ -53,9 +52,11 @@ function NftsContainer({ model, operations }: Props) {
     }
   }, []);
 
-  if (model.web3.meta.error) {
-    return <ErrorWithRetry text={model.web3.meta.error.message} withRetry={false} />;
-  }
+  useEffect(() => {
+    if (signer) {
+      operations.nft.getCurrentSignerTokensMetadata(signer);
+    }
+  }, [model.web3.accounts]);
 
   if (model.nft.meta.error) {
     return <ErrorWithRetry text={model.nft.meta.error.message} withRetry={true} />;

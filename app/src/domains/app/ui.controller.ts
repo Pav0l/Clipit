@@ -25,11 +25,9 @@ export class UiController {
       this.snackbar.sendError(TwitchClipsErrors.CLIP_DOES_NOT_BELONG_TO_USER);
       return;
     }
-    await this.web3.requestConnect();
+    await this.web3.requestConnectIfProviderExist();
     const address = this.model.web3.getAccount();
     if (!address) {
-      // requestAccounts failed (rejected/already opened, etc...) and notification to user was sent
-      // just stop here
       return;
     }
 

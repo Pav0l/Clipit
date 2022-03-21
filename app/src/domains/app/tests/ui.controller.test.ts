@@ -81,10 +81,12 @@ describe("ui-controller", function () {
       expect(window.location.assign).toHaveBeenCalledWith(window.location.href + `nfts/${clipPartialFragment.id}`);
     });
 
-    it("mint displays web3 error if no provider installed", () => {
+    it("mint displays snackbar info if no provider installed", () => {
       expect(ui.mint(model.clip.getClip(clipId)!, "10", "clip title", "clip description")).resolves;
-      expect(model.web3.meta.error?.type).toEqual("missing-provider");
-      expect(model.web3.meta.error?.message).toEqual(Web3Errors.INSTALL_METAMASK);
+      expect(model.web3.meta.error).toEqual(undefined);
+      expect(model.snackbar.open).toEqual(true);
+      expect(model.snackbar.message?.text).toEqual(Web3Errors.INSTALL_METAMASK);
+      expect(model.snackbar.message?.severity).toEqual("info");
     });
 
     it("displays error if user is not clip broadcaster", () => {
