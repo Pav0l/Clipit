@@ -3,12 +3,14 @@ import { makeAppStyles } from "../theme/theme.constants";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { IWeb3Controller } from "../web3/web3.controller";
 import { AppModel } from "../app/app.model";
+import { NavigatorController } from "../navigation/navigation.controller";
 
 interface Props {
   model: AppModel;
   operations: {
     web3: IWeb3Controller;
     snackbar: SnackbarClient;
+    navigator: NavigatorController;
   };
 }
 
@@ -18,6 +20,7 @@ const Playground = observer(function Playground({ model, operations }: Props) {
   const onClick = async () => {
     try {
       // do something
+      operations.navigator.goToAbout();
     } catch (error) {
       operations.snackbar.sendError((error as Error).message);
       return;
@@ -27,24 +30,18 @@ const Playground = observer(function Playground({ model, operations }: Props) {
   return (
     <div>
       <div>ENS name: {model.web3.ensName}</div>
-      <button onClick={onClick}>Do something!</button>
+      <button onClick={onClick}>/about</button>
       <button
         className={classes.btn}
         onClick={() => {
-          model.testStore.addData({ id: 1, text: `text is here: ${Math.random() * 1000}` });
-          model.testStore.addData({ id: 2, text: `text is here: ${Math.random() * 1000}` });
-          model.testStore.addData({ id: 3, text: `text is here: ${Math.random() * 1000}` });
+          operations.navigator.goToHome();
         }}
       >
-        add data
-      </button>
-      <button onClick={() => model.testStore.replaceData({ id: 2, text: `wauza` })}>replace data</button>
-      <button className={classes.btn} onClick={() => operations.snackbar.sendInfo(`infoo: ${Math.random() * 1000}`)}>
-        SET INFO
+        /home
       </button>
       <div>
         data: <br />
-        {JSON.stringify(model.testStore.data)}
+        {JSON.stringify(model.navigation)}
       </div>
     </div>
   );

@@ -4,8 +4,12 @@ import { AppRoute } from "../../../lib/constants";
 import { NavigationModel } from "../navigation.model";
 import { LinkButton } from "../../../components/linkButton/LinkButton";
 import { makeAppStyles } from "../../theme/theme.constants";
+import { NavigatorController } from "../navigation.controller";
 
 interface Props {
+  operations: {
+    navigator: NavigatorController;
+  };
   model: {
     navigation: NavigationModel;
   };
@@ -13,7 +17,7 @@ interface Props {
   text: string;
 }
 
-export default observer(function NavLink({ to, text, model }: Props) {
+export default observer(function NavLink({ to, text, model, operations }: Props) {
   const classes = useStyles();
   const buildClassName = (to: AppRoute) => {
     const baseClass = classes.li;
@@ -29,7 +33,7 @@ export default observer(function NavLink({ to, text, model }: Props) {
     <LinkButton
       to={to}
       text={<Typography>{text}</Typography>}
-      setActive={model.navigation.setActiveRoute}
+      setActive={operations.navigator.goToRoute}
       setHovered={model.navigation.setHoveredRoute}
       className={buildClassName(to)}
       underline="none"

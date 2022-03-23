@@ -11,6 +11,7 @@ import ConnectMetamaskButton from "../../../components/connectMetamask/ConnectMe
 import { NavigationModel } from "../../navigation/navigation.model";
 import NavLink from "./NavLink";
 import { makeAppStyles } from "../../theme/theme.constants";
+import { NavigatorController } from "../navigation.controller";
 
 interface Props {
   model: {
@@ -22,6 +23,7 @@ interface Props {
     web3: IWeb3Controller;
     auth: OAuthController;
     snackbar: SnackbarClient;
+    navigator: NavigatorController;
   };
   isDevelopment: boolean;
 }
@@ -33,17 +35,42 @@ export default observer(function Navbar({ model, operations, isDevelopment }: Pr
     <AppBar position="static" className={classes.appbar}>
       <Toolbar className={classes.toolbar}>
         <div className={classes.div} data-testid="navlinks-div">
-          <NavLink to={AppRoute.HOME} model={{ navigation: model.navigation }} text={"Home"} />
-          <NavLink to={AppRoute.MARKETPLACE} model={{ navigation: model.navigation }} text={"Marketplace"} />
+          <NavLink
+            to={AppRoute.HOME}
+            model={{ navigation: model.navigation }}
+            operations={{ navigator: operations.navigator }}
+            text={"Home"}
+          />
+          <NavLink
+            to={AppRoute.MARKETPLACE}
+            model={{ navigation: model.navigation }}
+            operations={{ navigator: operations.navigator }}
+            text={"Marketplace"}
+          />
           {model.auth.isLoggedIn ? (
-            <NavLink to={AppRoute.NFTS} model={{ navigation: model.navigation }} text={"NFTs"} />
+            <NavLink
+              to={AppRoute.NFTS}
+              model={{ navigation: model.navigation }}
+              operations={{ navigator: operations.navigator }}
+              text={"NFTs"}
+            />
           ) : null}
 
           {model.auth.isLoggedIn ? (
-            <NavLink to={AppRoute.CLIPS} model={{ navigation: model.navigation }} text={"Clips"} />
+            <NavLink
+              to={AppRoute.CLIPS}
+              model={{ navigation: model.navigation }}
+              operations={{ navigator: operations.navigator }}
+              text={"Clips"}
+            />
           ) : null}
           {isDevelopment ? (
-            <NavLink to={AppRoute.ABOUT} model={{ navigation: model.navigation }} text={"About"} />
+            <NavLink
+              to={AppRoute.ABOUT}
+              model={{ navigation: model.navigation }}
+              operations={{ navigator: operations.navigator }}
+              text={"About"}
+            />
           ) : null}
         </div>
 

@@ -24,10 +24,13 @@ import { SentryClient } from "./lib/sentry/sentry.client";
 import { AuctionController } from "./domains/auction/auction.controller";
 import { MintController } from "./domains/mint/mint.controller";
 import { EthereumClientCreator } from "./lib/ethereum/ethereum.client";
+import { NavigationClient } from "./domains/navigation/navigation.client";
+import { NavigatorController } from "./domains/navigation/navigation.controller";
 
 export function initSynchronous() {
   const sentry = new SentryClient(CONFIG.sentryDsn, CONFIG.isDevelopment);
 
+  const historyClient = new NavigationClient(window);
   const storage = new LocalStorageClient();
   const model = new AppModel();
 
@@ -57,6 +60,7 @@ export function initSynchronous() {
   const mint = new MintController(model.mint, ClipItContractCreator, clipit, snackbar, sentry, CONFIG);
   const web3 = new Web3Controller(model.web3, EthereumClientCreator, snackbar, sentry);
 
+  const navigator = new NavigatorController(model.navigation, historyClient);
   const ui = new UiController(model, web3, auction, mint, nft, snackbar);
 
   auth.checkTokenInStorage();
@@ -74,6 +78,7 @@ export function initSynchronous() {
       mint,
       auction,
       snackbar,
+      navigator,
     },
     sentry,
   };

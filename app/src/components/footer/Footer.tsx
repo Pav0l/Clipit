@@ -1,16 +1,23 @@
 import { Typography } from "@material-ui/core";
+import { RouteLink } from "../../domains/navigation/components/RouteLink";
+import { NavigatorController } from "../../domains/navigation/navigation.controller";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { AppRoute } from "../../lib/constants";
-import { LinkButton } from "../linkButton/LinkButton";
 
-export default function Footer() {
+interface Props {
+  operations: {
+    navigator: NavigatorController;
+  };
+}
+
+export default function Footer({ operations }: Props) {
   const classes = useStyles();
 
   return (
     <footer className={classes.footer}>
-      <LinkButton
+      <RouteLink
         to={AppRoute.TERMS}
-        setActive={() => null}
+        setActive={operations.navigator.goToRoute}
         className={classes.link}
         text={<Typography variant="caption">Terms of Service</Typography>}
         underline="hover"
@@ -29,5 +36,6 @@ const useStyles = makeAppStyles(() => ({
   },
   link: {
     margin: "0 2rem",
+    cursor: "pointer",
   },
 }));

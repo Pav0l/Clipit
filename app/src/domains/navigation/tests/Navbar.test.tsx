@@ -20,6 +20,7 @@ describe("Navbar component", function () {
               web3: init.operations.web3,
               auth: init.operations.auth,
               snackbar: init.operations.snackbar,
+              navigator: init.operations.navigator,
             }}
           />
         </BrowserRouter>

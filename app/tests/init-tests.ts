@@ -28,10 +28,13 @@ import { AuctionController } from "../src/domains/auction/auction.controller";
 import { MintController } from "../src/domains/mint/mint.controller";
 import { EthereumTestClientCreator } from "../src/lib/ethereum/ethereum-test.client";
 import { StreamerUiController } from "../src/extension/domains/streamer/streamer-ui.controller";
+import { NavigationTestClient } from "../src/domains/navigation/tests/navigation-test.client";
+import { NavigatorController } from "../src/domains/navigation/navigation.controller";
 
 export function initTestSync(testConfig: IConfig) {
   const sentry = new SentryClient("", true);
   const storage = new LocalStorageTestClient();
+  const navigationClient = new NavigationTestClient();
   const model = new AppModel();
 
   model.navigation.setActiveRoute(location.pathname as AppRoute);
@@ -61,6 +64,7 @@ export function initTestSync(testConfig: IConfig) {
   const mint = new MintController(model.mint, ClipItTestContractCreator, clipit, snackbar, sentry, CONFIG);
   const web3 = new Web3Controller(model.web3, EthereumTestClientCreator, snackbar, sentry);
 
+  const navigator = new NavigatorController(model.navigation, navigationClient);
   const ui = new UiController(model, web3, auction, mint, nft, snackbar);
 
   auth.checkTokenInStorage();
@@ -78,6 +82,7 @@ export function initTestSync(testConfig: IConfig) {
       auction,
       snackbar,
       ui,
+      navigator,
     },
     localStorage: storage,
     clipitApi: clipit,
