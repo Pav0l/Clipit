@@ -36,6 +36,5 @@ const useStyles = makeAppStyles(() => ({
   },
   link: {
     margin: "0 2rem",
-    cursor: "pointer",
   },
 }));

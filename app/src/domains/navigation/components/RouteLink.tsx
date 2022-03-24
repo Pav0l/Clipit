@@ -1,4 +1,5 @@
 import { Link as MuiLink } from "@material-ui/core";
+import { makeAppStyles } from "../../theme/theme.constants";
 
 interface Props {
   to: string;
@@ -10,10 +11,11 @@ interface Props {
 }
 
 export function RouteLink(props: Props) {
+  const classes = useStyles();
   return (
     <MuiLink
       underline={props.underline}
-      className={props.className}
+      className={`${classes.link} ${props.className}`}
       onClick={() => props.setActive(props.to)}
       onMouseEnter={() => (props.setHovered ? props.setHovered(props.to) : null)}
       onMouseLeave={() => (props.setHovered ? props.setHovered(undefined) : null)}
@@ -22,3 +24,9 @@ export function RouteLink(props: Props) {
     </MuiLink>
   );
 }
+
+const useStyles = makeAppStyles(() => ({
+  link: {
+    cursor: "pointer",
+  },
+}));
