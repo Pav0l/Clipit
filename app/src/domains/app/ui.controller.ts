@@ -1,6 +1,7 @@
 import { BigNumberish } from "ethers";
 import { AuctionController } from "../auction/auction.controller";
 import { MintController } from "../mint/mint.controller";
+import { NavigatorController } from "../navigation/navigation.controller";
 import { NftController } from "../nfts/nft.controller";
 import { SnackbarController } from "../snackbar/snackbar.controller";
 import { TwitchClipsErrors } from "../twitch-clips/clip.errors";
@@ -15,6 +16,7 @@ export class UiController {
     private auction: AuctionController,
     private mintCtrl: MintController,
     private nft: NftController,
+    private navigator: NavigatorController,
     private snackbar: SnackbarController
   ) {}
 
@@ -51,8 +53,7 @@ export class UiController {
       return;
     }
 
-    // TODO ideally we do not want to reload the app here and just update state
-    location.assign(location.origin + `/nfts/${clipNft.id}`);
+    this.navigator.goToNft(clipNft.id);
   }
 
   async createAuction(tokenId: string, duration: BigNumberish, minPrice: BigNumberish) {

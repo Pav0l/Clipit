@@ -22,12 +22,13 @@ export const DEFAULT_SKIP_COUNT_VALUE = 0;
 // APP
 export enum AppRoute {
   ABOUT = "/about",
+  TERMS = "/terms",
+  NFT = "/nfts/:tokenId",
+  // TODO - routes below to be moved to custom router
   MARKETPLACE = "/marketplace",
   CLIPS = "/clips",
   CLIP = "/clips/:clipId",
   NFTS = "/nfts",
-  NFT = "/nfts/:tokenId",
   OAUTH_REDIRECT = "/oauth2/redirect",
   HOME = "/",
-  TERMS = "/terms",
 }

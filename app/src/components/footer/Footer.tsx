@@ -19,7 +19,7 @@ export default function Footer({ operations }: Props) {
         to={AppRoute.TERMS}
         setActive={operations.navigator.goToRoute}
         className={classes.link}
-        text={<Typography variant="caption">Terms of Service</Typography>}
+        child={<Typography variant="caption">Terms of Service</Typography>}
         underline="hover"
       />
     </footer>

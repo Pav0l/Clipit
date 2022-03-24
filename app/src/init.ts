@@ -61,7 +61,7 @@ export function initSynchronous() {
   const web3 = new Web3Controller(model.web3, EthereumClientCreator, snackbar, sentry);
 
   const navigator = new NavigatorController(model.navigation, historyClient);
-  const ui = new UiController(model, web3, auction, mint, nft, snackbar);
+  const ui = new UiController(model, web3, auction, mint, nft, navigator, snackbar);
 
   auth.checkTokenInStorage();
 
@@ -89,11 +89,13 @@ export async function initAsync({
   user,
   web3,
   nft,
+  navigator,
 }: {
   model: AppModel;
   user: UserController;
   web3: Web3Controller;
   nft: NftController;
+  navigator: NavigatorController;
 }) {
   ////////////////////////////
   // twitch data init
@@ -114,11 +116,7 @@ export async function initAsync({
 
     const clip = model.nft.getContentHashMetadata(contentHash);
     if (clip?.tokenId) {
-      // TODO do not want to location.assign, just change history state and keep app state
-      location.assign(location.origin + `/nfts/${clip.tokenId}`);
-      // just wait a second with end of init till browser reloads
-      await new Promise((res) => setTimeout(res, 1000));
-      return;
+      navigator.goToNft(clip.tokenId);
     }
   }
 

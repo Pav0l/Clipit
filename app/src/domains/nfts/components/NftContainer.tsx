@@ -1,5 +1,4 @@
 import { observer } from "mobx-react-lite";
-import { useParams } from "react-router";
 import { useEffect } from "react";
 
 import ErrorWithRetry from "../../../components/error/Error";
@@ -16,6 +15,7 @@ import { AuctionModel } from "../../auction/auction.model";
 import { UiController } from "../../app/ui.controller";
 
 interface Props {
+  tokenId: string;
   model: {
     nft: NftModel;
     web3: Web3Model;
@@ -29,14 +29,14 @@ interface Props {
   sentry: SentryClient;
 }
 
-function NftContainer({ model, operations, sentry }: Props) {
-  const { tokenId } = useParams<{ tokenId?: string }>();
+function NftContainer({ model, operations, sentry, tokenId }: Props) {
   if (!tokenId) {
     sentry.captureMessage("missing tokenId in url params");
     return <ErrorWithRetry text="Something went wrong" withRetry={true} />;
   }
   const metadata = model.nft.getTokenMetadata(tokenId);
 
+  // TODO move this outside of component
   useEffect(() => {
     if (!metadata) {
       operations.nft.getTokenMetadata(tokenId);

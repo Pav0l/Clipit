@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Button, TextField, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useInputData } from "../../lib/hooks/useInputData";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { ClipModel } from "../../domains/twitch-clips/clip.model";
 import { ClipController } from "../../domains/twitch-clips/clip.controller";
 import FullPageLoader from "../loader/FullPageLoader";
@@ -13,6 +13,8 @@ import LoginWithTwitch from "../../domains/twitch-oauth/LoginWithTwitch/LoginWit
 import { OAuthModel } from "../../domains/twitch-oauth/oauth.model";
 import { OAuthController } from "../../domains/twitch-oauth/oauth.controller";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
+import { NavigatorController } from "../../domains/navigation/navigation.controller";
+import { RouteLink } from "../../domains/navigation/components/RouteLink";
 
 interface Props {
   model: {
@@ -23,6 +25,7 @@ interface Props {
   operations: {
     clip: ClipController;
     auth: OAuthController;
+    navigator: NavigatorController;
   };
 }
 
@@ -81,9 +84,13 @@ function Home({ model, operations }: Props) {
         </div>
       </section>
       {randomClip ? (
-        <Link to={`/nfts/${randomClip.tokenId}`} className={classes.link}>
-          <NftCard metadata={randomClip} />
-        </Link>
+        <RouteLink
+          to={`/nfts/${randomClip.tokenId}`}
+          className={classes.link}
+          setActive={operations.navigator.goToRoute}
+          child={<NftCard metadata={randomClip} />}
+          underline="none"
+        />
       ) : (
         <></>
       )}

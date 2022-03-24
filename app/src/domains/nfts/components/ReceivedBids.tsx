@@ -10,9 +10,10 @@ import { LinkButton } from "../../../components/linkButton/LinkButton";
 interface Props {
   metadata: Metadata[];
   setTabValue: () => void;
+  handleRouteChange: (path: string) => void;
 }
 
-function ReceivedBids({ metadata, setTabValue }: Props) {
+function ReceivedBids({ metadata, setTabValue, handleRouteChange }: Props) {
   if (metadata.length === 0) {
     return (
       <CenteredContainer>
@@ -24,7 +25,7 @@ function ReceivedBids({ metadata, setTabValue }: Props) {
     );
   }
 
-  return <ListOfCardsWithThumbnail metadata={metadata} />;
+  return <ListOfCardsWithThumbnail metadata={metadata} handleRouteChange={handleRouteChange} />;
 }
 
 export default observer(ReceivedBids);

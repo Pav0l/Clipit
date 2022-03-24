@@ -65,7 +65,7 @@ export function initTestSync(testConfig: IConfig) {
   const web3 = new Web3Controller(model.web3, EthereumTestClientCreator, snackbar, sentry);
 
   const navigator = new NavigatorController(model.navigation, navigationClient);
-  const ui = new UiController(model, web3, auction, mint, nft, snackbar);
+  const ui = new UiController(model, web3, auction, mint, nft, navigator, snackbar);
 
   auth.checkTokenInStorage();
 

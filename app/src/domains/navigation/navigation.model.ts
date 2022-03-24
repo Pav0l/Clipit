@@ -1,19 +1,18 @@
 import { makeAutoObservable } from "mobx";
-import { AppRoute } from "../../lib/constants";
 
 export class NavigationModel {
-  activeRoute?: AppRoute;
-  hoveredRoute?: AppRoute;
+  activeRoute?: string;
+  hoveredRoute?: string;
 
   constructor() {
     makeAutoObservable(this);
   }
 
-  setActiveRoute = (route: AppRoute) => {
+  setActiveRoute = (route: string) => {
     this.activeRoute = route;
   };
 
-  setHoveredRoute = (route: AppRoute | undefined) => {
+  setHoveredRoute = (route: string | undefined) => {
     this.hoveredRoute = route;
   };
 }

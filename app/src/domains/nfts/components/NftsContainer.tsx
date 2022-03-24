@@ -13,6 +13,7 @@ import ErrorWithRetry from "../../../components/error/Error";
 import { Web3Model, Web3Errors } from "../../web3/web3.model";
 import ReceivedBids from "./ReceivedBids";
 import { makeAppStyles } from "../../theme/theme.constants";
+import { NavigatorController } from "../../navigation/navigation.controller";
 
 interface Props {
   model: {
@@ -23,6 +24,7 @@ interface Props {
   operations: {
     web3: IWeb3Controller;
     nft: NftController;
+    navigator: NavigatorController;
   };
 }
 
@@ -80,11 +82,19 @@ function NftsContainer({ model, operations }: Props) {
         </Tabs>
       </Paper>
       {value === 0 ? (
-        <NftsPage model={model} metadata={metadata} />
+        <NftsPage model={model} metadata={metadata} handleRouteChange={operations.navigator.goToRoute} />
       ) : value === 1 ? (
-        <ActiveBidsPage model={model} metadata={model.nft.activeAuctionBidsMetadata} />
+        <ActiveBidsPage
+          model={model}
+          metadata={model.nft.activeAuctionBidsMetadata}
+          handleRouteChange={operations.navigator.goToRoute}
+        />
       ) : value === 2 ? (
-        <ReceivedBids metadata={bidsOnAuctions} setTabValue={() => setValue(0)} />
+        <ReceivedBids
+          metadata={bidsOnAuctions}
+          setTabValue={() => setValue(0)}
+          handleRouteChange={operations.navigator.goToRoute}
+        />
       ) : null}
     </>
   );

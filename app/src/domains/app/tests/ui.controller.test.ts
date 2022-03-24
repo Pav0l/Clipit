@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { initTestSync } from "../../../../tests/init-tests";
 import { clipPartialFragment } from "../../../../tests/__fixtures__/clip-fragment";
@@ -43,33 +42,7 @@ describe("ui-controller", function () {
   });
 
   describe("minting clip", function () {
-    // https://www.benmvp.com/blog/mocking-window-location-methods-jest-jsdom/
-    const oldWindowLocation = window.location;
-    // TODO get rid of this
-    beforeAll(() => {
-      // @ts-ignore
-      delete window.location;
-
-      // @ts-ignore
-      window.location = Object.defineProperties(
-        {},
-        {
-          ...Object.getOwnPropertyDescriptors(oldWindowLocation),
-          assign: {
-            configurable: true,
-            value: jest.fn(),
-          },
-        }
-      );
-    });
-
-    afterAll(() => {
-      window.location = oldWindowLocation;
-    });
-
     beforeEach(async () => {
-      (window.location.assign as jest.Mock).mockReset();
-
       // first we need to have user, clip & game
       await user.getUser();
       await clip.getClip(clipId);
@@ -82,8 +55,7 @@ describe("ui-controller", function () {
       // transaction was created
       expect(model.mint.mintTxHash).toEqual(txHash);
       // route redirected to nft/:id
-      expect(window.location.assign).toHaveBeenCalledTimes(1);
-      expect(window.location.assign).toHaveBeenCalledWith(window.location.href + `nfts/${clipPartialFragment.id}`);
+      expect(model.navigation.activeRoute).toEqual(`/nfts/${clipPartialFragment.id}`);
     });
 
     it("mint displays snackbar info if no provider installed", () => {

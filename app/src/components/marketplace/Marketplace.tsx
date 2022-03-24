@@ -9,13 +9,17 @@ import { NftController } from "../../domains/nfts/nft.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { CLIPS_PAGINATION_SKIP_VALUE, DEFAULT_SKIP_COUNT_VALUE } from "../../lib/constants";
 import ListOfCardsWithThumbnail from "../nfts/ListOfCardsWithThumbnail";
+import { NavigatorController } from "../../domains/navigation/navigation.controller";
 
 interface Props {
   model: {
     nft: NftModel;
     web3: Web3Model;
   };
-  operations: NftController;
+  operations: {
+    nft: NftController;
+    navigator: NavigatorController;
+  };
 }
 
 function Marketplace({ model, operations }: Props) {
@@ -29,14 +33,14 @@ function Marketplace({ model, operations }: Props) {
 
   useEffect(() => {
     if (metadata.length === 0) {
-      operations.getClips(DEFAULT_SKIP_COUNT_VALUE);
+      operations.nft.getClips(DEFAULT_SKIP_COUNT_VALUE);
     }
   }, []);
 
   useEffect(() => {
     if (skipCount !== DEFAULT_SKIP_COUNT_VALUE) {
       const clipsToSkip = skipCount * CLIPS_PAGINATION_SKIP_VALUE;
-      operations.getClips(clipsToSkip);
+      operations.nft.getClips(clipsToSkip);
     }
   }, [skipCount]);
 
@@ -51,7 +55,7 @@ function Marketplace({ model, operations }: Props) {
 
   return (
     <>
-      <ListOfCardsWithThumbnail metadata={metadata} />
+      <ListOfCardsWithThumbnail metadata={metadata} handleRouteChange={operations.navigator.goToRoute} />
 
       {metadata.length >= CLIPS_PAGINATION_SKIP_VALUE ? (
         <Button variant="outlined" onClick={fetchNextBatchOfClips}>

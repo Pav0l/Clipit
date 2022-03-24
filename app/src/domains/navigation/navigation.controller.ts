@@ -17,7 +17,11 @@ export class NavigatorController {
     this.goToRoute(AppRoute.TERMS);
   };
 
-  goToRoute = (route: AppRoute) => {
+  goToNft = (tokenId: string) => {
+    this.goToRoute(`/nfts/${tokenId}`);
+  };
+
+  goToRoute = (route: string) => {
     this.model.setActiveRoute(route);
     this.client.push(route);
   };

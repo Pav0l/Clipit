@@ -19,7 +19,13 @@ import { AppError } from "./lib/errors/errors";
   );
 
   try {
-    await initAsync({ model, user: operations.user, web3: operations.web3, nft: operations.nft });
+    await initAsync({
+      model,
+      user: operations.user,
+      web3: operations.web3,
+      nft: operations.nft,
+      navigator: operations.navigator,
+    });
   } catch (error) {
     sentry.captureException(error);
     model.meta.setError(new AppError({ msg: "Error while initializing app", type: "init" }));

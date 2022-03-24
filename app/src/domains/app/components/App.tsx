@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
-import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route as ReactRoute, Redirect } from "react-router-dom";
+import Route from "route-parser";
 
 import { AppModel } from "../app.model";
 import { AppRoute } from "../../../lib/constants";
@@ -122,28 +123,41 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
   }
 
   if (app === null) {
-    return (
-      <Switch>
-        <Route exact path={AppRoute.MARKETPLACE}>
-          <Marketplace model={{ nft: model.nft, web3: model.web3 }} operations={operations.nft} />
-        </Route>
+    if (model.navigation.activeRoute?.startsWith(AppRoute.NFTS)) {
+      const route = new Route<{ tokenId: string }>(AppRoute.NFT);
+      const matched = route.match(model.navigation.activeRoute);
 
-        <Route exact path={AppRoute.NFTS}>
-          <ErrorBoundary sentry={sentry}>
-            <NftsContainer
-              model={{ nft: model.nft, web3: model.web3, navigation: model.navigation }}
-              operations={{ web3: operations.web3, nft: operations.nft }}
-            />
-          </ErrorBoundary>
-        </Route>
-
-        <Route exact path={AppRoute.NFT}>
+      if (matched !== false) {
+        app = (
           <NftContainer
+            tokenId={matched.tokenId}
             model={{ nft: model.nft, web3: model.web3, auction: model.auction }}
             operations={{ web3: operations.web3, nft: operations.nft, ui: operations.ui }}
             sentry={sentry}
           />
-        </Route>
+        );
+      }
+    }
+  }
+
+  if (app === null) {
+    return (
+      <Switch>
+        <ReactRoute exact path={AppRoute.MARKETPLACE}>
+          <Marketplace
+            model={{ nft: model.nft, web3: model.web3 }}
+            operations={{ navigator: operations.navigator, nft: operations.nft }}
+          />
+        </ReactRoute>
+
+        <ReactRoute exact path={AppRoute.NFTS}>
+          <ErrorBoundary sentry={sentry}>
+            <NftsContainer
+              model={{ nft: model.nft, web3: model.web3, navigation: model.navigation }}
+              operations={{ web3: operations.web3, nft: operations.nft, navigator: operations.navigator }}
+            />
+          </ErrorBoundary>
+        </ReactRoute>
 
         <OAuthProtectedRoute
           exact
@@ -185,15 +199,16 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
             />
           </ErrorBoundary>
         </OAuthProtectedRoute>
-        <Route exact path={AppRoute.OAUTH_REDIRECT}>
+        <ReactRoute exact path={AppRoute.OAUTH_REDIRECT}>
           <OAuth2Redirect controller={operations.auth} model={model.auth} />
-        </Route>
-        <Route path={AppRoute.HOME}>
+        </ReactRoute>
+
+        <ReactRoute path={AppRoute.HOME}>
           <Home
             model={{ clip: model.clip, nft: model.nft, auth: model.auth }}
-            operations={{ clip: operations.clip, auth: operations.auth }}
+            operations={{ clip: operations.clip, auth: operations.auth, navigator: operations.navigator }}
           />
-        </Route>
+        </ReactRoute>
 
         {/* fallback route */}
         <Redirect to={AppRoute.HOME} />

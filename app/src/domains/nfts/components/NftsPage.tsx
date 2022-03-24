@@ -13,9 +13,10 @@ interface Props {
     navigation: NavigationModel;
   };
   metadata: Metadata[];
+  handleRouteChange: (path: string) => void;
 }
 
-function NftsPage({ model, metadata }: Props) {
+function NftsPage({ model, metadata, handleRouteChange }: Props) {
   if (metadata.length === 0) {
     return (
       <CenteredContainer>
@@ -33,7 +34,7 @@ function NftsPage({ model, metadata }: Props) {
     );
   }
 
-  return <ListOfCardsWithThumbnail metadata={metadata} />;
+  return <ListOfCardsWithThumbnail metadata={metadata} handleRouteChange={handleRouteChange} />;
 }
 
 export default observer(NftsPage);
