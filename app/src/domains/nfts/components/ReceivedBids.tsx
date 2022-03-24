@@ -5,7 +5,7 @@ import { AppRoute } from "../../../lib/constants";
 import CenteredContainer from "../../../components/container/CenteredContainer";
 import ListOfCardsWithThumbnail from "../../../components/nfts/ListOfCardsWithThumbnail";
 import { Metadata } from "../nft.model";
-import { LinkButton } from "../../../components/linkButton/LinkButton";
+import { RouteLink } from "../../navigation/components/RouteLink";
 
 interface Props {
   metadata: Metadata[];
@@ -19,7 +19,7 @@ function ReceivedBids({ metadata, setTabValue, handleRouteChange }: Props) {
       <CenteredContainer>
         <Typography variant="h6" component="h6">
           It seems you have no Active Auctions. You can create an Auction for{" "}
-          <LinkButton to={AppRoute.NFTS} text="minted CLIP" className="" setActive={setTabValue} underline="always" />
+          <RouteLink to={AppRoute.NFTS} child="minted CLIP" className="" setActive={setTabValue} underline="always" />
         </Typography>
       </CenteredContainer>
     );
