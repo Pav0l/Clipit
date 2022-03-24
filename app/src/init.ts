@@ -1,6 +1,6 @@
 import { GraphQLClient } from "graphql-request";
 
-import { AppRoute, pinataGatewayUri, twitchApiUri, twitchOAuthUri } from "./lib/constants";
+import { pinataGatewayUri, twitchApiUri, twitchOAuthUri } from "./lib/constants";
 import { AppModel } from "./domains/app/app.model";
 import { Web3Controller } from "./domains/web3/web3.controller";
 import { HttpClient } from "./lib/http-client/http-client";
@@ -33,7 +33,8 @@ export function initSynchronous() {
   const storage = new LocalStorageClient();
   const model = new AppModel();
 
-  model.navigation.setActiveRoute(location.pathname as AppRoute);
+  // TODO this is stupid - need to validate pathname before writing to model
+  model.navigation.setActiveRoute(location.pathname);
 
   const snackbar = new SnackbarController(model.snackbar);
 

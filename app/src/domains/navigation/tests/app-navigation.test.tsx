@@ -127,7 +127,32 @@ describe("app navigation", function () {
     expect(init.model.navigation.activeRoute).toEqual(AppRoute.NFTS);
     const nftsContainer = getByTestId("nfts-container");
     expect(nftsContainer).toBeTruthy();
+  });
 
-    await flushPromisesInTests();
+  it("non-existent route falls back to HOME", async () => {
+    setLocationForTests(`http://localhost/this-route-does-not-exist`);
+
+    const init = initTestSync(CONFIG);
+
+    await initAsync({
+      model: init.model,
+      navigator: init.operations.navigator,
+      nft: init.operations.nft,
+      user: init.operations.user,
+      web3: init.operations.web3,
+    });
+
+    const component = (
+      <ThemeProvider model={init.model.theme}>
+        <BrowserRouter>
+          <App model={init.model} operations={init.operations} sentry={init.sentry} />
+        </BrowserRouter>
+      </ThemeProvider>
+    );
+
+    const { getByTestId } = render(component);
+
+    const home = getByTestId("home");
+    expect(home).toBeTruthy();
   });
 });
