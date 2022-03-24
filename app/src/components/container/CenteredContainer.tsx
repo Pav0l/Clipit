@@ -9,7 +9,7 @@ interface Props {
 function CenteredContainer({ children, className }: Props) {
   const classes = useStyles();
 
-  return <Box className={`${classes.container} ${className}`}>{children}</Box>;
+  return <Box className={`${classes.container} ${className ?? ""}`}>{children}</Box>;
 }
 
 export default CenteredContainer;
