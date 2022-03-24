@@ -28,7 +28,7 @@ const Playground = observer(function Playground({ model, operations }: Props) {
   };
 
   return (
-    <div>
+    <div data-testid="about">
       <div>ENS name: {model.web3.ensName}</div>
       <button onClick={onClick}>/about</button>
       <button

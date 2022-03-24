@@ -5,7 +5,7 @@ import { SimpleList } from "../simpleList/SimpleList";
 
 export default function TermsOfService() {
   return (
-    <CenteredContainer>
+    <CenteredContainer dataTestId="terms">
       <Container>
         <Typography variant="h4" component="h4">
           Terms of Service

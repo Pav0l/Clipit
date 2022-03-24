@@ -50,7 +50,7 @@ function NftContainer({ model, operations, sentry, tokenId }: Props) {
 
   if (metadata) {
     return (
-      <SplitContainer>
+      <SplitContainer dataTestId="nft-container">
         <NftCard metadata={metadata} />
         <NftDetails
           metadata={metadata}

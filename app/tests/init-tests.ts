@@ -86,6 +86,7 @@ export function initTestSync(testConfig: IConfig) {
     },
     localStorage: storage,
     clipitApi: clipit,
+    sentry,
   };
 }
 

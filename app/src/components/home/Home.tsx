@@ -55,7 +55,7 @@ function Home({ model, operations }: Props) {
   }
 
   return (
-    <SplitContainer className={classes.main}>
+    <SplitContainer className={classes.main} dataTestId="home">
       <section className={classes.section}>
         <div className={classes.div}>
           <Typography variant="h2" className={classes.title}>

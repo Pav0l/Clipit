@@ -1,6 +1,5 @@
 import { GraphQLClient } from "graphql-request";
 
-import "./index.css";
 import { AppRoute, pinataGatewayUri, twitchApiUri, twitchOAuthUri } from "./lib/constants";
 import { AppModel } from "./domains/app/app.model";
 import { Web3Controller } from "./domains/web3/web3.controller";
@@ -111,7 +110,7 @@ export async function initAsync({
   // TODO clean this up somewhere to Nav ctrl or UI ctrl or refactor the to router based init
   const params = new URL(location.href).searchParams;
   const contentHash = params.get("contentHash");
-  if (contentHash) {
+  if (contentHash !== null) {
     await nft.getClipByContentHash(contentHash);
 
     const clip = model.nft.getContentHashMetadata(contentHash);
