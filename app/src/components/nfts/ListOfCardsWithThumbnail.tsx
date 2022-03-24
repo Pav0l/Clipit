@@ -7,13 +7,14 @@ import { CardWithThumbnail } from "./CardWithThumbnail";
 interface Props {
   metadata: Metadata[];
   handleRouteChange: (path: string) => void;
+  dataTestId?: string;
 }
 
-export default function ListOfCardsWithThumbnail({ metadata, handleRouteChange }: Props) {
+export default function ListOfCardsWithThumbnail({ metadata, handleRouteChange, dataTestId }: Props) {
   const classes = useStyles();
 
   return (
-    <VideoList>
+    <VideoList dataTestId={dataTestId}>
       {metadata.map((metadata, idx) => (
         <RouteLink
           key={idx}

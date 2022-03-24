@@ -55,7 +55,11 @@ function Marketplace({ model, operations }: Props) {
 
   return (
     <>
-      <ListOfCardsWithThumbnail metadata={metadata} handleRouteChange={operations.navigator.goToRoute} />
+      <ListOfCardsWithThumbnail
+        metadata={metadata}
+        handleRouteChange={operations.navigator.goToRoute}
+        dataTestId="marketplace"
+      />
 
       {metadata.length >= CLIPS_PAGINATION_SKIP_VALUE ? (
         <Button variant="outlined" onClick={fetchNextBatchOfClips}>

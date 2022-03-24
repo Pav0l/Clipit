@@ -120,6 +120,15 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
     case AppRoute.TERMS:
       app = <TermsOfService />;
       break;
+
+    case AppRoute.MARKETPLACE:
+      app = (
+        <Marketplace
+          model={{ nft: model.nft, web3: model.web3 }}
+          operations={{ navigator: operations.navigator, nft: operations.nft }}
+        />
+      );
+      break;
   }
 
   if (app === null) {
@@ -143,13 +152,6 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
   if (app === null) {
     return (
       <Switch>
-        <ReactRoute exact path={AppRoute.MARKETPLACE}>
-          <Marketplace
-            model={{ nft: model.nft, web3: model.web3 }}
-            operations={{ navigator: operations.navigator, nft: operations.nft }}
-          />
-        </ReactRoute>
-
         <ReactRoute exact path={AppRoute.NFTS}>
           <ErrorBoundary sentry={sentry}>
             <NftsContainer

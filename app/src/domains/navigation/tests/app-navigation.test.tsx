@@ -101,5 +101,12 @@ describe("app navigation", function () {
     expect(init.model.navigation.activeRoute).toEqual(AppRoute.HOME);
     const home = getByTestId("home");
     expect(home).toBeTruthy();
+
+    // go to /marketplace
+    init.operations.navigator.goToMarketplace();
+
+    expect(init.model.navigation.activeRoute).toEqual(AppRoute.MARKETPLACE);
+    const marketplace = getByTestId("marketplace");
+    expect(marketplace).toBeTruthy();
   });
 });
