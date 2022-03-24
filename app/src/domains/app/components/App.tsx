@@ -129,6 +129,17 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
         />
       );
       break;
+
+    case AppRoute.NFTS:
+      app = (
+        <ErrorBoundary sentry={sentry}>
+          <NftsContainer
+            model={{ nft: model.nft, web3: model.web3, navigation: model.navigation }}
+            operations={{ web3: operations.web3, nft: operations.nft, navigator: operations.navigator }}
+          />
+        </ErrorBoundary>
+      );
+      break;
   }
 
   if (app === null) {
@@ -152,15 +163,6 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
   if (app === null) {
     return (
       <Switch>
-        <ReactRoute exact path={AppRoute.NFTS}>
-          <ErrorBoundary sentry={sentry}>
-            <NftsContainer
-              model={{ nft: model.nft, web3: model.web3, navigation: model.navigation }}
-              operations={{ web3: operations.web3, nft: operations.nft, navigator: operations.navigator }}
-            />
-          </ErrorBoundary>
-        </ReactRoute>
-
         <OAuthProtectedRoute
           exact
           path={AppRoute.CLIPS}
@@ -181,6 +183,7 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
             />
           </ErrorBoundary>
         </OAuthProtectedRoute>
+
         <OAuthProtectedRoute
           exact
           path={AppRoute.CLIP}
@@ -201,6 +204,7 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
             />
           </ErrorBoundary>
         </OAuthProtectedRoute>
+
         <ReactRoute exact path={AppRoute.OAUTH_REDIRECT}>
           <OAuth2Redirect controller={operations.auth} model={model.auth} />
         </ReactRoute>

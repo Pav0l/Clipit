@@ -8,6 +8,8 @@ import { App } from "../../app/components/App";
 import { initAsync } from "../../../init";
 import { clipPartialFragment } from "../../../../tests/__fixtures__/clip-fragment";
 import { AppRoute } from "../../../lib/constants";
+import { EthereumTestProvider } from "../../../lib/ethereum/ethereum-test-provider";
+import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
 
 function setLocationForTests(href: string) {
   const url = new URL(href);
@@ -17,6 +19,10 @@ function setLocationForTests(href: string) {
     href: url.href,
     pathname: url.pathname,
   };
+}
+
+function flushPromisesInTests() {
+  return new Promise((res) => setTimeout(res));
 }
 
 describe("app navigation", function () {
@@ -29,6 +35,7 @@ describe("app navigation", function () {
 
   afterAll((): void => {
     window.location = location;
+    window.ethereum = undefined;
   });
 
   it("redirects to nft/:tokenId if app opened with `contentHash` query param", async () => {
@@ -62,6 +69,7 @@ describe("app navigation", function () {
 
   it("navigating between routes work", async () => {
     setLocationForTests(`http://localhost${AppRoute.TERMS}`);
+    window.ethereum = new EthereumTestProvider();
 
     const init = initTestSync(CONFIG);
 
@@ -72,6 +80,7 @@ describe("app navigation", function () {
       user: init.operations.user,
       web3: init.operations.web3,
     });
+    init.model.web3.setAccounts([signerAddress]);
 
     expect(init.model.navigation.activeRoute).toEqual(AppRoute.TERMS);
 
@@ -108,5 +117,17 @@ describe("app navigation", function () {
     expect(init.model.navigation.activeRoute).toEqual(AppRoute.MARKETPLACE);
     const marketplace = getByTestId("marketplace");
     expect(marketplace).toBeTruthy();
+
+    // wait for async operations from rendering Marketplace to finish
+    await flushPromisesInTests();
+
+    // go to /nfts
+    init.operations.navigator.goToNfts();
+
+    expect(init.model.navigation.activeRoute).toEqual(AppRoute.NFTS);
+    const nftsContainer = getByTestId("nfts-container");
+    expect(nftsContainer).toBeTruthy();
+
+    await flushPromisesInTests();
   });
 });

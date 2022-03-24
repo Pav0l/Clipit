@@ -74,7 +74,7 @@ function NftsContainer({ model, operations }: Props) {
 
   return (
     <>
-      <Paper className={classes.container}>
+      <Paper className={classes.container} data-testid="nfts-container">
         <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary" centered>
           <Tab label="Clips" />
           <Tab label="Active Bids" />
