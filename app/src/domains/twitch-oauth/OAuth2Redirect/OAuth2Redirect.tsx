@@ -1,29 +1,30 @@
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
-import { useHistory } from "react-router-dom";
 
 import FullPageLoader from "../../../components/loader/FullPageLoader";
 import ErrorWithRetry from "../../../components/error/Error";
 import { AppRoute } from "../../../lib/constants";
 import { OAuthController } from "../oauth.controller";
 import { OAuthModel } from "../oauth.model";
+import { NavigatorController } from "../../navigation/navigation.controller";
 
 interface Props {
-  controller: OAuthController;
+  operations: {
+    oauth: OAuthController;
+    navigator: NavigatorController;
+  };
   model: OAuthModel;
 }
 
-const OAuth2Redirect = observer(({ controller, model }: Props) => {
-  const history = useHistory();
-
+const OAuth2Redirect = observer(({ operations, model }: Props) => {
   useEffect(() => {
-    controller.handleOAuth2Redirect(new URL(location.href));
+    operations.oauth.handleOAuth2Redirect(new URL(location.href));
     let referrer = model.referrer;
 
     if (!referrer) {
       referrer = AppRoute.HOME;
     }
-    history.push(referrer);
+    operations.navigator.goToRoute(referrer);
   }, []);
 
   if (model.meta.error) {

@@ -155,4 +155,31 @@ describe("app navigation", function () {
     const home = getByTestId("home");
     expect(home).toBeTruthy();
   });
+
+  it("oauth/redirect redirects properly", async () => {
+    setLocationForTests(`http://localhost${AppRoute.OAUTH_REDIRECT}`);
+
+    const init = initTestSync(CONFIG);
+
+    await initAsync({
+      model: init.model,
+      navigator: init.operations.navigator,
+      nft: init.operations.nft,
+      user: init.operations.user,
+      web3: init.operations.web3,
+    });
+
+    const component = (
+      <ThemeProvider model={init.model.theme}>
+        <BrowserRouter>
+          <App model={init.model} operations={init.operations} sentry={init.sentry} />
+        </BrowserRouter>
+      </ThemeProvider>
+    );
+
+    const { getByTestId } = render(component);
+
+    const home = getByTestId("home");
+    expect(home).toBeTruthy();
+  });
 });

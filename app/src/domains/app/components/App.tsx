@@ -140,6 +140,12 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
         </ErrorBoundary>
       );
       break;
+
+    case AppRoute.OAUTH_REDIRECT:
+      app = (
+        <OAuth2Redirect model={model.auth} operations={{ oauth: operations.auth, navigator: operations.navigator }} />
+      );
+      break;
   }
 
   if (app === null) {
@@ -204,10 +210,6 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
             />
           </ErrorBoundary>
         </OAuthProtectedRoute>
-
-        <ReactRoute exact path={AppRoute.OAUTH_REDIRECT}>
-          <OAuth2Redirect controller={operations.auth} model={model.auth} />
-        </ReactRoute>
 
         <ReactRoute path={AppRoute.HOME}>
           <Home
