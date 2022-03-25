@@ -1,14 +1,14 @@
-import { Link } from "react-router-dom";
 import { Typography } from "@material-ui/core";
 
 import { ClipCard } from "./ClipCard";
 import VideoList from "../../../components/videoList/VideoList";
 import CenteredContainer from "../../../components/container/CenteredContainer";
 import { makeAppStyles } from "../../theme/theme.constants";
+import { RouteLink } from "../../navigation/components/RouteLink";
 
 interface Props {
   clipList: Clip[];
-  handpePagination?: () => void;
+  handleRouteChange: (path: string) => void;
 }
 
 interface Clip {
@@ -27,7 +27,7 @@ function EmptyList() {
   );
 }
 
-export default function ClipList({ clipList }: Props) {
+export default function ClipList({ clipList, handleRouteChange }: Props) {
   const classes = useStyles();
 
   return (
@@ -38,9 +38,14 @@ export default function ClipList({ clipList }: Props) {
         <VideoList>
           {clipList.map((clip, idx) => {
             return (
-              <Link to={`/clips/${clip.id}`} key={idx} className={classes.link}>
-                <ClipCard title={clip.title} thumbnailUrl={clip.thumbnailUrl} key={idx} />
-              </Link>
+              <RouteLink
+                to={`/clips/${clip.id}`}
+                setActive={handleRouteChange}
+                key={idx}
+                className={classes.link}
+                child={<ClipCard title={clip.title} thumbnailUrl={clip.thumbnailUrl} key={idx} />}
+                underline="none"
+              />
             );
           })}
         </VideoList>

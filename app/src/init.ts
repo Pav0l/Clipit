@@ -26,6 +26,7 @@ import { EthereumClientCreator } from "./lib/ethereum/ethereum.client";
 import { NavigationClient } from "./domains/navigation/navigation.client";
 import { NavigatorController } from "./domains/navigation/navigation.controller";
 
+// TODO create init interface, use in asyncInit, reuse in testInit, reuse in renderAppForTest, allow "runAfterSyncInit" function
 export function initSynchronous() {
   const sentry = new SentryClient(CONFIG.sentryDsn, CONFIG.isDevelopment);
 
@@ -90,13 +91,22 @@ export async function initAsync({
   web3,
   nft,
   navigator,
+  oauth,
 }: {
   model: AppModel;
   user: UserController;
   web3: Web3Controller;
   nft: NftController;
   navigator: NavigatorController;
+  oauth: OAuthController;
 }) {
+  ////////////////////////////
+  // authorization
+  ////////////////////////////
+  if (navigator.isOnOAuthProtectedRoute) {
+    oauth.initOauthFlowIfNotAuthorized();
+  }
+
   ////////////////////////////
   // twitch data init
   ////////////////////////////

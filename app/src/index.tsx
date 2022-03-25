@@ -25,6 +25,7 @@ import { AppError } from "./lib/errors/errors";
       web3: operations.web3,
       nft: operations.nft,
       navigator: operations.navigator,
+      oauth: operations.auth,
     });
   } catch (error) {
     sentry.captureException(error);

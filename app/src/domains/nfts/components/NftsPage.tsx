@@ -5,28 +5,24 @@ import { AppRoute } from "../../../lib/constants";
 import CenteredContainer from "../../../components/container/CenteredContainer";
 import ListOfCardsWithThumbnail from "../../../components/nfts/ListOfCardsWithThumbnail";
 import { Metadata } from "../nft.model";
-import { LinkButton } from "../../../components/linkButton/LinkButton";
-import { NavigationModel } from "../../navigation/navigation.model";
+import { RouteLink } from "../../navigation/components/RouteLink";
 
 interface Props {
-  model: {
-    navigation: NavigationModel;
-  };
   metadata: Metadata[];
   handleRouteChange: (path: string) => void;
 }
 
-function NftsPage({ model, metadata, handleRouteChange }: Props) {
+function NftsPage({ metadata, handleRouteChange }: Props) {
   if (metadata.length === 0) {
     return (
       <CenteredContainer>
         <Typography variant="h6" component="h6">
           It seems you have no NFTs yet. Try{" "}
-          <LinkButton
+          <RouteLink
             to={AppRoute.CLIPS}
-            text="minting your first clip"
+            child="minting your first clip"
             className=""
-            setActive={model.navigation.setActiveRoute}
+            setActive={handleRouteChange}
             underline="always"
           />
         </Typography>

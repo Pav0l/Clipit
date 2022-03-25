@@ -9,6 +9,7 @@ import { ClipController } from "../clip.controller";
 import { GameController } from "../../twitch-games/game.controller";
 import { UserController } from "../../twitch-user/user.controller";
 import ClipList from "./ClipList";
+import { NavigatorController } from "../../navigation/navigation.controller";
 
 interface Props {
   model: {
@@ -19,6 +20,7 @@ interface Props {
     clip: ClipController;
     game: GameController;
     user: UserController;
+    navigator: NavigatorController;
   };
 }
 
@@ -54,7 +56,10 @@ function ClipsContainer({ model, operations }: Props) {
       {model.user.meta.isLoading || model.clip.meta.isLoading ? (
         <FullPageLoader />
       ) : (
-        <ClipList clipList={model.clip.getUsersClips(model.user.id)} />
+        <ClipList
+          clipList={model.clip.getUsersClips(model.user.id)}
+          handleRouteChange={operations.navigator.goToRoute}
+        />
       )}
     </>
   );

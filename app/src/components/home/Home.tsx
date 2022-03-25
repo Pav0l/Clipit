@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import { Button, TextField, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useInputData } from "../../lib/hooks/useInputData";
-import { useHistory } from "react-router-dom";
 import { ClipModel } from "../../domains/twitch-clips/clip.model";
 import { ClipController } from "../../domains/twitch-clips/clip.controller";
 import FullPageLoader from "../loader/FullPageLoader";
@@ -32,7 +31,6 @@ interface Props {
 function Home({ model, operations }: Props) {
   const [inputData, inputHandler, clearInput] = useInputData();
 
-  const history = useHistory();
   const classes = useStyles();
 
   const randomClip = useMemo(() => model.nft.getRandomMetadata(), [model.nft.metadata]);
@@ -44,7 +42,7 @@ function Home({ model, operations }: Props) {
     const clipId = operations.clip.validateClipUrl(inputData.trim());
 
     if (clipId) {
-      history.push(`/clips/${clipId}`);
+      operations.navigator.goToClip(clipId);
     }
     clearInput();
     model.clip.meta.setLoading(false);

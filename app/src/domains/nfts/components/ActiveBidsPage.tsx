@@ -4,15 +4,10 @@ import { Typography } from "@material-ui/core";
 import { AppRoute } from "../../../lib/constants";
 import CenteredContainer from "../../../components/container/CenteredContainer";
 import ListOfCardsWithThumbnail from "../../../components/nfts/ListOfCardsWithThumbnail";
-import { Web3Model } from "../../web3/web3.model";
-import { Metadata, NftModel } from "../nft.model";
+import { Metadata } from "../nft.model";
 import { RouteLink } from "../../navigation/components/RouteLink";
 
 interface Props {
-  model: {
-    web3: Web3Model;
-    nft: NftModel;
-  };
   metadata: Metadata[];
   handleRouteChange: (path: string) => void;
 }

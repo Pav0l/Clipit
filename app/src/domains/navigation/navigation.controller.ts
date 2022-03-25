@@ -21,8 +21,16 @@ export class NavigatorController {
     this.goToRoute(AppRoute.MARKETPLACE);
   };
 
+  goToClips = () => {
+    this.goToRoute(AppRoute.CLIPS);
+  };
+
+  goToClip = (clipId: string) => {
+    this.goToRoute(`${AppRoute.CLIPS}/${clipId}`);
+  };
+
   goToNft = (tokenId: string) => {
-    this.goToRoute(`/nfts/${tokenId}`);
+    this.goToRoute(`${AppRoute.NFTS}/${tokenId}`);
   };
 
   goToNfts = () => {
@@ -33,4 +41,8 @@ export class NavigatorController {
     this.model.setActiveRoute(route);
     this.client.push(route);
   };
+
+  get isOnOAuthProtectedRoute() {
+    return !!this.model.activeRoute?.startsWith(AppRoute.CLIPS);
+  }
 }

@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { Card, CardMedia } from "@material-ui/core";
 
@@ -21,6 +20,7 @@ import { MintModel, MintStatus } from "../../mint/mint.model";
 import { UiController } from "../../app/ui.controller";
 
 interface Props {
+  clipId: string;
   model: {
     clip: ClipModel;
     user: UserModel;
@@ -37,8 +37,7 @@ interface Props {
   };
 }
 
-function ClipDetailContainer({ model, operations }: Props) {
-  const { clipId } = useParams<{ clipId: string }>();
+function ClipDetailContainer({ model, operations, clipId }: Props) {
   const clip = model.clip.getClip(clipId);
 
   const [titleInput, setTitleInput, clearTitleInput] = useInputData();

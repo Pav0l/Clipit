@@ -5,7 +5,6 @@ import { Paper, Tabs, Tab } from "@material-ui/core";
 import { IWeb3Controller } from "../../web3/web3.controller";
 import { NftController } from "../nft.controller";
 import { NftModel } from "../nft.model";
-import { NavigationModel } from "../../navigation/navigation.model";
 import NftsPage from "./NftsPage";
 import ActiveBidsPage from "./ActiveBidsPage";
 import FullPageLoader from "../../../components/loader/FullPageLoader";
@@ -19,7 +18,6 @@ interface Props {
   model: {
     web3: Web3Model;
     nft: NftModel;
-    navigation: NavigationModel;
   };
   operations: {
     web3: IWeb3Controller;
@@ -82,10 +80,9 @@ function NftsContainer({ model, operations }: Props) {
         </Tabs>
       </Paper>
       {value === 0 ? (
-        <NftsPage model={model} metadata={metadata} handleRouteChange={operations.navigator.goToRoute} />
+        <NftsPage metadata={metadata} handleRouteChange={operations.navigator.goToRoute} />
       ) : value === 1 ? (
         <ActiveBidsPage
-          model={model}
           metadata={model.nft.activeAuctionBidsMetadata}
           handleRouteChange={operations.navigator.goToRoute}
         />

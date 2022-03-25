@@ -28,6 +28,12 @@ export class OAuthController {
     location.reload();
   };
 
+  initOauthFlowIfNotAuthorized = () => {
+    if (!this.model.isLoggedIn) {
+      location.assign(this.getTwitchOAuth2AuthorizeUrl());
+    }
+  };
+
   handleOAuth2Redirect = (url: URL) => {
     const { access_token, state } = this.parseDataFromUrl(url);
 

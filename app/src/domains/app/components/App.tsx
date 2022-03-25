@@ -16,7 +16,6 @@ import Navbar from "../../navigation/components/Navbar";
 import ErrorBoundary from "../../../components/error/ErrorBoundry";
 import Playground from "../../playground/Playground";
 import ThemeProvider from "../../theme/components/ThemeProvider";
-import OAuthProtectedRoute from "../../twitch-oauth/OAuthProtected/OAuthProtectedRoute";
 import ErrorWithRetry from "../../../components/error/Error";
 import Footer from "../../../components/footer/Footer";
 import TermsOfService from "../../../components/terms/TermsOfService";
@@ -134,8 +133,27 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
       app = (
         <ErrorBoundary sentry={sentry}>
           <NftsContainer
-            model={{ nft: model.nft, web3: model.web3, navigation: model.navigation }}
+            model={{ nft: model.nft, web3: model.web3 }}
             operations={{ web3: operations.web3, nft: operations.nft, navigator: operations.navigator }}
+          />
+        </ErrorBoundary>
+      );
+      break;
+
+    case AppRoute.CLIPS:
+      app = (
+        <ErrorBoundary sentry={sentry}>
+          <ClipsContainer
+            model={{
+              clip: model.clip,
+              user: model.user,
+            }}
+            operations={{
+              clip: operations.clip,
+              game: operations.game,
+              user: operations.user,
+              navigator: operations.navigator,
+            }}
           />
         </ErrorBoundary>
       );
@@ -164,40 +182,16 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
         );
       }
     }
-  }
 
-  if (app === null) {
-    return (
-      <Switch>
-        <OAuthProtectedRoute
-          exact
-          path={AppRoute.CLIPS}
-          model={{ auth: model.auth }}
-          operations={{ auth: operations.auth }}
-        >
-          <ErrorBoundary sentry={sentry}>
-            <ClipsContainer
-              model={{
-                clip: model.clip,
-                user: model.user,
-              }}
-              operations={{
-                clip: operations.clip,
-                game: operations.game,
-                user: operations.user,
-              }}
-            />
-          </ErrorBoundary>
-        </OAuthProtectedRoute>
+    if (model.navigation.activeRoute?.startsWith(AppRoute.CLIPS)) {
+      const route = new Route<{ clipId: string }>(AppRoute.CLIP);
+      const matched = route.match(model.navigation.activeRoute);
 
-        <OAuthProtectedRoute
-          exact
-          path={AppRoute.CLIP}
-          model={{ auth: model.auth }}
-          operations={{ auth: operations.auth }}
-        >
+      if (matched !== false) {
+        app = (
           <ErrorBoundary sentry={sentry}>
             <ClipDetailContainer
+              clipId={matched.clipId}
               model={{
                 clip: model.clip,
                 user: model.user,
@@ -209,8 +203,14 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
               operations={operations}
             />
           </ErrorBoundary>
-        </OAuthProtectedRoute>
+        );
+      }
+    }
+  }
 
+  if (app === null) {
+    return (
+      <Switch>
         <ReactRoute path={AppRoute.HOME}>
           <Home
             model={{ clip: model.clip, nft: model.nft, auth: model.auth }}
