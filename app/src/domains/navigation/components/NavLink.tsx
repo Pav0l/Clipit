@@ -2,9 +2,9 @@ import { Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { AppRoute } from "../../../lib/constants";
 import { NavigationModel } from "../navigation.model";
-import { LinkButton } from "../../../components/linkButton/LinkButton";
 import { makeAppStyles } from "../../theme/theme.constants";
 import { NavigatorController } from "../navigation.controller";
+import { RouteLink } from "./RouteLink";
 
 interface Props {
   operations: {
@@ -30,9 +30,9 @@ export default observer(function NavLink({ to, text, model, operations }: Props)
   };
 
   return (
-    <LinkButton
+    <RouteLink
       to={to}
-      text={<Typography>{text}</Typography>}
+      child={<Typography>{text}</Typography>}
       setActive={operations.navigator.goToRoute}
       setHovered={model.navigation.setHoveredRoute}
       className={buildClassName(to)}
