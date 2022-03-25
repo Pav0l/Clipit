@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { render } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
 
 import { initTestSync } from "../../../../tests/init-tests";
 import ThemeProvider from "../../theme/components/ThemeProvider";
@@ -64,9 +63,7 @@ describe("app navigation", function () {
 
     const component = (
       <ThemeProvider model={init.model.theme}>
-        <BrowserRouter>
-          <App model={init.model} operations={init.operations} sentry={init.sentry} />
-        </BrowserRouter>
+        <App model={init.model} operations={init.operations} sentry={init.sentry} />
       </ThemeProvider>
     );
 
@@ -87,9 +84,7 @@ describe("app navigation", function () {
 
     const component = (
       <ThemeProvider model={init.model.theme}>
-        <BrowserRouter>
-          <App model={init.model} operations={init.operations} sentry={init.sentry} />
-        </BrowserRouter>
+        <App model={init.model} operations={init.operations} sentry={init.sentry} />
       </ThemeProvider>
     );
 
@@ -106,14 +101,14 @@ describe("app navigation", function () {
     expect(nftContainer).toBeTruthy();
 
     // go to home /
-    init.operations.navigator.goToHome();
+    init.operations.navigator.goToRoute(AppRoute.HOME);
 
     expect(init.model.navigation.activeRoute).toEqual(AppRoute.HOME);
     const home = getByTestId("home");
     expect(home).toBeTruthy();
 
     // go to /marketplace
-    init.operations.navigator.goToMarketplace();
+    init.operations.navigator.goToRoute(AppRoute.MARKETPLACE);
 
     expect(init.model.navigation.activeRoute).toEqual(AppRoute.MARKETPLACE);
     const marketplace = getByTestId("marketplace");
@@ -123,11 +118,21 @@ describe("app navigation", function () {
     await flushPromisesInTests();
 
     // go to /nfts
-    init.operations.navigator.goToNfts();
+    init.operations.navigator.goToRoute(AppRoute.NFTS);
 
     expect(init.model.navigation.activeRoute).toEqual(AppRoute.NFTS);
     const nftsContainer = getByTestId("nfts-container");
     expect(nftsContainer).toBeTruthy();
+
+    // wait for async operations from rendering Marketplace to finish
+    await flushPromisesInTests();
+
+    // go back home
+    init.operations.navigator.goToRoute(AppRoute.HOME);
+
+    expect(init.model.navigation.activeRoute).toEqual(AppRoute.HOME);
+    const homeAgain = getByTestId("home");
+    expect(homeAgain).toBeTruthy();
   });
 
   it("non-existent route falls back to HOME", async () => {
@@ -137,14 +142,13 @@ describe("app navigation", function () {
 
     const component = (
       <ThemeProvider model={init.model.theme}>
-        <BrowserRouter>
-          <App model={init.model} operations={init.operations} sentry={init.sentry} />
-        </BrowserRouter>
+        <App model={init.model} operations={init.operations} sentry={init.sentry} />
       </ThemeProvider>
     );
 
     const { getByTestId } = render(component);
 
+    expect(init.model.navigation.activeRoute).toEqual(AppRoute.HOME);
     const home = getByTestId("home");
     expect(home).toBeTruthy();
   });
@@ -156,14 +160,13 @@ describe("app navigation", function () {
 
     const component = (
       <ThemeProvider model={init.model.theme}>
-        <BrowserRouter>
-          <App model={init.model} operations={init.operations} sentry={init.sentry} />
-        </BrowserRouter>
+        <App model={init.model} operations={init.operations} sentry={init.sentry} />
       </ThemeProvider>
     );
-
     const { getByTestId } = render(component);
 
+    // default referrer is "home" if it does not exist in /oauth/redirect query params
+    expect(init.model.navigation.activeRoute).toEqual(AppRoute.HOME);
     const home = getByTestId("home");
     expect(home).toBeTruthy();
   });
@@ -177,9 +180,7 @@ describe("app navigation", function () {
 
     const component = (
       <ThemeProvider model={init.model.theme}>
-        <BrowserRouter>
-          <App model={init.model} operations={init.operations} sentry={init.sentry} />
-        </BrowserRouter>
+        <App model={init.model} operations={init.operations} sentry={init.sentry} />
       </ThemeProvider>
     );
 

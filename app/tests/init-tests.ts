@@ -37,8 +37,6 @@ export function initTestSync(testConfig: IConfig) {
   const navigationClient = new NavigationTestClient();
   const model = new AppModel();
 
-  model.navigation.setActiveRoute(location.pathname as AppRoute);
-
   const snackbar = new SnackbarController(model.snackbar);
 
   const twitchOAuthApi = new TwitchOAuthApiTestClient();
@@ -68,6 +66,8 @@ export function initTestSync(testConfig: IConfig) {
   const ui = new UiController(model, web3, auction, mint, nft, navigator, snackbar);
 
   auth.checkTokenInStorage();
+
+  navigator.validatePathForAppInit(location.pathname, location.href);
 
   return {
     model,

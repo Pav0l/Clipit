@@ -1,5 +1,4 @@
 import { observer } from "mobx-react-lite";
-import { BrowserRouter as Router, Switch, Route as ReactRoute, Redirect } from "react-router-dom";
 import Route from "route-parser";
 
 import { AppModel } from "../app.model";
@@ -65,34 +64,32 @@ const StyledApp = observer(function App({ model, operations, sentry }: Props) {
 
   return (
     <div className={classes.app}>
-      <Router basename={AppRoute.HOME}>
-        <Navbar
-          model={{ web3: model.web3, auth: model.auth, navigation: model.navigation }}
-          operations={{
-            web3: operations.web3,
-            auth: operations.auth,
-            snackbar: operations.snackbar,
-            navigator: operations.navigator,
-          }}
-          isDevelopment={CONFIG.isDevelopment}
-        />
+      <Navbar
+        model={{ web3: model.web3, auth: model.auth, navigation: model.navigation }}
+        operations={{
+          web3: operations.web3,
+          auth: operations.auth,
+          snackbar: operations.snackbar,
+          navigator: operations.navigator,
+        }}
+        isDevelopment={CONFIG.isDevelopment}
+      />
 
-        <Snackbar model={{ snackbar: model.snackbar }} operations={operations.snackbar} />
+      <Snackbar model={{ snackbar: model.snackbar }} operations={operations.snackbar} />
 
-        {appMetaData.isLoading ? (
-          <FullPageLoader />
-        ) : appMetaData.error ? (
-          <ErrorWithRetry text={appMetaData.error.message} withRetry={true} />
-        ) : (
-          <RouterX model={model} operations={operations} sentry={sentry} />
-        )}
+      {appMetaData.isLoading ? (
+        <FullPageLoader />
+      ) : appMetaData.error ? (
+        <ErrorWithRetry text={appMetaData.error.message} withRetry={true} />
+      ) : (
+        <RouterX model={model} operations={operations} sentry={sentry} />
+      )}
 
-        <Footer
-          operations={{
-            navigator: operations.navigator,
-          }}
-        />
-      </Router>
+      <Footer
+        operations={{
+          navigator: operations.navigator,
+        }}
+      />
     </div>
   );
 });
@@ -164,6 +161,15 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
         <OAuth2Redirect model={model.auth} operations={{ oauth: operations.auth, navigator: operations.navigator }} />
       );
       break;
+
+    case AppRoute.HOME:
+      app = (
+        <Home
+          model={{ clip: model.clip, nft: model.nft, auth: model.auth }}
+          operations={{ clip: operations.clip, auth: operations.auth, navigator: operations.navigator }}
+        />
+      );
+      break;
   }
 
   if (app === null) {
@@ -208,19 +214,13 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
     }
   }
 
+  // app is still null -> must be some unknown route, just go home
   if (app === null) {
-    return (
-      <Switch>
-        <ReactRoute path={AppRoute.HOME}>
-          <Home
-            model={{ clip: model.clip, nft: model.nft, auth: model.auth }}
-            operations={{ clip: operations.clip, auth: operations.auth, navigator: operations.navigator }}
-          />
-        </ReactRoute>
-
-        {/* fallback route */}
-        <Redirect to={AppRoute.HOME} />
-      </Switch>
+    app = (
+      <Home
+        model={{ clip: model.clip, nft: model.nft, auth: model.auth }}
+        operations={{ clip: operations.clip, auth: operations.auth, navigator: operations.navigator }}
+      />
     );
   }
 

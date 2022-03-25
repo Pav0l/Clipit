@@ -1,29 +1,11 @@
+import Route from "route-parser";
+
 import { AppRoute } from "../../lib/constants";
 import { INavigationClient } from "./navigation.client";
 import { NavigationModel } from "./navigation.model";
 
 export class NavigatorController {
   constructor(private model: NavigationModel, private client: INavigationClient) {}
-
-  goToHome = () => {
-    this.goToRoute(AppRoute.HOME);
-  };
-
-  goToAbout = () => {
-    this.goToRoute(AppRoute.ABOUT);
-  };
-
-  goToTerms = () => {
-    this.goToRoute(AppRoute.TERMS);
-  };
-
-  goToMarketplace = () => {
-    this.goToRoute(AppRoute.MARKETPLACE);
-  };
-
-  goToClips = () => {
-    this.goToRoute(AppRoute.CLIPS);
-  };
 
   goToClip = (clipId: string) => {
     this.goToRoute(`${AppRoute.CLIPS}/${clipId}`);
@@ -33,14 +15,24 @@ export class NavigatorController {
     this.goToRoute(`${AppRoute.NFTS}/${tokenId}`);
   };
 
-  goToNfts = () => {
-    this.goToRoute(AppRoute.NFTS);
+  goToRoute = (route: string, href?: string) => {
+    this.model.setActiveRoute(route);
+    this.client.push(href ?? route);
   };
 
-  goToRoute = (route: string) => {
-    this.model.setActiveRoute(route);
-    this.client.push(route);
-  };
+  // href is used to pass on any query string params / hashes forward
+  validatePathForAppInit(pathname: string, href: string) {
+    const routes = Object.values(AppRoute);
+
+    for (const appRoute of routes) {
+      const matched = new Route(appRoute).match(pathname);
+      if (matched) {
+        return this.goToRoute(pathname, href);
+      }
+    }
+    // no AppRoute match -> redirect to Home
+    this.goToRoute(AppRoute.HOME);
+  }
 
   get isOnOAuthProtectedRoute() {
     return !!this.model.activeRoute?.startsWith(AppRoute.CLIPS);

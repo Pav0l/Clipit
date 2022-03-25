@@ -4,6 +4,7 @@ import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { IWeb3Controller } from "../web3/web3.controller";
 import { AppModel } from "../app/app.model";
 import { NavigatorController } from "../navigation/navigation.controller";
+import { AppRoute } from "../../lib/constants";
 
 interface Props {
   model: AppModel;
@@ -20,7 +21,7 @@ const Playground = observer(function Playground({ model, operations }: Props) {
   const onClick = async () => {
     try {
       // do something
-      operations.navigator.goToAbout();
+      operations.navigator.goToRoute(AppRoute.ABOUT);
     } catch (error) {
       operations.snackbar.sendError((error as Error).message);
       return;
@@ -34,7 +35,7 @@ const Playground = observer(function Playground({ model, operations }: Props) {
       <button
         className={classes.btn}
         onClick={() => {
-          operations.navigator.goToHome();
+          operations.navigator.goToRoute(AppRoute.HOME);
         }}
       >
         /home

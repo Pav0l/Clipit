@@ -34,9 +34,6 @@ export function initSynchronous() {
   const storage = new LocalStorageClient();
   const model = new AppModel();
 
-  // TODO this is stupid - need to validate pathname before writing to model
-  model.navigation.setActiveRoute(location.pathname);
-
   const snackbar = new SnackbarController(model.snackbar);
 
   const clipit = new ClipItApiClient(new HttpClient(CONFIG.clipItApiUrl), storage);
@@ -65,6 +62,8 @@ export function initSynchronous() {
   const ui = new UiController(model, web3, auction, mint, nft, navigator, snackbar);
 
   auth.checkTokenInStorage();
+
+  navigator.validatePathForAppInit(location.pathname, location.href);
 
   return {
     model,

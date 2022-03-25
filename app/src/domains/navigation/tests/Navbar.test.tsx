@@ -1,6 +1,5 @@
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BrowserRouter } from "react-router-dom";
 
 import Navbar from "../components/Navbar";
 import { initTestSync } from "../../../../tests/init-tests";
@@ -12,18 +11,16 @@ describe("Navbar component", function () {
     const init = initTestSync(CONFIG);
     const component = (
       <ThemeProvider model={init.model.theme}>
-        <BrowserRouter>
-          <Navbar
-            model={{ web3: init.model.web3, auth: init.model.auth, navigation: init.model.navigation }}
-            isDevelopment={true}
-            operations={{
-              web3: init.operations.web3,
-              auth: init.operations.auth,
-              snackbar: init.operations.snackbar,
-              navigator: init.operations.navigator,
-            }}
-          />
-        </BrowserRouter>
+        <Navbar
+          model={{ web3: init.model.web3, auth: init.model.auth, navigation: init.model.navigation }}
+          isDevelopment={true}
+          operations={{
+            web3: init.operations.web3,
+            auth: init.operations.auth,
+            snackbar: init.operations.snackbar,
+            navigator: init.operations.navigator,
+          }}
+        />
       </ThemeProvider>
     );
 
