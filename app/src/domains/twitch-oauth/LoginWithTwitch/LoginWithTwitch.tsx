@@ -18,7 +18,7 @@ function LoginWithTwitch({ model, operations }: Props) {
   return (
     <Button
       className={`${classes.button} ${isLoggedIn ? classes.logOut : ""}`}
-      onClick={isLoggedIn ? operations.logout : () => location.assign(operations.getTwitchOAuth2AuthorizeUrl())}
+      onClick={isLoggedIn ? operations.logout : () => window.location.assign(operations.getTwitchOAuth2AuthorizeUrl())}
     >
       {isLoggedIn ? "Log out" : "Login with Twitch"}
     </Button>

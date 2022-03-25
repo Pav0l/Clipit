@@ -18,19 +18,19 @@ export class OAuthController {
   logout = async () => {
     const token = this.getAccessToken();
     if (!token) {
-      location.reload();
+      window.location.reload();
       return;
     }
 
     await this.oauthApi.revokeAccessToken(token);
 
     this.storage.removeItem(twitchApiAccessTokenKey);
-    location.reload();
+    window.location.reload();
   };
 
   initOauthFlowIfNotAuthorized = () => {
     if (!this.model.isLoggedIn) {
-      location.assign(this.getTwitchOAuth2AuthorizeUrl());
+      window.location.assign(this.getTwitchOAuth2AuthorizeUrl());
     }
   };
 
@@ -70,13 +70,13 @@ export class OAuthController {
   getTwitchOAuth2AuthorizeUrl = () => {
     const url = new URL(`${twitchOAuthUri}/oauth2/authorize`);
     url.searchParams.append(OauthQueryParams.CLIENT_ID, this.twitchClientId);
-    url.searchParams.append(OauthQueryParams.REDIRECT_URI, `${location.origin}/oauth2/redirect`);
+    url.searchParams.append(OauthQueryParams.REDIRECT_URI, `${window.location.origin}/oauth2/redirect`);
     url.searchParams.append(OauthQueryParams.RESPONSE_TYPE, "token");
     url.searchParams.append(OauthQueryParams.SCOPE, twitchScopes);
     url.searchParams.append(
       OauthQueryParams.STATE,
       JSON.stringify({
-        referrer: location.pathname,
+        referrer: window.location.pathname,
         secret: this.generateSecretAndStore(),
       })
     );

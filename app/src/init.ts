@@ -63,7 +63,7 @@ export function initSynchronous() {
 
   auth.checkTokenInStorage();
 
-  navigator.validatePathForAppInit(location.pathname, location.href);
+  navigator.validatePathForAppInit(window.location.pathname, window.location.href);
 
   return {
     model,
@@ -118,7 +118,7 @@ export async function initAsync({
   ////////////////////////////
 
   // TODO clean this up somewhere to Nav ctrl or UI ctrl or refactor the to router based init
-  const params = new URL(location.href).searchParams;
+  const params = new URL(window.location.href).searchParams;
   const contentHash = params.get("contentHash");
   if (contentHash !== null) {
     await nft.getClipByContentHash(contentHash);

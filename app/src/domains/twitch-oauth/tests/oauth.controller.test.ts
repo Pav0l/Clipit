@@ -6,23 +6,14 @@ import { OAuthModel } from "../oauth.model";
 import { initTestSync } from "../../../../tests/init-tests";
 import { twitchApiAccessTokenKey, twitchOAuthStateSecretKey } from "../../../lib/constants";
 import { OAuthErrors } from "../oauth.types";
+import { useWindowLocationInTests } from "../../../../tests/setup";
 
 describe("oauth controller", () => {
   let model: OAuthModel;
   let ctrl: OAuthController;
   let ls: LocalStorageTestClient;
 
-  // TODO replace this
-  const { location } = window;
-  beforeAll(() => {
-    // @ts-ignore
-    delete window.location;
-    // @ts-ignore
-    window.location = { reload: jest.fn() };
-  });
-  afterAll(() => {
-    window.location = location;
-  });
+  useWindowLocationInTests();
 
   beforeEach(() => {
     const init = initTestSync(CONFIG);

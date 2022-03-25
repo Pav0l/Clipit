@@ -24,7 +24,6 @@ export enum AppRoute {
   ABOUT = "/about",
   TERMS = "/terms",
   NFT = "/nfts/:tokenId",
-  // TODO - routes below to be moved to custom router
   MARKETPLACE = "/marketplace",
   CLIPS = "/clips",
   CLIP = "/clips/:clipId",

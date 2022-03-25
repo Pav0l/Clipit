@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { render } from "@testing-library/react";
 
 import { initTestSync } from "../../../../tests/init-tests";
@@ -10,18 +9,7 @@ import { AppRoute, twitchOAuthUri } from "../../../lib/constants";
 import { EthereumTestProvider } from "../../../lib/ethereum/ethereum-test-provider";
 import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
 
-// TODO take out to reusable test fn
-function setLocationForTests(href: string) {
-  const url = new URL(href);
-
-  // @ts-ignore
-  window.location = {
-    href: url.href,
-    pathname: url.pathname,
-    origin: url.origin,
-    assign: jest.fn(),
-  };
-}
+import { useWindowLocationInTests } from "../../../../tests/setup";
 
 async function initAppForTests() {
   const init = initTestSync(CONFIG);
@@ -42,17 +30,7 @@ function flushPromisesInTests() {
 }
 
 describe("app navigation", function () {
-  const { location } = window;
-
-  beforeAll((): void => {
-    // @ts-ignore
-    delete window.location;
-  });
-
-  afterAll((): void => {
-    window.location = location;
-    window.ethereum = undefined;
-  });
+  const setLocationForTests = useWindowLocationInTests();
 
   it("redirects to nft/:tokenId if app opened with `contentHash` query param", async () => {
     setLocationForTests(`http://localhost?contentHash=${clipPartialFragment.contentHash}`);
@@ -189,7 +167,7 @@ describe("app navigation", function () {
     expect(window.location.assign).toHaveBeenCalledWith(expect.stringContaining(`${twitchOAuthUri}/oauth2/authorize`));
     // with proper redirect uri back to app
     expect(window.location.assign).toHaveBeenCalledWith(
-      expect.stringContaining("redirect_uri=" + encodeURIComponent(`${location.origin}/oauth2/redirect`))
+      expect.stringContaining("redirect_uri=" + encodeURIComponent(`${window.location.origin}/oauth2/redirect`))
     );
     // and he referrer is the same as where we started
     expect(window.location.assign).toHaveBeenCalledWith(

@@ -18,7 +18,7 @@ interface Props {
 
 const OAuth2Redirect = observer(({ operations, model }: Props) => {
   useEffect(() => {
-    operations.oauth.handleOAuth2Redirect(new URL(location.href));
+    operations.oauth.handleOAuth2Redirect(new URL(window.location.href));
     let referrer = model.referrer;
 
     if (!referrer) {

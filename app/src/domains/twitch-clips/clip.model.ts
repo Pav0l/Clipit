@@ -64,7 +64,7 @@ export class TwitchClip {
     this.gameId = clip.game_id ?? "";
     this.title = clip.title ?? "";
     this.thumbnailUrl = clip.thumbnail_url ?? "";
-    this.embedUrl = clip.embed_url ? `${clip.embed_url}&parent=${location.hostname}` : "";
+    this.embedUrl = clip.embed_url ? `${clip.embed_url}&parent=${window.location.hostname}` : "";
   }
 }
 

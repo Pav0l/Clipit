@@ -19,3 +19,42 @@ console.error = function () {
 Object.defineProperty(globalThis, "crypto", {
   value: { getRandomValues: randomFillSync },
 });
+
+export function useWindowLocationInTests() {
+  const { location } = window;
+
+  beforeAll((): void => {
+    // @ts-ignore
+    delete window.location;
+
+    // set default location that was set in jest.config
+    setLocationForTests(location.href);
+  });
+
+  afterAll((): void => {
+    window.location = location;
+    window.ethereum = undefined;
+  });
+
+  function setLocationForTests(href: string) {
+    const url = new URL(href);
+
+    // @ts-ignore
+    window.location = {
+      href: url.href,
+      pathname: url.pathname,
+      origin: url.origin,
+      hash: url.hash,
+      host: url.host,
+      hostname: url.hostname,
+      port: url.port,
+      protocol: url.protocol,
+      search: url.search,
+      assign: jest.fn(),
+      reload: jest.fn(),
+      replace: jest.fn(),
+    };
+  }
+
+  return setLocationForTests;
+}

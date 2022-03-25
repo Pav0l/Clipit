@@ -67,7 +67,7 @@ export function initTestSync(testConfig: IConfig) {
 
   auth.checkTokenInStorage();
 
-  navigator.validatePathForAppInit(location.pathname, location.href);
+  navigator.validatePathForAppInit(window.location.pathname, window.location.href);
 
   return {
     model,
