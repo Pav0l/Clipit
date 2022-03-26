@@ -1,15 +1,24 @@
 const path = require("path");
 const fs = require("fs");
+const execSync = require('child_process').execSync;
 const config = require("config");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
+let COMMIT_HASH = "";
+try {
+  const buffer = execSync(`git log --grep="app:" --format='%h' --max-count=1`);
+  COMMIT_HASH = buffer.toString('ascii').trim();
+} catch (err) {
+  console.error("error:", err);
+};
+
 const nodeEnv = process.env["NODE_ENV"];
 const isDevelopment = nodeEnv === "development";
 const mode = process.env["NODE_APP_INSTANCE"]; // app / extension
 
-console.log(`Running Webpack in ${mode ?? "APP"} mode and ${nodeEnv.toUpperCase()} env`);
+console.log(`Running ${COMMIT_HASH} in ${mode ?? "APP"} mode and ${nodeEnv.toUpperCase()} env`);
 console.log("App config:", config);
 
 const appConfig = {
@@ -65,6 +74,7 @@ const appConfig = {
     }),
     new webpack.DefinePlugin({
       CONFIG: JSON.stringify({ ...config, isDevelopment }),
+      COMMIT_HASH: JSON.stringify(COMMIT_HASH),
     }),
   ],
 };

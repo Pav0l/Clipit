@@ -6,6 +6,7 @@ export {};
 
 declare global {
   const CONFIG: IConfig;
+  const COMMIT_HASH: string;
 
   interface Window {
     ethereum?: EthereumProvider;

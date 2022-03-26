@@ -7,6 +7,8 @@ export class SentryClient {
       enabled: isDevelopment ? false : true,
       // TODO setup `release` and `environment` options
     });
+
+    Sentry.setTag("COMMIT_HASH", COMMIT_HASH);
   }
 
   captureException(err: unknown, ctx?: CaptureContext) {
