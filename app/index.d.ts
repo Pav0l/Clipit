@@ -11,5 +11,11 @@ declare global {
   interface Window {
     ethereum?: EthereumProvider;
     Tawk_API?: TawkSdk;
+
+    clipit: {
+      build: {
+        commit: string;
+      };
+    };
   }
 }

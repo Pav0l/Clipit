@@ -7,6 +7,12 @@ import { App } from "./domains/app/components/App";
 import { AppError } from "./lib/errors/errors";
 
 (async () => {
+  window.clipit = {
+    build: {
+      commit: COMMIT_HASH,
+    },
+  };
+
   const { model, operations, clients } = initSynchronous(CONFIG, initClients(CONFIG));
 
   model.meta.setLoading(true);
