@@ -70,7 +70,9 @@ const appConfig = {
 };
 
 if (isDevelopment) {
-  appConfig.plugins.push(new BundleAnalyzerPlugin());
+  appConfig.plugins.push(new BundleAnalyzerPlugin({
+    analyzerPort: 8888
+  }));
 }
 
 const extensionConfig = {
