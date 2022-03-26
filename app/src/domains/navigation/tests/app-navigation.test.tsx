@@ -131,6 +131,8 @@ describe("app navigation", function () {
       expect.stringContaining(encodeURIComponent(`"referrer":"${AppRoute.CLIPS}"`))
     );
 
+    expect(init.model.navigation.activeRoute).toEqual(AppRoute.CLIPS);
+
     const { getByTestId } = renderAppForTests(init);
     const loader = getByTestId("full-page-loader");
     expect(loader).toBeTruthy();
