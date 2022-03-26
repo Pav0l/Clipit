@@ -1,13 +1,9 @@
 import { LocalStorageTestClient } from "../src/lib/local-storage/local-storage-test.client";
-import { AppModel } from "../src/domains/app/app.model";
-import { AppRoute } from "../src/lib/constants";
 import { SnackbarController } from "../src/domains/snackbar/snackbar.controller";
 import { ClipItApiTestClient } from "../src/lib/clipit-api/clipit-api-test.client";
 import { IpfsTestClient } from "../src/lib/ipfs/ipfs-test.client";
-import { TwitchOAuthApiTestClient } from "../src/lib/twitch-oauth/twitch-oauth-api-test.client";
 import { TwitchApiTestClient } from "../src/lib/twitch-api/twitch-api-test.client";
 import { SubgraphTestClient } from "../src/lib/graphql/subgraph-test.client";
-import { OAuthController } from "../src/domains/twitch-oauth/oauth.controller";
 import { ClipController } from "../src/domains/twitch-clips/clip.controller";
 import { GameController } from "../src/domains/twitch-games/game.controller";
 import { UserController } from "../src/domains/twitch-user/user.controller";
@@ -21,74 +17,15 @@ import { ExtensionMode } from "../src/extension/domains/extension/extension.inte
 import { TwitchExtensionTestClient } from "../src/lib/twitch-extension/twitch-extension-test.client";
 import { Logger } from "../src/lib/logger/logger";
 import { ExtensionModel } from "../src/extension/domains/extension/extension.model";
-import { UiController } from "../src/domains/app/ui.controller";
 import { ConfigUiController } from "../src/extension/domains/config/config-ui.controller";
 import { BroadcasterAuthService } from "../src/extension/domains/broadcaster-auth/broadcaster-auth.service";
 import { AuctionController } from "../src/domains/auction/auction.controller";
 import { MintController } from "../src/domains/mint/mint.controller";
 import { EthereumTestClientCreator } from "../src/lib/ethereum/ethereum-test.client";
 import { StreamerUiController } from "../src/extension/domains/streamer/streamer-ui.controller";
+import { initSynchronous, initAsync, AppInit, ClientsInit } from "../src/init";
 import { NavigationTestClient } from "../src/domains/navigation/tests/navigation-test.client";
-import { NavigatorController } from "../src/domains/navigation/navigation.controller";
-
-export function initTestSync(testConfig: IConfig) {
-  const sentry = new SentryClient("", true);
-  const storage = new LocalStorageTestClient();
-  const navigationClient = new NavigationTestClient();
-  const model = new AppModel();
-
-  const snackbar = new SnackbarController(model.snackbar);
-
-  const twitchOAuthApi = new TwitchOAuthApiTestClient();
-  const twitchApi = new TwitchApiTestClient();
-
-  const clipit = new ClipItApiTestClient();
-  const ipfs = new IpfsTestClient();
-  const subgraph = new SubgraphTestClient();
-
-  const auth = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, testConfig.twitch.clientId);
-  const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
-  const game = new GameController(model.game, twitchApi, sentry);
-  const user = new UserController(model.user, twitchApi, sentry);
-  const nft = new NftController(model.nft, ipfs, subgraph, snackbar, sentry);
-  const auction = new AuctionController(
-    model.auction,
-    AuctionTestContractCreator,
-    ClipItTestContractCreator,
-    snackbar,
-    sentry,
-    CONFIG
-  );
-  const mint = new MintController(model.mint, ClipItTestContractCreator, clipit, snackbar, sentry, CONFIG);
-  const web3 = new Web3Controller(model.web3, EthereumTestClientCreator, snackbar, sentry);
-
-  const navigator = new NavigatorController(model.navigation, navigationClient);
-  const ui = new UiController(model, web3, auction, mint, nft, navigator, snackbar);
-
-  auth.checkTokenInStorage();
-
-  navigator.validatePathForAppInit(window.location.pathname, window.location.href);
-
-  return {
-    model,
-    operations: {
-      web3,
-      clip,
-      user,
-      game,
-      auth,
-      nft,
-      mint,
-      auction,
-      snackbar,
-      ui,
-      navigator,
-    },
-    localStorage: storage,
-    clipitApi: clipit,
-    sentry,
-  };
-}
+import { TwitchOAuthApiTestClient } from "../src/lib/twitch-oauth/twitch-oauth-api-test.client";
 
 export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) {
   const twitch = new TwitchExtensionTestClient();
@@ -142,4 +79,58 @@ export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) 
     sentry,
     storage,
   };
+}
+
+function initClientsForTests(): ClientsInit {
+  const storage = new LocalStorageTestClient();
+  const navigationClient = new NavigationTestClient();
+
+  const twitchOAuthApi = new TwitchOAuthApiTestClient();
+  const twitchApi = new TwitchApiTestClient();
+
+  const clipit = new ClipItApiTestClient();
+  const ipfs = new IpfsTestClient();
+  const subgraph = new SubgraphTestClient();
+
+  const tokenContractCreator = ClipItTestContractCreator;
+  const auctionContractCreator = AuctionTestContractCreator;
+  const ethereumClientCreator = EthereumTestClientCreator;
+
+  return {
+    storage,
+    navigationClient,
+    twitchOAuthApi,
+    twitchApi,
+    clipit,
+    ipfs,
+    subgraph,
+    tokenContractCreator,
+    auctionContractCreator,
+    ethereumClientCreator,
+  };
+}
+
+export function initSynchronousWithTestClients(config: IConfig) {
+  return initSynchronous(config, initClientsForTests());
+}
+
+export async function fullAppInitForTests(options: { runAfterSyncInit?: (init: AppInit) => Promise<void> } = {}) {
+  const { runAfterSyncInit } = options;
+
+  const init = initSynchronousWithTestClients(CONFIG);
+
+  if (runAfterSyncInit) {
+    await runAfterSyncInit(init);
+  }
+
+  await initAsync({
+    model: init.model,
+    navigator: init.operations.navigator,
+    nft: init.operations.nft,
+    user: init.operations.user,
+    web3: init.operations.web3,
+    oauth: init.operations.auth,
+  });
+
+  return init;
 }

@@ -1,24 +1,23 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import { LocalStorageTestClient } from "../../../lib/local-storage/local-storage-test.client";
 import { OAuthController } from "../oauth.controller";
 import { OAuthModel } from "../oauth.model";
-import { initTestSync } from "../../../../tests/init-tests";
+import { initSynchronousWithTestClients } from "../../../../tests/init-tests";
 import { twitchApiAccessTokenKey, twitchOAuthStateSecretKey } from "../../../lib/constants";
 import { OAuthErrors } from "../oauth.types";
 import { useWindowLocationInTests } from "../../../../tests/setup";
+import { ILocalStorage } from "../../../lib/local-storage/local-storage.client";
 
 describe("oauth controller", () => {
   let model: OAuthModel;
   let ctrl: OAuthController;
-  let ls: LocalStorageTestClient;
+  let ls: ILocalStorage;
 
   useWindowLocationInTests();
 
   beforeEach(() => {
-    const init = initTestSync(CONFIG);
+    const init = initSynchronousWithTestClients(CONFIG);
     model = init.model.auth;
-    ls = init.localStorage;
+    ls = init.clients.storage;
     ctrl = init.operations.auth;
   });
 

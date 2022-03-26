@@ -1,4 +1,4 @@
-import { initTestSync } from "../../../../tests/init-tests";
+import { initSynchronousWithTestClients } from "../../../../tests/init-tests";
 import { ClipController } from "../clip.controller";
 import { ClipModel } from "../clip.model";
 
@@ -7,7 +7,7 @@ describe("clip controller", () => {
   let model: ClipModel;
 
   beforeEach(() => {
-    const init = initTestSync(CONFIG);
+    const init = initSynchronousWithTestClients(CONFIG);
     model = init.model.clip;
     ctrl = init.operations.clip;
   });

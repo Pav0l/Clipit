@@ -1,4 +1,4 @@
-import { initTestSync } from "../../../../tests/init-tests";
+import { initSynchronousWithTestClients } from "../../../../tests/init-tests";
 import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
 import { EthereumTestProvider } from "../../../lib/ethereum/ethereum-test-provider";
 import { RpcErrors, RpcErrorForTests } from "../../../lib/ethereum/rpc.errors";
@@ -12,7 +12,7 @@ describe("web3 controller", () => {
   let requestAccountsMock: jest.SpyInstance;
 
   beforeEach(() => {
-    const init = initTestSync(CONFIG);
+    const init = initSynchronousWithTestClients(CONFIG);
     model = init.model;
     ctrl = init.operations.web3;
 

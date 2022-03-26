@@ -1,4 +1,4 @@
-import { initTestSync } from "../../../../tests/init-tests";
+import { initSynchronousWithTestClients } from "../../../../tests/init-tests";
 import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
 import { NftController } from "../nft.controller";
 import { NftModel } from "../nft.model";
@@ -8,7 +8,7 @@ describe("nft controller", () => {
   let ctrl: NftController;
 
   beforeEach(() => {
-    const init = initTestSync(CONFIG);
+    const init = initSynchronousWithTestClients(CONFIG);
     model = init.model.nft;
     ctrl = init.operations.nft;
   });

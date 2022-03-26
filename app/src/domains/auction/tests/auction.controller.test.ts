@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { utils } from "ethers";
-import { initTestSync } from "../../../../tests/init-tests";
+import { initSynchronousWithTestClients } from "../../../../tests/init-tests";
 import { auctionPartialFragment } from "../../../../tests/__fixtures__/auction-fragment";
 import { txHash } from "../../../../tests/__fixtures__/ethereum";
-import { IAuctionContractClient } from "../../../lib/contracts/AuctionHouse/auction-contract.client";
 import { AuctionContractErrors } from "../../../lib/contracts/AuctionHouse/auction-contract.errors";
 import { RpcErrors, RpcErrorForTests } from "../../../lib/ethereum/rpc.errors";
 import { AppModel } from "../../app/app.model";
@@ -22,7 +21,7 @@ describe("aution controller", function () {
   const ONE_DAY = 86400; //in seconds
 
   beforeEach(async () => {
-    const init = initTestSync(CONFIG);
+    const init = initSynchronousWithTestClients(CONFIG);
     model = init.model;
     auction = init.operations.auction;
 

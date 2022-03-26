@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { initTestSync } from "../../../../tests/init-tests";
+import { initSynchronousWithTestClients } from "../../../../tests/init-tests";
 import { clipPartialFragment } from "../../../../tests/__fixtures__/clip-fragment";
 import { txHash } from "../../../../tests/__fixtures__/ethereum";
 import { twitchClip } from "../../../../tests/__fixtures__/twitch-api-data";
@@ -28,7 +28,7 @@ describe("ui-controller", function () {
     // eth provider installed
     window.ethereum = new EthereumTestProvider();
 
-    const app = initTestSync(CONFIG);
+    const app = initSynchronousWithTestClients(CONFIG);
     model = app.model;
     ui = app.operations.ui;
     user = app.operations.user;

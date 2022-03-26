@@ -2,13 +2,13 @@ import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import Navbar from "../components/Navbar";
-import { initTestSync } from "../../../../tests/init-tests";
+import { initSynchronousWithTestClients } from "../../../../tests/init-tests";
 import { AppRoute } from "../../../lib/constants";
 import ThemeProvider from "../../theme/components/ThemeProvider";
 
 describe("Navbar component", function () {
   it("renders navbar links properly when clicking/mouse-overing them", async () => {
-    const init = initTestSync(CONFIG);
+    const init = initSynchronousWithTestClients(CONFIG);
     const component = (
       <ThemeProvider model={init.model.theme}>
         <Navbar

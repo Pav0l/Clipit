@@ -2,7 +2,10 @@
   "tokenAddress": "0xc82355e1d263141139fce010982780140aa0cd5ab",
   "auctionAddress": "0x039dc8e1d263141139fce010982780140aa0cd5ab",
   "clipItApiUrl": "http://localhost:420/v2",
+  "clipItClientUrl": "http://localhost:3232/v2",
+  "clipItExtensionUrl": "",
   "subgraphUrl": "http://localhost:420/subgraph",
+  "sentryDsn": "",
   "twitch": {
     "clientId": "42069"
   }

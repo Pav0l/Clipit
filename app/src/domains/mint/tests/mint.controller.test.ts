@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { initTestSync } from "../../../../tests/init-tests";
+import { initSynchronousWithTestClients } from "../../../../tests/init-tests";
 import { txHash } from "../../../../tests/__fixtures__/ethereum";
 import { twitchClip } from "../../../../tests/__fixtures__/twitch-api-data";
 import { ClipItApiTestClient } from "../../../lib/clipit-api/clipit-api-test.client";
@@ -21,10 +21,10 @@ describe("mint controller", function () {
   let contractMintMock: jest.SpyInstance;
 
   beforeEach(async () => {
-    const init = initTestSync(CONFIG);
+    const init = initSynchronousWithTestClients(CONFIG);
     model = init.model;
     mint = init.operations.mint;
-    clipitApi = init.clipitApi;
+    clipitApi = init.clients.clipit as ClipItApiTestClient;
 
     const clipId = twitchClip.id;
     await init.operations.clip.getClip(clipId);

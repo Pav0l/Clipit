@@ -2,18 +2,18 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import "./index.css";
-import { initSynchronous, initAsync } from "./init";
+import { initSynchronous, initAsync, initClients } from "./init";
 import { App } from "./domains/app/components/App";
 import { AppError } from "./lib/errors/errors";
 
 (async () => {
-  const { model, operations, sentry } = initSynchronous();
+  const { model, operations, clients } = initSynchronous(CONFIG, initClients(CONFIG));
 
   model.meta.setLoading(true);
 
   ReactDOM.render(
     <React.StrictMode>
-      <App model={model} operations={operations} sentry={sentry} />
+      <App model={model} operations={operations} sentry={clients.sentry} />
     </React.StrictMode>,
     document.getElementById("root")
   );
@@ -28,7 +28,7 @@ import { AppError } from "./lib/errors/errors";
       oauth: operations.auth,
     });
   } catch (error) {
-    sentry.captureException(error);
+    clients.sentry.captureException(error);
     model.meta.setError(new AppError({ msg: "Error while initializing app", type: "init" }));
   }
 
