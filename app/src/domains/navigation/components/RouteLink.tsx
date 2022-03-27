@@ -8,6 +8,7 @@ interface Props {
   setActive: (to: string) => void;
   setHovered?: (to?: string) => void;
   underline?: "none" | "hover" | "always";
+  dataTestId?: string;
 }
 
 export function RouteLink(props: Props) {
@@ -19,6 +20,7 @@ export function RouteLink(props: Props) {
       onClick={() => props.setActive(props.to)}
       onMouseEnter={() => (props.setHovered ? props.setHovered(props.to) : null)}
       onMouseLeave={() => (props.setHovered ? props.setHovered(undefined) : null)}
+      data-testid={props.dataTestId ?? ""}
     >
       {props.child}
     </MuiLink>

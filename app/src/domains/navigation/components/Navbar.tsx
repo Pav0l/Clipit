@@ -40,12 +40,14 @@ export default observer(function Navbar({ model, operations, isDevelopment }: Pr
             model={{ navigation: model.navigation }}
             operations={{ navigator: operations.navigator }}
             text={"Home"}
+            dataTestId="home-navlink"
           />
           <NavLink
             to={AppRoute.MARKETPLACE}
             model={{ navigation: model.navigation }}
             operations={{ navigator: operations.navigator }}
             text={"Marketplace"}
+            dataTestId="marketplace-navlink"
           />
           {model.auth.isLoggedIn ? (
             <NavLink
@@ -53,6 +55,7 @@ export default observer(function Navbar({ model, operations, isDevelopment }: Pr
               model={{ navigation: model.navigation }}
               operations={{ navigator: operations.navigator }}
               text={"NFTs"}
+              dataTestId="nfts-navlink"
             />
           ) : null}
 
@@ -62,6 +65,7 @@ export default observer(function Navbar({ model, operations, isDevelopment }: Pr
               model={{ navigation: model.navigation }}
               operations={{ navigator: operations.navigator }}
               text={"Clips"}
+              dataTestId="clips-navlink"
             />
           ) : null}
           {isDevelopment ? (
@@ -70,6 +74,7 @@ export default observer(function Navbar({ model, operations, isDevelopment }: Pr
               model={{ navigation: model.navigation }}
               operations={{ navigator: operations.navigator }}
               text={"About"}
+              dataTestId="about-navlink"
             />
           ) : null}
         </div>

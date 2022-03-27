@@ -20,6 +20,7 @@ export class NftModel {
 
   metadata: Metadata[] = [];
   hasMetadata: { [tokenId: string]: boolean } = {};
+  randomClip: Metadata | null = null;
 
   /**
    * Auction Bids this user made for other Clips
@@ -80,8 +81,17 @@ export class NftModel {
   }
 
   getRandomMetadata(): Metadata | null {
-    const idx = Math.floor(Math.random() * this.metadata.length - 1);
-    return this.metadata[idx] ?? null;
+    const clip = this.randomClip;
+    if (clip) {
+      return clip;
+    }
+
+    const idx = Math.floor(Math.random() * (this.metadata.length - 1));
+    if (!this.metadata[idx]) {
+      return null;
+    }
+    this.randomClip = this.metadata[idx];
+    return this.metadata[idx];
   }
 
   get metadataForMarketplace(): Metadata[] {

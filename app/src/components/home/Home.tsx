@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Button, TextField, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useInputData } from "../../lib/hooks/useInputData";
@@ -32,8 +32,7 @@ function Home({ model, operations }: Props) {
   const [inputData, inputHandler, clearInput] = useInputData();
 
   const classes = useStyles();
-
-  const randomClip = useMemo(() => model.nft.getRandomMetadata(), [model.nft.metadata]);
+  const randomClip = model.nft.getRandomMetadata();
 
   const buttonHandler = (event: React.MouseEvent) => {
     event.preventDefault();

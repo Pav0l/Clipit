@@ -129,10 +129,6 @@ export function initSynchronous(config: IConfig, clients: ClientsInit): AppInit 
   const navigator = new NavigatorController(model.navigation, navigationClient);
   const ui = new UiController(model, web3, auction, mint, nft, navigator, snackbar);
 
-  auth.checkTokenInStorage();
-
-  navigator.validatePathForAppInit(window.location.pathname, window.location.href);
-
   return {
     model,
     operations: {
@@ -171,6 +167,11 @@ export async function initAsync({
   navigator: NavigatorController;
   oauth: OAuthController;
 }) {
+  // first we check if user is logged into twitch
+  oauth.checkTokenInStorage();
+  // then we check which route we want to open
+  navigator.validatePathForAppInit(window.location.pathname, window.location.href);
+
   ////////////////////////////
   // authorization
   ////////////////////////////

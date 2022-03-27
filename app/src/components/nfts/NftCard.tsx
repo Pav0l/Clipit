@@ -14,7 +14,7 @@ export function NftCard({ metadata }: Props) {
   const classes = useStyles();
 
   return (
-    <Card className={classes.card}>
+    <Card className={classes.card} data-testid="nft-card">
       <CardActionArea>
         <CardMedia
           component="video"

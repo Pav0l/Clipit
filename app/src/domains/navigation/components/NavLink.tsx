@@ -15,9 +15,10 @@ interface Props {
   };
   to: AppRoute;
   text: string;
+  dataTestId?: string;
 }
 
-export default observer(function NavLink({ to, text, model, operations }: Props) {
+export default observer(function NavLink({ to, text, model, operations, dataTestId }: Props) {
   const classes = useStyles();
   const buildClassName = (to: AppRoute) => {
     const baseClass = classes.li;
@@ -37,6 +38,7 @@ export default observer(function NavLink({ to, text, model, operations }: Props)
       setHovered={model.navigation.setHoveredRoute}
       className={buildClassName(to)}
       underline="none"
+      dataTestId={dataTestId}
     />
   );
 });
