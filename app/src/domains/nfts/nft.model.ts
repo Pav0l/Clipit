@@ -80,7 +80,7 @@ export class NftModel {
   }
 
   getRandomMetadata(): Metadata | null {
-    const idx = Math.random() * this.metadata.length;
+    const idx = Math.floor(Math.random() * this.metadata.length - 1);
     return this.metadata[idx] ?? null;
   }
 
