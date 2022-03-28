@@ -106,7 +106,6 @@ const useStyles = makeAppStyles((theme) => ({
 
 const RouterX = observer(function RouterX({ model, operations, sentry }: Props) {
   let app: JSX.Element | null = null;
-  console.log("[LOG] active route:", model.navigation.activeRoute);
 
   switch (model.navigation.activeRoute) {
     case AppRoute.ABOUT:
