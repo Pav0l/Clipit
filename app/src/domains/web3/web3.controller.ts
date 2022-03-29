@@ -135,7 +135,7 @@ export class Web3Controller implements IWeb3Controller {
     this.model.setAccounts(accounts);
     const address = this.model.getAccount();
     if (!address) {
-      return;
+      return this.model.setEnsName(null);
     }
 
     this.model.setConnected();

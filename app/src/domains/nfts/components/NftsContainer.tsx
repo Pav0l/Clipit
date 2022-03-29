@@ -42,11 +42,6 @@ function NftsContainer({ model, operations }: Props) {
   };
 
   useEffect(() => {
-    if (!model.web3.isProviderConnected()) {
-      // MM was not connected -> no reason to keep some previous NFTs on state
-      model.nft.resetMetadata();
-    }
-
     if (signer) {
       operations.nft.getCurrentSignerTokensMetadata(signer);
     }
