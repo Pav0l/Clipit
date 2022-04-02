@@ -18,6 +18,7 @@ interface IMarket {
     address bidder;
     // Address of the recipient
     address recipient;
+    // TODO remove sellOnShare
     // % of the next sale to award the current owner
     Decimal.D256 sellOnShare;
   }
@@ -30,6 +31,7 @@ interface IMarket {
   }
 
   struct BidShares {
+    // TODO remove prevOwner
     // % of sale value that goes to the _previous_ owner of the nft
     Decimal.D256 prevOwner;
     // % of sale value that goes to the original creator of the nft
@@ -44,6 +46,7 @@ interface IMarket {
   event AskCreated(uint256 indexed tokenId, Ask ask);
   event AskRemoved(uint256 indexed tokenId, Ask ask);
   event BidShareUpdated(uint256 indexed tokenId, BidShares bidShares);
+  event MinterSet(uint256 indexed tokenId, address minter);
 
   function bidForTokenBidder(uint256 tokenId, address bidder) external view returns (Bid memory);
 
@@ -60,6 +63,8 @@ interface IMarket {
   function configure(address mediaContractAddress) external;
 
   function setBidShares(uint256 tokenId, BidShares calldata bidShares) external;
+
+  function setMinter(uint256 tokenId, address minter) external;
 
   function setAsk(uint256 tokenId, Ask calldata ask) external;
 

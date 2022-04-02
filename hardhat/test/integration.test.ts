@@ -1,5 +1,5 @@
 import { ethers, waffle } from "hardhat";
-import { BigNumber, Wallet } from "ethers";
+import { BigNumber, BigNumberish, Wallet } from "ethers";
 import { ClipIt } from "../typechain/ClipIt";
 import { Market } from "../typechain/Market";
 import { BaseERC20 } from "../typechain/BaseERC20";
@@ -13,7 +13,7 @@ describe("AuctionHouse", function () {
   let tokenContract: ClipIt;
   let marketContract: Market;
   let auctionContract: AuctionHouse;
-  let deployer: Wallet, owner: Wallet, bidder: Wallet, bidder2: Wallet;
+  let deployer: Wallet, owner: Wallet, bidder: Wallet, bidder2: Wallet, minter: Wallet;
   let wethContract: WETH;
   let currencyContract: BaseERC20;
   let wethAddress: string;
@@ -26,7 +26,7 @@ describe("AuctionHouse", function () {
   const metadataURI = "ipfs://metadataCid";
   const metadataHash = sha256(toUtf8Bytes(mtdt));
   const tokenURI = `ipfs://${clipCID}`;
-  const contentHash = sha256(toUtf8Bytes("content"));
+  let contentHash: string = sha256(toUtf8Bytes(`content-${Math.random()}`));
 
   const oneDay = 24 * 60 * 60;
   const oneEther = ethers.utils.parseEther("1");
@@ -43,8 +43,8 @@ describe("AuctionHouse", function () {
     return currencyContract.address;
   }
 
-  async function setupToken(owner: Wallet) {
-    const sig = await generateSignature(deployer, contentHash, owner.address);
+  async function setupToken(creator: Wallet, minter: Wallet, tokenId: BigNumberish) {
+    const sig = await generateSignature(deployer, contentHash, creator.address);
     const data = {
       tokenURI,
       metadataURI,
@@ -57,9 +57,8 @@ describe("AuctionHouse", function () {
       prevOwner: Decimal.from(0),
     };
 
-    const ownerCaller = tokenContract.connect(owner);
-    await ownerCaller.mint(data, shares, sig.v, sig.r, sig.s);
-    await ownerCaller.approve(auctionContract.address, tid);
+    await tokenContract.connect(minter).mint(creator.address, data, shares, sig.v, sig.r, sig.s);
+    await tokenContract.connect(owner).approve(auctionContract.address, tokenId);
   }
 
   async function setupAuction(currency: string) {
@@ -78,11 +77,11 @@ describe("AuctionHouse", function () {
   async function getAndApproveWeth(caller: Wallet, to: string, amount = oneEther) {
     const wethCaller = wethContract.connect(caller);
     await wethCaller.deposit({ value: amount });
-    await wethCaller.approve(to, oneEther);
+    await wethCaller.approve(to, amount);
   }
 
   beforeEach(async () => {
-    [deployer, owner, bidder, bidder2] = waffle.provider.getWallets();
+    [deployer, owner, bidder, bidder2, minter] = waffle.provider.getWallets();
 
     const marketFactory = await ethers.getContractFactory("Market", {
       signer: deployer,
@@ -103,8 +102,8 @@ describe("AuctionHouse", function () {
     });
     auctionContract = (await auctionFactory.deploy(tokenContract.address, wethAddress)) as AuctionHouse;
 
-    // mint and approve for auction
-    await setupToken(owner);
+    // mint and approve for auction. owner is minter and creator
+    await setupToken(owner, owner, tid);
   });
 
   it("auction in weth", async () => {
@@ -121,8 +120,8 @@ describe("AuctionHouse", function () {
     await auctionContract.connect(owner).endAuction("0");
 
     const ownerBalance = await wethContract.balanceOf(owner.address);
-    // owner === creator => ownerShare + creatorShare - deployerShare => 1 * (0.9 + 0.1 - 0.9*0.01) = 0,991ETH
-    expect(ownerBalance.toString()).eql(oneEther.mul(991).div(1000).toString());
+    // owner === creator => ownerShare + creatorShare - deployerShare => 1 * (0.9 + 0.1 - 0.9*0.02) = 0,982ETH
+    expect(ownerBalance.toString()).eql(oneEther.mul(982).div(1000).toString());
 
     const bidderBalance = await wethContract.balanceOf(bidder.address);
     expect(bidderBalance.toString()).eql(BigNumber.from(0).toString());
@@ -147,7 +146,8 @@ describe("AuctionHouse", function () {
     await auctionContract.connect(owner).endAuction("0");
 
     const balance = await currencyContract.balanceOf(owner.address);
-    expect(balance.toString()).eql(oneEther.mul(991).div(1000).toString());
+    // see test above for expected calculation
+    expect(balance.toString()).eql(oneEther.mul(982).div(1000).toString());
 
     const bidderBalance = await currencyContract.balanceOf(bidder.address);
     expect(bidderBalance.toString()).eql(BigNumber.from(0).toString());
@@ -207,5 +207,54 @@ describe("AuctionHouse", function () {
 
     const latestOwner = await tokenContract.ownerOf(tid);
     expect(latestOwner).eql(bidder.address);
+  });
+
+  it("auction where minter receives his share for minting the token for creator", async () => {
+    contentHash = sha256(toUtf8Bytes(`content-${Math.random()}`));
+    const newTokenId = "1";
+
+    await setupToken(owner, minter, newTokenId);
+
+    // minter is stored in market contract for the token
+    const minterAddres = await marketContract.minterForToken(newTokenId);
+    expect(minterAddres).to.eq(minter.address);
+
+    // create auction for WETH
+    await auctionContract
+      .connect(owner)
+      .createAuction(newTokenId, tokenContract.address, oneDay, "0", ethers.constants.AddressZero, "0", wethAddress);
+
+    const ONE_HUNDRED_ETH = ethers.utils.parseEther("100");
+    // swap & approve WETH
+    await getAndApproveWeth(bidder, auctionContract.address, ONE_HUNDRED_ETH);
+
+    // bid
+    await auctionContract.connect(bidder).createBid("0", ONE_HUNDRED_ETH, { value: ONE_HUNDRED_ETH });
+
+    // move forward in time until auction expires
+    await ethers.provider.send("evm_increaseTime", [oneDay]);
+
+    await auctionContract.connect(owner).endAuction("0");
+
+    const ownerBalanceAfter = await wethContract.balanceOf(owner.address);
+    const minterBalanceAfter = await wethContract.balanceOf(minter.address);
+    const deployerBalanceAfter = await wethContract.balanceOf(deployer.address);
+
+    // owner expected balance:
+    // owner === creator => ownerShare + creatorShare - deployerShare - minterAmount:
+    // 100 * (0.9 + 0.1 - 0.9*0.02 - 0.9*0.01) = 97.3ETH
+    expect(ownerBalanceAfter.toString()).eql(ONE_HUNDRED_ETH.mul(973).div(1000).toString());
+    // minter expected balance:
+    // 100 * (0.9 * 0.01) => 0.9ETH
+    expect(minterBalanceAfter.toString()).eql(ONE_HUNDRED_ETH.mul(9).div(1000).toString());
+    // 100 * (0.9 * 0.02) => 1.8ETH
+    expect(deployerBalanceAfter.toString()).eql(ONE_HUNDRED_ETH.mul(18).div(1000).toString());
+
+    // bidder is owner of token
+    expect(await tokenContract.ownerOf(newTokenId)).eql(bidder.address);
+
+    // minter is removed after the first transfer
+    const minterAddAfter = await marketContract.minterForToken(newTokenId);
+    expect(minterAddAfter).to.eq(ethers.constants.AddressZero);
   });
 });

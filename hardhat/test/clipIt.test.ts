@@ -77,6 +77,7 @@ describe("ClipIt", function () {
   }
 
   async function mint(
+    creator: string,
     contract: ClipIt,
     metadataURI: string,
     tokenURI: string,
@@ -91,7 +92,7 @@ describe("ClipIt", function () {
       contentHash,
       metadataHash,
     };
-    return contract.mint(data, shares, sig.v, sig.r, sig.s);
+    return contract.mint(creator, data, shares, sig.v, sig.r, sig.s);
   }
 
   async function deployCurrency(owner: Wallet) {
@@ -153,6 +154,7 @@ describe("ClipIt", function () {
 
       const signerTwo = await contract.connect(two);
       const tx = await mint(
+        two.address,
         signerTwo,
         metadataURI,
         tokenURI,
@@ -204,15 +206,53 @@ describe("ClipIt", function () {
       expect(bidShares.prevOwner.value.toString()).eql("10000000000000000000");
     });
 
-    // it("can not mint to 0 address", async () => {
-    //   // unable to do, since we use `msg.sender` for the `_to` parameter
-    //   // might need if we use the `_to` argument for `mint` function
-    //   // but you can not verify if `_to` is really streamers address unless you keep it on chain/off chain sig verification
-    // });
+    it("adds minter of token if minter !== creator", async () => {
+      const sig = await generateSignature(contractOwner, contentHash, two.address);
+
+      const minter = await contract.connect(three);
+      await mint(
+        two.address,
+        minter,
+        metadataURI,
+        tokenURI,
+        contentHashBytes,
+        metadataHashBytes,
+        {
+          creator: Decimal.from(10),
+          owner: Decimal.from(80),
+          prevOwner: Decimal.from(10),
+        },
+        sig
+      );
+
+      const minterAddr = await marketContract.minterForToken("0");
+      expect(minterAddr).to.eql(three.address);
+    });
+
+    it("can not mint to 0 address", async () => {
+      const sig = await generateSignature(contractOwner, contentHash, ethers.constants.AddressZero);
+      await expect(
+        mint(
+          ethers.constants.AddressZero,
+          contract,
+          metadataURI,
+          tokenURI,
+          contentHashBytes,
+          metadataHashBytes,
+          {
+            creator: Decimal.from(10),
+            owner: Decimal.from(80),
+            prevOwner: Decimal.from(10),
+          },
+          sig
+        )
+      ).to.be.revertedWith("ERC721: mint to the zero address");
+    });
 
     it("can not mint content that already was already minted", async () => {
       const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
       await mint(
+        contractOwner.address,
         contract,
         metadataURI,
         tokenURI,
@@ -228,6 +268,7 @@ describe("ClipIt", function () {
 
       await expect(
         mint(
+          contractOwner.address,
           contract,
           metadataURI,
           tokenURI,
@@ -248,6 +289,7 @@ describe("ClipIt", function () {
       const sig = await generateSignature(two, contentHash, two.address);
       await expect(
         mint(
+          two.address,
           contract,
           metadataURI,
           tokenURI,
@@ -260,14 +302,15 @@ describe("ClipIt", function () {
           },
           sig
         )
-      ).to.be.revertedWith("ClipIt: address not allowed to mint");
+      ).to.be.revertedWith("ClipIt: invalid signature");
     });
 
     it("does not allow minting with invalid signature address", async () => {
       const sig = await generateSignature(contractOwner, contentHash, three.address);
-      // signed address and msg.sender do not match
+      // signed address and creator address do not match
       await expect(
         mint(
+          four.address,
           contract,
           metadataURI,
           tokenURI,
@@ -280,7 +323,7 @@ describe("ClipIt", function () {
           },
           sig
         )
-      ).to.be.revertedWith("ClipIt: address not allowed to mint");
+      ).to.be.revertedWith("ClipIt: invalid signature");
     });
 
     it("does not allow minting with invalid signature cid", async () => {
@@ -289,6 +332,7 @@ describe("ClipIt", function () {
       // signed contentHash and ocntentHashBytes do not match
       await expect(
         mint(
+          three.address,
           contract,
           metadataURI,
           tokenURI,
@@ -301,7 +345,7 @@ describe("ClipIt", function () {
           },
           sig
         )
-      ).to.be.revertedWith("ClipIt: address not allowed to mint");
+      ).to.be.revertedWith("ClipIt: invalid signature");
     });
 
     it("token and mint URIs must exist", async () => {
@@ -309,6 +353,7 @@ describe("ClipIt", function () {
       // empty metadataURI
       await expect(
         mint(
+          contractOwner.address,
           contract,
           "",
           tokenURI,
@@ -326,6 +371,7 @@ describe("ClipIt", function () {
       // empty tokenURI
       await expect(
         mint(
+          contractOwner.address,
           contract,
           metadataURI,
           "",
@@ -345,6 +391,7 @@ describe("ClipIt", function () {
       const sig = await generateSignature(contractOwner, ethers.constants.HashZero, contractOwner.address);
       await expect(
         mint(
+          contractOwner.address,
           contract,
           metadataURI,
           tokenURI,
@@ -364,6 +411,7 @@ describe("ClipIt", function () {
       const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
       await expect(
         mint(
+          contractOwner.address,
           contract,
           metadataURI,
           tokenURI,
@@ -383,6 +431,7 @@ describe("ClipIt", function () {
       const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
       await expect(
         mint(
+          contractOwner.address,
           contract,
           metadataURI,
           tokenURI,
@@ -400,100 +449,12 @@ describe("ClipIt", function () {
     });
   });
 
-  describe("verifiedMint:", () => {
-    it("allows contract owner to mint clip to specific creator address", async () => {
-      const data: MediaData = {
-        tokenURI,
-        metadataURI,
-        contentHash: contentHashBytes,
-        metadataHash: metadataHashBytes,
-      };
-      const tx = await contract.verifiedMint(two.address, data, {
-        creator: Decimal.from(10),
-        owner: Decimal.from(80),
-        prevOwner: Decimal.from(10),
-      });
-      const receipt = await tx.wait();
-
-      expectEventWithArgs(receipt, "Transfer", (args) => {
-        expect(args["from"]).to.eql(ethers.constants.AddressZero);
-        expect(args["to"]).to.eql(two.address);
-        expect(args["tokenId"]).to.exist;
-        expect(args!.tokenId.toString()).to.eql("0");
-      });
-
-      const tokenCreator = await contract.tokenCreators(tid);
-      expect(tokenCreator).eq(two.address);
-
-      const previousTokenOwners = await contract.previousTokenOwners(tid);
-      expect(previousTokenOwners).eq(two.address);
-
-      const tokenContentHashes = await contract.tokenContentHashes(tid);
-      expect(tokenContentHashes).eq(contentHash);
-
-      const returnedTokenURI = await contract.tokenURI(tid);
-      expect(returnedTokenURI).eq(tokenURI);
-
-      const tokenMetadataHashes = await contract.tokenMetadataHashes(tid);
-      expect(tokenMetadataHashes).eq(metadataHash);
-
-      const tokenMetadataURI = await contract.tokenMetadataURI(tid);
-      expect(tokenMetadataURI).eq(metadataURI);
-
-      const ownerOf = await contract.ownerOf(tid);
-      expect(ownerOf).eql(two.address);
-
-      const token = await contract.tokenOfOwnerByIndex(two.address, 0);
-      expect(token.toString()).eql(tid.toString());
-
-      const bidShares = await marketContract.bidSharesForToken(tid);
-      expect(bidShares.owner.value.toString()).eql("80000000000000000000");
-      expect(bidShares.creator.value.toString()).eql("10000000000000000000");
-      expect(bidShares.prevOwner.value.toString()).eql("10000000000000000000");
-    });
-
-    it("can not mint to 0 address", async () => {
-      const data: MediaData = {
-        tokenURI,
-        metadataURI,
-        contentHash: contentHashBytes,
-        metadataHash: metadataHashBytes,
-      };
-
-      await expect(
-        contract.verifiedMint(ethers.constants.AddressZero, data, {
-          creator: Decimal.from(10),
-          owner: Decimal.from(80),
-          prevOwner: Decimal.from(10),
-        })
-      ).to.be.revertedWith("ERC721: mint to the zero address");
-    });
-
-    it("can not be called by other address than owner", async () => {
-      const data: MediaData = {
-        tokenURI,
-        metadataURI,
-        contentHash: contentHashBytes,
-        metadataHash: metadataHashBytes,
-      };
-
-      const caller = contract.connect(two);
-
-      await expect(
-        caller.verifiedMint(two.address, data, {
-          creator: Decimal.from(10),
-          owner: Decimal.from(80),
-          prevOwner: Decimal.from(10),
-        })
-      ).to.be.revertedWith("Ownable: caller is not the owner");
-    });
-  });
-
   describe("burn:", () => {
     beforeEach(async () => {
       const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
+        contractOwner.address,
         contract,
         metadataURI,
         tokenURI,
@@ -626,6 +587,7 @@ describe("ClipIt", function () {
       const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
+        contractOwner.address,
         contract,
         metadataURI,
         tokenURI,
@@ -699,6 +661,7 @@ describe("ClipIt", function () {
       const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
+        contractOwner.address,
         contract,
         metadataURI,
         tokenURI,
@@ -772,6 +735,7 @@ describe("ClipIt", function () {
       const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
+        contractOwner.address,
         contract,
         metadataURI,
         tokenURI,
@@ -878,6 +842,7 @@ describe("ClipIt", function () {
       const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
+        contractOwner.address,
         contract,
         metadataURI,
         tokenURI,
@@ -937,6 +902,7 @@ describe("ClipIt", function () {
       const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
+        contractOwner.address,
         contract,
         metadataURI,
         tokenURI,
@@ -1044,6 +1010,7 @@ describe("ClipIt", function () {
       const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
+        contractOwner.address,
         contract,
         metadataURI,
         tokenURI,
@@ -1092,6 +1059,7 @@ describe("ClipIt", function () {
       const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
+        contractOwner.address,
         contract,
         metadataURI,
         tokenURI,
@@ -1133,6 +1101,7 @@ describe("ClipIt", function () {
       const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
+        contractOwner.address,
         contract,
         metadataURI,
         tokenURI,
@@ -1283,19 +1252,19 @@ describe("ClipIt", function () {
       let otherBalance = await currencyContract.balanceOf(otherBidderAddress);
 
       const shares = await marketContract.bidSharesForToken(tid);
-      console.log("owner shares:", shares.owner.value.toString());
-      console.log("previous owner shares:", shares.prevOwner.value.toString());
+      // console.log("owner shares:", shares.owner.value.toString());
+      // console.log("previous owner shares:", shares.prevOwner.value.toString());
 
-      console.log(`creator balance change:`, creatorBalance.toNumber() - creatorBalanceBefore.toNumber());
-      console.log(`bidder balance change:`, bidderBalance.toNumber() - bidderBalanceBefore.toNumber());
-      console.log(`otherBidder balance change:`, otherBalance.toNumber() - otherBalanceBefore.toNumber());
+      // console.log(`creator balance change:`, creatorBalance.toNumber() - creatorBalanceBefore.toNumber());
+      // console.log(`bidder balance change:`, bidderBalance.toNumber() - bidderBalanceBefore.toNumber());
+      // console.log(`otherBidder balance change:`, otherBalance.toNumber() - otherBalanceBefore.toNumber());
     }
 
     it("sellOnShare test", async () => {
       await contract.setAsk(tid, defaultAsk(500, currencyAddress));
       await printBalance(async () => console.log(""));
 
-      console.log("\nBidder bidding 500 to creator");
+      // console.log("\nBidder bidding 500 to creator");
       // bid with 10% sellOnShare
       // await bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress));
       await printBalance(() => bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress)));
@@ -1303,7 +1272,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(bidderAddress);
 
-      console.log("\nOther bidding 500 to bidder");
+      // console.log("\nOther bidding 500 to bidder");
       bidder.setAsk(tid, defaultAsk(500, currencyAddress));
       // await otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress));
       await printBalance(() => otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress)));
@@ -1311,7 +1280,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(otherBidderAddress);
 
-      console.log("\nBidder bidding 500 to other");
+      // console.log("\nBidder bidding 500 to other");
       otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
       // bid with 10% sellOnShare
       // await bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress));
@@ -1320,7 +1289,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(bidderAddress);
 
-      console.log("\nOther bidding 500 to bidder");
+      // console.log("\nOther bidding 500 to bidder");
       bidder.setAsk(tid, defaultAsk(500, currencyAddress));
       // await otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress));
       await printBalance(() => otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress)));
@@ -1328,7 +1297,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(otherBidderAddress);
 
-      console.log("\nBidder bidding 500 to other with 50% sellOnShare");
+      // console.log("\nBidder bidding 500 to other with 50% sellOnShare");
       otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
       // bid with 10% sellOnShare
       const bb = defaultBid(currencyAddress, bidderAddress);
@@ -1339,7 +1308,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(bidderAddress);
 
-      console.log("\nOther bidding 500 to bidder with 40% sellOnShare");
+      // console.log("\nOther bidding 500 to bidder with 40% sellOnShare");
       bidder.setAsk(tid, defaultAsk(500, currencyAddress));
       const xb = defaultBid(currencyAddress, otherBidderAddress);
       xb.sellOnShare = Decimal.from(40);
@@ -1349,7 +1318,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(otherBidderAddress);
 
-      console.log("\nBidder bidding 500 to other with 0% sellOnShare");
+      // console.log("\nBidder bidding 500 to other with 0% sellOnShare");
       otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
       // bid with 10% sellOnShare
       const yb = defaultBid(currencyAddress, bidderAddress);
@@ -1360,7 +1329,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(bidderAddress);
 
-      console.log("\nOther bidding 500 to bidder with 0% sellOnShare");
+      // console.log("\nOther bidding 500 to bidder with 0% sellOnShare");
       bidder.setAsk(tid, defaultAsk(500, currencyAddress));
       const zb = defaultBid(currencyAddress, otherBidderAddress);
       zb.sellOnShare = Decimal.from(0);
@@ -1370,7 +1339,7 @@ describe("ClipIt", function () {
       // bidder is owner
       expect(newOwner).eql(otherBidderAddress);
 
-      console.log("\nBidder bidding 500 to other with 0% sellOnShare");
+      // console.log("\nBidder bidding 500 to other with 0% sellOnShare");
       otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
       // bid with 10% sellOnShare
       const wb = defaultBid(currencyAddress, bidderAddress);
@@ -1393,6 +1362,7 @@ describe("ClipIt", function () {
       const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
+        contractOwner.address,
         contract,
         metadataURI,
         tokenURI,
@@ -1459,6 +1429,7 @@ describe("ClipIt", function () {
       const sig = await generateSignature(contractOwner, contentHash, contractOwner.address);
 
       await mint(
+        contractOwner.address,
         contract,
         metadataURI,
         tokenURI,
@@ -1563,14 +1534,14 @@ describe("ClipIt", function () {
       bidderBalanceAfter = await currencyContract.balanceOf(bidderAddress);
       otherBalanceAfter = await currencyContract.balanceOf(otherBidderAddress);
 
-      // +10% to creator, +15% from sellOnFee for prevOwner, +1% of owner share as developer fee (to contract owner)
+      // +10% to creator, +15% from sellOnFee for prevOwner, +2% of owner share as developer fee (to contract owner)
       expect(creatorBalanceAfter.toNumber() - creatorBalanceBefore.toNumber()).eql(
-        0.1 * 500 + 0.15 * 500 + Math.floor(0.75 * 500 * 0.01)
-      ); // 128
-      // +75% to owner of token minus the dev fee (1% of the 75%)
+        0.1 * 500 + 0.15 * 500 + Math.floor(0.75 * 500 * 0.02)
+      ); // 132
+      // +75% to owner of token minus the dev fee (2% of the 75%)
       expect(bidderBalanceAfter.toNumber() - bidderBalanceBefore.toNumber()).eql(
-        0.75 * 500 - Math.floor(0.75 * 500 * 0.01)
-      ); // 372
+        0.75 * 500 - Math.floor(0.75 * 500 * 0.02)
+      ); // 368
       expect(otherBalanceAfter.toNumber() - otherBalanceBefore.toNumber()).eql(-500);
 
       const anotherNewOwner = await contract.ownerOf(tid);

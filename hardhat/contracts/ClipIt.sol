@@ -12,11 +12,14 @@ pragma experimental ABIEncoderV2;
  * even tho "clip" is not compatible with Zoras definition of Media.
  *
  * The following functions needed to be modified:
- *  - `mint` now takes ECDSA signature to verify ownership of the Clip and caller of the `mint`.
+ *  - `mint` now takes ECDSA signature to verify ownership of the Clip as creator of the `mint`.
  *     The ownership is verified by third-party API, where the creator generates the Clip.
+ *     The function now takes `creator` address so that it can be used by viewers to mint clips for Broadcasters
+ *     If the address calling the function sends a valid signature, and it's different than `creator`
+ *     it is considered as "minter" who is eligible for a % share of next token sale via Market contract.
  *  - `mintWithSig` was removed, since `mint` itself already required a signature
- *  - `onlyTokenWithContentHash` modifier was removed. creating token without content hash is prevented in `mint`
- *  - `onlyTokenWithMetadataHash` modifier was removed. creating token without metadata hash is prevented in `mint`
+ *  - `onlyTokenWithContentHash` modifier was removed. creating token without content hash is prevented in `_mintForCreator`
+ *  - `onlyTokenWithMetadataHash` modifier was removed. creating token without metadata hash is prevented in `_mintForCreator`
  *  - `permit` function and `_calculateDomainSeparator` function as removed
  *  - `_creatorTokens` mapping was removed
  */
@@ -156,24 +159,14 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
    * @notice see IClipIt
    */
   function mint(
+    address creator,
     MediaData memory data,
     IMarket.BidShares memory bidShares,
     uint8 v,
     bytes32 r,
     bytes32 s
   ) public override nonReentrant {
-    require(_verifySignature(data.contentHash, msg.sender, v, r, s), "ClipIt: address not allowed to mint");
-    _mintForCreator(msg.sender, data, bidShares);
-  }
-
-  /**
-   * @notice see IClipIt
-   */
-  function verifiedMint(
-    address creator,
-    MediaData memory data,
-    IMarket.BidShares memory bidShares
-  ) public override nonReentrant onlyOwner {
+    require(_verifySignature(data.contentHash, creator, v, r, s), "ClipIt: invalid signature");
     _mintForCreator(creator, data, bidShares);
   }
 
@@ -336,6 +329,10 @@ contract ClipIt is IClipIt, ERC721Burnable, ReentrancyGuard, Ownable {
     tokenCreators[tokenId] = creator;
     previousTokenOwners[tokenId] = creator;
     IMarket(marketContract).setBidShares(tokenId, bidShares);
+
+    if (msg.sender != creator) {
+      IMarket(marketContract).setMinter(tokenId, msg.sender);
+    }
   }
 
   function _setTokenContentHash(uint256 tokenId, bytes32 contentHash) internal virtual onlyExistingToken(tokenId) {

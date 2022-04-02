@@ -42,24 +42,16 @@ interface IClipIt {
   function tokenMetadataURI(uint256 tokenId) external view returns (string memory);
 
   /**
-   * @notice Mint new Clip for msg.sender.
+   * @notice Mint new Clip to creator. 
+   * @notice `creator` must be Clip broadcaster verified by the signature.
    */
   function mint(
+    address creator,
     MediaData calldata data,
     IMarket.BidShares calldata bidShares,
     uint8 v,
     bytes32 r,
     bytes32 s
-  ) external;
-
-  /**
-   * @notice Mint new Clip to creator.
-   * @notice Can only be called by contract owner who can verify ownership of the Clip for creator offchain
-   */
-  function verifiedMint(
-    address creator,
-    MediaData calldata data,
-    IMarket.BidShares calldata bidShares
   ) external;
 
   /**

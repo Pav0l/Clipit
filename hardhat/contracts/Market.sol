@@ -47,6 +47,9 @@ contract Market is IMarket, Ownable {
   // Mapping from token to the current ask for the token
   mapping(uint256 => Ask) private _tokenAsks;
 
+  // Mapping from token to minter for minter fee
+  mapping(uint256 => address) private _tokenMinter;
+
   /* *********
    * Modifiers
    * *********
@@ -74,6 +77,10 @@ contract Market is IMarket, Ownable {
 
   function bidSharesForToken(uint256 tokenId) public view override returns (BidShares memory) {
     return _bidShares[tokenId];
+  }
+
+  function minterForToken(uint256 tokenId) public view returns (address) {
+    return _tokenMinter[tokenId];
   }
 
   /**
@@ -258,6 +265,15 @@ contract Market is IMarket, Ownable {
   }
 
   /**
+   * @notice Stores the address that mints the token so that the address 
+   * can receive a share of first token sale. Can only be called by the media contract.
+   */
+  function setMinter(uint256 tokenId, address minter) external override onlyMediaCaller {
+    _tokenMinter[tokenId] = minter;
+    emit MinterSet(tokenId, minter);
+  }
+
+  /**
    * @notice Given a token ID and a bidder, this method transfers the value of
    * the bid to the shareholders. It also transfers the ownership of the media
    * to the bid recipient. Finally, it removes the accepted bid and the current ask.
@@ -269,8 +285,19 @@ contract Market is IMarket, Ownable {
     IERC20 token = IERC20(bid.currency);
 
     uint256 ownerAmountFromBidShare = splitShare(bidShares.owner, bid.amount);
-    uint256 devAmount = ownerAmountFromBidShare.div(100); // 1% from media owners share
-    uint256 ownerAmount = ownerAmountFromBidShare.sub(devAmount);
+    uint256 devAmount = ownerAmountFromBidShare.div(50); // 2% from owners share
+    
+    uint256 minterAmount = 0;
+    if (_tokenMinter[tokenId] != address(0)) {
+      // TODO customizable `minter` share?
+      minterAmount = ownerAmountFromBidShare.div(100); // 1% from owners share
+      // Transfer minter share to minter of token
+      token.safeTransfer(_tokenMinter[tokenId], minterAmount);
+      // remove minter from future token transfers
+      _tokenMinter[tokenId] = address(0);
+    }
+
+    uint256 ownerAmount = ownerAmountFromBidShare.sub(devAmount).sub(minterAmount);
 
     // Transfer bid share to owner of contract
     token.safeTransfer(owner(), devAmount);
