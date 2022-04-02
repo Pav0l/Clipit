@@ -54,7 +54,6 @@ describe("AuctionHouse", function () {
     const shares = {
       creator: Decimal.from(10),
       owner: Decimal.from(90),
-      prevOwner: Decimal.from(0),
     };
 
     await tokenContract.connect(minter).mint(creator.address, data, shares, sig.v, sig.r, sig.s);
@@ -182,7 +181,6 @@ describe("AuctionHouse", function () {
       currency: wethAddress,
       bidder: bidder.address,
       recipient: bidder.address,
-      sellOnShare: Decimal.from(0),
     };
     // set market bid
     await tokenContract.connect(bidder).setBid(tid, marketBid);

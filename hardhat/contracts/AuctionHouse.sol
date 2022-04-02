@@ -402,8 +402,7 @@ contract AuctionHouse is IAuctionHouse, ReentrancyGuard {
       amount: auctions[auctionId].amount,
       currency: currency,
       bidder: address(this),
-      recipient: auctions[auctionId].bidder,
-      sellOnShare: Decimal.D256(0)
+      recipient: auctions[auctionId].bidder
     });
 
     IERC20(currency).approve(IClipItExtended(zora).marketContract(), bid.amount);

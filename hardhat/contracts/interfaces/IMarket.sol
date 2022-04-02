@@ -18,9 +18,6 @@ interface IMarket {
     address bidder;
     // Address of the recipient
     address recipient;
-    // TODO remove sellOnShare
-    // % of the next sale to award the current owner
-    Decimal.D256 sellOnShare;
   }
 
   struct Ask {
@@ -31,9 +28,6 @@ interface IMarket {
   }
 
   struct BidShares {
-    // TODO remove prevOwner
-    // % of sale value that goes to the _previous_ owner of the nft
-    Decimal.D256 prevOwner;
     // % of sale value that goes to the original creator of the nft
     Decimal.D256 creator;
     // % of sale value that goes to the seller (current owner) of the nft

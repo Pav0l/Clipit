@@ -1,6 +1,6 @@
 import { parseUnits } from "ethers/lib/utils";
 import { ethers } from "hardhat";
-import { Decimal, getMarketAddress, getTokenAddress, getWETHAddress } from "../../lib";
+import { getMarketAddress, getTokenAddress, getWETHAddress } from "../../lib";
 import { WETH } from "../../typechain";
 import { ClipIt } from "../../typechain/ClipIt";
 import { Market } from "../../typechain/Market";
@@ -42,7 +42,6 @@ async function main() {
     currency: wethAddress,
     bidder: bidder.address,
     recipient: bidder.address,
-    sellOnShare: Decimal.from(0),
   };
 
   await token.setBid(tokenId, bid);

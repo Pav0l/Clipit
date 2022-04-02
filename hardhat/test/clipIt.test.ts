@@ -53,8 +53,6 @@ describe("ClipIt", function () {
     bidder,
     // Address of the recipient
     recipient: recipient ?? bidder,
-    // % of the next sale to award the current owner
-    sellOnShare: Decimal.from(10),
   });
 
   interface MediaData {
@@ -72,7 +70,6 @@ describe("ClipIt", function () {
 
   interface BidShares {
     owner: DecimalValue;
-    prevOwner: DecimalValue;
     creator: DecimalValue;
   }
 
@@ -162,8 +159,7 @@ describe("ClipIt", function () {
         metadataHashBytes,
         {
           creator: Decimal.from(10),
-          owner: Decimal.from(80),
-          prevOwner: Decimal.from(10),
+          owner: Decimal.from(90),
         },
         sig
       );
@@ -201,9 +197,8 @@ describe("ClipIt", function () {
       expect(token.toString()).eql(tid.toString());
 
       const bidShares = await marketContract.bidSharesForToken(tid);
-      expect(bidShares.owner.value.toString()).eql("80000000000000000000");
+      expect(bidShares.owner.value.toString()).eql("90000000000000000000");
       expect(bidShares.creator.value.toString()).eql("10000000000000000000");
-      expect(bidShares.prevOwner.value.toString()).eql("10000000000000000000");
     });
 
     it("adds minter of token if minter !== creator", async () => {
@@ -219,8 +214,7 @@ describe("ClipIt", function () {
         metadataHashBytes,
         {
           creator: Decimal.from(10),
-          owner: Decimal.from(80),
-          prevOwner: Decimal.from(10),
+          owner: Decimal.from(90),
         },
         sig
       );
@@ -241,8 +235,7 @@ describe("ClipIt", function () {
           metadataHashBytes,
           {
             creator: Decimal.from(10),
-            owner: Decimal.from(80),
-            prevOwner: Decimal.from(10),
+            owner: Decimal.from(90),
           },
           sig
         )
@@ -260,8 +253,7 @@ describe("ClipIt", function () {
         metadataHashBytes,
         {
           creator: Decimal.from(10),
-          owner: Decimal.from(80),
-          prevOwner: Decimal.from(10),
+          owner: Decimal.from(90),
         },
         sig
       );
@@ -276,8 +268,7 @@ describe("ClipIt", function () {
           metadataHashBytes,
           {
             creator: Decimal.from(10),
-            owner: Decimal.from(80),
-            prevOwner: Decimal.from(10),
+            owner: Decimal.from(90),
           },
           sig
         )
@@ -297,8 +288,7 @@ describe("ClipIt", function () {
           metadataHashBytes,
           {
             creator: Decimal.from(10),
-            owner: Decimal.from(80),
-            prevOwner: Decimal.from(10),
+            owner: Decimal.from(90),
           },
           sig
         )
@@ -318,8 +308,7 @@ describe("ClipIt", function () {
           metadataHashBytes,
           {
             creator: Decimal.from(10),
-            owner: Decimal.from(80),
-            prevOwner: Decimal.from(10),
+            owner: Decimal.from(90),
           },
           sig
         )
@@ -340,8 +329,7 @@ describe("ClipIt", function () {
           metadataHashBytes,
           {
             creator: Decimal.from(10),
-            owner: Decimal.from(80),
-            prevOwner: Decimal.from(10),
+            owner: Decimal.from(90),
           },
           sig
         )
@@ -361,8 +349,7 @@ describe("ClipIt", function () {
           metadataHashBytes,
           {
             creator: Decimal.from(10),
-            owner: Decimal.from(80),
-            prevOwner: Decimal.from(10),
+            owner: Decimal.from(90),
           },
           sig
         )
@@ -379,8 +366,7 @@ describe("ClipIt", function () {
           metadataHashBytes,
           {
             creator: Decimal.from(10),
-            owner: Decimal.from(80),
-            prevOwner: Decimal.from(10),
+            owner: Decimal.from(90),
           },
           sig
         )
@@ -399,8 +385,7 @@ describe("ClipIt", function () {
           metadataHashBytes,
           {
             creator: Decimal.from(10),
-            owner: Decimal.from(80),
-            prevOwner: Decimal.from(10),
+            owner: Decimal.from(90),
           },
           sig
         )
@@ -419,8 +404,7 @@ describe("ClipIt", function () {
           arrayify(ethers.constants.HashZero),
           {
             creator: Decimal.from(10),
-            owner: Decimal.from(80),
-            prevOwner: Decimal.from(10),
+            owner: Decimal.from(90),
           },
           sig
         )
@@ -438,10 +422,9 @@ describe("ClipIt", function () {
           contentHashBytes,
           metadataHashBytes,
           {
-            creator: Decimal.from(10),
-            // owner share too big
+            // sum of creator and owner share is above 100
+            creator: Decimal.from(20),
             owner: Decimal.from(90),
-            prevOwner: Decimal.from(10),
           },
           sig
         )
@@ -462,8 +445,7 @@ describe("ClipIt", function () {
         metadataHashBytes,
         {
           creator: Decimal.from(10),
-          owner: Decimal.from(80),
-          prevOwner: Decimal.from(10),
+          owner: Decimal.from(90),
         },
         sig
       );
@@ -595,8 +577,7 @@ describe("ClipIt", function () {
         metadataHashBytes,
         {
           creator: Decimal.from(10),
-          owner: Decimal.from(80),
-          prevOwner: Decimal.from(10),
+          owner: Decimal.from(90),
         },
         sig
       );
@@ -669,8 +650,7 @@ describe("ClipIt", function () {
         metadataHashBytes,
         {
           creator: Decimal.from(10),
-          owner: Decimal.from(80),
-          prevOwner: Decimal.from(10),
+          owner: Decimal.from(90),
         },
         sig
       );
@@ -743,8 +723,7 @@ describe("ClipIt", function () {
         metadataHashBytes,
         {
           creator: Decimal.from(10),
-          owner: Decimal.from(80),
-          prevOwner: Decimal.from(10),
+          owner: Decimal.from(90),
         },
         sig
       );
@@ -850,8 +829,7 @@ describe("ClipIt", function () {
         metadataHashBytes,
         {
           creator: Decimal.from(10),
-          owner: Decimal.from(80),
-          prevOwner: Decimal.from(10),
+          owner: Decimal.from(90),
         },
         sig
       );
@@ -910,8 +888,7 @@ describe("ClipIt", function () {
         metadataHashBytes,
         {
           creator: Decimal.from(10),
-          owner: Decimal.from(80),
-          prevOwner: Decimal.from(10),
+          owner: Decimal.from(90),
         },
         sig
       );
@@ -1018,8 +995,7 @@ describe("ClipIt", function () {
         metadataHashBytes,
         {
           creator: Decimal.from(10),
-          owner: Decimal.from(80),
-          prevOwner: Decimal.from(10),
+          owner: Decimal.from(90),
         },
         sig
       );
@@ -1067,8 +1043,7 @@ describe("ClipIt", function () {
         metadataHashBytes,
         {
           creator: Decimal.from(10),
-          owner: Decimal.from(80),
-          prevOwner: Decimal.from(10),
+          owner: Decimal.from(90),
         },
         sig
       );
@@ -1110,7 +1085,6 @@ describe("ClipIt", function () {
         {
           creator: Decimal.from(0),
           owner: Decimal.from(100),
-          prevOwner: Decimal.from(0),
         },
         sig
       );
@@ -1165,16 +1139,6 @@ describe("ClipIt", function () {
       ).revertedWith("Market: bid recipient cannot be 0 addres");
     });
 
-    it("invalid sellOnShare reverts", async () => {
-      const shares = await marketContract.bidSharesForToken(tid);
-      // creator BidShare from mint is X, so any sellOnShare that would make `creator share + sellOnShare` over 100
-      // is invalid
-      const invalidSellOnShare = Decimal.from(BigNumber.from(101).sub(shares.creator.value).toNumber());
-      await expect(
-        bidder.setBid(tid, { ...defaultBid(currencyAddress, bidderAddress), sellOnShare: invalidSellOnShare })
-      ).revertedWith("Market: Sell on fee invalid for share splitting");
-    });
-
     it("reverts if bidder does not have enough allowance for their bidding currency", async () => {
       const noAllowanceCaller = contract.connect(four);
       await expect(noAllowanceCaller.setBid(tid, defaultBid(currencyAddress, four.address))).revertedWith(
@@ -1199,7 +1163,6 @@ describe("ClipIt", function () {
       expect(bid.amount.toNumber()).eq(defBid.amount);
       expect(bid.recipient).eq(defBid.recipient);
       expect(bid.bidder).eq(defBid.bidder);
-      expect(bid.sellOnShare.value.toString()).eq(defBid.sellOnShare.value.toString());
     });
 
     it("refunds bidders previous bid when it exist", async () => {
@@ -1253,103 +1216,11 @@ describe("ClipIt", function () {
 
       const shares = await marketContract.bidSharesForToken(tid);
       // console.log("owner shares:", shares.owner.value.toString());
-      // console.log("previous owner shares:", shares.prevOwner.value.toString());
 
       // console.log(`creator balance change:`, creatorBalance.toNumber() - creatorBalanceBefore.toNumber());
       // console.log(`bidder balance change:`, bidderBalance.toNumber() - bidderBalanceBefore.toNumber());
       // console.log(`otherBidder balance change:`, otherBalance.toNumber() - otherBalanceBefore.toNumber());
     }
-
-    it("sellOnShare test", async () => {
-      await contract.setAsk(tid, defaultAsk(500, currencyAddress));
-      await printBalance(async () => console.log(""));
-
-      // console.log("\nBidder bidding 500 to creator");
-      // bid with 10% sellOnShare
-      // await bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress));
-      await printBalance(() => bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress)));
-      let newOwner = await contract.ownerOf(tid);
-      // bidder is owner
-      expect(newOwner).eql(bidderAddress);
-
-      // console.log("\nOther bidding 500 to bidder");
-      bidder.setAsk(tid, defaultAsk(500, currencyAddress));
-      // await otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress));
-      await printBalance(() => otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress)));
-      newOwner = await contract.ownerOf(tid);
-      // bidder is owner
-      expect(newOwner).eql(otherBidderAddress);
-
-      // console.log("\nBidder bidding 500 to other");
-      otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
-      // bid with 10% sellOnShare
-      // await bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress));
-      await printBalance(() => bidder.setBid(tid, defaultBid(currencyAddress, bidderAddress)));
-      newOwner = await contract.ownerOf(tid);
-      // bidder is owner
-      expect(newOwner).eql(bidderAddress);
-
-      // console.log("\nOther bidding 500 to bidder");
-      bidder.setAsk(tid, defaultAsk(500, currencyAddress));
-      // await otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress));
-      await printBalance(() => otherBidder.setBid(tid, defaultBid(currencyAddress, otherBidderAddress)));
-      newOwner = await contract.ownerOf(tid);
-      // bidder is owner
-      expect(newOwner).eql(otherBidderAddress);
-
-      // console.log("\nBidder bidding 500 to other with 50% sellOnShare");
-      otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
-      // bid with 10% sellOnShare
-      const bb = defaultBid(currencyAddress, bidderAddress);
-      bb.sellOnShare = Decimal.from(50);
-      // await bidder.setBid(tid, bb);
-      await printBalance(() => bidder.setBid(tid, bb));
-      newOwner = await contract.ownerOf(tid);
-      // bidder is owner
-      expect(newOwner).eql(bidderAddress);
-
-      // console.log("\nOther bidding 500 to bidder with 40% sellOnShare");
-      bidder.setAsk(tid, defaultAsk(500, currencyAddress));
-      const xb = defaultBid(currencyAddress, otherBidderAddress);
-      xb.sellOnShare = Decimal.from(40);
-      // await otherBidder.setBid(tid, xb);
-      await printBalance(() => otherBidder.setBid(tid, xb));
-      newOwner = await contract.ownerOf(tid);
-      // bidder is owner
-      expect(newOwner).eql(otherBidderAddress);
-
-      // console.log("\nBidder bidding 500 to other with 0% sellOnShare");
-      otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
-      // bid with 10% sellOnShare
-      const yb = defaultBid(currencyAddress, bidderAddress);
-      yb.sellOnShare = Decimal.from(0);
-      // await bidder.setBid(tid, yb);
-      await printBalance(() => bidder.setBid(tid, yb));
-      newOwner = await contract.ownerOf(tid);
-      // bidder is owner
-      expect(newOwner).eql(bidderAddress);
-
-      // console.log("\nOther bidding 500 to bidder with 0% sellOnShare");
-      bidder.setAsk(tid, defaultAsk(500, currencyAddress));
-      const zb = defaultBid(currencyAddress, otherBidderAddress);
-      zb.sellOnShare = Decimal.from(0);
-      // await otherBidder.setBid(tid, zb);
-      await printBalance(() => otherBidder.setBid(tid, zb));
-      newOwner = await contract.ownerOf(tid);
-      // bidder is owner
-      expect(newOwner).eql(otherBidderAddress);
-
-      // console.log("\nBidder bidding 500 to other with 0% sellOnShare");
-      otherBidder.setAsk(tid, defaultAsk(500, currencyAddress));
-      // bid with 10% sellOnShare
-      const wb = defaultBid(currencyAddress, bidderAddress);
-      wb.sellOnShare = Decimal.from(0);
-      // await bidder.setBid(tid, wb);
-      await printBalance(() => bidder.setBid(tid, wb));
-      newOwner = await contract.ownerOf(tid);
-      // bidder is owner
-      expect(newOwner).eql(bidderAddress);
-    });
   });
 
   describe("removeBid:", () => {
@@ -1371,7 +1242,6 @@ describe("ClipIt", function () {
         {
           creator: Decimal.from(0),
           owner: Decimal.from(100),
-          prevOwner: Decimal.from(0),
         },
         sig
       );
@@ -1437,8 +1307,7 @@ describe("ClipIt", function () {
         metadataHashBytes,
         {
           creator: Decimal.from(10),
-          owner: Decimal.from(80),
-          prevOwner: Decimal.from(10),
+          owner: Decimal.from(90),
         },
         sig
       );
@@ -1500,7 +1369,6 @@ describe("ClipIt", function () {
       let otherBalanceBefore = await currencyContract.balanceOf(otherBidderAddress);
 
       const bid = defaultBid(currencyAddress, bidderAddress);
-      bid.sellOnShare = Decimal.from(15);
       await bidder.setBid(tid, bid);
       await contract.acceptBid(tid, bid);
 
@@ -1517,8 +1385,7 @@ describe("ClipIt", function () {
 
       const bidShares = await marketContract.bidSharesForToken(tid);
       expect(bidShares.creator.value.toString()).eql("10000000000000000000");
-      expect(bidShares.owner.value.toString()).eql("75000000000000000000");
-      expect(bidShares.prevOwner.value.toString()).eql("15000000000000000000");
+      expect(bidShares.owner.value.toString()).eql("90000000000000000000");
 
       // Another bid -> accept -> transfer
       creatorBalanceBefore = await currencyContract.balanceOf(contractOwner.address);
@@ -1526,7 +1393,6 @@ describe("ClipIt", function () {
       otherBalanceBefore = await currencyContract.balanceOf(otherBidderAddress);
 
       const otherBid = defaultBid(currencyAddress, otherBidderAddress);
-      otherBid.sellOnShare = Decimal.from(15);
       await otherBidder.setBid(tid, otherBid);
       await bidder.acceptBid(tid, otherBid);
 
@@ -1534,14 +1400,16 @@ describe("ClipIt", function () {
       bidderBalanceAfter = await currencyContract.balanceOf(bidderAddress);
       otherBalanceAfter = await currencyContract.balanceOf(otherBidderAddress);
 
-      // +10% to creator, +15% from sellOnFee for prevOwner, +2% of owner share as developer fee (to contract owner)
+      // +10% to creator +2% of owner share as dev fee (to contract owner)
       expect(creatorBalanceAfter.toNumber() - creatorBalanceBefore.toNumber()).eql(
-        0.1 * 500 + 0.15 * 500 + Math.floor(0.75 * 500 * 0.02)
-      ); // 132
-      // +75% to owner of token minus the dev fee (2% of the 75%)
+        0.1 * 500 + Math.floor(0.9 * 500 * 0.02)
+      ); // 59
+
+      // +90% to owner of token (bidderAddress) minus the dev fee (90% * amount * 2%)
       expect(bidderBalanceAfter.toNumber() - bidderBalanceBefore.toNumber()).eql(
-        0.75 * 500 - Math.floor(0.75 * 500 * 0.02)
-      ); // 368
+        0.9 * 500 - Math.floor(0.9 * 500 * 0.02)
+      ); // 441
+      // new bidders balance also updated
       expect(otherBalanceAfter.toNumber() - otherBalanceBefore.toNumber()).eql(-500);
 
       const anotherNewOwner = await contract.ownerOf(tid);
@@ -1549,15 +1417,13 @@ describe("ClipIt", function () {
 
       const newBidShares = await marketContract.bidSharesForToken(tid);
       expect(newBidShares.creator.value.toString()).eql("10000000000000000000");
-      expect(newBidShares.owner.value.toString()).eql("75000000000000000000");
-      expect(newBidShares.prevOwner.value.toString()).eql("15000000000000000000");
+      expect(newBidShares.owner.value.toString()).eql("90000000000000000000");
 
       const bidRemoved = await marketContract.bidForTokenBidder(tid, otherBidderAddress);
       expect(bidRemoved.amount.toNumber()).eql(0);
       expect(bidRemoved.bidder).eql(ethers.constants.AddressZero);
       expect(bidRemoved.recipient).eql(ethers.constants.AddressZero);
       expect(bidRemoved.currency).eql(ethers.constants.AddressZero);
-      expect(bidRemoved.sellOnShare.value.toString()).eq("0");
     });
 
     // TODO events where missing (check IMarket for events)

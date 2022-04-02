@@ -25,7 +25,6 @@ interface ClipData {
   metadataHash: BytesLike;
 }
 interface BidShares {
-  prevOwner: { value: BigNumberish };
   creator: { value: BigNumberish };
   owner: { value: BigNumberish };
 }
@@ -38,7 +37,6 @@ const mintData: ClipData = {
 };
 
 const bidShares: BidShares = {
-  prevOwner: Decimal.from(0),
   creator: Decimal.from(5),
   owner: Decimal.from(95),
 };
@@ -58,7 +56,14 @@ async function main() {
   const signature = await generateSignature(contractOwner, contentHash, creator.address);
 
   console.log("minting CLIP...");
-  let tx = await contract.mint(mintData, bidShares, BigNumber.from(signature.v), signature.r, signature.s);
+  let tx = await contract.mint(
+    contractOwner.address,
+    mintData,
+    bidShares,
+    BigNumber.from(signature.v),
+    signature.r,
+    signature.s
+  );
   const receipt = await tx.wait();
 
   console.log("mint done...");
@@ -111,7 +116,6 @@ async function main() {
     currency: wethAddress,
     bidder: bidder1.address,
     recipient: bidder1.address,
-    sellOnShare: Decimal.from(0),
   };
 
   console.log("setting bid for bidder1...");
@@ -138,7 +142,6 @@ async function main() {
     currency: wethAddress,
     bidder: bidder2.address,
     recipient: bidder2.address,
-    sellOnShare: Decimal.from(0),
   };
 
   console.log("setting bid for bidder2...");

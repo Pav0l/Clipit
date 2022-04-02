@@ -11,7 +11,8 @@ pragma experimental ABIEncoderV2;
  *  - changed solidity version
  *  - imported ClipIt contract instead of the original Media contract
  *  - contract is now `Ownable`
- *  - _finalizeNFTTransfer sends 1% from owners share and sends it to contract owner
+ *  - _finalizeNFTTransfer sends 2% from owners share to contract owner and 1% to minter if it exist
+ *  - `Bid.sellOnShare` and `BidShare.prevOwner` were removed
  */
 
 import { SafeMath } from "@openzeppelin/contracts/math/SafeMath.sol";
@@ -95,19 +96,14 @@ contract Market is IMarket, Ownable {
     require(isValidBidShares(bidShares), "Market: Invalid bid shares for token");
     return
       bidAmount != 0 &&
-      (bidAmount ==
-        splitShare(bidShares.creator, bidAmount).add(splitShare(bidShares.prevOwner, bidAmount)).add(
-          splitShare(bidShares.owner, bidAmount)
-        ));
+      (bidAmount == splitShare(bidShares.creator, bidAmount).add(splitShare(bidShares.owner, bidAmount)));
   }
 
   /**
    * @notice Validates that the provided bid shares sum to 100
    */
   function isValidBidShares(BidShares memory bidShares) public pure override returns (bool) {
-    return
-      bidShares.creator.value.add(bidShares.owner.value).add(bidShares.prevOwner.value) ==
-      uint256(100).mul(Decimal.BASE);
+    return bidShares.creator.value.add(bidShares.owner.value) == uint256(100).mul(Decimal.BASE);
   }
 
   /**
@@ -176,11 +172,6 @@ contract Market is IMarket, Ownable {
     Bid memory bid,
     address spender
   ) public override onlyMediaCaller {
-    BidShares memory bidShares = _bidShares[tokenId];
-    require(
-      bidShares.creator.value.add(bid.sellOnShare.value) <= uint256(100).mul(Decimal.BASE),
-      "Market: Sell on fee invalid for share splitting"
-    );
     require(bid.bidder != address(0), "Market: bidder cannot be 0 address");
     require(bid.amount != 0, "Market: cannot bid amount of 0");
     require(bid.currency != address(0), "Market: bid currency cannot be 0 address");
@@ -205,8 +196,7 @@ contract Market is IMarket, Ownable {
       afterBalance.sub(beforeBalance),
       bid.currency,
       bid.bidder,
-      bid.recipient,
-      bid.sellOnShare
+      bid.recipient
     );
     emit BidCreated(tokenId, bid);
 
@@ -255,7 +245,6 @@ contract Market is IMarket, Ownable {
     require(
       bid.amount == expectedBid.amount &&
         bid.currency == expectedBid.currency &&
-        bid.sellOnShare.value == expectedBid.sellOnShare.value &&
         bid.recipient == expectedBid.recipient,
       "Market: Unexpected bid found."
     );
@@ -306,19 +295,15 @@ contract Market is IMarket, Ownable {
     token.safeTransfer(IERC721(mediaContract).ownerOf(tokenId), ownerAmount);
     // Transfer bid share to creator of media
     token.safeTransfer(ClipIt(mediaContract).tokenCreators(tokenId), splitShare(bidShares.creator, bid.amount));
-    // Transfer bid share to previous owner of media (if applicable)
-    token.safeTransfer(ClipIt(mediaContract).previousTokenOwners(tokenId), splitShare(bidShares.prevOwner, bid.amount));
 
     // Transfer media to bid recipient
     ClipIt(mediaContract).auctionTransfer(tokenId, bid.recipient);
 
     // Calculate the bid share for the new owner,
-    // equal to 100 - creatorShare - sellOnShare
+    // equal to 100 - creatorShare
     bidShares.owner = Decimal.D256(
-      uint256(100).mul(Decimal.BASE).sub(_bidShares[tokenId].creator.value).sub(bid.sellOnShare.value)
+      uint256(100).mul(Decimal.BASE).sub(_bidShares[tokenId].creator.value)
     );
-    // Set the previous owner share to the accepted bid's sell-on fee
-    bidShares.prevOwner = bid.sellOnShare;
 
     // Remove the accepted bid
     delete _tokenBidders[tokenId][bidder];
