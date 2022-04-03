@@ -99,6 +99,7 @@ export function createClip(
   clip.owner = owner.id;
   clip.transactionHash = transactionHash;
   clip.creator = creator.id;
+  clip.minter = owner.id;
   clip.prevOwner = prevOwner.id;
   clip.contentURI = contentURI;
   clip.contentHash = contentHash;

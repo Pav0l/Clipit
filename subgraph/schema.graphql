@@ -8,7 +8,7 @@ type Clip @entity {
   "The current owner of the Clip"
   owner: User!
 
-  "The creator of the Clip"
+  "The creator of the Clip content"
   creator: User!
 
   "The minter of the Clip"
