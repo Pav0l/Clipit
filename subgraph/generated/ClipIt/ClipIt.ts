@@ -639,16 +639,6 @@ export class AcceptBidCallBidStruct extends ethereum.Tuple {
   get recipient(): Address {
     return this[3].toAddress();
   }
-
-  get sellOnShare(): AcceptBidCallBidSellOnShareStruct {
-    return changetype<AcceptBidCallBidSellOnShareStruct>(this[4].toTuple());
-  }
-}
-
-export class AcceptBidCallBidSellOnShareStruct extends ethereum.Tuple {
-  get value(): BigInt {
-    return this[0].toBigInt();
-  }
 }
 
 export class ApproveCall extends ethereum.Call {
@@ -766,28 +756,32 @@ export class MintCall__Inputs {
     this._call = call;
   }
 
+  get creator(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
   get data(): MintCallDataStruct {
     return changetype<MintCallDataStruct>(
-      this._call.inputValues[0].value.toTuple()
+      this._call.inputValues[1].value.toTuple()
     );
   }
 
   get bidShares(): MintCallBidSharesStruct {
     return changetype<MintCallBidSharesStruct>(
-      this._call.inputValues[1].value.toTuple()
+      this._call.inputValues[2].value.toTuple()
     );
   }
 
   get v(): i32 {
-    return this._call.inputValues[2].value.toI32();
+    return this._call.inputValues[3].value.toI32();
   }
 
   get r(): Bytes {
-    return this._call.inputValues[3].value.toBytes();
+    return this._call.inputValues[4].value.toBytes();
   }
 
   get s(): Bytes {
-    return this._call.inputValues[4].value.toBytes();
+    return this._call.inputValues[5].value.toBytes();
   }
 }
 
@@ -818,22 +812,12 @@ export class MintCallDataStruct extends ethereum.Tuple {
 }
 
 export class MintCallBidSharesStruct extends ethereum.Tuple {
-  get prevOwner(): MintCallBidSharesPrevOwnerStruct {
-    return changetype<MintCallBidSharesPrevOwnerStruct>(this[0].toTuple());
-  }
-
   get creator(): MintCallBidSharesCreatorStruct {
-    return changetype<MintCallBidSharesCreatorStruct>(this[1].toTuple());
+    return changetype<MintCallBidSharesCreatorStruct>(this[0].toTuple());
   }
 
   get owner(): MintCallBidSharesOwnerStruct {
-    return changetype<MintCallBidSharesOwnerStruct>(this[2].toTuple());
-  }
-}
-
-export class MintCallBidSharesPrevOwnerStruct extends ethereum.Tuple {
-  get value(): BigInt {
-    return this[0].toBigInt();
+    return changetype<MintCallBidSharesOwnerStruct>(this[1].toTuple());
   }
 }
 
@@ -1176,16 +1160,6 @@ export class SetBidCallBidStruct extends ethereum.Tuple {
 
   get recipient(): Address {
     return this[3].toAddress();
-  }
-
-  get sellOnShare(): SetBidCallBidSellOnShareStruct {
-    return changetype<SetBidCallBidSellOnShareStruct>(this[4].toTuple());
-  }
-}
-
-export class SetBidCallBidSellOnShareStruct extends ethereum.Tuple {
-  get value(): BigInt {
-    return this[0].toBigInt();
   }
 }
 

@@ -26,7 +26,6 @@ export class Clip extends Entity {
     this.set("metadataURI", Value.fromString(""));
     this.set("ownerBidShare", Value.fromBigInt(BigInt.zero()));
     this.set("creatorBidShare", Value.fromBigInt(BigInt.zero()));
-    this.set("prevOwnerBidShare", Value.fromBigInt(BigInt.zero()));
     this.set("createdAtTimestamp", Value.fromBigInt(BigInt.zero()));
     this.set("createdAtBlockNumber", Value.fromBigInt(BigInt.zero()));
   }
@@ -162,15 +161,6 @@ export class Clip extends Entity {
 
   set creatorBidShare(value: BigInt) {
     this.set("creatorBidShare", Value.fromBigInt(value));
-  }
-
-  get prevOwnerBidShare(): BigInt {
-    let value = this.get("prevOwnerBidShare");
-    return value!.toBigInt();
-  }
-
-  set prevOwnerBidShare(value: BigInt) {
-    this.set("prevOwnerBidShare", Value.fromBigInt(value));
   }
 
   get createdAtTimestamp(): BigInt {
@@ -526,7 +516,6 @@ export class Bid extends Entity {
     this.set("clip", Value.fromString(""));
     this.set("currency", Value.fromString(""));
     this.set("amount", Value.fromBigInt(BigInt.zero()));
-    this.set("sellOnShare", Value.fromBigInt(BigInt.zero()));
     this.set("bidder", Value.fromString(""));
     this.set("recipient", Value.fromString(""));
     this.set("createdAtTimestamp", Value.fromBigInt(BigInt.zero()));
@@ -595,15 +584,6 @@ export class Bid extends Entity {
     this.set("amount", Value.fromBigInt(value));
   }
 
-  get sellOnShare(): BigInt {
-    let value = this.get("sellOnShare");
-    return value!.toBigInt();
-  }
-
-  set sellOnShare(value: BigInt) {
-    this.set("sellOnShare", Value.fromBigInt(value));
-  }
-
   get bidder(): string {
     let value = this.get("bidder");
     return value!.toString();
@@ -651,7 +631,6 @@ export class InactiveBid extends Entity {
     this.set("type", Value.fromString(""));
     this.set("currency", Value.fromString(""));
     this.set("amount", Value.fromBigInt(BigInt.zero()));
-    this.set("sellOnShare", Value.fromBigInt(BigInt.zero()));
     this.set("bidder", Value.fromString(""));
     this.set("recipient", Value.fromString(""));
     this.set("createdAtTimestamp", Value.fromBigInt(BigInt.zero()));
@@ -729,15 +708,6 @@ export class InactiveBid extends Entity {
 
   set amount(value: BigInt) {
     this.set("amount", Value.fromBigInt(value));
-  }
-
-  get sellOnShare(): BigInt {
-    let value = this.get("sellOnShare");
-    return value!.toBigInt();
-  }
-
-  set sellOnShare(value: BigInt) {
-    this.set("sellOnShare", Value.fromBigInt(value));
   }
 
   get bidder(): string {

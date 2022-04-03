@@ -56,17 +56,17 @@ dataSources:
         - name: ERC20NameBytes
           file: ./abis/ERC20NameBytes.json
       eventHandlers:
-        - event: BidShareUpdated(indexed uint256,((uint256),(uint256),(uint256)))
+        - event: BidShareUpdated(indexed uint256,((uint256),(uint256)))
           handler: handleBidShareUpdated
         - event: AskCreated(indexed uint256,(uint256,address))
           handler: handleAskCreated
         - event: AskRemoved(indexed uint256,(uint256,address))
           handler: handleAskRemoved
-        - event: BidCreated(indexed uint256,(uint256,address,address,address,(uint256)))
+        - event: BidCreated(indexed uint256,(uint256,address,address,address))
           handler: handleBidCreated
-        - event: BidRemoved(indexed uint256,(uint256,address,address,address,(uint256)))
+        - event: BidRemoved(indexed uint256,(uint256,address,address,address))
           handler: handleBidRemoved
-        - event: BidFinalized(indexed uint256,(uint256,address,address,address,(uint256)))
+        - event: BidFinalized(indexed uint256,(uint256,address,address,address))
           handler: handleBidFinalized
       file: ./src/market.ts
   - kind: ethereum/contract

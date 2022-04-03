@@ -118,16 +118,6 @@ export class BidCreatedBidStruct extends ethereum.Tuple {
   get recipient(): Address {
     return this[3].toAddress();
   }
-
-  get sellOnShare(): BidCreatedBidSellOnShareStruct {
-    return changetype<BidCreatedBidSellOnShareStruct>(this[4].toTuple());
-  }
-}
-
-export class BidCreatedBidSellOnShareStruct extends ethereum.Tuple {
-  get value(): BigInt {
-    return this[0].toBigInt();
-  }
 }
 
 export class BidFinalized extends ethereum.Event {
@@ -169,16 +159,6 @@ export class BidFinalizedBidStruct extends ethereum.Tuple {
 
   get recipient(): Address {
     return this[3].toAddress();
-  }
-
-  get sellOnShare(): BidFinalizedBidSellOnShareStruct {
-    return changetype<BidFinalizedBidSellOnShareStruct>(this[4].toTuple());
-  }
-}
-
-export class BidFinalizedBidSellOnShareStruct extends ethereum.Tuple {
-  get value(): BigInt {
-    return this[0].toBigInt();
   }
 }
 
@@ -222,16 +202,6 @@ export class BidRemovedBidStruct extends ethereum.Tuple {
   get recipient(): Address {
     return this[3].toAddress();
   }
-
-  get sellOnShare(): BidRemovedBidSellOnShareStruct {
-    return changetype<BidRemovedBidSellOnShareStruct>(this[4].toTuple());
-  }
-}
-
-export class BidRemovedBidSellOnShareStruct extends ethereum.Tuple {
-  get value(): BigInt {
-    return this[0].toBigInt();
-  }
 }
 
 export class BidShareUpdated extends ethereum.Event {
@@ -259,24 +229,12 @@ export class BidShareUpdated__Params {
 }
 
 export class BidShareUpdatedBidSharesStruct extends ethereum.Tuple {
-  get prevOwner(): BidShareUpdatedBidSharesPrevOwnerStruct {
-    return changetype<BidShareUpdatedBidSharesPrevOwnerStruct>(
-      this[0].toTuple()
-    );
-  }
-
   get creator(): BidShareUpdatedBidSharesCreatorStruct {
-    return changetype<BidShareUpdatedBidSharesCreatorStruct>(this[1].toTuple());
+    return changetype<BidShareUpdatedBidSharesCreatorStruct>(this[0].toTuple());
   }
 
   get owner(): BidShareUpdatedBidSharesOwnerStruct {
-    return changetype<BidShareUpdatedBidSharesOwnerStruct>(this[2].toTuple());
-  }
-}
-
-export class BidShareUpdatedBidSharesPrevOwnerStruct extends ethereum.Tuple {
-  get value(): BigInt {
-    return this[0].toBigInt();
+    return changetype<BidShareUpdatedBidSharesOwnerStruct>(this[1].toTuple());
   }
 }
 
@@ -289,6 +247,28 @@ export class BidShareUpdatedBidSharesCreatorStruct extends ethereum.Tuple {
 export class BidShareUpdatedBidSharesOwnerStruct extends ethereum.Tuple {
   get value(): BigInt {
     return this[0].toBigInt();
+  }
+}
+
+export class MinterSet extends ethereum.Event {
+  get params(): MinterSet__Params {
+    return new MinterSet__Params(this);
+  }
+}
+
+export class MinterSet__Params {
+  _event: MinterSet;
+
+  constructor(event: MinterSet) {
+    this._event = event;
+  }
+
+  get tokenId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get minter(): Address {
+    return this._event.parameters[1].value.toAddress();
   }
 }
 
@@ -330,43 +310,19 @@ export class Market__bidForTokenBidderResultValue0Struct extends ethereum.Tuple 
   get recipient(): Address {
     return this[3].toAddress();
   }
-
-  get sellOnShare(): Market__bidForTokenBidderResultValue0SellOnShareStruct {
-    return changetype<Market__bidForTokenBidderResultValue0SellOnShareStruct>(
-      this[4].toTuple()
-    );
-  }
-}
-
-export class Market__bidForTokenBidderResultValue0SellOnShareStruct extends ethereum.Tuple {
-  get value(): BigInt {
-    return this[0].toBigInt();
-  }
 }
 
 export class Market__bidSharesForTokenResultValue0Struct extends ethereum.Tuple {
-  get prevOwner(): Market__bidSharesForTokenResultValue0PrevOwnerStruct {
-    return changetype<Market__bidSharesForTokenResultValue0PrevOwnerStruct>(
-      this[0].toTuple()
-    );
-  }
-
   get creator(): Market__bidSharesForTokenResultValue0CreatorStruct {
     return changetype<Market__bidSharesForTokenResultValue0CreatorStruct>(
-      this[1].toTuple()
+      this[0].toTuple()
     );
   }
 
   get owner(): Market__bidSharesForTokenResultValue0OwnerStruct {
     return changetype<Market__bidSharesForTokenResultValue0OwnerStruct>(
-      this[2].toTuple()
+      this[1].toTuple()
     );
-  }
-}
-
-export class Market__bidSharesForTokenResultValue0PrevOwnerStruct extends ethereum.Tuple {
-  get value(): BigInt {
-    return this[0].toBigInt();
   }
 }
 
@@ -393,28 +349,16 @@ export class Market__currentAskForTokenResultValue0Struct extends ethereum.Tuple
 }
 
 export class Market__isValidBidSharesInputBidSharesStruct extends ethereum.Tuple {
-  get prevOwner(): Market__isValidBidSharesInputBidSharesPrevOwnerStruct {
-    return changetype<Market__isValidBidSharesInputBidSharesPrevOwnerStruct>(
-      this[0].toTuple()
-    );
-  }
-
   get creator(): Market__isValidBidSharesInputBidSharesCreatorStruct {
     return changetype<Market__isValidBidSharesInputBidSharesCreatorStruct>(
-      this[1].toTuple()
+      this[0].toTuple()
     );
   }
 
   get owner(): Market__isValidBidSharesInputBidSharesOwnerStruct {
     return changetype<Market__isValidBidSharesInputBidSharesOwnerStruct>(
-      this[2].toTuple()
+      this[1].toTuple()
     );
-  }
-}
-
-export class Market__isValidBidSharesInputBidSharesPrevOwnerStruct extends ethereum.Tuple {
-  get value(): BigInt {
-    return this[0].toBigInt();
   }
 }
 
@@ -447,7 +391,7 @@ export class Market extends ethereum.SmartContract {
   ): Market__bidForTokenBidderResultValue0Struct {
     let result = super.call(
       "bidForTokenBidder",
-      "bidForTokenBidder(uint256,address):((uint256,address,address,address,(uint256)))",
+      "bidForTokenBidder(uint256,address):((uint256,address,address,address))",
       [
         ethereum.Value.fromUnsignedBigInt(tokenId),
         ethereum.Value.fromAddress(bidder)
@@ -465,7 +409,7 @@ export class Market extends ethereum.SmartContract {
   ): ethereum.CallResult<Market__bidForTokenBidderResultValue0Struct> {
     let result = super.tryCall(
       "bidForTokenBidder",
-      "bidForTokenBidder(uint256,address):((uint256,address,address,address,(uint256)))",
+      "bidForTokenBidder(uint256,address):((uint256,address,address,address))",
       [
         ethereum.Value.fromUnsignedBigInt(tokenId),
         ethereum.Value.fromAddress(bidder)
@@ -487,7 +431,7 @@ export class Market extends ethereum.SmartContract {
   ): Market__bidSharesForTokenResultValue0Struct {
     let result = super.call(
       "bidSharesForToken",
-      "bidSharesForToken(uint256):(((uint256),(uint256),(uint256)))",
+      "bidSharesForToken(uint256):(((uint256),(uint256)))",
       [ethereum.Value.fromUnsignedBigInt(tokenId)]
     );
 
@@ -501,7 +445,7 @@ export class Market extends ethereum.SmartContract {
   ): ethereum.CallResult<Market__bidSharesForTokenResultValue0Struct> {
     let result = super.tryCall(
       "bidSharesForToken",
-      "bidSharesForToken(uint256):(((uint256),(uint256),(uint256)))",
+      "bidSharesForToken(uint256):(((uint256),(uint256)))",
       [ethereum.Value.fromUnsignedBigInt(tokenId)]
     );
     if (result.reverted) {
@@ -585,7 +529,7 @@ export class Market extends ethereum.SmartContract {
   ): boolean {
     let result = super.call(
       "isValidBidShares",
-      "isValidBidShares(((uint256),(uint256),(uint256))):(bool)",
+      "isValidBidShares(((uint256),(uint256))):(bool)",
       [ethereum.Value.fromTuple(bidShares)]
     );
 
@@ -597,7 +541,7 @@ export class Market extends ethereum.SmartContract {
   ): ethereum.CallResult<boolean> {
     let result = super.tryCall(
       "isValidBidShares",
-      "isValidBidShares(((uint256),(uint256),(uint256))):(bool)",
+      "isValidBidShares(((uint256),(uint256))):(bool)",
       [ethereum.Value.fromTuple(bidShares)]
     );
     if (result.reverted) {
@@ -618,6 +562,29 @@ export class Market extends ethereum.SmartContract {
       "mediaContract",
       "mediaContract():(address)",
       []
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  minterForToken(tokenId: BigInt): Address {
+    let result = super.call(
+      "minterForToken",
+      "minterForToken(uint256):(address)",
+      [ethereum.Value.fromUnsignedBigInt(tokenId)]
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_minterForToken(tokenId: BigInt): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "minterForToken",
+      "minterForToken(uint256):(address)",
+      [ethereum.Value.fromUnsignedBigInt(tokenId)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -754,18 +721,6 @@ export class AcceptBidCallExpectedBidStruct extends ethereum.Tuple {
 
   get recipient(): Address {
     return this[3].toAddress();
-  }
-
-  get sellOnShare(): AcceptBidCallExpectedBidSellOnShareStruct {
-    return changetype<AcceptBidCallExpectedBidSellOnShareStruct>(
-      this[4].toTuple()
-    );
-  }
-}
-
-export class AcceptBidCallExpectedBidSellOnShareStruct extends ethereum.Tuple {
-  get value(): BigInt {
-    return this[0].toBigInt();
   }
 }
 
@@ -991,16 +946,6 @@ export class SetBidCallBidStruct extends ethereum.Tuple {
   get recipient(): Address {
     return this[3].toAddress();
   }
-
-  get sellOnShare(): SetBidCallBidSellOnShareStruct {
-    return changetype<SetBidCallBidSellOnShareStruct>(this[4].toTuple());
-  }
-}
-
-export class SetBidCallBidSellOnShareStruct extends ethereum.Tuple {
-  get value(): BigInt {
-    return this[0].toBigInt();
-  }
 }
 
 export class SetBidSharesCall extends ethereum.Call {
@@ -1040,26 +985,14 @@ export class SetBidSharesCall__Outputs {
 }
 
 export class SetBidSharesCallBidSharesStruct extends ethereum.Tuple {
-  get prevOwner(): SetBidSharesCallBidSharesPrevOwnerStruct {
-    return changetype<SetBidSharesCallBidSharesPrevOwnerStruct>(
+  get creator(): SetBidSharesCallBidSharesCreatorStruct {
+    return changetype<SetBidSharesCallBidSharesCreatorStruct>(
       this[0].toTuple()
     );
   }
 
-  get creator(): SetBidSharesCallBidSharesCreatorStruct {
-    return changetype<SetBidSharesCallBidSharesCreatorStruct>(
-      this[1].toTuple()
-    );
-  }
-
   get owner(): SetBidSharesCallBidSharesOwnerStruct {
-    return changetype<SetBidSharesCallBidSharesOwnerStruct>(this[2].toTuple());
-  }
-}
-
-export class SetBidSharesCallBidSharesPrevOwnerStruct extends ethereum.Tuple {
-  get value(): BigInt {
-    return this[0].toBigInt();
+    return changetype<SetBidSharesCallBidSharesOwnerStruct>(this[1].toTuple());
   }
 }
 
@@ -1072,6 +1005,40 @@ export class SetBidSharesCallBidSharesCreatorStruct extends ethereum.Tuple {
 export class SetBidSharesCallBidSharesOwnerStruct extends ethereum.Tuple {
   get value(): BigInt {
     return this[0].toBigInt();
+  }
+}
+
+export class SetMinterCall extends ethereum.Call {
+  get inputs(): SetMinterCall__Inputs {
+    return new SetMinterCall__Inputs(this);
+  }
+
+  get outputs(): SetMinterCall__Outputs {
+    return new SetMinterCall__Outputs(this);
+  }
+}
+
+export class SetMinterCall__Inputs {
+  _call: SetMinterCall;
+
+  constructor(call: SetMinterCall) {
+    this._call = call;
+  }
+
+  get tokenId(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
+  }
+
+  get minter(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+}
+
+export class SetMinterCall__Outputs {
+  _call: SetMinterCall;
+
+  constructor(call: SetMinterCall) {
+    this._call = call;
   }
 }
 

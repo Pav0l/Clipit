@@ -35,9 +35,6 @@ type Clip @entity {
   "The bid share for the creator of the Clip"
   creatorBidShare: BigInt!
 
-  "The bid share for the previous owner of the Clip's market"
-  prevOwnerBidShare: BigInt!
-
   "The timestamp of the block the Clip was minted in"
   createdAtTimestamp: BigInt!
 
@@ -128,9 +125,6 @@ type Bid @entity {
   "The amount of Currency of the Bid"
   amount: BigInt!
 
-  "The sellOnShare of the Bid"
-  sellOnShare: BigInt!
-
   "The bidder of the Bid"
   bidder: User!
 
@@ -168,9 +162,6 @@ type InactiveBid @entity {
 
   "The amount of Currency of the InactiveBid"
   amount: BigInt!
-
-  "The sellOnShare of the InactiveBid"
-  sellOnShare: BigInt!
 
   "The bidder of the InactiveBid"
   bidder: User!
