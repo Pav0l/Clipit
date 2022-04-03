@@ -11,7 +11,7 @@ import {
   Clip,
   ReserveAuction,
   ReserveAuctionBid,
-  InactiveReserveAuctionBid
+  InactiveReserveAuctionBid,
 } from "../generated/schema";
 import { ClipIt } from "../generated/ClipIt/ClipIt";
 import { Market } from "../generated/Market/Market";
@@ -113,10 +113,7 @@ export function createClip(
   return clip;
 }
 
-export function fetchClipBidShares(
-  tokenId: BigInt,
-  clipAddress: Address
-): BidShares {
+export function fetchClipBidShares(tokenId: BigInt, clipAddress: Address): BidShares {
   let clip = ClipIt.bind(clipAddress);
   let marketAddress = clip.marketContract();
   let market = Market.bind(marketAddress);
@@ -125,10 +122,7 @@ export function fetchClipBidShares(
     return new BidShares(BigInt.zero(), BigInt.zero());
   }
 
-  return new BidShares(
-    bidSharesTry.value.creator.value,
-    bidSharesTry.value.owner.value
-  );
+  return new BidShares(bidSharesTry.value.creator.value, bidSharesTry.value.owner.value);
 }
 
 export class BidShares {
@@ -350,10 +344,7 @@ function fetchCurrencyName(currencyAddress: Address): string {
 }
 
 function isNullEthValue(value: string): boolean {
-  return (
-    value ==
-    "0x0000000000000000000000000000000000000000000000000000000000000001"
-  );
+  return value == "0x0000000000000000000000000000000000000000000000000000000000000001";
 }
 
 export function createReserveAuction(
@@ -396,27 +387,18 @@ export function createReserveAuction(
   return reserveAuction;
 }
 
-export function setReserveAuctionFirstBidTime(
-  auction: ReserveAuction,
-  time: BigInt
-): void {
+export function setReserveAuctionFirstBidTime(auction: ReserveAuction, time: BigInt): void {
   auction.firstBidTime = time;
   auction.expectedEndTimestamp = auction.duration.plus(time);
   auction.save();
 }
 
-export function handleReserveAuctionExtended(
-  auction: ReserveAuction,
-  duration: BigInt
-): void {
+export function handleReserveAuctionExtended(auction: ReserveAuction, duration: BigInt): void {
   auction.duration = duration;
 
   let firstBidTime = auction.firstBidTime;
   if (firstBidTime === null) {
-    log.error(
-      "[handleReserveAuctionExtended] missing auction firstBidTime for auction {}",
-      [auction.id.toString()]
-    );
+    log.error("[handleReserveAuctionExtended] missing auction firstBidTime for auction {}", [auction.id.toString()]);
     return;
   }
   auction.expectedEndTimestamp = firstBidTime.plus(duration);
@@ -461,10 +443,7 @@ export function handleBidReplaced(
 ): void {
   let activeBid = ReserveAuctionBid.load(auctionCurrentBidId);
   if (!activeBid) {
-    log.error(
-      "[handleBidReplaced] missing active bid for reserve auction bid id {}",
-      [auctionCurrentBidId]
-    );
+    log.error("[handleBidReplaced] missing active bid for reserve auction bid id {}", [auctionCurrentBidId]);
     return;
   }
 

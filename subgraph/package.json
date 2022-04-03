@@ -2,6 +2,7 @@
   "name": "clip-it.subgraph",
   "license": "MIT",
   "scripts": {
+    "format": "prettier -w .",
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ h0ppx/two",
@@ -13,6 +14,7 @@
     "@graphprotocol/graph-ts": "0.24.1"
   },
   "devDependencies": {
-    "mustache": "^4.2.0"
+    "mustache": "^4.2.0",
+    "prettier": "^2.6.2"
   }
 }

@@ -4,7 +4,7 @@ import {
   BidCreated,
   BidFinalized,
   BidRemoved,
-  BidShareUpdated
+  BidShareUpdated,
 } from "../generated/Market/Market";
 import { BigInt, store, log } from "@graphprotocol/graph-ts";
 import { Ask, Bid, Clip, Transfer } from "../generated/schema";
@@ -15,7 +15,7 @@ import {
   createInactiveBid,
   findOrCreateCurrency,
   findOrCreateUser,
-  zeroAddress
+  zeroAddress,
 } from "./utils";
 
 const REMOVED = "Removed";
@@ -29,20 +29,15 @@ export function handleBidShareUpdated(event: BidShareUpdated): void {
   const tokenId = event.params.tokenId.toString();
   const bidShares = event.params.bidShares;
 
-  log.info(
-    "[handleBidShareUpdated] tokenId: {}, bidShares: creator: {}, owner: {}",
-    [
-      tokenId,
-      bidShares.creator.value.toString(),
-      bidShares.owner.value.toString()
-    ]
-  );
+  log.info("[handleBidShareUpdated] tokenId: {}, bidShares: creator: {}, owner: {}", [
+    tokenId,
+    bidShares.creator.value.toString(),
+    bidShares.owner.value.toString(),
+  ]);
 
   const clip = Clip.load(tokenId);
   if (clip == null) {
-    log.error("[handleBidShareUpdated] missing CLIP for tokenId: {}", [
-      tokenId
-    ]);
+    log.error("[handleBidShareUpdated] missing CLIP for tokenId: {}", [tokenId]);
     return;
   }
 
@@ -50,14 +45,11 @@ export function handleBidShareUpdated(event: BidShareUpdated): void {
   clip.ownerBidShare = bidShares.owner.value;
   clip.save();
 
-  log.info(
-    "[handleBidShareUpdated] done. tokenId: {}, bidShares: creator: {}, owner: {}",
-    [
-      tokenId,
-      bidShares.creator.value.toString(),
-      bidShares.owner.value.toString()
-    ]
-  );
+  log.info("[handleBidShareUpdated] done. tokenId: {}, bidShares: creator: {}, owner: {}", [
+    tokenId,
+    bidShares.creator.value.toString(),
+    bidShares.owner.value.toString(),
+  ]);
 }
 
 /**
@@ -71,7 +63,7 @@ export function handleAskCreated(event: AskCreated): void {
   log.info(`[handleAskCreated] tokenId: {}, currency: {}, amount: {}`, [
     tokenId,
     onchainAsk.currency.toHexString(),
-    onchainAsk.amount.toString()
+    onchainAsk.amount.toString(),
   ]);
 
   const clip = Clip.load(tokenId);
@@ -126,7 +118,7 @@ export function handleAskCreated(event: AskCreated): void {
     log.info(`[handleAskCreated] done tokenId: {}, currency: {}, amount: {}`, [
       tokenId,
       onchainAsk.currency.toHexString(),
-      onchainAsk.amount.toString()
+      onchainAsk.amount.toString(),
     ]);
   }
 }
@@ -143,7 +135,7 @@ export function handleAskRemoved(event: AskRemoved): void {
   log.info(`[handleAskRemoved] tokenId: {}, currency: {}, amount: {}`, [
     tokenId,
     onChainAsk.currency.toHexString(),
-    onChainAsk.amount.toString()
+    onChainAsk.amount.toString(),
   ]);
 
   const zero = BigInt.fromI32(0);
@@ -162,10 +154,7 @@ export function handleAskRemoved(event: AskRemoved): void {
     askId = tokenId.concat("-").concat(clip.owner);
     const ask = Ask.load(askId);
     if (ask == null) {
-      log.error(
-        "[handleAskRemoved] missing Ask for tokenId: {} and askId: {}",
-        [tokenId, askId]
-      );
+      log.error("[handleAskRemoved] missing Ask for tokenId: {} and askId: {}", [tokenId, askId]);
       return;
     }
 
@@ -193,7 +182,7 @@ export function handleAskRemoved(event: AskRemoved): void {
     log.info(`[handleAskRemoved] done tokenId: {}, currency: {}, amount: {}`, [
       tokenId,
       onChainAsk.currency.toHexString(),
-      onChainAsk.amount.toString()
+      onChainAsk.amount.toString(),
     ]);
   }
 }
@@ -207,16 +196,13 @@ export function handleBidCreated(event: BidCreated): void {
   const clip = Clip.load(tokenId);
   const bid = event.params.bid;
 
-  log.info(
-    `[handleBidCreated] tokenId: {}, currency: {}, amount: {}, bidder: {}, recipient: {}`,
-    [
-      tokenId,
-      bid.currency.toHexString(),
-      bid.amount.toString(),
-      bid.bidder.toHexString(),
-      bid.recipient.toHexString()
-    ]
-  );
+  log.info(`[handleBidCreated] tokenId: {}, currency: {}, amount: {}, bidder: {}, recipient: {}`, [
+    tokenId,
+    bid.currency.toHexString(),
+    bid.amount.toString(),
+    bid.bidder.toHexString(),
+    bid.recipient.toHexString(),
+  ]);
 
   if (clip == null) {
     log.error("[handleBidCreated] missing CLIP for tokenId: {}", [tokenId]);
@@ -245,16 +231,13 @@ export function handleBidCreated(event: BidCreated): void {
   currency.liquidity = currency.liquidity.plus(bid.amount);
   currency.save();
 
-  log.info(
-    `[handleBidCreated] done tokenId: {}, currency: {}, amount: {}, bidder: {}, recipient: {}`,
-    [
-      tokenId,
-      bid.currency.toHexString(),
-      bid.amount.toString(),
-      bid.bidder.toHexString(),
-      bid.recipient.toHexString()
-    ]
-  );
+  log.info(`[handleBidCreated] done tokenId: {}, currency: {}, amount: {}, bidder: {}, recipient: {}`, [
+    tokenId,
+    bid.currency.toHexString(),
+    bid.amount.toString(),
+    bid.bidder.toHexString(),
+    bid.recipient.toHexString(),
+  ]);
 }
 
 /**
@@ -268,16 +251,13 @@ export function handleBidRemoved(event: BidRemoved): void {
 
   const bidId = tokenId.concat("-").concat(onChainBid.bidder.toHexString());
 
-  log.info(
-    `[handleBidRemoved] tokenId: {}, currency: {}, amount: {}, bidder: {}, recipient: {}`,
-    [
-      tokenId,
-      onChainBid.currency.toHexString(),
-      onChainBid.amount.toString(),
-      onChainBid.bidder.toHexString(),
-      onChainBid.recipient.toHexString()
-    ]
-  );
+  log.info(`[handleBidRemoved] tokenId: {}, currency: {}, amount: {}, bidder: {}, recipient: {}`, [
+    tokenId,
+    onChainBid.currency.toHexString(),
+    onChainBid.amount.toString(),
+    onChainBid.bidder.toHexString(),
+    onChainBid.recipient.toHexString(),
+  ]);
 
   if (clip == null) {
     log.error("[handleBidRemoved] missing CLIP for tokenId: {}", [tokenId]);
@@ -286,10 +266,7 @@ export function handleBidRemoved(event: BidRemoved): void {
 
   const bid = Bid.load(bidId);
   if (bid == null) {
-    log.error("[handleBidRemoved] missing Bid for tokenId: {} and bidId: {}", [
-      tokenId,
-      bidId
-    ]);
+    log.error("[handleBidRemoved] missing Bid for tokenId: {} and bidId: {}", [tokenId, bidId]);
     return;
   }
 
@@ -325,16 +302,13 @@ export function handleBidRemoved(event: BidRemoved): void {
   // Remove Bid
   store.remove("Bid", bidId);
 
-  log.info(
-    `[handleBidRemoved] done tokenId: {}, currency: {}, amount: {}, bidder: {}, recipient: {}`,
-    [
-      tokenId,
-      onChainBid.currency.toHexString(),
-      onChainBid.amount.toString(),
-      onChainBid.bidder.toHexString(),
-      onChainBid.recipient.toHexString()
-    ]
-  );
+  log.info(`[handleBidRemoved] done tokenId: {}, currency: {}, amount: {}, bidder: {}, recipient: {}`, [
+    tokenId,
+    onChainBid.currency.toHexString(),
+    onChainBid.amount.toString(),
+    onChainBid.bidder.toHexString(),
+    onChainBid.recipient.toHexString(),
+  ]);
 }
 
 /**
@@ -348,16 +322,13 @@ export function handleBidFinalized(event: BidFinalized): void {
 
   const bidId = tokenId.concat("-").concat(onChainBid.bidder.toHexString());
 
-  log.info(
-    `[handleBidFinalized] tokenId: {}, currency: {}, amount: {}, bidder: {}, recipient: {}`,
-    [
-      tokenId,
-      onChainBid.currency.toHexString(),
-      onChainBid.amount.toString(),
-      onChainBid.bidder.toHexString(),
-      onChainBid.recipient.toHexString()
-    ]
-  );
+  log.info(`[handleBidFinalized] tokenId: {}, currency: {}, amount: {}, bidder: {}, recipient: {}`, [
+    tokenId,
+    onChainBid.currency.toHexString(),
+    onChainBid.amount.toString(),
+    onChainBid.bidder.toHexString(),
+    onChainBid.recipient.toHexString(),
+  ]);
 
   if (clip == null) {
     log.error("[handleBidFinalized] missing CLIP for tokenId: {}", [tokenId]);
@@ -366,10 +337,7 @@ export function handleBidFinalized(event: BidFinalized): void {
 
   const bid = Bid.load(bidId);
   if (bid == null) {
-    log.error(
-      "[handleBidFinalized] missing Bid for tokenId: {} and bidId: {}",
-      [tokenId, bidId]
-    );
+    log.error("[handleBidFinalized] missing Bid for tokenId: {} and bidId: {}", [tokenId, bidId]);
     return;
   }
 
@@ -394,10 +362,7 @@ export function handleBidFinalized(event: BidFinalized): void {
     .concat(event.transactionLogIndex.minus(BigInt.fromI32(2)).toString());
   const transfer = Transfer.load(transferId);
   if (transfer == null) {
-    log.error(
-      "[handleBidFinalized] missing Transfer for tokenId: {} and transferId: {}",
-      [tokenId, transferId]
-    );
+    log.error("[handleBidFinalized] missing Transfer for tokenId: {} and transferId: {}", [tokenId, transferId]);
     return;
   }
 
@@ -427,14 +392,11 @@ export function handleBidFinalized(event: BidFinalized): void {
   // Remove Bid
   store.remove("Bid", bidId);
 
-  log.info(
-    `[handleBidFinalized] done tokenId: {}, currency: {}, amount: {}, bidder: {}, recipient: {}`,
-    [
-      tokenId,
-      onChainBid.currency.toHexString(),
-      onChainBid.amount.toString(),
-      onChainBid.bidder.toHexString(),
-      onChainBid.recipient.toHexString()
-    ]
-  );
+  log.info(`[handleBidFinalized] done tokenId: {}, currency: {}, amount: {}, bidder: {}, recipient: {}`, [
+    tokenId,
+    onChainBid.currency.toHexString(),
+    onChainBid.amount.toString(),
+    onChainBid.bidder.toHexString(),
+    onChainBid.recipient.toHexString(),
+  ]);
 }

@@ -6,7 +6,7 @@ import {
   TokenMetadataURIUpdated,
   TokenURIUpdated,
   Transfer,
-  ClipIt
+  ClipIt,
 } from "../generated/ClipIt/ClipIt";
 import {
   findOrCreateUser,
@@ -14,7 +14,7 @@ import {
   createTransfer,
   createClip,
   fetchClipBidShares,
-  zeroAddress
+  zeroAddress,
 } from "./utils";
 
 const CONTENT = "Content";
@@ -25,11 +25,7 @@ export function handleApproval(event: Approval): void {
   const tokenId = event.params.tokenId.toString();
   const approved = event.params.approved.toHexString();
 
-  log.info("[handleApproval] tokenId: {}, owner: {}, approved: {}", [
-    tokenId,
-    owner,
-    approved
-  ]);
+  log.info("[handleApproval] tokenId: {}, owner: {}, approved: {}", [tokenId, owner, approved]);
 
   const clip = Clip.load(tokenId);
   if (clip == null) {
@@ -45,11 +41,7 @@ export function handleApproval(event: Approval): void {
   }
 
   clip.save();
-  log.info("[handleApproval] done for tokenId: {}, owner: {}, approved: {}", [
-    tokenId,
-    owner,
-    approved
-  ]);
+  log.info("[handleApproval] done for tokenId: {}, owner: {}, approved: {}", [tokenId, owner, approved]);
 }
 
 export function handleApprovalForAll(event: ApprovalForAll): void {
@@ -60,7 +52,7 @@ export function handleApprovalForAll(event: ApprovalForAll): void {
   log.info("[handleApprovalForAll] owner: {}, operator: {}, approved: {}", [
     ownerAddr,
     operatorAddr,
-    approved.toString()
+    approved.toString(),
   ]);
 
   const owner = findOrCreateUser(ownerAddr);
@@ -85,24 +77,21 @@ export function handleApprovalForAll(event: ApprovalForAll): void {
   }
 
   owner.save();
-  log.info(
-    "[handleApprovalForAll] done for owner: {}, operator: {}, approved: {}",
-    [ownerAddr, operatorAddr, approved.toString()]
-  );
+  log.info("[handleApprovalForAll] done for owner: {}, operator: {}, approved: {}", [
+    ownerAddr,
+    operatorAddr,
+    approved.toString(),
+  ]);
 }
 
-export function handleTokenMetadataURIUpdated(
-  event: TokenMetadataURIUpdated
-): void {
+export function handleTokenMetadataURIUpdated(event: TokenMetadataURIUpdated): void {
   let tokenId = event.params._tokenId.toString();
 
   log.info("[handleTokenMetadataURIUpdated] tokenId: {}", [tokenId]);
 
   let clip = Clip.load(tokenId);
   if (clip == null) {
-    log.error("[handleTokenMetadataURIUpdated] missing CLIP for tokenId: {}", [
-      tokenId
-    ]);
+    log.error("[handleTokenMetadataURIUpdated] missing CLIP for tokenId: {}", [tokenId]);
     return;
   }
 
@@ -138,9 +127,7 @@ export function handleTokenURIUpdated(event: TokenURIUpdated): void {
 
   let clip = Clip.load(tokenId);
   if (clip == null) {
-    log.error("[handleTokenURIUpdated] missing CLIP for tokenId: {}", [
-      tokenId
-    ]);
+    log.error("[handleTokenURIUpdated] missing CLIP for tokenId: {}", [tokenId]);
     return;
   }
 
@@ -174,11 +161,7 @@ export function handleTransfer(event: Transfer): void {
   const toAddr = event.params.to.toHexString();
   const tokenId = event.params.tokenId.toString();
 
-  log.info("[handleTransfer] from: {}, to: {}, tokenId: {}", [
-    fromAddr,
-    toAddr,
-    tokenId
-  ]);
+  log.info("[handleTransfer] from: {}, to: {}, tokenId: {}", [fromAddr, toAddr, tokenId]);
 
   const toUser = findOrCreateUser(toAddr);
   const fromUser = findOrCreateUser(fromAddr);
@@ -222,11 +205,7 @@ export function handleTransfer(event: Transfer): void {
     event.block.number
   );
 
-  log.info("[handleTransfer] done. from: {}, to: {}, tokenId: {}", [
-    fromAddr,
-    toAddr,
-    tokenId
-  ]);
+  log.info("[handleTransfer] done. from: {}, to: {}, tokenId: {}", [fromAddr, toAddr, tokenId]);
 }
 
 function handleMint(event: Transfer): void {

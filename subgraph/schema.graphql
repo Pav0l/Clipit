@@ -429,8 +429,7 @@ type ReserveAuction @entity {
   currentBid: ReserveAuctionBid
 
   "The previous bids on this auction"
-  previousBids: [InactiveReserveAuctionBid!]
-    @derivedFrom(field: "reserveAuction")
+  previousBids: [InactiveReserveAuctionBid!] @derivedFrom(field: "reserveAuction")
 
   "The time the auction was approved"
   approvedTimestamp: BigInt
