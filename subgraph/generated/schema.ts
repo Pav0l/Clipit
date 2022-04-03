@@ -19,6 +19,7 @@ export class Clip extends Entity {
     this.set("transactionHash", Value.fromString(""));
     this.set("owner", Value.fromString(""));
     this.set("creator", Value.fromString(""));
+    this.set("minter", Value.fromString(""));
     this.set("prevOwner", Value.fromString(""));
     this.set("contentHash", Value.fromBytes(Bytes.empty()));
     this.set("metadataHash", Value.fromBytes(Bytes.empty()));
@@ -81,6 +82,15 @@ export class Clip extends Entity {
 
   set creator(value: string) {
     this.set("creator", Value.fromString(value));
+  }
+
+  get minter(): string {
+    let value = this.get("minter");
+    return value!.toString();
+  }
+
+  set minter(value: string) {
+    this.set("minter", Value.fromString(value));
   }
 
   get prevOwner(): string {

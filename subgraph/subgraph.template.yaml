@@ -68,6 +68,8 @@ dataSources:
           handler: handleBidRemoved
         - event: BidFinalized(indexed uint256,(uint256,address,address,address))
           handler: handleBidFinalized
+        - event: MinterSet(indexed uint256,address)
+          handler: handleMinterSet
       file: ./src/market.ts
   - kind: ethereum/contract
     name: AuctionHouse

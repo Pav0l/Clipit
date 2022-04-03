@@ -5,6 +5,7 @@ import {
   BidFinalized,
   BidRemoved,
   BidShareUpdated,
+  MinterSet,
 } from "../generated/Market/Market";
 import { BigInt, store, log } from "@graphprotocol/graph-ts";
 import { Ask, Bid, Clip, Transfer } from "../generated/schema";
@@ -23,7 +24,6 @@ const FINALIZED = "Finalized";
 
 /**
  * Handler called when a `BidShareUpdated` Event is emitted on the Market Contract
- * @param event
  */
 export function handleBidShareUpdated(event: BidShareUpdated): void {
   const tokenId = event.params.tokenId.toString();
@@ -54,7 +54,6 @@ export function handleBidShareUpdated(event: BidShareUpdated): void {
 
 /**
  * Handler called when the `AskCreated` Event is emitted on the Market Contract
- * @param event
  */
 export function handleAskCreated(event: AskCreated): void {
   const tokenId = event.params.tokenId.toString();
@@ -125,7 +124,6 @@ export function handleAskCreated(event: AskCreated): void {
 
 /**
  * Handler called when the `AskRemoved` Event is emitted on the Market Contract
- * @param event
  */
 export function handleAskRemoved(event: AskRemoved): void {
   const tokenId = event.params.tokenId.toString();
@@ -189,7 +187,6 @@ export function handleAskRemoved(event: AskRemoved): void {
 
 /**
  * Handler called `BidCreated` Event is emitted on the Market Contract
- * @param event
  */
 export function handleBidCreated(event: BidCreated): void {
   const tokenId = event.params.tokenId.toString();
@@ -242,7 +239,6 @@ export function handleBidCreated(event: BidCreated): void {
 
 /**
  * Handler called when the `BidRemoved` Event is emitted on the Market Contract
- * @param event
  */
 export function handleBidRemoved(event: BidRemoved): void {
   const tokenId = event.params.tokenId.toString();
@@ -313,7 +309,6 @@ export function handleBidRemoved(event: BidRemoved): void {
 
 /**
  * Handler called when the `BidFinalized` Event is emitted on the Market Contract
- * @param event
  */
 export function handleBidFinalized(event: BidFinalized): void {
   const tokenId = event.params.tokenId.toString();
@@ -399,4 +394,25 @@ export function handleBidFinalized(event: BidFinalized): void {
     onChainBid.bidder.toHexString(),
     onChainBid.recipient.toHexString(),
   ]);
+}
+
+/**
+ * Handler called when the `MinterSet` Event is emitted on the Market Contract
+ */
+export function handleMinterSet(event: MinterSet): void {
+  const tokenId = event.params.tokenId.toString();
+  const minter = event.params.minter.toHexString();
+
+  log.info(`[handleMinterSet] tokenId: {}, minter: {}`, [tokenId, minter]);
+
+  const clip = Clip.load(tokenId);
+  if (clip == null) {
+    log.error("[handleMinterSet] missing CLIP for tokenId: {}", [tokenId]);
+    return;
+  }
+
+  clip.minter = minter;
+  clip.save();
+
+  log.info(`[handleMinterSet] done tokenId: {}, minter: {}`, [tokenId, minter]);
 }

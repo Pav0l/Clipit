@@ -11,6 +11,9 @@ type Clip @entity {
   "The creator of the Clip"
   creator: User!
 
+  "The minter of the Clip"
+  minter: User!
+
   "The previous owner of the ClipIt's Market"
   prevOwner: User!
 
