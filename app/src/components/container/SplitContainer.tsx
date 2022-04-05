@@ -23,7 +23,6 @@ const useStyles = makeAppStyles(() => ({
   container: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
+    justifyContent: "space-between",
   },
 }));
