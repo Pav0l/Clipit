@@ -7,7 +7,12 @@ export enum ThemeName {
   Dark = "dark",
 }
 
-const commonThemeOpts: ThemeOptions = {};
+const commonThemeOpts: ThemeOptions = {
+  typography: {
+    fontFamily: ["Montserrat", "sans-serif"].join(","),
+    fontSize: 16,
+  },
+};
 const darkOpts: ThemeOptions = {
   palette: {
     type: "light", // TODO replace with "dark" once ready
