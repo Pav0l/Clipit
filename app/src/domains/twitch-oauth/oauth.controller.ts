@@ -28,9 +28,9 @@ export class OAuthController {
     window.location.reload();
   };
 
-  initOauthFlowIfNotAuthorized = () => {
+  initOauthFlowIfNotAuthorized = (referrer?: string) => {
     if (!this.model.isLoggedIn) {
-      window.location.assign(this.getTwitchOAuth2AuthorizeUrl());
+      window.location.assign(this.getTwitchOAuth2AuthorizeUrl(referrer));
     }
   };
 
@@ -67,7 +67,7 @@ export class OAuthController {
     }
   }
 
-  getTwitchOAuth2AuthorizeUrl = () => {
+  getTwitchOAuth2AuthorizeUrl = (referrer?: string) => {
     const url = new URL(`${twitchOAuthUri}/oauth2/authorize`);
     url.searchParams.append(OauthQueryParams.CLIENT_ID, this.twitchClientId);
     url.searchParams.append(OauthQueryParams.REDIRECT_URI, `${window.location.origin}/oauth2/redirect`);
@@ -76,7 +76,7 @@ export class OAuthController {
     url.searchParams.append(
       OauthQueryParams.STATE,
       JSON.stringify({
-        referrer: window.location.pathname,
+        referrer: referrer ?? window.location.pathname,
         secret: this.generateSecretAndStore(),
       })
     );

@@ -1,26 +1,33 @@
 import { Button } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
+import TwitchGlitchPurpleIcon from "../../../assets/TwitchGlitchPurple.svg";
+
 import { makeAppStyles } from "../../theme/theme.constants";
-import { OAuthController } from "../oauth.controller";
 import { OAuthModel } from "../oauth.model";
 
 interface Props {
   model: {
     auth: OAuthModel;
   };
-  operations: OAuthController;
+
+  loggedInClick: () => void;
+  loggedOutClick: () => void;
+
+  loggedInText: string;
+  loggedOutText: string;
 }
 
-function LoginWithTwitch({ model, operations }: Props) {
+function LoginWithTwitch({ model, loggedInClick, loggedOutClick, loggedInText, loggedOutText }: Props) {
   const classes = useStyles();
   const isLoggedIn = model.auth.isLoggedIn;
 
   return (
     <Button
-      className={`${classes.button} ${isLoggedIn ? classes.logOut : ""}`}
-      onClick={isLoggedIn ? operations.logout : operations.initOauthFlowIfNotAuthorized}
+      className={`${classes.button}`} // ${isLoggedIn ? classes.logOut : ""}
+      onClick={isLoggedIn ? loggedInClick : loggedOutClick}
+      startIcon={<TwitchGlitchPurpleIcon />}
     >
-      {isLoggedIn ? "Log out" : "Login with Twitch"}
+      {isLoggedIn ? loggedInText : loggedOutText}
     </Button>
   );
 }
@@ -30,24 +37,25 @@ export default observer(LoginWithTwitch);
 const useStyles = makeAppStyles((theme) => ({
   button: {
     backgroundColor: theme.colors.twitch_bg_primary,
-    borderRadius: "4px",
     color: theme.colors.twitch_text_primary,
+    borderRadius: "16px",
     border: "none",
-    textTransform: "none",
-    padding: "6px 18px",
-    marginRight: "0.5rem",
-    fontWeight: 600,
+    fontVariant: "small-caps",
+    padding: "1em 2em",
+    fontWeight: 900,
+    fontSize: "1.3vw",
+    boxShadow: "0px 16px 48px #C3C8C9",
     "&:hover": {
-      backgroundColor: theme.colors.twitch_bg_hover,
-      color: theme.colors.twitch_text_primary,
+      backgroundColor: theme.colors.twitch_bg_secondary,
+      color: theme.colors.twitch_text_secondary,
     },
   },
   logOut: {
-    backgroundColor: theme.colors.twitch_bg_secondary,
-    color: theme.colors.twitch_text_secondary,
+    backgroundColor: theme.colors.twitch_bg_ternary,
+    color: theme.colors.text_primary,
     "&:hover": {
-      backgroundColor: theme.colors.twitch_bg_secondary_hover,
-      color: theme.colors.twitch_text_secondary,
+      backgroundColor: theme.colors.twitch_bg_ternary_hover,
+      color: theme.colors.twitch_text_primary,
     },
   },
 }));

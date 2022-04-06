@@ -175,9 +175,9 @@ export async function initAsync({
   ////////////////////////////
   // authorization
   ////////////////////////////
-  if (navigator.isOnOAuthProtectedRoute) {
-    oauth.initOauthFlowIfNotAuthorized();
-  }
+  // if (navigator.isOnOAuthProtectedRoute) {
+  //   oauth.initOauthFlowIfNotAuthorized();
+  // }
 
   ////////////////////////////
   // twitch data init
@@ -187,21 +187,30 @@ export async function initAsync({
   }
 
   ////////////////////////////
+  // demo init
+  ////////////////////////////
+  const params = new URL(window.location.href).searchParams;
+  const cid = params.get("cid");
+  if (cid !== null) {
+    model.demo.setCid(cid);
+  }
+
+  ////////////////////////////
   // web3 init
   ////////////////////////////
 
   // TODO clean this up somewhere to Nav ctrl or UI ctrl or refactor the to router based init
-  const params = new URL(window.location.href).searchParams;
-  const contentHash = params.get("contentHash");
-  if (contentHash !== null) {
-    await nft.getClipByContentHash(contentHash);
+  // const params = new URL(window.location.href).searchParams;
+  // const contentHash = params.get("contentHash");
+  // if (contentHash !== null) {
+  //   await nft.getClipByContentHash(contentHash);
 
-    const clip = model.nft.getContentHashMetadata(contentHash);
-    if (clip?.tokenId) {
-      navigator.goToNft(clip.tokenId);
-    }
-  }
+  //   const clip = model.nft.getContentHashMetadata(contentHash);
+  //   if (clip?.tokenId) {
+  //     navigator.goToNft(clip.tokenId);
+  //   }
+  // }
 
-  await web3.requestEthAccounts();
-  await nft.getClips();
+  // await web3.requestEthAccounts();
+  // await nft.getClips();
 }

@@ -11,6 +11,7 @@ import { NavigationModel } from "../navigation/navigation.model";
 import { ThemeModel } from "../theme/theme.model";
 import { MintModel } from "../mint/mint.model";
 import { AuctionModel } from "../auction/auction.model";
+import { DemoModel } from "./demo.model";
 
 export interface IAppModel {
   meta: MetaModel;
@@ -27,6 +28,7 @@ export interface IAppModel {
   snackbar: SnackbarModel;
   navigation: NavigationModel;
 
+  demo: DemoModel;
   testStore: TestStore;
 }
 
@@ -45,6 +47,7 @@ export class AppModel implements IAppModel {
   mint: MintModel;
   auction: AuctionModel;
 
+  demo: DemoModel;
   testStore: TestStore;
 
   constructor() {
@@ -65,5 +68,6 @@ export class AppModel implements IAppModel {
     this.snackbar = new SnackbarModel();
 
     this.testStore = new TestStore();
+    this.demo = new DemoModel();
   }
 }

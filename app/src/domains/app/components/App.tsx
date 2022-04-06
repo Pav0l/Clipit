@@ -1,22 +1,14 @@
 import { observer } from "mobx-react-lite";
+import { Box } from "@material-ui/core";
 import Route from "route-parser";
 
 import { AppModel } from "../app.model";
 import { AppRoute } from "../../../lib/constants";
-import NftContainer from "../../nfts/components/NftContainer";
-import NftsContainer from "../../nfts/components/NftsContainer";
-import ClipDetailContainer from "../../twitch-clips/components/ClipDetailContainer";
-import ClipsContainer from "../../twitch-clips/components/ClipsContainer";
 import Snackbar from "../../snackbar/Snackbar";
 import Home from "../../../components/home/Home";
 import OAuth2Redirect from "../../twitch-oauth/OAuth2Redirect/OAuth2Redirect";
-import Marketplace from "../../../components/marketplace/Marketplace";
-import Navbar from "../../navigation/components/Navbar";
-import ErrorBoundary from "../../../components/error/ErrorBoundry";
-import Playground from "../../playground/Playground";
 import ThemeProvider from "../../theme/components/ThemeProvider";
 import ErrorWithRetry from "../../../components/error/Error";
-import Footer from "../../../components/footer/Footer";
 import TermsOfService from "../../../components/terms/TermsOfService";
 import { Web3Controller } from "../../web3/web3.controller";
 import { OAuthController } from "../../twitch-oauth/oauth.controller";
@@ -63,18 +55,7 @@ const StyledApp = observer(function App({ model, operations, sentry }: Props) {
   const appMetaData = model.meta;
 
   return (
-    <div className={classes.app}>
-      <Navbar
-        model={{ web3: model.web3, auth: model.auth, navigation: model.navigation }}
-        operations={{
-          web3: operations.web3,
-          auth: operations.auth,
-          snackbar: operations.snackbar,
-          navigator: operations.navigator,
-        }}
-        isDevelopment={CONFIG.isDevelopment}
-      />
-
+    <Box className={classes.app}>
       <Snackbar model={{ snackbar: model.snackbar }} operations={operations.snackbar} />
 
       {appMetaData.isLoading ? (
@@ -84,75 +65,27 @@ const StyledApp = observer(function App({ model, operations, sentry }: Props) {
       ) : (
         <RouterX model={model} operations={operations} sentry={sentry} />
       )}
-
-      <Footer
-        operations={{
-          navigator: operations.navigator,
-        }}
-      />
-    </div>
+    </Box>
   );
 });
 
 const useStyles = makeAppStyles((theme) => ({
   app: {
     backgroundColor: theme.colors.background_primary,
-    minHeight: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
   },
 }));
 
-const RouterX = observer(function RouterX({ model, operations, sentry }: Props) {
+// TODO FIX going "back" in browser does not return to previous route
+// it changes browser URL, but not the app route
+const RouterX = observer(function RouterX({ model, operations }: Props) {
   let app: JSX.Element | null = null;
 
-  switch (model.navigation.activeRoute) {
-    case AppRoute.ABOUT:
-      app = <Playground model={model} operations={operations} />;
-      break;
+  const home = <Home model={model} operations={{ auth: operations.auth, navigator: operations.navigator }} />;
 
+  switch (model.navigation.activeRoute) {
+    // TODO should /terms also have Navbar?
     case AppRoute.TERMS:
       app = <TermsOfService />;
-      break;
-
-    case AppRoute.MARKETPLACE:
-      app = (
-        <Marketplace
-          model={{ nft: model.nft, web3: model.web3 }}
-          operations={{ navigator: operations.navigator, nft: operations.nft }}
-        />
-      );
-      break;
-
-    case AppRoute.NFTS:
-      app = (
-        <ErrorBoundary sentry={sentry}>
-          <NftsContainer
-            model={{ nft: model.nft, web3: model.web3 }}
-            operations={{ web3: operations.web3, nft: operations.nft, navigator: operations.navigator }}
-          />
-        </ErrorBoundary>
-      );
-      break;
-
-    case AppRoute.CLIPS:
-      app = (
-        <ErrorBoundary sentry={sentry}>
-          <ClipsContainer
-            model={{
-              clip: model.clip,
-              user: model.user,
-            }}
-            operations={{
-              clip: operations.clip,
-              game: operations.game,
-              user: operations.user,
-              navigator: operations.navigator,
-            }}
-          />
-        </ErrorBoundary>
-      );
       break;
 
     case AppRoute.OAUTH_REDIRECT:
@@ -162,65 +95,24 @@ const RouterX = observer(function RouterX({ model, operations, sentry }: Props) 
       break;
 
     case AppRoute.HOME:
-      app = (
-        <Home
-          model={{ clip: model.clip, nft: model.nft, auth: model.auth }}
-          operations={{ clip: operations.clip, auth: operations.auth, navigator: operations.navigator }}
-        />
-      );
+      app = home;
       break;
   }
 
   if (app === null) {
-    if (model.navigation.activeRoute?.startsWith(AppRoute.NFTS)) {
-      const route = new Route<{ tokenId: string }>(AppRoute.NFT);
+    if (model.navigation.activeRoute?.startsWith(AppRoute.DEMO)) {
+      const route = new Route<{ clipCid: string }>(AppRoute.DEMO_CLIP);
       const matched = route.match(model.navigation.activeRoute);
 
       if (matched !== false) {
-        app = (
-          <NftContainer
-            tokenId={matched.tokenId}
-            model={{ nft: model.nft, web3: model.web3, auction: model.auction }}
-            operations={{ web3: operations.web3, nft: operations.nft, ui: operations.ui }}
-            sentry={sentry}
-          />
-        );
-      }
-    }
-
-    if (model.navigation.activeRoute?.startsWith(AppRoute.CLIPS)) {
-      const route = new Route<{ clipId: string }>(AppRoute.CLIP);
-      const matched = route.match(model.navigation.activeRoute);
-
-      if (matched !== false) {
-        app = (
-          <ErrorBoundary sentry={sentry}>
-            <ClipDetailContainer
-              clipId={matched.clipId}
-              model={{
-                clip: model.clip,
-                user: model.user,
-                game: model.game,
-                web3: model.web3,
-                nft: model.nft,
-                mint: model.mint,
-              }}
-              operations={operations}
-            />
-          </ErrorBoundary>
-        );
+        app = <div>This is demo NFT page {matched.clipCid}</div>;
       }
     }
   }
 
   // app is still null -> must be some unknown route, just go home
   if (app === null) {
-    app = (
-      <Home
-        model={{ clip: model.clip, nft: model.nft, auth: model.auth }}
-        operations={{ clip: operations.clip, auth: operations.auth, navigator: operations.navigator }}
-      />
-    );
+    app = home;
   }
 
   return app;

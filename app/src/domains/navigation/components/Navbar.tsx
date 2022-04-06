@@ -80,12 +80,13 @@ export default observer(function Navbar({ model, operations, isDevelopment }: Pr
         </div>
 
         <div>
-          <LoginWithTwitch model={{ auth: model.auth }} operations={operations.auth} />
+          {/* TODO clipCid */}
+          {/* <LoginWithTwitch model={{ auth: model.auth }} operations={operations.auth} clipCid="" />
           <ConnectMetamaskButton
             model={model}
             onClick={operations.web3.requestConnectIfProviderExist}
             onClickError={operations.snackbar.sendError}
-          />
+          /> */}
         </div>
       </Toolbar>
     </AppBar>

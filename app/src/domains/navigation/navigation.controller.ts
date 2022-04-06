@@ -15,6 +15,10 @@ export class NavigatorController {
     this.goToRoute(`${AppRoute.NFTS}/${tokenId}`);
   };
 
+  goToDemoClip = (cid: string) => {
+    this.goToRoute(`${AppRoute.DEMO}/${cid}`);
+  };
+
   goToRoute = (route: string, href?: string) => {
     this.model.setActiveRoute(route);
     this.client.push(href ?? route);

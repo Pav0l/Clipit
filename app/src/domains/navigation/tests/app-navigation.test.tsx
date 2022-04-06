@@ -10,7 +10,7 @@ function flushPromisesInTests() {
   return new Promise((res) => setTimeout(res));
 }
 
-describe("app navigation", function () {
+describe.skip("app navigation", function () {
   const setLocationForTests = useWindowLocationInTests();
 
   beforeEach(() => {

@@ -11,7 +11,7 @@ function flushPromisesInTests() {
   return new Promise((res) => setTimeout(res));
 }
 
-describe("app tests", function () {
+describe.skip("app tests", function () {
   const setLocationForTests = useWindowLocationInTests();
 
   beforeEach(() => {

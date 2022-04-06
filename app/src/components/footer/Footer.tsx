@@ -18,23 +18,23 @@ export default function Footer({ operations }: Props) {
       <RouteLink
         to={AppRoute.TERMS}
         setActive={operations.navigator.goToRoute}
-        className={classes.link}
-        child={<Typography variant="caption">Terms of Service</Typography>}
+        child={
+          <Typography variant="caption" className={classes.text}>
+            Terms & conditions
+          </Typography>
+        }
         underline="hover"
       />
     </footer>
   );
 }
 
-const useStyles = makeAppStyles(() => ({
+const useStyles = makeAppStyles((theme) => ({
   footer: {
-    margin: "1rem 2rem",
     display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    paddingTop: "1rem",
+    justifyContent: "end",
   },
-  link: {
-    margin: "0 2rem",
+  text: {
+    color: theme.colors.text_secondary,
   },
 }));

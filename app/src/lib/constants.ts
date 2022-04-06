@@ -23,11 +23,13 @@ export const DEFAULT_SKIP_COUNT_VALUE = 0;
 export enum AppRoute {
   ABOUT = "/about",
   TERMS = "/terms",
+  NFTS = "/nfts",
   NFT = "/nfts/:tokenId",
   MARKETPLACE = "/marketplace",
   CLIPS = "/clips",
   CLIP = "/clips/:clipId",
-  NFTS = "/nfts",
+  DEMO = "/demo",
+  DEMO_CLIP = "/demo/:clipCid",
   OAUTH_REDIRECT = "/oauth2/redirect",
   HOME = "/",
 }
