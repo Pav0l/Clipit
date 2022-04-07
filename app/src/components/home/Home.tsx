@@ -153,7 +153,7 @@ const useStyles = makeAppStyles((theme) => ({
     padding: "2rem 3rem",
     display: "inline-block",
     textAlign: "center",
-    clipPath: "polygon(0% 0%,100% 0%,100% 70%,80% 100%,0% 100%)",
+    clipPath: "polygon(0% 0%,100% 0%,100% 82%,82% 100%,0% 100%)",
   },
   descriptionWithBtn: {
     marginLeft: "3.5rem",
