@@ -12,9 +12,12 @@ export interface ColorTokens {
   text_primary: string;
   text_secondary: string;
   text_ternary: string;
+  text_quaternary: string;
+  text_fifth: string;
   text_hint: string;
   background_primary: string;
   background_secondary: string;
+  background_ternary: string;
   border_primary: string;
   border_secondary: string;
 }
@@ -37,6 +40,9 @@ const black_40 = "rgba(0, 0, 0, 0.4)";
 const black_54 = "rgba(0, 0, 0, 0.54)";
 const black_111111 = "#111111";
 
+const clipit_green = "#C4E6CA";
+const clipit_gray = "#C4D0D2";
+
 export const lightColors: ColorTokens = {
   twitch_bg_primary: white,
   twitch_bg_hover: twitch_purple_hover,
@@ -50,10 +56,13 @@ export const lightColors: ColorTokens = {
   text_primary: black_111111,
   text_secondary: black_40,
   text_ternary: white,
+  text_quaternary: clipit_green,
+  text_fifth: clipit_gray,
   text_hint: black_38,
 
   background_primary: gray_90,
   background_secondary: black,
+  background_ternary: white,
 
   border_primary: black,
   border_secondary: white,
@@ -73,11 +82,14 @@ export const darkColors: ColorTokens = {
   text_primary: blue_primary,
   text_secondary: white,
   text_ternary: white,
+  text_quaternary: white,
+  text_fifth: white,
   text_hint: white,
 
   // TODO tmp "dark mode" background color
   background_primary: "rgb(24, 24, 27)",
   background_secondary: black_54,
+  background_ternary: black_54,
 
   border_primary: white,
   border_secondary: "rgb(24, 24, 27)",

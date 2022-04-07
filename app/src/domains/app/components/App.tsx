@@ -23,6 +23,7 @@ import { SupportWidgetProvider } from "../../support-widget/components/SupportWi
 import { makeAppStyles } from "../../theme/theme.constants";
 import { UiController } from "../ui.controller";
 import { NavigatorController } from "../../navigation/navigation.controller";
+import { Demo } from "../../../components/demo/Demo";
 
 interface Props {
   model: AppModel;
@@ -105,7 +106,7 @@ const RouterX = observer(function RouterX({ model, operations }: Props) {
       const matched = route.match(model.navigation.activeRoute);
 
       if (matched !== false) {
-        app = <div>This is demo NFT page {matched.clipCid}</div>;
+        app = <Demo clipCid={matched.clipCid} videoUri={model.demo.ipfsUri} />;
       }
     }
   }
