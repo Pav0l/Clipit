@@ -12,6 +12,15 @@ const commonThemeOpts: ThemeOptions = {
     fontFamily: ["Montserrat", "sans-serif"].join(","),
     fontSize: 16,
   },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 1024,
+      md: 1280,
+      lg: 1680,
+      xl: 1920,
+    },
+  },
 };
 const darkOpts: ThemeOptions = {
   palette: {

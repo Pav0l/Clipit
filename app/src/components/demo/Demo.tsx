@@ -129,7 +129,6 @@ const MainBoxText = (props: { text: string }) => {
 };
 
 const bottomHeight = "6vh";
-// TODO add media queries https://v4.mui.com/customization/breakpoints/#css-media-queries
 const useStyles = makeAppStyles((theme) => ({
   homeWrapper: {
     height: "100vh",
@@ -144,6 +143,9 @@ const useStyles = makeAppStyles((theme) => ({
   },
   video: {
     width: "80%",
+    [theme.breakpoints.down("sm")]: {
+      alignSelf: "center",
+    },
   },
   rightPanel: {
     display: "flex",
@@ -163,6 +165,9 @@ const useStyles = makeAppStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "center",
     padding: "1.5rem 0",
+    [theme.breakpoints.down("md")]: {
+      padding: "0.5rem 0",
+    },
   },
   collectorTitle: {
     color: theme.colors.text_quaternary,
@@ -170,6 +175,9 @@ const useStyles = makeAppStyles((theme) => ({
     fontWeight: 700,
     lineHeight: "1rem",
     letterSpacing: "0.1rem",
+    [theme.breakpoints.down("md")]: {
+      lineHeight: "normal",
+    },
   },
   collectorAddress: {
     fontSize: "clamp(12px, 1.2vw, 1.5rem)",
@@ -177,6 +185,9 @@ const useStyles = makeAppStyles((theme) => ({
     lineHeight: "2rem",
     letterSpacing: 0,
     marginRight: "0.5rem",
+    [theme.breakpoints.down("md")]: {
+      lineHeight: "normal",
+    },
   },
   mainBox: {
     margin: "auto 0",
@@ -191,6 +202,9 @@ const useStyles = makeAppStyles((theme) => ({
     letterSpacing: "0",
     lineHeight: "2.5rem",
     marginRight: "3rem",
+    [theme.breakpoints.down("md")]: {
+      lineHeight: "normal",
+    },
   },
   mainAuthor: {
     color: theme.colors.text_primary,
@@ -206,6 +220,9 @@ const useStyles = makeAppStyles((theme) => ({
     fontSize: "clamp(10px, 1vw, 1rem)",
     letterSpacing: "0.1em",
     lineHeight: "2rem",
+    [theme.breakpoints.down("md")]: {
+      lineHeight: "normal",
+    },
   },
   mainText: {
     color: theme.colors.text_primary,
