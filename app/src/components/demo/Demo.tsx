@@ -143,9 +143,7 @@ const useStyles = makeAppStyles((theme) => ({
   },
   video: {
     width: "80%",
-    [theme.breakpoints.down("sm")]: {
-      alignSelf: "center",
-    },
+    alignSelf: "center",
   },
   rightPanel: {
     display: "flex",
