@@ -28,14 +28,7 @@ import { Demo } from "../../../components/demo/Demo";
 interface Props {
   model: AppModel;
   operations: {
-    web3: Web3Controller;
     auth: OAuthController;
-    snackbar: SnackbarController;
-    nft: NftController;
-    clip: ClipController;
-    game: GameController;
-    user: UserController;
-    ui: UiController;
     navigator: NavigatorController;
   };
   sentry: SentryClient;
@@ -57,8 +50,6 @@ const StyledApp = observer(function App({ model, operations, sentry }: Props) {
 
   return (
     <Box className={classes.app}>
-      <Snackbar model={{ snackbar: model.snackbar }} operations={operations.snackbar} />
-
       {appMetaData.isLoading ? (
         <FullPageLoader />
       ) : appMetaData.error ? (
