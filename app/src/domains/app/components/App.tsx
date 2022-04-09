@@ -106,7 +106,9 @@ const RouterX = observer(function RouterX({ model, operations }: Props) {
       const matched = route.match(model.navigation.activeRoute);
 
       if (matched !== false) {
-        app = <Demo clipCid={matched.clipCid} videoUri={model.demo.ipfsUri} />;
+        app = (
+          <Demo clipCid={matched.clipCid} videoUri={model.demo.ipfsUri} logoOnClick={operations.navigator.goToRoute} />
+        );
       }
     }
   }

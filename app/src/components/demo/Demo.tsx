@@ -4,11 +4,14 @@ import ExternalLinkIcon from "../../assets/external-link.svg";
 import { demoStore } from "../../domains/app/demo.model";
 import { RouteLink } from "../../domains/navigation/components/RouteLink";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
+import { AppRoute } from "../../lib/constants";
 
 interface Props {
   clipCid: string;
 
   videoUri: string;
+
+  logoOnClick: (to: string, href?: string) => void;
 }
 
 /* What is this screen supposed to tell to ppl??? */
@@ -97,9 +100,17 @@ export const Demo = observer(function Demo(props: Props) {
             </Box>
           </Box>
           <Box className={`${classes.withGradient} ${classes.bottomBox}`}>
-            <Typography variant="h5" className={`${classes.boxMargin} ${classes.navLogo}`}>
-              Clipit
-            </Typography>
+            <RouteLink
+              child={
+                <Typography variant="h5" className={`${classes.boxMargin} ${classes.navLogo}`}>
+                  Clipit
+                </Typography>
+              }
+              setActive={props.logoOnClick}
+              underline="none"
+              to={AppRoute.HOME}
+              className={classes.baselinePrimaryFlexRow}
+            />
           </Box>
         </Box>
       </Box>
