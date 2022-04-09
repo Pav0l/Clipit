@@ -33,6 +33,7 @@ const useStyles = makeAppStyles((theme) => ({
   footer: {
     display: "flex",
     justifyContent: "end",
+    padding: "5px 0",
   },
   text: {
     color: theme.colors.text_secondary,

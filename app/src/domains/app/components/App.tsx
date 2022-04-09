@@ -62,7 +62,7 @@ const StyledApp = observer(function App({ model, operations, sentry }: Props) {
       {appMetaData.isLoading ? (
         <FullPageLoader />
       ) : appMetaData.error ? (
-        <ErrorWithRetry text={appMetaData.error.message} withRetry={true} />
+        <ErrorWithRetry text={appMetaData.error.message} withRetry={true} classNames={classes.error} />
       ) : (
         <RouterX model={model} operations={operations} sentry={sentry} />
       )}
@@ -73,6 +73,9 @@ const StyledApp = observer(function App({ model, operations, sentry }: Props) {
 const useStyles = makeAppStyles((theme) => ({
   app: {
     backgroundColor: theme.colors.background_primary,
+  },
+  error: {
+    height: "100vh",
   },
 }));
 
