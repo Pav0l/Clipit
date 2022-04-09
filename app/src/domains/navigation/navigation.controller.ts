@@ -5,7 +5,9 @@ import { INavigationClient } from "./navigation.client";
 import { NavigationModel } from "./navigation.model";
 
 export class NavigatorController {
-  constructor(private model: NavigationModel, private client: INavigationClient) {}
+  constructor(private model: NavigationModel, private client: INavigationClient) {
+    this.client.onPopState(this.goToRoute);
+  }
 
   goToClip = (clipId: string) => {
     this.goToRoute(`${AppRoute.CLIPS}/${clipId}`);
