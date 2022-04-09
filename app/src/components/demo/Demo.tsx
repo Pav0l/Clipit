@@ -1,4 +1,4 @@
-import { Box, CardMedia, Typography } from "@material-ui/core";
+import { Box, CardMedia, Tooltip, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import ExternalLinkIcon from "../../assets/external-link.svg";
 import { demoStore } from "../../domains/app/demo.model";
@@ -11,6 +11,7 @@ interface Props {
   videoUri: string;
 }
 
+/* What is this screen supposed to tell to ppl??? */
 export const Demo = observer(function Demo(props: Props) {
   const classes = useStyles();
   const data = demoStore[props.clipCid];
@@ -26,25 +27,28 @@ export const Demo = observer(function Demo(props: Props) {
           controls
           controlsList="nodownload"
         />
-        {/* TODO add tooltips */}
         <Box className={classes.rightPanel}>
           <Box className={classes.topBox}>
             <Box className={`${classes.boxMargin} ${classes.collectorBox}`}>
-              <Typography variant="h6" className={classes.collectorTitle}>
-                COLLECTOR
-              </Typography>
-              <RouteLink
-                child={
-                  <>
-                    <Typography className={classes.collectorAddress}>{data.collector}</Typography>
-                    <ExternalLinkIcon />
-                  </>
-                }
-                setActive={() => window.open("https://rinkeby.etherscan.io/", "_blank", "noreferrer")}
-                underline="none"
-                to=""
-                className={classes.baselinePrimaryFlexRow}
-              />
+              <Tooltip title="Ethereum address of the viewer who bought the Clip" placement="bottom">
+                <Box>
+                  <Typography variant="h6" className={classes.collectorTitle}>
+                    COLLECTOR
+                  </Typography>
+                  <RouteLink
+                    child={
+                      <>
+                        <Typography className={classes.collectorAddress}>{data.collector}</Typography>
+                        <ExternalLinkIcon />
+                      </>
+                    }
+                    setActive={() => window.open("https://rinkeby.etherscan.io/", "_blank", "noreferrer")}
+                    underline="none"
+                    to=""
+                    className={classes.baselinePrimaryFlexRow}
+                  />
+                </Box>
+              </Tooltip>
             </Box>
             <Box className={`${classes.withGradient} ${classes.dividerBox}`}></Box>
           </Box>
@@ -114,7 +118,7 @@ const MainBoxText = (props: { text: string }) => {
 };
 
 const bottomHeight = "6vh";
-// TODO add media queries
+// TODO add media queries https://v4.mui.com/customization/breakpoints/#css-media-queries
 const useStyles = makeAppStyles((theme) => ({
   homeWrapper: {
     height: "100vh",
@@ -224,8 +228,8 @@ const useStyles = makeAppStyles((theme) => ({
     // changed
     /**
      * Dynamically calculate the padding (which makes the height) of the component:
-     * height = fontSize + 2 * padding
-     * height = 1.2 * bottomHeight
+     * height = fontSize + 2 * padding // border and margin are 0
+     * height = 1.2 * bottomHeight // navLogo to be 20% bigger than bottom bar
      * ==================================
      * padding = ((1.2 * bottomHeight) - fontSize) / 2
      */
