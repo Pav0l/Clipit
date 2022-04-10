@@ -19,11 +19,12 @@ export default function Footer({ operations }: Props) {
         to={AppRoute.TERMS}
         setActive={operations.navigator.goToRoute}
         child={
-          <Typography variant="caption" className={classes.text}>
+          <Typography variant="caption" className={classes.link}>
             Terms & conditions
           </Typography>
         }
         underline="hover"
+        className={classes.link}
       />
     </footer>
   );
@@ -35,7 +36,7 @@ const useStyles = makeAppStyles((theme) => ({
     justifyContent: "end",
     padding: "5px 0",
   },
-  text: {
+  link: {
     color: theme.colors.text_secondary,
   },
 }));
