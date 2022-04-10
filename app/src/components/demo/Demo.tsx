@@ -5,6 +5,7 @@ import { demoStore } from "../../domains/app/demo.model";
 import { RouteLink } from "../../domains/navigation/components/RouteLink";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { AppRoute } from "../../lib/constants";
+import { Logo } from "../logo/Logo";
 
 interface Props {
   clipCid: string;
@@ -31,7 +32,7 @@ export const Demo = observer(function Demo(props: Props) {
           controlsList="nodownload"
         />
         <Box className={classes.rightPanel}>
-          <Box className={classes.topBox}>
+          <Box>
             <Box className={`${classes.boxMargin} ${classes.collectorBox}`}>
               <Tooltip title="Ethereum address of the viewer who bought the Clip" placement="bottom">
                 <Box>
@@ -101,11 +102,7 @@ export const Demo = observer(function Demo(props: Props) {
           </Box>
           <Box className={`${classes.withGradient} ${classes.bottomBox}`}>
             <RouteLink
-              child={
-                <Typography variant="h5" className={`${classes.boxMargin} ${classes.navLogo}`}>
-                  Clipit
-                </Typography>
-              }
+              child={<Logo className={`${classes.boxMargin} ${classes.navLogo}`} />}
               setActive={props.logoOnClick}
               underline="none"
               to={AppRoute.HOME}
@@ -157,7 +154,6 @@ const useStyles = makeAppStyles((theme) => ({
   dividerBox: {
     height: "6px",
   },
-  topBox: {},
   collectorBox: {
     display: "flex",
     flexDirection: "column",
@@ -242,16 +238,7 @@ const useStyles = makeAppStyles((theme) => ({
     alignItems: "baseline",
     color: theme.colors.text_primary,
   },
-  // TODO reuse
   navLogo: {
-    backgroundColor: theme.colors.background_secondary,
-    color: theme.colors.text_ternary,
-    fontStyle: "italic",
-    fontWeight: 900,
-    display: "inline-block",
-    textAlign: "center",
-    clipPath: "polygon(0% 0%,100% 0%,100% 82%,82% 100%,0% 100%)",
-    // changed
     /**
      * Dynamically calculate the padding (which makes the height) of the component:
      * height = fontSize + 2 * padding // border and margin are 0

@@ -1,12 +1,13 @@
-import { Container, Typography } from "@material-ui/core";
-import CenteredContainer from "../container/CenteredContainer";
+import { Container, Typography, Box } from "@material-ui/core";
+import { Logo } from "../logo/Logo";
 import { SectionHeader, Section, SectionParagraph } from "../section/Section";
 import { SimpleList } from "../simpleList/SimpleList";
 
 export default function TermsOfService() {
   return (
-    <CenteredContainer dataTestId="terms">
+    <Box data-testid="terms">
       <Container>
+        <Logo />
         <Typography variant="h4" component="h4">
           Terms of Service
         </Typography>
@@ -21,7 +22,13 @@ export default function TermsOfService() {
               <>
                 ClipIt is a NFT marketplace maintained by a decentralized team of developers (&quot;ClipIt&quot;,
                 &quot;we&quot;, &quot;us&quot; or &quot;our&quot;). It is build on top of{" "}
-                <a href="https://zora.co/" target="_blank" rel="noreferrer">
+                <a
+                  href="https://zora.co/"
+                  target="_blank"
+                  rel="noreferrer"
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  style={{ ["text-decoration" as any]: "none" }}
+                >
                   Zora Market and AuctionHouse
                 </a>
                 , an opensource NFT Marketplace Protocol on the Ethereum blockchain.
@@ -290,6 +297,6 @@ export default function TermsOfService() {
           />
         </Section>
       </Container>
-    </CenteredContainer>
+    </Box>
   );
 }

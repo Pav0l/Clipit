@@ -8,6 +8,7 @@ import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { NavigatorController } from "../../domains/navigation/navigation.controller";
 import Footer from "../footer/Footer";
 import { DemoModel } from "../../domains/app/demo.model";
+import { Logo } from "../logo/Logo";
 
 interface Props {
   model: {
@@ -27,9 +28,7 @@ function Home({ model, operations }: Props) {
   return (
     <Box className={classes.homeWrapper}>
       <nav>
-        <Typography variant="h5" className={classes.navLogo}>
-          Clipit
-        </Typography>
+        <Logo />
       </nav>
       <SplitContainer dataTestId="home">
         <section className={classes.splitContainerChild}>
@@ -144,16 +143,6 @@ const useStyles = makeAppStyles((theme) => ({
   },
   video: {
     maxHeight: "70vh",
-  },
-  navLogo: {
-    backgroundColor: theme.colors.background_secondary,
-    color: theme.colors.text_ternary,
-    fontStyle: "italic",
-    fontWeight: 900,
-    padding: "2rem 3rem",
-    display: "inline-block",
-    textAlign: "center",
-    clipPath: "polygon(0% 0%,100% 0%,100% 82%,82% 100%,0% 100%)",
   },
   descriptionWithBtn: {
     marginLeft: "3.5rem",

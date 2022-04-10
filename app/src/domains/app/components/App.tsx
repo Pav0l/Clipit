@@ -78,7 +78,6 @@ const RouterX = observer(function RouterX({ model, operations }: Props) {
   const home = <Home model={model} operations={{ auth: operations.auth, navigator: operations.navigator }} />;
 
   switch (model.navigation.activeRoute) {
-    // TODO should /terms also have Navbar?
     case AppRoute.TERMS:
       app = <TermsOfService />;
       break;
