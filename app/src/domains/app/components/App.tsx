@@ -4,24 +4,16 @@ import Route from "route-parser";
 
 import { AppModel } from "../app.model";
 import { AppRoute } from "../../../lib/constants";
-import Snackbar from "../../snackbar/Snackbar";
 import Home from "../../../components/home/Home";
 import OAuth2Redirect from "../../twitch-oauth/OAuth2Redirect/OAuth2Redirect";
 import ThemeProvider from "../../theme/components/ThemeProvider";
 import ErrorWithRetry from "../../../components/error/Error";
 import TermsOfService from "../../../components/terms/TermsOfService";
-import { Web3Controller } from "../../web3/web3.controller";
 import { OAuthController } from "../../twitch-oauth/oauth.controller";
-import { SnackbarController } from "../../snackbar/snackbar.controller";
 import { SentryClient } from "../../../lib/sentry/sentry.client";
-import { NftController } from "../../nfts/nft.controller";
-import { ClipController } from "../../twitch-clips/clip.controller";
-import { GameController } from "../../twitch-games/game.controller";
-import { UserController } from "../../twitch-user/user.controller";
 import FullPageLoader from "../../../components/loader/FullPageLoader";
 import { SupportWidgetProvider } from "../../support-widget/components/SupportWidgetProvider";
 import { makeAppStyles } from "../../theme/theme.constants";
-import { UiController } from "../ui.controller";
 import { NavigatorController } from "../../navigation/navigation.controller";
 import { Demo } from "../../../components/demo/Demo";
 
@@ -98,7 +90,11 @@ const RouterX = observer(function RouterX({ model, operations }: Props) {
 
       if (matched !== false) {
         app = (
-          <Demo clipCid={matched.clipCid} videoUri={model.demo.ipfsUri} logoOnClick={operations.navigator.goToRoute} />
+          <Demo
+            clipCid={matched.clipCid}
+            operations={{ auth: operations.auth, navigator: operations.navigator }}
+            model={model}
+          />
         );
       }
     }

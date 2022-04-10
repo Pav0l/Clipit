@@ -3,27 +3,38 @@ import { observer } from "mobx-react-lite";
 import ExternalLinkIcon from "../../assets/external-link.svg";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { RouteLink } from "../../domains/navigation/components/RouteLink";
-import { demoStore } from "../../domains/app/demo.model";
+import { DemoModel, demoStore } from "../../domains/app/demo.model";
 import { Logo } from "../logo/Logo";
 import { Video } from "./Video";
+import { OAuthModel } from "../../domains/twitch-oauth/oauth.model";
+import { OAuthController } from "../../domains/twitch-oauth/oauth.controller";
+import { NavigatorController } from "../../domains/navigation/navigation.controller";
 
 interface Props {
   clipCid: string;
-
-  videoUri: string;
-
-  logoOnClick: (to: string, href?: string) => void;
+  model: {
+    auth: OAuthModel;
+    demo: DemoModel;
+  };
+  operations: {
+    auth: OAuthController;
+    navigator: NavigatorController;
+  };
 }
 
-/* What is this screen supposed to tell to ppl??? */
 export const Demo = observer(function Demo(props: Props) {
   const classes = useStyles();
-  const data = demoStore[props.clipCid];
+  const clipCid = props.clipCid;
+  const data = demoStore[clipCid];
 
   return (
     <Box className={classes.homeWrapper}>
       <Box className={classes.centeredContainer}>
-        <Video src={props.videoUri} title={`${data.clipAuthor}: ${data.clipTitle}`} className={classes.video} />
+        <Video
+          src={props.model.demo.ipfsUri}
+          title={`${data.clipAuthor}: ${data.clipTitle}`}
+          className={classes.video}
+        />
         <Box className={classes.rightPanel}>
           <Box>
             <Box className={`${classes.boxMargin} ${classes.collectorBox}`}>
@@ -97,7 +108,7 @@ export const Demo = observer(function Demo(props: Props) {
             <Logo
               textClass={`${classes.boxMargin} ${classes.navLogo}`}
               linkClass={classes.baselinePrimaryFlexRow}
-              onClick={props.logoOnClick}
+              onClick={props.operations.navigator.goToRoute}
             />
           </Box>
         </Box>
