@@ -12,4 +12,14 @@ export class TawkClient implements TawkSdk {
   isChatMinimized = () => {
     return !!this.sdk?.isChatMinimized();
   };
+
+  showWidget = () => {
+    this.sdk?.showWidget();
+  };
+
+  hideWidget = () => {
+    this.sdk?.hideWidget();
+  };
+
+  isChatHidden = () => !!this.sdk?.isChatHidden();
 }

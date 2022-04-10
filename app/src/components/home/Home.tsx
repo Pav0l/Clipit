@@ -10,6 +10,8 @@ import Footer from "../footer/Footer";
 import { DemoModel } from "../../domains/app/demo.model";
 import { Logo } from "../logo/Logo";
 import { Video } from "../demo/Video";
+import { useSupportWidget } from "../../domains/support-widget/components/SupportWidgetProvider";
+import { useEffect } from "react";
 
 interface Props {
   model: {
@@ -24,7 +26,18 @@ interface Props {
 
 function Home({ model, operations }: Props) {
   const classes = useStyles();
+  const widget = useSupportWidget();
   const clipCid = model.demo.cid;
+
+  useEffect(() => {
+    // do not show Tawk chat on Home page
+    widget.hide();
+
+    return () => {
+      // but show it elsewhere
+      widget.show();
+    };
+  }, []);
 
   return (
     <Box className={classes.homeWrapper}>

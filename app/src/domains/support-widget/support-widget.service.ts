@@ -8,4 +8,14 @@ export class SupportWidgetService {
       this.tawk.maximize();
     }
   };
+
+  hide = () => {
+    this.tawk.hideWidget();
+  };
+
+  show = () => {
+    if (this.tawk.isChatHidden()) {
+      this.tawk.showWidget();
+    }
+  };
 }
