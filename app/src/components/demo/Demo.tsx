@@ -1,10 +1,9 @@
 import { Box, CardMedia, Tooltip, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import ExternalLinkIcon from "../../assets/external-link.svg";
-import { demoStore } from "../../domains/app/demo.model";
-import { RouteLink } from "../../domains/navigation/components/RouteLink";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
-import { AppRoute } from "../../lib/constants";
+import { RouteLink } from "../../domains/navigation/components/RouteLink";
+import { demoStore } from "../../domains/app/demo.model";
 import { Logo } from "../logo/Logo";
 
 interface Props {
@@ -101,12 +100,10 @@ export const Demo = observer(function Demo(props: Props) {
             </Box>
           </Box>
           <Box className={`${classes.withGradient} ${classes.bottomBox}`}>
-            <RouteLink
-              child={<Logo className={`${classes.boxMargin} ${classes.navLogo}`} />}
-              setActive={props.logoOnClick}
-              underline="none"
-              to={AppRoute.HOME}
-              className={classes.baselinePrimaryFlexRow}
+            <Logo
+              textClass={`${classes.boxMargin} ${classes.navLogo}`}
+              linkClass={classes.baselinePrimaryFlexRow}
+              onClick={props.logoOnClick}
             />
           </Box>
         </Box>

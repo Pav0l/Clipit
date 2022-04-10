@@ -2,12 +2,20 @@ import { Container, Typography, Box } from "@material-ui/core";
 import { Logo } from "../logo/Logo";
 import { SectionHeader, Section, SectionParagraph } from "../section/Section";
 import { SimpleList } from "../simpleList/SimpleList";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
 
-export default function TermsOfService() {
+interface Props {
+  logoOnClick: (to: string) => void;
+}
+
+export default function TermsOfService(props: Props) {
+  const classes = useStyles();
+
   return (
     <Box data-testid="terms">
       <Container>
-        <Logo />
+        <Logo onClick={props.logoOnClick} textClass={classes.logo} />
+
         <Typography variant="h4" component="h4">
           Terms of Service
         </Typography>
@@ -300,3 +308,9 @@ export default function TermsOfService() {
     </Box>
   );
 }
+
+const useStyles = makeAppStyles(() => ({
+  logo: {
+    marginBottom: "2rem",
+  },
+}));

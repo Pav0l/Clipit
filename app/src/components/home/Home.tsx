@@ -28,7 +28,7 @@ function Home({ model, operations }: Props) {
   return (
     <Box className={classes.homeWrapper}>
       <nav>
-        <Logo />
+        <Logo onClick={operations.navigator.goToRoute} />
       </nav>
       <SplitContainer dataTestId="home">
         <section className={classes.splitContainerChild}>

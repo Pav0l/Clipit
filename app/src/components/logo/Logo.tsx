@@ -1,17 +1,30 @@
 import { Typography } from "@material-ui/core";
+import { RouteLink } from "../../domains/navigation/components/RouteLink";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
+import { AppRoute } from "../../lib/constants";
 
 interface Props {
-  className?: string;
+  textClass?: string;
+  linkClass?: string;
+
+  onClick: (to: string) => void;
 }
 
 export function Logo(props: Props) {
   const classes = useStyles();
 
   return (
-    <Typography variant="h5" className={`${classes.logo} ${props.className ? props.className : ""}`}>
-      Clipit
-    </Typography>
+    <RouteLink
+      child={
+        <Typography variant="h5" className={`${classes.logo} ${props.textClass ? props.textClass : ""}`}>
+          Clipit
+        </Typography>
+      }
+      setActive={props.onClick}
+      underline="none"
+      to={AppRoute.HOME}
+      className={props.linkClass ?? ""}
+    />
   );
 }
 

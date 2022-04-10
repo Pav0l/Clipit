@@ -70,8 +70,6 @@ const useStyles = makeAppStyles((theme) => ({
   },
 }));
 
-// TODO FIX going "back" in browser does not return to previous route
-// it changes browser URL, but not the app route
 const RouterX = observer(function RouterX({ model, operations }: Props) {
   let app: JSX.Element | null = null;
 
@@ -79,7 +77,7 @@ const RouterX = observer(function RouterX({ model, operations }: Props) {
 
   switch (model.navigation.activeRoute) {
     case AppRoute.TERMS:
-      app = <TermsOfService />;
+      app = <TermsOfService logoOnClick={operations.navigator.goToRoute} />;
       break;
 
     case AppRoute.OAUTH_REDIRECT:
