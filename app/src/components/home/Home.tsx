@@ -64,12 +64,17 @@ function Home({ model, operations }: Props) {
               Your Greatest Streaming Moments
             </Typography>
             <div className={classes.buttonWrapper}>
+              {/* 
+                TODO this should not be LoginWithTwitch button,
+                but it's here just for btn style, until we have better design
+                Also the Twitch Icon should not be there for this btn.
+              */}
               <LoginWithTwitch
                 model={{ auth: model.auth }}
                 loggedInClick={() => operations.navigator.goToDemoClip(clipCid)}
-                loggedOutClick={() => operations.auth.initOauthFlowIfNotAuthorized(`/demo/${clipCid}`)}
-                loggedOutText="Login with Twitch"
-                loggedInText="Show NFT Demo"
+                loggedOutClick={() => operations.navigator.goToDemoClip(clipCid)}
+                loggedOutText="How it works"
+                loggedInText="How it works"
               />
             </div>
           </div>
