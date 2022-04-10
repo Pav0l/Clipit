@@ -1,10 +1,11 @@
-import { Box, CardMedia, Tooltip, Typography } from "@material-ui/core";
+import { Box, Tooltip, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import ExternalLinkIcon from "../../assets/external-link.svg";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { RouteLink } from "../../domains/navigation/components/RouteLink";
 import { demoStore } from "../../domains/app/demo.model";
 import { Logo } from "../logo/Logo";
+import { Video } from "./Video";
 
 interface Props {
   clipCid: string;
@@ -22,14 +23,7 @@ export const Demo = observer(function Demo(props: Props) {
   return (
     <Box className={classes.homeWrapper}>
       <Box className={classes.centeredContainer}>
-        <CardMedia
-          component="video"
-          src={props.videoUri}
-          title="demo clip"
-          className={classes.video}
-          controls
-          controlsList="nodownload"
-        />
+        <Video src={props.videoUri} title={`${data.clipAuthor}: ${data.clipTitle}`} className={classes.video} />
         <Box className={classes.rightPanel}>
           <Box>
             <Box className={`${classes.boxMargin} ${classes.collectorBox}`}>

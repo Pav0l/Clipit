@@ -1,4 +1,4 @@
-import { Typography, CardMedia, Box } from "@material-ui/core";
+import { Typography, Box } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import SplitContainer from "../container/SplitContainer";
 import LoginWithTwitch from "../../domains/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
@@ -9,6 +9,7 @@ import { NavigatorController } from "../../domains/navigation/navigation.control
 import Footer from "../footer/Footer";
 import { DemoModel } from "../../domains/app/demo.model";
 import { Logo } from "../logo/Logo";
+import { Video } from "../demo/Video";
 
 interface Props {
   model: {
@@ -74,14 +75,7 @@ function Home({ model, operations }: Props) {
           </div>
         </section>
         <div className={classes.splitContainerChild}>
-          <CardMedia
-            component="video"
-            src={model.demo.ipfsUri}
-            title="demo clip"
-            className={classes.video}
-            controls
-            controlsList="nodownload"
-          />
+          <Video src={model.demo.ipfsUri} className={classes.video} />
         </div>
       </SplitContainer>
       <Footer operations={{ navigator: operations.navigator }} />
