@@ -40,13 +40,15 @@ export const Demo = observer(function Demo(props: Props) {
             <Box className={`${classes.boxMargin} ${classes.collectorBox}`}>
               <Tooltip title="Ethereum address of the viewer who bought the Clip" placement="bottom">
                 <Box>
-                  <Typography variant="h6" className={classes.collectorTitle}>
+                  <Typography variant="h6" className={`${classes.collectorTitle} ${classes.sourceCodeProFamily}`}>
                     COLLECTOR
                   </Typography>
                   <RouteLink
                     child={
                       <>
-                        <Typography className={classes.collectorAddress}>{data.collector}</Typography>
+                        <Typography className={`${classes.collectorAddress} ${classes.openSansFamily}`}>
+                          {data.collector}
+                        </Typography>
                         <ExternalLinkIcon />
                       </>
                     }
@@ -64,7 +66,7 @@ export const Demo = observer(function Demo(props: Props) {
           <Box className={`${classes.boxMargin} ${classes.mainBox}`}>
             <Box className={classes.withMargin}>
               <MainBoxTitle title="TITLE" />
-              <Typography variant="h3" className={classes.mainTitleValue}>
+              <Typography variant="h3" className={`${classes.mainTitleValue} ${classes.openSansFamily}`}>
                 {data.clipTitle}
               </Typography>
             </Box>
@@ -74,7 +76,7 @@ export const Demo = observer(function Demo(props: Props) {
               <RouteLink
                 child={
                   <>
-                    <Typography variant="h4" className={classes.mainAuthor}>
+                    <Typography variant="h4" className={`${classes.mainAuthor} ${classes.openSansFamily}`}>
                       {data.clipAuthor}
                     </Typography>
                     <ExternalLinkIcon />
@@ -119,12 +121,12 @@ export const Demo = observer(function Demo(props: Props) {
 
 const MainBoxTitle = (props: { title: string }) => {
   const classes = useStyles();
-  return <Typography className={classes.mainTitle}>{props.title}</Typography>;
+  return <Typography className={`${classes.mainTitle} ${classes.sourceCodeProFamily}`}>{props.title}</Typography>;
 };
 
 const MainBoxText = (props: { text: string }) => {
   const classes = useStyles();
-  return <Typography className={classes.mainText}>{props.text}</Typography>;
+  return <Typography className={`${classes.mainText} ${classes.openSansFamily}`}>{props.text}</Typography>;
 };
 
 const bottomHeight = "6vh";
@@ -251,5 +253,11 @@ const useStyles = makeAppStyles((theme) => ({
     padding: `calc(((1.2 * ${bottomHeight}) - 1.2rem) / 2) 1.5vw`,
     fontSize: "1.2rem",
     marginTop: "-6px",
+  },
+  sourceCodeProFamily: {
+    fontFamily: "Source Code Pro",
+  },
+  openSansFamily: {
+    fontFamily: "Open Sans",
   },
 }));
