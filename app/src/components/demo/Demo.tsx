@@ -22,6 +22,10 @@ interface Props {
   };
 }
 
+function openRinkebyEtherscan() {
+  window.open("https://rinkeby.etherscan.io/", "_blank", "noreferrer");
+}
+
 export const Demo = observer(function Demo(props: Props) {
   const classes = useStyles();
   const clipCid = props.clipCid;
@@ -52,7 +56,7 @@ export const Demo = observer(function Demo(props: Props) {
                         <ExternalLinkIcon />
                       </>
                     }
-                    setActive={() => window.open("https://rinkeby.etherscan.io/", "_blank", "noreferrer")}
+                    setActive={openRinkebyEtherscan}
                     underline="none"
                     to=""
                     className={classes.baselinePrimaryFlexRow}
@@ -97,12 +101,7 @@ export const Demo = observer(function Demo(props: Props) {
               <MainBoxTitle title="MINTED" />
               <Box className={classes.baselinePrimaryFlexRow}>
                 <MainBoxText text={data.mintedDate} />
-                <RouteLink
-                  child={<ExternalLinkIcon />}
-                  setActive={() => window.open("https://rinkeby.etherscan.io/", "_blank", "noreferrer")}
-                  underline="none"
-                  to=""
-                />
+                <RouteLink child={<ExternalLinkIcon />} setActive={openRinkebyEtherscan} underline="none" to="" />
               </Box>
             </Box>
           </Box>

@@ -24,7 +24,7 @@ export function Video(props: Props) {
     //   allowFullScreen={false}
     //   height="100%"
     //   width="100%"
-    //   src={`https://clips.twitch.tv/embed?clip=${props.src}&parent=${window.location.hostname}`}
+    //   src={`https://clips.twitch.tv/embed?clip=VivaciousCautiousPineappleVoteYea-Uazb8iTEtX1F9RAW&parent=${window.location.hostname}`}
     //   title={"Twitch clip embedded in iframe"}
     //   className={props.className}
     // />

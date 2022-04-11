@@ -74,7 +74,7 @@ function Home({ model, operations }: Props) {
           </div>
           <div className={classes.descriptionWithBtn}>
             <Typography variant="h4" className={classes.description}>
-              Your Greatest Streaming Moments
+              The Greatest Streaming Moments
             </Typography>
             <div className={classes.buttonWrapper}>
               {/* 
@@ -85,9 +85,9 @@ function Home({ model, operations }: Props) {
               <LoginWithTwitch
                 model={{ auth: model.auth }}
                 loggedInClick={() => operations.navigator.goToDemoClip(clipCid)}
-                loggedOutClick={() => operations.navigator.goToDemoClip(clipCid)}
-                loggedOutText="How it works"
-                loggedInText="How it works"
+                loggedOutClick={() => operations.auth.initOauthFlowIfNotAuthorized(`/demo/${clipCid}`)}
+                loggedOutText="Login with Twitch"
+                loggedInText="Show NFT demo"
               />
             </div>
           </div>
