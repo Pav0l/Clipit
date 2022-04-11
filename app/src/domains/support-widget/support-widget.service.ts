@@ -1,7 +1,14 @@
 import { TawkClient } from "../../lib/tawk/tawk.client";
 
 export class SupportWidgetService {
-  constructor(private tawk: TawkClient) {}
+  loaded = false;
+  id?: number;
+
+  constructor(private tawk: TawkClient) {
+    this.tawk.onLoad(() => {
+      this.loaded = true;
+    });
+  }
 
   open = () => {
     if (this.tawk.isChatMinimized()) {
@@ -10,7 +17,19 @@ export class SupportWidgetService {
   };
 
   hide = () => {
-    this.tawk.hideWidget();
+    // this method is called on mount of Home component, but TawkClient may not have loaded yet
+    // if that's the case, try again
+    if (!this.loaded) {
+      this.id = window.setInterval(() => {
+        this.hide();
+      }, 50);
+      return;
+    }
+
+    window.clearInterval(this.id);
+    if (!this.tawk.isChatHidden()) {
+      this.tawk.hideWidget();
+    }
   };
 
   show = () => {

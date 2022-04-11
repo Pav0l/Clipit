@@ -5,6 +5,12 @@ export class TawkClient implements TawkSdk {
     return window.Tawk_API;
   }
 
+  onLoad(cb: () => void) {
+    if (this.sdk) {
+      this.sdk.onLoad = cb;
+    }
+  }
+
   maximize = () => {
     this.sdk?.maximize();
   };

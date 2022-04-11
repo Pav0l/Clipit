@@ -5,6 +5,11 @@
  */
 export interface TawkSdk {
   /**
+   * Function invoked right after the widget is rendered
+   */
+  onLoad: (cb: () => void) => void;
+
+  /**
    * Maximizes the chat widget
    */
   maximize: () => void;
