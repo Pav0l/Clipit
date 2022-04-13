@@ -1,5 +1,7 @@
 import { Box, Tooltip, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
+import { useEffect } from "react";
+
 import ExternalLinkIcon from "../../assets/external-link.svg";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { RouteLink } from "../../domains/navigation/components/RouteLink";
@@ -30,6 +32,10 @@ export const Demo = observer(function Demo(props: Props) {
   const classes = useStyles();
   const clip = props.clip;
   const data = demoStore[clip];
+
+  useEffect(() => {
+    props.operations.navigator.hasQueryToShowSnackbar();
+  }, []);
 
   return (
     <Box className={classes.homeWrapper}>

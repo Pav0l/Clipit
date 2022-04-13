@@ -82,7 +82,9 @@ function Home({ model, operations }: Props) {
               <LoginWithTwitch
                 model={{ auth: model.auth }}
                 loggedInClick={() => operations.navigator.goToDemoClip(clipSlug)}
-                loggedOutClick={() => operations.auth.initOauthFlowIfNotAuthorized(`/demo/${clipSlug}`)}
+                loggedOutClick={() =>
+                  operations.auth.initOauthFlowIfNotAuthorized(operations.navigator.generateDemoLoginRedirect(clipSlug))
+                }
                 loggedOutText="Login with Twitch"
                 loggedInText="Show NFT demo"
               />

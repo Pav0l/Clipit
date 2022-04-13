@@ -132,7 +132,7 @@ export function initSynchronous(config: IConfig, clients: ClientsInit): AppInit 
   const mint = new MintController(model.mint, tokenContractCreator, clipit, snackbar, sentry, config);
   const web3 = new Web3Controller(model.web3, ethereumClientCreator, snackbar, sentry);
 
-  const navigator = new NavigatorController(model.navigation, navigationClient);
+  const navigator = new NavigatorController(model.navigation, navigationClient, snackbar);
   const ui = new UiController(model, web3, auction, mint, nft, navigator, snackbar);
 
   return {

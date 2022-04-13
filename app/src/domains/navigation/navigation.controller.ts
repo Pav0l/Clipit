@@ -1,11 +1,16 @@
 import Route from "route-parser";
 
 import { AppRoute } from "../../lib/constants";
+import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { INavigationClient } from "./navigation.client";
 import { NavigationModel } from "./navigation.model";
 
+enum NavQuery {
+  HI = "hi",
+}
+
 export class NavigatorController {
-  constructor(private model: NavigationModel, private client: INavigationClient) {
+  constructor(private model: NavigationModel, private client: INavigationClient, private snackbar: SnackbarClient) {
     this.client.onPopState(this.goToRoute);
   }
 
@@ -38,6 +43,20 @@ export class NavigatorController {
     }
     // no AppRoute match -> redirect to Home
     this.goToRoute(AppRoute.HOME);
+  }
+
+  hasQueryToShowSnackbar() {
+    const url = new URL(window.location.href).searchParams;
+    const ok = url.get(NavQuery.HI);
+    if (ok) {
+      // TODO improve copy, style? and timing of the snack
+      this.snackbar.sendInfo("Thanks for your trust! We'll get in touch...");
+      this.client.push(window.location.pathname);
+    }
+  }
+
+  generateDemoLoginRedirect(slug: string) {
+    return `/demo/${slug}?${NavQuery.HI}=ok`;
   }
 
   get isOnOAuthProtectedRoute() {
