@@ -85,13 +85,13 @@ const RouterX = observer(function RouterX({ model, operations }: Props) {
 
   if (app === null) {
     if (model.navigation.activeRoute?.startsWith(AppRoute.DEMO)) {
-      const route = new Route<{ clipCid: string }>(AppRoute.DEMO_CLIP);
+      const route = new Route<{ clip: string }>(AppRoute.DEMO_CLIP);
       const matched = route.match(model.navigation.activeRoute);
 
       if (matched !== false) {
         app = (
           <Demo
-            clipCid={matched.clipCid}
+            clip={matched.clip}
             operations={{ auth: operations.auth, navigator: operations.navigator }}
             model={model}
           />

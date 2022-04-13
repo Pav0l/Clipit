@@ -29,7 +29,7 @@ export enum AppRoute {
   CLIPS = "/clips",
   CLIP = "/clips/:clipId",
   DEMO = "/demo",
-  DEMO_CLIP = "/demo/:clipCid",
+  DEMO_CLIP = "/demo/:clip",
   OAUTH_REDIRECT = "/oauth2/redirect",
   HOME = "/",
 }

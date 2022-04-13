@@ -5,13 +5,13 @@ import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { RouteLink } from "../../domains/navigation/components/RouteLink";
 import { DemoModel, demoStore } from "../../domains/app/demo.model";
 import { Logo } from "../logo/Logo";
-import { Video } from "./Video";
 import { OAuthModel } from "../../domains/twitch-oauth/oauth.model";
 import { OAuthController } from "../../domains/twitch-oauth/oauth.controller";
 import { NavigatorController } from "../../domains/navigation/navigation.controller";
+import { TwitchEmbed } from "./TwitchEmbed";
 
 interface Props {
-  clipCid: string;
+  clip: string;
   model: {
     auth: OAuthModel;
     demo: DemoModel;
@@ -28,17 +28,13 @@ function openRinkebyEtherscan() {
 
 export const Demo = observer(function Demo(props: Props) {
   const classes = useStyles();
-  const clipCid = props.clipCid;
-  const data = demoStore[clipCid];
+  const clip = props.clip;
+  const data = demoStore[clip];
 
   return (
     <Box className={classes.homeWrapper}>
       <Box className={classes.centeredContainer}>
-        <Video
-          src={props.model.demo.ipfsUri}
-          title={`${data.clipAuthor}: ${data.clipTitle}`}
-          className={classes.video}
-        />
+        <TwitchEmbed src={data.embedUrl} title={`${data.clipAuthor}: ${data.clipTitle}`} className={classes.video} />
         <Box className={classes.rightPanel}>
           <Box>
             <Box className={`${classes.boxMargin} ${classes.collectorBox}`}>

@@ -195,6 +195,11 @@ export async function initAsync({
     model.demo.setCid(cid);
   }
 
+  const slug = params.get("slug");
+  if (slug !== null) {
+    model.demo.setSlug(slug);
+  }
+
   ////////////////////////////
   // web3 init
   ////////////////////////////

@@ -7,11 +7,12 @@ import { OAuthController } from "../../domains/twitch-oauth/oauth.controller";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { NavigatorController } from "../../domains/navigation/navigation.controller";
 import Footer from "../footer/Footer";
-import { DemoModel } from "../../domains/app/demo.model";
+import { DemoModel, demoStore } from "../../domains/app/demo.model";
 import { Logo } from "../logo/Logo";
-import { Video } from "../demo/Video";
 import { useSupportWidget } from "../../domains/support-widget/components/SupportWidgetProvider";
 import { useEffect } from "react";
+import { Thumbnail } from "../demo/Thumbnail";
+import { RouteLink } from "../../domains/navigation/components/RouteLink";
 
 interface Props {
   model: {
@@ -27,7 +28,8 @@ interface Props {
 function Home({ model, operations }: Props) {
   const classes = useStyles();
   const widget = useSupportWidget();
-  const clipCid = model.demo.cid;
+  const clipSlug = model.demo.slug;
+  const data = demoStore[model.demo.slug];
 
   useEffect(() => {
     // do not show Tawk chat on Home page
@@ -77,15 +79,10 @@ function Home({ model, operations }: Props) {
               The Greatest Streaming Moments
             </Typography>
             <div className={classes.buttonWrapper}>
-              {/* 
-                TODO this should not be LoginWithTwitch button,
-                but it's here just for btn style, until we have better design
-                Also the Twitch Icon should not be there for this btn.
-              */}
               <LoginWithTwitch
                 model={{ auth: model.auth }}
-                loggedInClick={() => operations.navigator.goToDemoClip(clipCid)}
-                loggedOutClick={() => operations.auth.initOauthFlowIfNotAuthorized(`/demo/${clipCid}`)}
+                loggedInClick={() => operations.navigator.goToDemoClip(clipSlug)}
+                loggedOutClick={() => operations.auth.initOauthFlowIfNotAuthorized(`/demo/${clipSlug}`)}
                 loggedOutText="Login with Twitch"
                 loggedInText="Show NFT demo"
               />
@@ -93,7 +90,12 @@ function Home({ model, operations }: Props) {
           </div>
         </section>
         <div className={classes.splitContainerChild}>
-          <Video src={model.demo.ipfsUri} className={classes.video} />
+          <RouteLink
+            setActive={operations.navigator.goToRoute}
+            to={`/demo/${clipSlug}`}
+            underline="none"
+            child={<Thumbnail src={data.clipThumbnail} title={data.clipTitle} className={classes.video} />}
+          />
         </div>
       </SplitContainer>
       <Footer operations={{ navigator: operations.navigator }} />
