@@ -27,6 +27,7 @@ import { INavigationClient, NavigationClient } from "./domains/navigation/naviga
 import { NavigatorController } from "./domains/navigation/navigation.controller";
 import { IConfig } from "./domains/app/config";
 import { EthereumProvider } from "./lib/ethereum/ethereum.types";
+import { AnalyticsClient, IAnalytics } from "./lib/firebase/analytics.client";
 
 export interface ClientsInit {
   storage: ILocalStorage;
@@ -36,6 +37,7 @@ export interface ClientsInit {
   clipit: IClipItApiClient;
   ipfs: IIpfsClient;
   subgraph: ISubgraphClient;
+  analytics: IAnalytics;
   tokenContractCreator: (provider: EthereumProvider, address: string) => IClipItContractClient;
   auctionContractCreator: (provider: EthereumProvider, address: string) => IAuctionContractClient;
   ethereumClientCreator: (provider: EthereumProvider) => IEthClient;
@@ -51,6 +53,7 @@ export function initClients(config: IConfig): ClientsInit {
   const clipit = new ClipItApiClient(new HttpClient(config.clipItApiUrl), storage);
   const ipfs = new IpfsClient(new HttpClient(pinataGatewayUri));
   const subgraph = new SubgraphClient(new GraphQLClient(config.subgraphUrl));
+  const analytics = new AnalyticsClient(config.firebase);
 
   const tokenContractCreator = ClipItContractCreator;
   const auctionContractCreator = AuctionContractCreator;
@@ -64,6 +67,7 @@ export function initClients(config: IConfig): ClientsInit {
     clipit,
     ipfs,
     subgraph,
+    analytics,
     tokenContractCreator,
     auctionContractCreator,
     ethereumClientCreator,
@@ -89,6 +93,7 @@ export interface AppInit {
     sentry: SentryClient;
     storage: ILocalStorage;
     clipit: IClipItApiClient;
+    analytics: IAnalytics;
   };
 }
 
@@ -104,13 +109,14 @@ export function initSynchronous(config: IConfig, clients: ClientsInit): AppInit 
     clipit,
     ipfs,
     subgraph,
+    analytics,
     tokenContractCreator,
     auctionContractCreator,
     ethereumClientCreator,
   } = clients;
 
   const snackbar = new SnackbarController(model.snackbar);
-  const auth = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, config.twitch.clientId);
+  const auth = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, analytics, config.twitch.clientId);
   const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
   const game = new GameController(model.game, twitchApi, sentry);
   const user = new UserController(model.user, twitchApi, sentry);
@@ -148,6 +154,7 @@ export function initSynchronous(config: IConfig, clients: ClientsInit): AppInit 
       sentry,
       storage,
       clipit,
+      analytics,
     },
   };
 }
@@ -155,17 +162,15 @@ export function initSynchronous(config: IConfig, clients: ClientsInit): AppInit 
 export async function initAsync({
   model,
   user,
-  web3,
-  nft,
   navigator,
   oauth,
+  analytics,
 }: {
   model: AppModel;
   user: UserController;
-  web3: Web3Controller;
-  nft: NftController;
   navigator: NavigatorController;
   oauth: OAuthController;
+  analytics: IAnalytics;
 }) {
   // first we check if user is logged into twitch
   oauth.checkTokenInStorage();
@@ -198,6 +203,7 @@ export async function initAsync({
   const slug = params.get("slug");
   if (slug !== null) {
     model.demo.setSlug(slug);
+    analytics.setProperty("slug", slug);
   }
 
   ////////////////////////////

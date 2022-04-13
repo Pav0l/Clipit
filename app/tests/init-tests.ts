@@ -26,6 +26,7 @@ import { StreamerUiController } from "../src/extension/domains/streamer/streamer
 import { initSynchronous, initAsync, AppInit, ClientsInit } from "../src/init";
 import { NavigationTestClient } from "../src/domains/navigation/tests/navigation-test.client";
 import { TwitchOAuthApiTestClient } from "../src/lib/twitch-oauth/twitch-oauth-api-test.client";
+import { AnalyticsTestClient } from "../src/lib/firebase/analytics-test.client";
 
 export function initExtensionTestSync(mode: ExtensionMode, testConfig: IConfig) {
   const twitch = new TwitchExtensionTestClient();
@@ -91,6 +92,7 @@ function initClientsForTests(): ClientsInit {
   const clipit = new ClipItApiTestClient();
   const ipfs = new IpfsTestClient();
   const subgraph = new SubgraphTestClient();
+  const analytics = new AnalyticsTestClient();
 
   const tokenContractCreator = ClipItTestContractCreator;
   const auctionContractCreator = AuctionTestContractCreator;
@@ -104,6 +106,7 @@ function initClientsForTests(): ClientsInit {
     clipit,
     ipfs,
     subgraph,
+    analytics,
     tokenContractCreator,
     auctionContractCreator,
     ethereumClientCreator,
@@ -126,10 +129,9 @@ export async function fullAppInitForTests(options: { runAfterSyncInit?: (init: A
   await initAsync({
     model: init.model,
     navigator: init.operations.navigator,
-    nft: init.operations.nft,
     user: init.operations.user,
-    web3: init.operations.web3,
     oauth: init.operations.auth,
+    analytics: init.clients.analytics,
   });
 
   return init;

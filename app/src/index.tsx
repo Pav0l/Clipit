@@ -28,10 +28,9 @@ import { AppError } from "./lib/errors/errors";
     await initAsync({
       model,
       user: operations.user,
-      web3: operations.web3,
-      nft: operations.nft,
       navigator: operations.navigator,
       oauth: operations.auth,
+      analytics: clients.analytics,
     });
   } catch (error) {
     clients.sentry.captureException(error);

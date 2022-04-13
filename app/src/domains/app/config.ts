@@ -8,8 +8,19 @@ export interface IConfig {
   twitch: TwitchConfig;
   isDevelopment: boolean;
   sentryDsn: string;
+  firebase: FirebaseConfig;
 }
 
 export interface TwitchConfig {
   clientId: string;
+}
+
+export interface FirebaseConfig {
+  apiKey: string;
+  authDomain: string;
+  projectId: string;
+  storageBucket: string;
+  messagingSenderId: string;
+  appId: string;
+  measurementId: string;
 }

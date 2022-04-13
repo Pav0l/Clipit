@@ -8,5 +8,14 @@
   "sentryDsn": "",
   "twitch": {
     "clientId": "42069"
+  },
+  "firebase": {
+    "apiKey": "",
+    "authDomain": "",
+    "projectId": "",
+    "storageBucket": "",
+    "messagingSenderId": "",
+    "appId": "",
+    "measurementId": ""
   }
 }
