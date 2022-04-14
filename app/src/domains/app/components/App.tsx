@@ -8,7 +8,7 @@ import Home from "../../../components/home/Home";
 import OAuth2Redirect from "../../twitch-oauth/OAuth2Redirect/OAuth2Redirect";
 import ThemeProvider from "../../theme/components/ThemeProvider";
 import ErrorWithRetry from "../../../components/error/Error";
-import TermsOfService from "../../../components/terms/TermsOfService";
+import Terms from "../../../components/terms/Terms";
 import { OAuthController } from "../../twitch-oauth/oauth.controller";
 import { SentryClient } from "../../../lib/sentry/sentry.client";
 import FullPageLoader from "../../../components/loader/FullPageLoader";
@@ -61,6 +61,7 @@ const StyledApp = observer(function App({ model, operations, sentry }: Props) {
 const useStyles = makeAppStyles((theme) => ({
   app: {
     backgroundColor: theme.colors.background_primary,
+    // TODO this should be 100vh, so that we never have content that does not fix the screen? (ToS, Errors, Loaders,...)
   },
   error: {
     height: "100vh",
@@ -74,7 +75,7 @@ const RouterX = observer(function RouterX({ model, operations }: Props) {
 
   switch (model.navigation.activeRoute) {
     case AppRoute.TERMS:
-      app = <TermsOfService logoOnClick={operations.navigator.goToRoute} />;
+      app = <Terms logoOnClick={operations.navigator.goToRoute} />;
       break;
 
     case AppRoute.OAUTH_REDIRECT:
