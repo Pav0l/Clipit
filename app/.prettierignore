@@ -1,5 +1,6 @@
 config
 dist
 ext-dist
+dist-demo
 node_modules
 stats.json

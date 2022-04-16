@@ -192,21 +192,6 @@ export async function initAsync({
   }
 
   ////////////////////////////
-  // demo init
-  ////////////////////////////
-  const params = new URL(window.location.href).searchParams;
-  const cid = params.get("cid");
-  if (cid !== null) {
-    model.demo.setCid(cid);
-  }
-
-  const slug = params.get("slug");
-  if (slug !== null) {
-    model.demo.setSlug(slug);
-    analytics.setProperty("slug", slug);
-  }
-
-  ////////////////////////////
   // web3 init
   ////////////////////////////
 

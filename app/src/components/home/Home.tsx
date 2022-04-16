@@ -7,11 +7,11 @@ import { OAuthController } from "../../domains/twitch-oauth/oauth.controller";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { NavigatorController } from "../../domains/navigation/navigation.controller";
 import Footer from "../footer/Footer";
-import { DemoModel, demoStore } from "../../domains/app/demo.model";
+import { DemoModel, demoStore } from "../../demo/domains/demo/demo.model";
 import { Logo } from "../logo/Logo";
 import { useSupportWidget } from "../../domains/support-widget/components/SupportWidgetProvider";
 import { useEffect } from "react";
-import { Thumbnail } from "../demo/Thumbnail";
+import { Thumbnail } from "../media/Thumbnail";
 import { RouteLink } from "../../domains/navigation/components/RouteLink";
 
 interface Props {

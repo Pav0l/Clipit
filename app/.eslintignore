@@ -1,4 +1,6 @@
 dist
+dist-demo
+ext-dist
 node_modules
 config
 **/*.js

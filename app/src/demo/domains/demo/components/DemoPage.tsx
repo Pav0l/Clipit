@@ -2,15 +2,15 @@ import { Box, Tooltip, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 
-import ExternalLinkIcon from "../../assets/external-link.svg";
-import { makeAppStyles } from "../../domains/theme/theme.constants";
-import { RouteLink } from "../../domains/navigation/components/RouteLink";
-import { DemoModel, demoStore } from "../../domains/app/demo.model";
-import { Logo } from "../logo/Logo";
-import { OAuthModel } from "../../domains/twitch-oauth/oauth.model";
-import { OAuthController } from "../../domains/twitch-oauth/oauth.controller";
-import { NavigatorController } from "../../domains/navigation/navigation.controller";
-import { TwitchEmbed } from "./TwitchEmbed";
+import ExternalLinkIcon from "../../../../assets/external-link.svg";
+import { makeAppStyles } from "../../../../domains/theme/theme.constants";
+import { RouteLink } from "../../../../domains/navigation/components/RouteLink";
+import { DemoModel, demoStore } from "../demo.model";
+import { Logo } from "../../../../components/logo/Logo";
+import { OAuthModel } from "../../../../domains/twitch-oauth/oauth.model";
+import { OAuthController } from "../../../../domains/twitch-oauth/oauth.controller";
+import { NavigatorController } from "../../../../domains/navigation/navigation.controller";
+import { TwitchEmbed } from "../../../../components/media/TwitchEmbed";
 
 interface Props {
   clip: string;
@@ -28,7 +28,7 @@ function openRinkebyEtherscan() {
   window.open("https://rinkeby.etherscan.io/", "_blank", "noreferrer");
 }
 
-export const Demo = observer(function Demo(props: Props) {
+export const DemoPage = observer(function Demo(props: Props) {
   const classes = useStyles();
   const clip = props.clip;
   const data = demoStore[clip];

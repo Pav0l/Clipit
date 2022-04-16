@@ -2,31 +2,31 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import "./index.css";
-import { initSynchronous, initAsync, initClients } from "./init";
-import { App } from "./domains/app/components/App";
-import { AppError } from "./lib/errors/errors";
+import { initDemoSynchronous, initDemoAsync, initDemoClients } from "./init";
+import { AppError } from "../lib/errors/errors";
+import { Demo } from "./domains/demo/components/Demo";
 
 (async () => {
   window.clipit = {
     build: {
       commit: COMMIT_HASH,
-      mode: "app",
+      mode: "demo",
     },
   };
 
-  const { model, operations, clients } = initSynchronous(CONFIG, initClients(CONFIG));
+  const { model, operations, clients } = initDemoSynchronous(CONFIG, initDemoClients(CONFIG));
 
   model.meta.setLoading(true);
 
   ReactDOM.render(
     <React.StrictMode>
-      <App model={model} operations={operations} sentry={clients.sentry} />
+      <Demo model={model} operations={operations} sentry={clients.sentry} />
     </React.StrictMode>,
     document.getElementById("root")
   );
 
   try {
-    await initAsync({
+    await initDemoAsync({
       model,
       user: operations.user,
       navigator: operations.navigator,

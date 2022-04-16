@@ -1,24 +1,24 @@
 const path = require("path");
 const fs = require("fs");
-const execSync = require('child_process').execSync;
+const execSync = require("child_process").execSync;
 const config = require("config");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
-let COMMIT_HASH = "";
-try {
-  const buffer = execSync(`git log --grep="app:" --format='%h' --max-count=1`);
-  COMMIT_HASH = buffer.toString('ascii').trim();
-} catch (err) {
-  console.error("error:", err);
-};
-
 const nodeEnv = process.env["NODE_ENV"];
 const isDevelopment = nodeEnv === "development";
-const mode = process.env["NODE_APP_INSTANCE"]; // app / extension
+const mode = process.env["NODE_APP_INSTANCE"]; // app / extension / demo
 
-console.log(`Running ${COMMIT_HASH} in ${mode ?? "APP"} mode and ${nodeEnv.toUpperCase()} env`);
+let COMMIT_HASH = "";
+try {
+  const buffer = execSync(`git log --grep="${mode}:" --format='%h' --max-count=1`);
+  COMMIT_HASH = buffer.toString("ascii").trim();
+} catch (err) {
+  console.error("error:", err);
+}
+
+console.log(`Running commit "${COMMIT_HASH}" in ${mode ?? "APP"} mode and ${nodeEnv.toUpperCase()} env`);
 console.log("App config:", config);
 
 const appConfig = {
@@ -79,11 +79,63 @@ const appConfig = {
   ],
 };
 
-if (isDevelopment) {
-  appConfig.plugins.push(new BundleAnalyzerPlugin({
-    analyzerPort: 8888
-  }));
-}
+const demoConfig = {
+  entry: "./src/demo/index.tsx",
+  output: {
+    path: path.join(__dirname, "/dist-demo"),
+    filename: "index.js",
+    publicPath: "/", // react-router default path
+  },
+  devServer: {
+    port: 3000,
+    watchContentBase: true,
+    historyApiFallback: true,
+  },
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
+    fallback: {
+      process: require.resolve("process/browser"),
+    },
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /nodeModules/,
+        use: {
+          loader: "babel-loader",
+        },
+      },
+      {
+        test: /\.(ts|tsx)$/,
+        exclude: /node_modules/,
+        use: ["ts-loader"],
+      },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"],
+      },
+      {
+        test: /\.svg$/,
+        use: ["@svgr/webpack"],
+      },
+    ],
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: "./src/demo/index.html",
+      favicon: "./src/assets/favicon.ico",
+    }),
+    new webpack.ProvidePlugin({
+      Buffer: ["buffer", "Buffer"],
+      process: "process/browser",
+    }),
+    new webpack.DefinePlugin({
+      CONFIG: JSON.stringify({ ...config, isDevelopment }),
+      COMMIT_HASH: JSON.stringify(COMMIT_HASH),
+    }),
+  ],
+};
 
 const extensionConfig = {
   entry: "./src/extension/index.tsx",
@@ -161,4 +213,32 @@ const extensionConfig = {
   ],
 };
 
-module.exports = mode === "extension" ? extensionConfig : appConfig;
+if (isDevelopment) {
+  switch (mode) {
+    case "app":
+      appConfig.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerPort: 8888,
+        })
+      );
+      break;
+
+    case "extension":
+      extensionConfig.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerPort: 8888,
+        })
+      );
+      break;
+
+    case "demo":
+      demoConfig.plugins.push(
+        new BundleAnalyzerPlugin({
+          analyzerPort: 8888,
+        })
+      );
+      break;
+  }
+}
+
+module.exports = mode === "extension" ? extensionConfig : mode === "demo" ? demoConfig : appConfig;

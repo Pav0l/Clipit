@@ -1,5 +1,4 @@
 import { makeAutoObservable } from "mobx";
-import { pinataGatewayUri } from "../../lib/constants";
 
 interface DemoData {
   collector: string;
@@ -27,20 +26,11 @@ export const demoStore: { [cid: string]: DemoData } = {
 };
 
 export class DemoModel {
-  // fallback clip if cid does not exist in URL
-  cid = "bafybeihrd4zsovhd27cdthlf3mn7euzba37yti6rzyjlbni7fxjd7rq7zi";
+  // fallback clip
   slug = "HungryTemperedMeerkatDoggo-UdQIrs87iEiQolN-";
 
   constructor() {
     makeAutoObservable(this);
-  }
-
-  setCid = (value: string) => {
-    this.cid = value;
-  };
-
-  get ipfsUri() {
-    return `${pinataGatewayUri}/${this.cid}`;
   }
 
   setSlug = (value: string) => {

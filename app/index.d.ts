@@ -15,7 +15,9 @@ declare global {
     clipit: {
       build: {
         commit: string;
+        mode: "app" | "extension" | "demo";
       };
+      config?: IConfig;
     };
   }
 }
