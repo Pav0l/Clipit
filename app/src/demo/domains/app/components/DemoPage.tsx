@@ -5,18 +5,19 @@ import { useEffect } from "react";
 import ExternalLinkIcon from "../../../../assets/external-link.svg";
 import { makeAppStyles } from "../../../../domains/theme/theme.constants";
 import { RouteLink } from "../../../../domains/navigation/components/RouteLink";
-import { DemoModel, demoStore } from "../demo.model";
+import { demoClip } from "../../../../lib/constants";
 import { Logo } from "../../../../components/logo/Logo";
 import { OAuthModel } from "../../../../domains/twitch-oauth/oauth.model";
 import { OAuthController } from "../../../../domains/twitch-oauth/oauth.controller";
 import { NavigatorController } from "../../../../domains/navigation/navigation.controller";
 import { TwitchEmbed } from "../../../../components/media/TwitchEmbed";
+import { ClipModel } from "../../../../domains/twitch-clips/clip.model";
 
 interface Props {
-  clip: string;
+  clipId: string;
   model: {
     auth: OAuthModel;
-    demo: DemoModel;
+    clip: ClipModel;
   };
   operations: {
     auth: OAuthController;
@@ -28,10 +29,19 @@ function openRinkebyEtherscan() {
   window.open("https://rinkeby.etherscan.io/", "_blank", "noreferrer");
 }
 
+function transformDate(date?: string): string {
+  const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
+  if (!date) {
+    return new Date().toLocaleDateString("en-US", options);
+  }
+
+  return new Date(date).toLocaleDateString("en-US", options);
+}
+
 export const DemoPage = observer(function Demo(props: Props) {
   const classes = useStyles();
-  const clip = props.clip;
-  const data = demoStore[clip];
+  const clipId = props.clipId;
+  const data = props.model.clip.getClip(clipId) ?? demoClip;
 
   useEffect(() => {
     props.operations.navigator.hasQueryToShowSnackbar();
@@ -40,7 +50,7 @@ export const DemoPage = observer(function Demo(props: Props) {
   return (
     <Box className={classes.homeWrapper}>
       <Box className={classes.centeredContainer}>
-        <TwitchEmbed src={data.embedUrl} title={`${data.clipAuthor}: ${data.clipTitle}`} className={classes.video} />
+        <TwitchEmbed src={data.embedUrl} title={`${data.broadcasterName}: ${data.title}`} className={classes.video} />
         <Box className={classes.rightPanel}>
           <Box>
             <Box className={`${classes.boxMargin} ${classes.collectorBox}`}>
@@ -53,7 +63,7 @@ export const DemoPage = observer(function Demo(props: Props) {
                     child={
                       <>
                         <Typography className={`${classes.collectorAddress} ${classes.openSansFamily}`}>
-                          {data.collector}
+                          {"demo-collector.eth"}
                         </Typography>
                         <ExternalLinkIcon />
                       </>
@@ -73,7 +83,7 @@ export const DemoPage = observer(function Demo(props: Props) {
             <Box className={classes.withMargin}>
               <MainBoxTitle title="TITLE" />
               <Typography variant="h3" className={`${classes.mainTitleValue} ${classes.openSansFamily}`}>
-                {data.clipTitle}
+                {data.title}
               </Typography>
             </Box>
 
@@ -83,12 +93,12 @@ export const DemoPage = observer(function Demo(props: Props) {
                 child={
                   <>
                     <Typography variant="h4" className={`${classes.mainAuthor} ${classes.openSansFamily}`}>
-                      {data.clipAuthor}
+                      {data.broadcasterName}
                     </Typography>
                     <ExternalLinkIcon />
                   </>
                 }
-                setActive={() => window.open(data.authorLink, "_blank", "noreferrer")}
+                setActive={() => window.open(`https://www.twitch.tv/${data.broadcasterName}`, "_blank", "noreferrer")}
                 underline="none"
                 to=""
                 className={classes.baselinePrimaryFlexRow}
@@ -97,12 +107,12 @@ export const DemoPage = observer(function Demo(props: Props) {
 
             <Box className={classes.withMargin}>
               <MainBoxTitle title="STREAMED" />
-              <MainBoxText text={data.streamedDate} />
+              <MainBoxText text={transformDate(data.createdAt)} />
             </Box>
             <Box className={classes.withMargin}>
               <MainBoxTitle title="MINTED" />
               <Box className={classes.baselinePrimaryFlexRow}>
-                <MainBoxText text={data.mintedDate} />
+                <MainBoxText text={transformDate()} />
                 <RouteLink child={<ExternalLinkIcon />} setActive={openRinkebyEtherscan} underline="none" to="" />
               </Box>
             </Box>

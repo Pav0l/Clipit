@@ -1,3 +1,5 @@
+import type { TwitchClip } from "../domains/twitch-clips/clip.model";
+
 // CLIPIT API
 export const ebsTokenKey = "ebs_token_key";
 
@@ -29,7 +31,20 @@ export enum AppRoute {
   CLIPS = "/clips",
   CLIP = "/clips/:clipId",
   DEMO = "/demo",
-  DEMO_CLIP = "/demo/:clip",
+  DEMO_CLIP = "/demo/:clipId",
   OAUTH_REDIRECT = "/oauth2/redirect",
   HOME = "/",
 }
+
+// fallback clip
+export const demoClip: Pick<
+  TwitchClip,
+  "id" | "title" | "broadcasterName" | "createdAt" | "embedUrl" | "thumbnailUrl"
+> = {
+  id: "HungryTemperedMeerkatDoggo-UdQIrs87iEiQolN-",
+  title: "streaming stuff",
+  broadcasterName: "h0ppxi",
+  createdAt: "March 12, 2022",
+  thumbnailUrl: "https://clips-media-assets2.twitch.tv/44944309404-offset-56-preview-480x272.jpg",
+  embedUrl: "https://clips.twitch.tv/embed?clip=HungryTemperedMeerkatDoggo-UdQIrs87iEiQolN-",
+};

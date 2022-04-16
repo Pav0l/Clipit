@@ -2,8 +2,8 @@ import { observer } from "mobx-react-lite";
 import { Box } from "@material-ui/core";
 import Route from "route-parser";
 
-import { IDemoAppModel } from "../../app/demo-app.model";
-import { AppRoute } from "../../../../lib/constants";
+import { IDemoModel } from "../demo.model";
+import { AppRoute, demoClip } from "../../../../lib/constants";
 import Home from "../../../../components/home/Home";
 import OAuth2Redirect from "../../../../domains/twitch-oauth/OAuth2Redirect/OAuth2Redirect";
 import ThemeProvider from "../../../../domains/theme/components/ThemeProvider";
@@ -20,7 +20,7 @@ import Snackbar from "../../../../domains/snackbar/Snackbar";
 import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
 
 interface Props {
-  model: IDemoAppModel;
+  model: IDemoModel;
   operations: {
     auth: OAuthController;
     navigator: NavigatorController;
@@ -71,7 +71,13 @@ const useStyles = makeAppStyles((theme) => ({
 const RouterX = observer(function RouterX({ model, operations }: Props) {
   let app: JSX.Element | null = null;
 
-  const home = <Home model={model} operations={{ auth: operations.auth, navigator: operations.navigator }} />;
+  const home = (
+    <Home
+      clipId={model.clip.lastClip?.id ?? demoClip.id}
+      model={model}
+      operations={{ auth: operations.auth, navigator: operations.navigator }}
+    />
+  );
 
   switch (model.navigation.activeRoute) {
     case AppRoute.TERMS:
@@ -91,13 +97,13 @@ const RouterX = observer(function RouterX({ model, operations }: Props) {
 
   if (app === null) {
     if (model.navigation.activeRoute?.startsWith(AppRoute.DEMO)) {
-      const route = new Route<{ clip: string }>(AppRoute.DEMO_CLIP);
+      const route = new Route<{ clipId: string }>(AppRoute.DEMO_CLIP);
       const matched = route.match(model.navigation.activeRoute);
 
       if (matched !== false) {
         app = (
           <DemoPage
-            clip={matched.clip}
+            clipId={matched.clipId}
             operations={{ auth: operations.auth, navigator: operations.navigator }}
             model={model}
           />

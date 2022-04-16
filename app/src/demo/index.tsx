@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import { initDemoSynchronous, initDemoAsync, initDemoClients } from "./init";
 import { AppError } from "../lib/errors/errors";
-import { Demo } from "./domains/demo/components/Demo";
+import { Demo } from "./domains/app/components/Demo";
 
 (async () => {
   window.clipit = {
@@ -29,6 +29,7 @@ import { Demo } from "./domains/demo/components/Demo";
     await initDemoAsync({
       model,
       user: operations.user,
+      clip: operations.clip,
       navigator: operations.navigator,
       oauth: operations.auth,
       analytics: clients.analytics,

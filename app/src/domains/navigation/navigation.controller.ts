@@ -22,8 +22,9 @@ export class NavigatorController {
     this.goToRoute(`${AppRoute.NFTS}/${tokenId}`);
   };
 
-  goToDemoClip = (cid: string) => {
-    this.goToRoute(`${AppRoute.DEMO}/${cid}`);
+  goToDemoClip = (clipId: string) => {
+    this.model.setAppRoute({ route: AppRoute.DEMO, params: { clipId } });
+    this.goToRoute(`${AppRoute.DEMO}/${clipId}`);
   };
 
   goToRoute = (route: string, href?: string) => {
@@ -38,10 +39,12 @@ export class NavigatorController {
     for (const appRoute of routes) {
       const matched = new Route(appRoute).match(pathname);
       if (matched) {
+        this.model.setAppRoute({ route: appRoute, params: matched });
         return this.goToRoute(pathname, href);
       }
     }
     // no AppRoute match -> redirect to Home
+    this.model.setAppRoute({ route: AppRoute.HOME, params: null });
     this.goToRoute(AppRoute.HOME);
   }
 

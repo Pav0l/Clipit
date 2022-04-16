@@ -54,6 +54,7 @@ export class TwitchClip {
   title: string;
   thumbnailUrl: string;
   embedUrl: string;
+  createdAt: string;
 
   constructor(clip: ITwitchClip) {
     makeAutoObservable(this);
@@ -64,7 +65,19 @@ export class TwitchClip {
     this.gameId = clip.game_id ?? "";
     this.title = clip.title ?? "";
     this.thumbnailUrl = clip.thumbnail_url ?? "";
-    this.embedUrl = clip.embed_url ? `${clip.embed_url}&parent=${window.location.hostname}` : "";
+    this.embedUrl = this.handleEmbedUrl(clip.embed_url);
+    this.createdAt = clip.created_at ?? "";
+  }
+
+  private handleEmbedUrl(embedUrl: string | undefined): string {
+    if (!embedUrl) {
+      return "";
+    }
+
+    const url = new URL(embedUrl);
+    url.searchParams.append("parent", window.location.hostname);
+
+    return url.href;
   }
 }
 
@@ -76,4 +89,5 @@ interface ITwitchClip {
   game_id?: string;
   title?: string;
   thumbnail_url?: string;
+  created_at?: string;
 }

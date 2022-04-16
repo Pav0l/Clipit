@@ -2,9 +2,9 @@ import { SyntheticEvent } from "react";
 import { SnackbarModel } from "./snackbar.model";
 
 export interface SnackbarClient {
-  sendError: (text: string) => void;
-  sendSuccess: (text: string) => void;
-  sendInfo: (text: string) => void;
+  sendError: (text: string, duration?: number) => void;
+  sendSuccess: (text: string, duration?: number) => void;
+  sendInfo: (text: string, duration?: number) => void;
 }
 
 export class SnackbarController implements SnackbarClient {
