@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { makeAppStyles } from "../theme/theme.constants";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import { IWeb3Controller } from "../web3/web3.controller";
-import { AppModel } from "../app/app.model";
+import { AppModel } from "../../app/app.model";
 import { NavigatorController } from "../navigation/navigation.controller";
 import { AppRoute } from "../../lib/constants";
 

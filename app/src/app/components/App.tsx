@@ -3,20 +3,20 @@ import { Box } from "@material-ui/core";
 import Route from "route-parser";
 
 import { AppModel } from "../app.model";
-import { AppRoute } from "../../../lib/constants";
-import Home from "../../../components/home/Home";
-import OAuth2Redirect from "../../twitch-oauth/OAuth2Redirect/OAuth2Redirect";
-import ThemeProvider from "../../theme/components/ThemeProvider";
-import ErrorWithRetry from "../../../components/error/Error";
-import Terms from "../../../components/terms/Terms";
-import { OAuthController } from "../../twitch-oauth/oauth.controller";
-import { SentryClient } from "../../../lib/sentry/sentry.client";
-import FullPageLoader from "../../../components/loader/FullPageLoader";
-import { SupportWidgetProvider } from "../../support-widget/components/SupportWidgetProvider";
-import { makeAppStyles } from "../../theme/theme.constants";
-import { NavigatorController } from "../../navigation/navigation.controller";
-import Snackbar from "../../snackbar/Snackbar";
-import { SnackbarController } from "../../snackbar/snackbar.controller";
+import { AppRoute } from "../../lib/constants";
+import Home from "../../components/home/Home";
+import ErrorWithRetry from "../../components/error/Error";
+import OAuth2Redirect from "../../domains/twitch-oauth/OAuth2Redirect/OAuth2Redirect";
+import ThemeProvider from "../../domains/theme/components/ThemeProvider";
+import Terms from "../../components/terms/Terms";
+import { OAuthController } from "../../domains/twitch-oauth/oauth.controller";
+import { SentryClient } from "../../lib/sentry/sentry.client";
+import FullPageLoader from "../../components/loader/FullPageLoader";
+import { SupportWidgetProvider } from "../../domains/support-widget/components/SupportWidgetProvider";
+import { makeAppStyles } from "../../domains/theme/theme.constants";
+import { NavigatorController } from "../../domains/navigation/navigation.controller";
+import Snackbar from "../../domains/snackbar/Snackbar";
+import { SnackbarController } from "../../domains/snackbar/snackbar.controller";
 
 interface Props {
   model: AppModel;

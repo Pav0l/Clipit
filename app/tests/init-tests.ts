@@ -11,7 +11,7 @@ import { NftController } from "../src/domains/nfts/nft.controller";
 import { Web3Controller } from "../src/domains/web3/web3.controller";
 import { ClipItTestContractCreator } from "../src/lib/contracts/ClipIt/clipit-contract-test.client";
 import { AuctionTestContractCreator } from "../src/lib/contracts/AuctionHouse/auction-contract-test.client";
-import { IConfig } from "../src/domains/app/config";
+import { IConfig } from "../src/app/config";
 import { SentryClient } from "../src/lib/sentry/sentry.client";
 import { ExtensionMode } from "../src/extension/domains/extension/extension.interfaces";
 import { TwitchExtensionTestClient } from "../src/lib/twitch-extension/twitch-extension-test.client";

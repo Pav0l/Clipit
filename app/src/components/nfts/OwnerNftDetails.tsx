@@ -4,7 +4,7 @@ import { AuctionModel } from "../../domains/auction/auction.model";
 import { Auction, NftModel } from "../../domains/nfts/nft.model";
 import { AuctionCreateForm } from "../../domains/auction/components/auctions/AuctionCreateForm";
 import { AuctionDetails } from "../../domains/auction/components/auctions/AuctionDetails";
-import { UiController } from "../../domains/app/ui.controller";
+import { UiController } from "../../app/ui.controller";
 
 interface Props {
   tokenId: string;

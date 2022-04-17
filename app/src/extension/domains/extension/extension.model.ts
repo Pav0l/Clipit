@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { MetaModel } from "../../../domains/app/meta.model";
+import { MetaModel } from "../../../domains/meta/meta.model";
 import { AuctionModel } from "../../../domains/auction/auction.model";
 import { MintModel } from "../../../domains/mint/mint.model";
 import { NftModel } from "../../../domains/nfts/nft.model";

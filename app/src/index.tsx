@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 
 import "./index.css";
 import { initSynchronous, initAsync, initClients } from "./init";
-import { App } from "./domains/app/components/App";
+import { App } from "./app/components/App";
 import { AppError } from "./lib/errors/errors";
 
 (async () => {

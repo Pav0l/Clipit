@@ -7,7 +7,7 @@ import { ClipItApiErrors } from "../../../lib/clipit-api/clipit-api.client";
 import { IClipItContractClient } from "../../../lib/contracts/ClipIt/clipit-contract.client";
 import { ClipItContractErrors } from "../../../lib/contracts/ClipIt/clipit-contract.errors";
 import { RpcErrors, RpcErrorForTests } from "../../../lib/ethereum/rpc.errors";
-import { AppModel } from "../../app/app.model";
+import { AppModel } from "../../../app/app.model";
 import { TwitchClip } from "../../twitch-clips/clip.model";
 import { MintController } from "../mint.controller";
 import { MintErrors } from "../mint.model";

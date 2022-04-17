@@ -4,7 +4,7 @@ describe("clip model", () => {
   it("works", () => {
     const clip = new TwitchClip({
       id: "id",
-      embed_url: "embed_url",
+      embed_url: "http://localhost",
       broadcaster_id: "broadcaster_id",
       broadcaster_name: "broadcaster_name",
       game_id: "game_id",
@@ -13,7 +13,7 @@ describe("clip model", () => {
     });
     expect(clip.id).toEqual("id");
     // embedUrl appends parent query string parameter
-    expect(clip.embedUrl).toEqual("embed_url&parent=localhost");
+    expect(clip.embedUrl).toEqual("http://localhost/?parent=localhost");
     expect(clip.broadcasterId).toEqual("broadcaster_id");
     expect(clip.broadcasterName).toEqual("broadcaster_name");
     expect(clip.gameId).toEqual("game_id");

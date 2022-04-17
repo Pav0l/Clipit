@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { initializeAnalytics, Analytics, setUserProperties, logEvent } from "firebase/analytics";
-import { FirebaseConfig } from "../../domains/app/config";
+import { FirebaseConfig } from "./firebase.config";
 
 export interface IAnalytics {
   setProperty(key: string, value: unknown): void;

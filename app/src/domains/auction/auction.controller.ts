@@ -7,7 +7,7 @@ import { AppError } from "../../lib/errors/errors";
 import { EthereumProvider } from "../../lib/ethereum/ethereum.types";
 import { isRpcError, RpcErrors } from "../../lib/ethereum/rpc.errors";
 import { SentryClient } from "../../lib/sentry/sentry.client";
-import { IConfig } from "../app/config";
+import { IConfig } from "../../app/config";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
 import {
   AuctionBidLoadStatus,

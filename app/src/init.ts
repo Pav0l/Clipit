@@ -1,7 +1,7 @@
 import { GraphQLClient } from "graphql-request";
 
 import { pinataGatewayUri, twitchApiUri, twitchOAuthUri } from "./lib/constants";
-import { AppModel } from "./domains/app/app.model";
+import { AppModel } from "./app/app.model";
 import { Web3Controller } from "./domains/web3/web3.controller";
 import { HttpClient } from "./lib/http-client/http-client";
 import { TwitchApi, TwitchApiClient } from "./lib/twitch-api/twitch-api.client";
@@ -16,7 +16,7 @@ import { NftController } from "./domains/nfts/nft.controller";
 import { SnackbarController } from "./domains/snackbar/snackbar.controller";
 import { ClipItApiClient, IClipItApiClient } from "./lib/clipit-api/clipit-api.client";
 import { IIpfsClient, IpfsClient } from "./lib/ipfs/ipfs.client";
-import { UiController } from "./domains/app/ui.controller";
+import { UiController } from "./app/ui.controller";
 import { ClipItContractCreator, IClipItContractClient } from "./lib/contracts/ClipIt/clipit-contract.client";
 import { AuctionContractCreator, IAuctionContractClient } from "./lib/contracts/AuctionHouse/auction-contract.client";
 import { SentryClient } from "./lib/sentry/sentry.client";
@@ -25,7 +25,7 @@ import { MintController } from "./domains/mint/mint.controller";
 import { EthereumClientCreator, IEthClient } from "./lib/ethereum/ethereum.client";
 import { INavigationClient, NavigationClient } from "./domains/navigation/navigation.client";
 import { NavigatorController } from "./domains/navigation/navigation.controller";
-import { IConfig } from "./domains/app/config";
+import { IConfig } from "./app/config";
 import { EthereumProvider } from "./lib/ethereum/ethereum.types";
 import { AnalyticsClient, IAnalytics } from "./lib/firebase/analytics.client";
 

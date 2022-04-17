@@ -1,4 +1,4 @@
-import { MetaModel } from "../../../domains/app/meta.model";
+import { MetaModel } from "../../../domains/meta/meta.model";
 import { SnackbarModel } from "../../../domains/snackbar/snackbar.model";
 import { UserModel } from "../../../domains/twitch-user/user.model";
 import { OAuthModel } from "../../../domains/twitch-oauth/oauth.model";

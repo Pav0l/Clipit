@@ -2,7 +2,7 @@ import { initSynchronousWithTestClients } from "../../../../tests/init-tests";
 import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
 import { EthereumTestProvider } from "../../../lib/ethereum/ethereum-test-provider";
 import { RpcErrors, RpcErrorForTests } from "../../../lib/ethereum/rpc.errors";
-import { AppModel } from "../../app/app.model";
+import { AppModel } from "../../../app/app.model";
 import { Web3Controller } from "../web3.controller";
 import { Web3Errors } from "../web3.model";
 

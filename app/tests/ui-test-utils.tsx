@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 
 import ThemeProvider from "../src/domains/theme/components/ThemeProvider";
-import { App } from "../src/domains/app/components/App";
+import { App } from "../src/app/components/App";
 import { AppInit } from "../src/init";
 
 export function renderAppForTests(init: AppInit) {

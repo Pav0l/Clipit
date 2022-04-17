@@ -1,11 +1,11 @@
-import { clipPartialFragment } from "../../../../tests/__fixtures__/clip-fragment";
-import { AppRoute, twitchApiAccessTokenKey } from "../../../lib/constants";
-import { EthereumTestProvider } from "../../../lib/ethereum/ethereum-test-provider";
-import { useWindowLocationInTests } from "../../../../tests/setup";
-import { fullAppInitForTests } from "../../../../tests/init-tests";
-import { renderAppForTests } from "../../../../tests/ui-test-utils";
+import { clipPartialFragment } from "../../../tests/__fixtures__/clip-fragment";
+import { AppRoute, twitchApiAccessTokenKey } from "../../lib/constants";
+import { EthereumTestProvider } from "../../lib/ethereum/ethereum-test-provider";
+import { useWindowLocationInTests } from "../../../tests/setup";
+import { fullAppInitForTests } from "../../../tests/init-tests";
+import { renderAppForTests } from "../../../tests/ui-test-utils";
 import userEvent from "@testing-library/user-event";
-import { signerAddress } from "../../../../tests/__fixtures__/ethereum";
+import { signerAddress } from "../../../tests/__fixtures__/ethereum";
 
 function flushPromisesInTests() {
   return new Promise((res) => setTimeout(res));

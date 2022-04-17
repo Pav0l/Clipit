@@ -13,7 +13,7 @@ import {
   ReserveAuctionStatus,
 } from "../../lib/graphql/types";
 import { calcExpectedEndOfAuction, formatTimestampToCountdown } from "../../lib/time/time";
-import { MetaModel } from "../app/meta.model";
+import { MetaModel } from "../meta/meta.model";
 
 export class NftModel {
   meta: MetaModel;

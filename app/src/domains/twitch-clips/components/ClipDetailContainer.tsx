@@ -17,7 +17,7 @@ import ClipCardContent from "./ClipCardContent";
 import { NftModel } from "../../nfts/nft.model";
 import { makeAppStyles } from "../../theme/theme.constants";
 import { MintModel, MintStatus } from "../../mint/mint.model";
-import { UiController } from "../../app/ui.controller";
+import { UiController } from "../../../app/ui.controller";
 
 interface Props {
   clipId: string;

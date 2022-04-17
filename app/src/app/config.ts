@@ -1,3 +1,7 @@
+import { TwitchConfig } from "../lib/twitch-api/twitch.config";
+import { FirebaseConfig } from "../lib/firebase/firebase.config";
+
+// TODO split Configs per app mode (app / ext / demo)
 export interface IConfig {
   tokenAddress: string;
   auctionAddress: string;
@@ -9,18 +13,4 @@ export interface IConfig {
   isDevelopment: boolean;
   sentryDsn: string;
   firebase: FirebaseConfig;
-}
-
-export interface TwitchConfig {
-  clientId: string;
-}
-
-export interface FirebaseConfig {
-  apiKey: string;
-  authDomain: string;
-  projectId: string;
-  storageBucket: string;
-  messagingSenderId: string;
-  appId: string;
-  measurementId: string;
 }

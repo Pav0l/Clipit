@@ -12,7 +12,7 @@ import { Web3Controller } from "../../web3/web3.controller";
 import { NftDetails } from "../../../components/nfts/NftDetails";
 import { SentryClient } from "../../../lib/sentry/sentry.client";
 import { AuctionModel } from "../../auction/auction.model";
-import { UiController } from "../../app/ui.controller";
+import { UiController } from "../../../app/ui.controller";
 
 interface Props {
   tokenId: string;

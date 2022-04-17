@@ -10,7 +10,7 @@ import { SnackbarController } from "../domains/snackbar/snackbar.controller";
 import { SentryClient } from "../lib/sentry/sentry.client";
 import { INavigationClient, NavigationClient } from "../domains/navigation/navigation.client";
 import { NavigatorController } from "../domains/navigation/navigation.controller";
-import { IConfig } from "../domains/app/config";
+import { IConfig } from "../app/config";
 import { AnalyticsClient, IAnalytics } from "../lib/firebase/analytics.client";
 import { ClipController } from "../domains/twitch-clips/clip.controller";
 

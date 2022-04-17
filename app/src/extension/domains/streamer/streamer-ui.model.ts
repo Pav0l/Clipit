@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { MetaModel } from "../../../domains/app/meta.model";
+import { MetaModel } from "../../../domains/meta/meta.model";
 
 export interface IStreamerUiModel {
   meta: MetaModel;

@@ -1,12 +1,12 @@
 import { BigNumberish } from "ethers";
-import { AuctionController } from "../auction/auction.controller";
-import { MintController } from "../mint/mint.controller";
-import { NavigatorController } from "../navigation/navigation.controller";
-import { NftController } from "../nfts/nft.controller";
-import { SnackbarController } from "../snackbar/snackbar.controller";
-import { TwitchClipsErrors } from "../twitch-clips/clip.errors";
-import { TwitchClip } from "../twitch-clips/clip.model";
-import { Web3Controller } from "../web3/web3.controller";
+import { AuctionController } from "../domains/auction/auction.controller";
+import { MintController } from "../domains/mint/mint.controller";
+import { NavigatorController } from "../domains/navigation/navigation.controller";
+import { NftController } from "../domains/nfts/nft.controller";
+import { SnackbarController } from "../domains/snackbar/snackbar.controller";
+import { TwitchClipsErrors } from "../domains/twitch-clips/clip.errors";
+import { TwitchClip } from "../domains/twitch-clips/clip.model";
+import { Web3Controller } from "../domains/web3/web3.controller";
 import { AppModel } from "./app.model";
 
 export class UiController {

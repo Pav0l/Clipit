@@ -1,5 +1,5 @@
 import { ReserveAuctionBidType, ReserveAuctionStatus } from "../../../lib/graphql/types";
-import { MetaModel } from "../../app/meta.model";
+import { MetaModel } from "../../meta/meta.model";
 import { Bid, Auction, DisplayAuctionStatus, DisplayAuctionStatusTitle, Metadata, NftModel } from "../nft.model";
 
 describe("nft model", () => {

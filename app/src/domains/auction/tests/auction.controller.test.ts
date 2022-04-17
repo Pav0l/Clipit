@@ -5,7 +5,7 @@ import { auctionPartialFragment } from "../../../../tests/__fixtures__/auction-f
 import { txHash } from "../../../../tests/__fixtures__/ethereum";
 import { AuctionContractErrors } from "../../../lib/contracts/AuctionHouse/auction-contract.errors";
 import { RpcErrors, RpcErrorForTests } from "../../../lib/ethereum/rpc.errors";
-import { AppModel } from "../../app/app.model";
+import { AppModel } from "../../../app/app.model";
 import { AuctionController } from "../auction.controller";
 import { AuctionBidLoadStatus, AuctionCancelLoadStatus, AuctionEndLoadStatus, AuctionErrors } from "../auction.model";
 

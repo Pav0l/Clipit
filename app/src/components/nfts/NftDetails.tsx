@@ -5,7 +5,7 @@ import { Web3Controller } from "../../domains/web3/web3.controller";
 import { Web3Model } from "../../domains/web3/web3.model";
 import { BidForm } from "../../domains/auction/components/bid/BidForm";
 import { OwnerNftDetails } from "./OwnerNftDetails";
-import { UiController } from "../../domains/app/ui.controller";
+import { UiController } from "../../app/ui.controller";
 
 interface Props {
   tokenId: string;

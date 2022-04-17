@@ -1,16 +1,16 @@
-import { ClipModel } from "../twitch-clips/clip.model";
-import { GameModel } from "../twitch-games/game.model";
-import { MetaModel } from "./meta.model";
-import { NftModel } from "../nfts/nft.model";
-import { SnackbarModel } from "../snackbar/snackbar.model";
-import { TestStore } from "../playground/playground.store";
-import { UserModel } from "../twitch-user/user.model";
-import { OAuthModel } from "../twitch-oauth/oauth.model";
-import { Web3Model } from "../web3/web3.model";
-import { NavigationModel } from "../navigation/navigation.model";
-import { ThemeModel } from "../theme/theme.model";
-import { MintModel } from "../mint/mint.model";
-import { AuctionModel } from "../auction/auction.model";
+import { ClipModel } from "../domains/twitch-clips/clip.model";
+import { GameModel } from "../domains/twitch-games/game.model";
+import { MetaModel } from "../domains/meta/meta.model";
+import { NftModel } from "../domains/nfts/nft.model";
+import { SnackbarModel } from "../domains/snackbar/snackbar.model";
+import { TestStore } from "../domains/playground/playground.store";
+import { UserModel } from "../domains/twitch-user/user.model";
+import { OAuthModel } from "../domains/twitch-oauth/oauth.model";
+import { Web3Model } from "../domains/web3/web3.model";
+import { NavigationModel } from "../domains/navigation/navigation.model";
+import { ThemeModel } from "../domains/theme/theme.model";
+import { MintModel } from "../domains/mint/mint.model";
+import { AuctionModel } from "../domains/auction/auction.model";
 
 export interface IAppModel {
   meta: MetaModel;

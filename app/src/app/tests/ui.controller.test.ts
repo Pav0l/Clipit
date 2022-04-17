@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { initSynchronousWithTestClients } from "../../../../tests/init-tests";
-import { clipPartialFragment } from "../../../../tests/__fixtures__/clip-fragment";
-import { txHash } from "../../../../tests/__fixtures__/ethereum";
-import { twitchClip } from "../../../../tests/__fixtures__/twitch-api-data";
-import { EthereumTestProvider } from "../../../lib/ethereum/ethereum-test-provider";
-import { RpcErrors, RpcErrorForTests } from "../../../lib/ethereum/rpc.errors";
-import { ClipController } from "../../twitch-clips/clip.controller";
-import { TwitchClipsErrors } from "../../twitch-clips/clip.errors";
-import { GameController } from "../../twitch-games/game.controller";
-import { UserController } from "../../twitch-user/user.controller";
-import { Web3Controller } from "../../web3/web3.controller";
-import { Web3Errors } from "../../web3/web3.model";
+import { initSynchronousWithTestClients } from "../../../tests/init-tests";
+import { clipPartialFragment } from "../../../tests/__fixtures__/clip-fragment";
+import { txHash } from "../../../tests/__fixtures__/ethereum";
+import { twitchClip } from "../../../tests/__fixtures__/twitch-api-data";
+import { EthereumTestProvider } from "../../lib/ethereum/ethereum-test-provider";
+import { RpcErrors, RpcErrorForTests } from "../../lib/ethereum/rpc.errors";
+import { ClipController } from "../../domains/twitch-clips/clip.controller";
+import { TwitchClipsErrors } from "../../domains/twitch-clips/clip.errors";
+import { GameController } from "../../domains/twitch-games/game.controller";
+import { UserController } from "../../domains/twitch-user/user.controller";
+import { Web3Controller } from "../../domains/web3/web3.controller";
+import { Web3Errors } from "../../domains/web3/web3.model";
 import { AppModel } from "../app.model";
 import { UiController } from "../ui.controller";
 

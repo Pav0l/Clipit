@@ -1,4 +1,4 @@
-import { TwitchConfig } from "../../domains/app/config";
+import { TwitchConfig } from "./twitch.config";
 import { extensionHelixTokenKey, twitchApiAccessTokenKey } from "../constants";
 import { HttpClient, RawResponse } from "../http-client/http-client";
 import { ILocalStorage } from "../local-storage/local-storage.client";

@@ -8,7 +8,7 @@ import { Web3Controller } from "../../../web3/web3.controller";
 import { Web3Model } from "../../../web3/web3.model";
 import { useInputData } from "../../../../lib/hooks/useInputData";
 import LinearLoader from "../../../../components/loader/LinearLoader";
-import { UiController } from "../../../app/ui.controller";
+import { UiController } from "../../../../app/ui.controller";
 
 interface Props {
   metadata: Metadata;

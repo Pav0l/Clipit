@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 import { makeAutoObservable } from "mobx";
 import { formatCurrencyAmountToDisplayAmount } from "../../lib/ethereum/currency";
 import { truncate } from "../../lib/strings/truncate";
-import { MetaModel } from "../app/meta.model";
+import { MetaModel } from "../meta/meta.model";
 
 export class Web3Model {
   meta: MetaModel;
