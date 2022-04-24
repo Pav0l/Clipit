@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/react";
 import { CaptureContext } from "@sentry/types";
+import { SESSION_ID } from "../constants";
 export class SentryClient {
   constructor(dsn: string, isDevelopment: boolean) {
     Sentry.init({
@@ -9,6 +10,7 @@ export class SentryClient {
     });
 
     Sentry.setTag("COMMIT_HASH", COMMIT_HASH);
+    Sentry.setTag("SESSION_ID", SESSION_ID);
   }
 
   captureException(err: unknown, ctx?: CaptureContext) {

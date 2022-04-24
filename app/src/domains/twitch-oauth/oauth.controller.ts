@@ -6,6 +6,7 @@ import { IOauthApiClient } from "../../lib/twitch-oauth/twitch-oauth-api.client"
 import { SentryClient } from "../../lib/sentry/sentry.client";
 import { AppError } from "../../lib/errors/errors";
 import { IAnalytics } from "../../lib/firebase/analytics.client";
+import { generateRandomString } from "../../lib/strings/random";
 
 export class OAuthController {
   constructor(
@@ -131,14 +132,8 @@ export class OAuthController {
     return parsed;
   };
 
-  private generateRandomString = () => {
-    const uintArr = new Uint16Array(10);
-    window.crypto.getRandomValues(uintArr);
-    return JSON.stringify(Array.from(uintArr));
-  };
-
   private generateSecretAndStore = (): string => {
-    const secret = this.generateRandomString();
+    const secret = generateRandomString();
     this.storage.setItem(twitchOAuthStateSecretKey, secret);
     return secret;
   };

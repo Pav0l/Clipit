@@ -1,4 +1,5 @@
 import type { TwitchClip } from "../domains/twitch-clips/clip.model";
+import { generateRandomString } from "./strings/random";
 
 // CLIPIT API
 export const ebsTokenKey = "ebs_token_key";
@@ -35,6 +36,8 @@ export enum AppRoute {
   OAUTH_REDIRECT = "/oauth2/redirect",
   HOME = "/",
 }
+
+export const SESSION_ID = generateRandomString();
 
 // fallback clip
 export const demoClip: Pick<
