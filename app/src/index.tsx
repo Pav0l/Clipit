@@ -31,7 +31,6 @@ import { AppError } from "./lib/errors/errors";
       user: operations.user,
       navigator: operations.navigator,
       oauth: operations.auth,
-      analytics: clients.analytics,
     });
   } catch (error) {
     clients.sentry.captureException(error);

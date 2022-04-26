@@ -131,7 +131,6 @@ export async function fullAppInitForTests(options: { runAfterSyncInit?: (init: A
     navigator: init.operations.navigator,
     user: init.operations.user,
     oauth: init.operations.auth,
-    analytics: init.clients.analytics,
   });
 
   return init;

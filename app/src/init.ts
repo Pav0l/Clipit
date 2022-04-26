@@ -164,13 +164,11 @@ export async function initAsync({
   user,
   navigator,
   oauth,
-  analytics,
 }: {
   model: AppModel;
   user: UserController;
   navigator: NavigatorController;
   oauth: OAuthController;
-  analytics: IAnalytics;
 }) {
   // first we check if user is logged into twitch
   oauth.checkTokenInStorage();
