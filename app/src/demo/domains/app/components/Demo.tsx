@@ -18,6 +18,7 @@ import { NavigatorController } from "../../../../domains/navigation/navigation.c
 import { DemoPage } from "./DemoPage";
 import Snackbar from "../../../../domains/snackbar/Snackbar";
 import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
+import { TelemetryService } from "../../telemetry/telemetry.service";
 
 interface Props {
   model: IDemoModel;
@@ -27,6 +28,7 @@ interface Props {
     snackbar: SnackbarController;
   };
   sentry: SentryClient;
+  telemetry: TelemetryService;
 }
 
 export const Demo = observer(function App(props: Props) {
@@ -39,7 +41,7 @@ export const Demo = observer(function App(props: Props) {
   );
 });
 
-const StyledApp = observer(function App({ model, operations, sentry }: Props) {
+const StyledApp = observer(function App({ model, operations, sentry, telemetry }: Props) {
   const classes = useStyles();
   const appMetaData = model.meta;
 
@@ -52,7 +54,7 @@ const StyledApp = observer(function App({ model, operations, sentry }: Props) {
       ) : appMetaData.error ? (
         <ErrorWithRetry text={appMetaData.error.message} withRetry={true} classNames={classes.error} />
       ) : (
-        <RouterX model={model} operations={operations} sentry={sentry} />
+        <RouterX model={model} operations={operations} sentry={sentry} telemetry={telemetry} />
       )}
     </Box>
   );
@@ -68,13 +70,14 @@ const useStyles = makeAppStyles((theme) => ({
   },
 }));
 
-const RouterX = observer(function RouterX({ model, operations }: Props) {
+const RouterX = observer(function RouterX({ model, operations, telemetry }: Props) {
   let app: JSX.Element | null = null;
 
   const home = (
     <Home
       clipId={model.clip.lastClip?.id ?? demoClip.id}
       model={model}
+      telemetry={telemetry}
       operations={{ auth: operations.auth, navigator: operations.navigator }}
     />
   );

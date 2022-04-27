@@ -13,6 +13,9 @@ import { NavigatorController } from "../domains/navigation/navigation.controller
 import { IConfig } from "../app/config";
 import { AnalyticsClient, IAnalytics } from "../lib/firebase/analytics.client";
 import { ClipController } from "../domains/twitch-clips/clip.controller";
+import { DatabaseClient, IDatabase } from "../lib/firebase/realtime-db/database.client";
+import { TelemetryClient } from "../lib/telemetry/telemetry.client";
+import { TelemetryService } from "./domains/telemetry/telemetry.service";
 
 export interface DemoClientsInit {
   storage: ILocalStorage;
@@ -20,6 +23,7 @@ export interface DemoClientsInit {
   twitchOAuthApi: IOauthApiClient;
   twitchApi: TwitchApiClient;
   analytics: IAnalytics;
+  database: IDatabase;
 }
 
 export function initDemoClients(config: IConfig): DemoClientsInit {
@@ -30,6 +34,7 @@ export function initDemoClients(config: IConfig): DemoClientsInit {
   const twitchApi = new TwitchApi(new HttpClient(twitchApiUri), storage, config.twitch);
 
   const analytics = new AnalyticsClient(config.firebase);
+  const database = new DatabaseClient(config.firebase);
 
   return {
     storage,
@@ -37,6 +42,7 @@ export function initDemoClients(config: IConfig): DemoClientsInit {
     twitchOAuthApi,
     twitchApi,
     analytics,
+    database,
   };
 }
 
@@ -52,6 +58,7 @@ export interface DemoInit {
   clients: {
     sentry: SentryClient;
     analytics: IAnalytics;
+    telemetry: TelemetryService;
   };
 }
 
@@ -59,14 +66,15 @@ export function initDemoSynchronous(config: IConfig, clients: DemoClientsInit): 
   const sentry = new SentryClient(config.sentryDsn, config.isDevelopment);
   const model = new DemoModel();
   // simple clients with no state that are usually mocked in tests
-  const { storage, navigationClient, twitchOAuthApi, twitchApi, analytics } = clients;
+  const { storage, navigationClient, twitchOAuthApi, twitchApi, analytics, database } = clients;
 
+  const telemetry = new TelemetryService(model, new TelemetryClient(database, sentry));
   const snackbar = new SnackbarController(model.snackbar);
   const auth = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, analytics, config.twitch.clientId);
   const user = new UserController(model.user, twitchApi, sentry);
   const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
 
-  const navigator = new NavigatorController(model.navigation, navigationClient, snackbar);
+  const navigator = new NavigatorController(model.navigation, navigationClient, snackbar, telemetry);
 
   return {
     model,
@@ -80,6 +88,7 @@ export function initDemoSynchronous(config: IConfig, clients: DemoClientsInit): 
     clients: {
       sentry,
       analytics,
+      telemetry,
     },
   };
 }
@@ -91,6 +100,7 @@ export async function initDemoAsync({
   navigator,
   oauth,
   analytics,
+  telemetry,
 }: {
   model: DemoModel;
   user: UserController;
@@ -98,6 +108,7 @@ export async function initDemoAsync({
   navigator: NavigatorController;
   oauth: OAuthController;
   analytics: IAnalytics;
+  telemetry: TelemetryService;
 }) {
   // first we check if user is logged into twitch
   oauth.checkTokenInStorage();
@@ -120,6 +131,7 @@ export async function initDemoAsync({
   // slug is not fallback clip
   if (slug !== null && slug !== demoClip.id) {
     analytics.setProperty("slug", slug);
+    telemetry.loaded(slug);
 
     await clip.getClip(slug);
   }
@@ -127,6 +139,8 @@ export async function initDemoAsync({
   ////////////////////////////
   // route based init
   ////////////////////////////
+
+  // load of specific demo clip
   if (model.navigation.appRoute.route === AppRoute.DEMO_CLIP) {
     await clip.getClip(model.navigation.appRoute.params!.clipId);
   }

@@ -44,7 +44,7 @@ export const DemoPage = observer(function Demo(props: Props) {
   const data = props.model.clip.getClip(clipId) ?? demoClip;
 
   useEffect(() => {
-    props.operations.navigator.hasQueryToShowSnackbar();
+    props.operations.navigator.hasQueryToShowSnackbar(clipId);
   }, []);
 
   return (

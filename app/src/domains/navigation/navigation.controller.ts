@@ -1,4 +1,5 @@
 import Route from "route-parser";
+import { TelemetryService } from "../../demo/domains/telemetry/telemetry.service";
 
 import { AppRoute } from "../../lib/constants";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
@@ -10,7 +11,12 @@ enum NavQuery {
 }
 
 export class NavigatorController {
-  constructor(private model: NavigationModel, private client: INavigationClient, private snackbar: SnackbarClient) {
+  constructor(
+    private model: NavigationModel,
+    private client: INavigationClient,
+    private snackbar: SnackbarClient,
+    private telemetry?: TelemetryService
+  ) {
     this.client.onPopState(this.goToRoute);
   }
 
@@ -48,10 +54,11 @@ export class NavigatorController {
     this.goToRoute(AppRoute.HOME);
   }
 
-  hasQueryToShowSnackbar() {
+  hasQueryToShowSnackbar(clipId: string) {
     const url = new URL(window.location.href).searchParams;
     const ok = url.get(NavQuery.HI);
     if (ok) {
+      this.telemetry?.login(clipId);
       // TODO improve copy, style? and timing of the snack
       this.snackbar.sendInfo("Thanks for your trust! We'll get in touch...");
       this.client.push(window.location.pathname);

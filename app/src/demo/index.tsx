@@ -20,7 +20,7 @@ import { Demo } from "./domains/app/components/Demo";
 
   ReactDOM.render(
     <React.StrictMode>
-      <Demo model={model} operations={operations} sentry={clients.sentry} />
+      <Demo model={model} operations={operations} sentry={clients.sentry} telemetry={clients.telemetry} />
     </React.StrictMode>,
     document.getElementById("root")
   );
@@ -33,6 +33,7 @@ import { Demo } from "./domains/app/components/Demo";
       navigator: operations.navigator,
       oauth: operations.auth,
       analytics: clients.analytics,
+      telemetry: clients.telemetry,
     });
   } catch (error) {
     clients.sentry.captureException(error);

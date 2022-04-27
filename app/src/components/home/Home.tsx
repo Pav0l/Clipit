@@ -14,6 +14,7 @@ import { Thumbnail } from "../media/Thumbnail";
 import { RouteLink } from "../../domains/navigation/components/RouteLink";
 import { ClipModel } from "../../domains/twitch-clips/clip.model";
 import { demoClip } from "../../lib/constants";
+import { TelemetryService } from "../../demo/domains/telemetry/telemetry.service";
 
 interface Props {
   clipId: string;
@@ -25,13 +26,19 @@ interface Props {
     auth: OAuthController;
     navigator: NavigatorController;
   };
+  telemetry: TelemetryService;
 }
 
-function Home({ model, operations, clipId }: Props) {
+function Home({ model, operations, telemetry, clipId }: Props) {
   const classes = useStyles();
   const widget = useSupportWidget();
 
   const data = model.clip.getClip(clipId) ?? demoClip;
+
+  const goToDemo = (to: string) => {
+    telemetry.thumbnail(clipId);
+    operations.navigator.goToRoute(to);
+  };
 
   useEffect(() => {
     // do not show Tawk chat on Home page
@@ -95,7 +102,7 @@ function Home({ model, operations, clipId }: Props) {
         </section>
         <div className={classes.splitContainerChild}>
           <RouteLink
-            setActive={operations.navigator.goToRoute}
+            setActive={goToDemo}
             to={`/demo/${clipId}`}
             underline="none"
             child={<Thumbnail src={data.thumbnailUrl} title={data.title} className={classes.video} />}
