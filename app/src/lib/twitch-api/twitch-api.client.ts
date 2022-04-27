@@ -70,7 +70,9 @@ export class TwitchApi implements TwitchApiClient {
 
   private makeAuthorizedRequest<T>(params: { method: "get" | "post" | "put" | "delete"; url: string; qs?: unknown }) {
     const key = this.authScheme === "Extension" ? extensionHelixTokenKey : twitchApiAccessTokenKey;
-    const token = this.storage.getItem(key);
+    // use twitch app access token if scheme is Bearer and there is no twitch oauth token in LS
+    const tokenFromLs = this.storage.getItem(key);
+    const token = tokenFromLs ? tokenFromLs : this.authScheme === "Bearer" ? this.config.appAccessToken : null;
 
     const authorizationHeaderValue = `${this.authScheme} ${token}`;
     const requestParams = { ...params, headers: { Authorization: authorizationHeaderValue } };
