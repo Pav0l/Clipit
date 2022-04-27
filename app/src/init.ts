@@ -116,7 +116,7 @@ export function initSynchronous(config: IConfig, clients: ClientsInit): AppInit 
   } = clients;
 
   const snackbar = new SnackbarController(model.snackbar);
-  const auth = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, analytics, config.twitch.clientId);
+  const auth = new OAuthController(model.auth, twitchOAuthApi, storage, sentry, config.twitch.clientId);
   const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
   const game = new GameController(model.game, twitchApi, sentry);
   const user = new UserController(model.user, twitchApi, sentry);

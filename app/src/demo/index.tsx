@@ -32,7 +32,6 @@ import { Demo } from "./domains/app/components/Demo";
       clip: operations.clip,
       navigator: operations.navigator,
       oauth: operations.auth,
-      analytics: clients.analytics,
       telemetry: clients.telemetry,
     });
   } catch (error) {

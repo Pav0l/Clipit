@@ -5,7 +5,6 @@ import { OAuthErrors, OauthQueryParams } from "./oauth.types";
 import { IOauthApiClient } from "../../lib/twitch-oauth/twitch-oauth-api.client";
 import { SentryClient } from "../../lib/sentry/sentry.client";
 import { AppError } from "../../lib/errors/errors";
-import { IAnalytics } from "../../lib/firebase/analytics.client";
 import { generateRandomString } from "../../lib/strings/random";
 
 export class OAuthController {
@@ -14,7 +13,6 @@ export class OAuthController {
     private oauthApi: IOauthApiClient,
     private storage: ILocalStorage,
     private sentry: SentryClient,
-    private analytics: IAnalytics,
     private twitchClientId: string
   ) {}
 
@@ -33,7 +31,6 @@ export class OAuthController {
 
   initOauthFlowIfNotAuthorized = (referrer?: string) => {
     if (!this.model.isLoggedIn) {
-      this.analytics.logPageView({ page_path: referrer });
       window.location.assign(this.getTwitchOAuth2AuthorizeUrl(referrer));
     }
   };
