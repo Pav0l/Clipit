@@ -1,6 +1,5 @@
 import { Box, Tooltip, Typography } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
 
 import ExternalLinkIcon from "../../../../assets/external-link.svg";
 import { makeAppStyles } from "../../../../domains/theme/theme.constants";
@@ -42,10 +41,6 @@ export const DemoPage = observer(function Demo(props: Props) {
   const classes = useStyles();
   const clipId = props.clipId;
   const data = props.model.clip.getClip(clipId) ?? demoClip;
-
-  useEffect(() => {
-    props.operations.navigator.hasQueryToShowSnackbar(clipId);
-  }, []);
 
   return (
     <Box className={classes.homeWrapper}>

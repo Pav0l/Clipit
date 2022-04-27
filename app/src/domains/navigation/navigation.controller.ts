@@ -42,16 +42,17 @@ export class NavigatorController {
   validatePathForAppInit(pathname: string, href: string) {
     const routes = Object.values(AppRoute);
 
+    // fallback AppRoute is Home
+    this.model.setAppRoute({ route: AppRoute.HOME, params: null });
+    this.goToRoute(AppRoute.HOME);
+
     for (const appRoute of routes) {
       const matched = new Route(appRoute).match(pathname);
       if (matched) {
         this.model.setAppRoute({ route: appRoute, params: matched });
-        return this.goToRoute(pathname, href);
+        this.goToRoute(pathname, href);
       }
     }
-    // no AppRoute match -> redirect to Home
-    this.model.setAppRoute({ route: AppRoute.HOME, params: null });
-    this.goToRoute(AppRoute.HOME);
   }
 
   hasQueryToShowSnackbar(clipId: string) {

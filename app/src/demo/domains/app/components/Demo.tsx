@@ -5,7 +5,6 @@ import Route from "route-parser";
 import { IDemoModel } from "../demo.model";
 import { AppRoute, demoClip } from "../../../../lib/constants";
 import Home from "../../../../components/home/Home";
-import OAuth2Redirect from "../../../../domains/twitch-oauth/OAuth2Redirect/OAuth2Redirect";
 import ThemeProvider from "../../../../domains/theme/components/ThemeProvider";
 import ErrorWithRetry from "../../../../components/error/Error";
 import Terms from "../../../../components/terms/Terms";
@@ -85,12 +84,6 @@ const RouterX = observer(function RouterX({ model, operations, telemetry }: Prop
   switch (model.navigation.activeRoute) {
     case AppRoute.TERMS:
       app = <Terms logoOnClick={operations.navigator.goToRoute} />;
-      break;
-
-    case AppRoute.OAUTH_REDIRECT:
-      app = (
-        <OAuth2Redirect model={model.auth} operations={{ oauth: operations.auth, navigator: operations.navigator }} />
-      );
       break;
 
     case AppRoute.HOME:

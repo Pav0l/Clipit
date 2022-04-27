@@ -140,8 +140,22 @@ export async function initDemoAsync({
   // route based init
   ////////////////////////////
 
+  // oauth redirect first, so we init the referrer route later as well
+  if (model.navigation.appRoute.route === AppRoute.OAUTH_REDIRECT) {
+    oauth.handleOAuth2Redirect(new URL(window.location.href));
+    let referrer = model.auth.referrer;
+
+    if (!referrer) {
+      referrer = AppRoute.HOME;
+    }
+    navigator.validatePathForAppInit(referrer, referrer);
+  }
+
   // load of specific demo clip
   if (model.navigation.appRoute.route === AppRoute.DEMO_CLIP) {
-    await clip.getClip(model.navigation.appRoute.params!.clipId);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const clipId = model.navigation.appRoute.params!.clipId;
+    await clip.getClip(clipId);
+    navigator.hasQueryToShowSnackbar(clipId);
   }
 }
