@@ -60,7 +60,7 @@ export class NavigatorController {
     const ok = url.get(NavQuery.HI);
     if (ok) {
       // TODO improve copy, style? and timing of the snack
-      this.snackbar.sendInfo("Thanks for your trust! This is how your Clip NFT could look like. We'll get in touch...");
+      this.snackbar.sendInfo("Thanks for your trust! We'll get in touch...");
       this.client.push(window.location.pathname);
       return true;
     }
