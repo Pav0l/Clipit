@@ -2,9 +2,9 @@ import { SyntheticEvent } from "react";
 import { SnackbarModel } from "./snackbar.model";
 
 export interface SnackbarClient {
-  sendError: (text: string, duration?: number) => void;
-  sendSuccess: (text: string, duration?: number) => void;
-  sendInfo: (text: string, duration?: number) => void;
+  sendError: (text: string, durationInMs?: number | null) => void;
+  sendSuccess: (text: string, durationInMs?: number | null) => void;
+  sendInfo: (text: string, durationInMs?: number | null) => void;
 }
 
 export class SnackbarController implements SnackbarClient {
@@ -19,18 +19,18 @@ export class SnackbarController implements SnackbarClient {
     this.showNextMessageFromQue();
   };
 
-  sendError = (text: string, duration?: number) => {
-    this.model.addErrorToSnackbarQue(text, duration);
+  sendError = (text: string, durationInMs?: number | null) => {
+    this.model.addErrorToSnackbarQue(text, durationInMs);
     this.showNextMessageFromQue();
   };
 
-  sendInfo = (text: string, duration?: number) => {
-    this.model.addInfoToSnackbarQue(text, duration);
+  sendInfo = (text: string, durationInMs?: number | null) => {
+    this.model.addInfoToSnackbarQue(text, durationInMs);
     this.showNextMessageFromQue();
   };
 
-  sendSuccess = (text: string, duration?: number) => {
-    this.model.addSuccessToSnackbarQue(text, duration);
+  sendSuccess = (text: string, durationInMs?: number | null) => {
+    this.model.addSuccessToSnackbarQue(text, durationInMs);
     this.showNextMessageFromQue();
   };
 

@@ -23,18 +23,18 @@ export class SnackbarModel {
     this.open = true;
   }
 
-  addErrorToSnackbarQue(text: string, duration?: number) {
-    this.pushSnackMessage(text, "error", duration);
+  addErrorToSnackbarQue(text: string, durationInMs?: number | null) {
+    this.pushSnackMessage(text, "error", durationInMs);
     this.open = true;
   }
 
-  addInfoToSnackbarQue(text: string, duration?: number) {
-    this.pushSnackMessage(text, "info", duration);
+  addInfoToSnackbarQue(text: string, durationInMs?: number | null) {
+    this.pushSnackMessage(text, "info", durationInMs);
     this.open = true;
   }
 
-  addSuccessToSnackbarQue(text: string, duration?: number) {
-    this.pushSnackMessage(text, "success", duration);
+  addSuccessToSnackbarQue(text: string, durationInMs?: number | null) {
+    this.pushSnackMessage(text, "success", durationInMs);
     this.open = true;
   }
 
@@ -43,7 +43,11 @@ export class SnackbarModel {
     this.open = false;
   }
 
-  private pushSnackMessage(text: string, severity: SnackSeverity, duration: number = DEFAULT_SNACKBAR_DURATION) {
-    this.messageList.push({ text, severity, duration });
+  private pushSnackMessage(
+    text: string,
+    severity: SnackSeverity,
+    durationInMs: number | null = DEFAULT_SNACKBAR_DURATION
+  ) {
+    this.messageList.push({ text, severity, durationInMs });
   }
 }

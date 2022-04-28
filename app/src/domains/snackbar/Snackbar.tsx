@@ -31,7 +31,7 @@ function TransitionSnackbar({ model, operations }: Props) {
     <Snackbar
       open={open}
       onClose={operations.handleSnackClose}
-      autoHideDuration={message.duration}
+      autoHideDuration={message.durationInMs}
       anchorOrigin={{
         vertical: "bottom",
         horizontal: "left",
