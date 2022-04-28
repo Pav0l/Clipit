@@ -7,7 +7,7 @@
     "clipit-30b85": {
       "hosting": {
         "app": [
-          "clipit"
+          "clipit-30b85"
         ],
         "stage": [
           "test-clipit"
