@@ -26,6 +26,7 @@ export class TelemetryService {
       email: this.model.user.email ?? null,
       display_name: this.model.user.display_name ?? null,
       clip_id: slug,
+      host: window.location.host,
     };
   }
 }
