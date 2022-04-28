@@ -146,7 +146,18 @@ export async function initDemoAsync({
   if (model.navigation.appRoute.route === AppRoute.DEMO_CLIP) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const clipId = model.navigation.appRoute.params!.clipId;
+
     await clip.getClip(clipId);
-    navigator.hasQueryToShowSnackbar(clipId);
+
+    // handle redirect from login
+    const justLoggedIn = navigator.hasQueryToShowSnackbar();
+
+    // also if user just logged in update telemetry
+    if (justLoggedIn) {
+      if (!model.user.id) {
+        await user.getUser();
+      }
+      telemetry?.login(clipId);
+    }
   }
 }
