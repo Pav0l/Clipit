@@ -14,11 +14,11 @@ const commonThemeOpts: ThemeOptions = {
   },
   breakpoints: {
     values: {
-      xs: 0,
-      sm: 1024,
-      md: 1280,
-      lg: 1680,
-      xl: 1920,
+      xs: 600,
+      sm: 900,
+      md: 1024,
+      lg: 1280,
+      xl: 1680,
     },
   },
 };

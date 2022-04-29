@@ -169,7 +169,7 @@ const useStyles = makeAppStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "center",
     padding: "1.5rem 0",
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       padding: "0.5rem 0",
     },
   },
@@ -179,7 +179,7 @@ const useStyles = makeAppStyles((theme) => ({
     fontWeight: 700,
     lineHeight: "1rem",
     letterSpacing: "0.1rem",
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       lineHeight: "normal",
     },
   },
@@ -189,7 +189,7 @@ const useStyles = makeAppStyles((theme) => ({
     lineHeight: "2rem",
     letterSpacing: 0,
     marginRight: "0.5rem",
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       lineHeight: "normal",
     },
   },
@@ -206,7 +206,7 @@ const useStyles = makeAppStyles((theme) => ({
     letterSpacing: "0",
     lineHeight: "2.5rem",
     marginRight: "3rem",
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       lineHeight: "normal",
     },
   },
@@ -224,7 +224,7 @@ const useStyles = makeAppStyles((theme) => ({
     fontSize: "clamp(10px, 1vw, 1rem)",
     letterSpacing: "0.1em",
     lineHeight: "2rem",
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("lg")]: {
       lineHeight: "normal",
     },
   },
