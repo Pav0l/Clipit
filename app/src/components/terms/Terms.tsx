@@ -27,12 +27,12 @@ export default function Terms(props: Props) {
           <SectionParagraph
             text={
               <>
-                ClipIt is a NFT marketplace maintained by a team of developers (&quot;ClipIt&quot;, &quot;we&quot;,
+                Clipit is a NFT marketplace maintained by a team of developers (&quot;Clipit&quot;, &quot;we&quot;,
                 &quot;us&quot; or &quot;our&quot;) build on top of{" "}
                 <a href="https://zora.co/" target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}>
                   Zora Market and AuctionHouse
-                </a>
-                , an opensource NFT Marketplace Protocol on the Ethereum blockchain.
+                </a>{" "}
+                - an opensource NFT Marketplace Protocol on the Ethereum blockchain.
               </>
             }
           />
@@ -40,7 +40,7 @@ export default function Terms(props: Props) {
           <SectionParagraph
             text={
               <>
-                These Terms & conditions (“Terms”) govern your access to and use of the ClipIt website, our APIs and any
+                These Terms & conditions (“Terms”) govern your access to and use of the Clipit website, our APIs and any
                 other software, tools, features, or functionalities provided on or in connection with our services
                 (collectively, the ”Service”).
               </>
@@ -63,9 +63,9 @@ export default function Terms(props: Props) {
           <SectionParagraph
             text={
               <>
-                <Typography variant="body2" className={classes.bold}>
+                <Typography variant="body2" component="span" className={classes.bold}>
                   Each creator that mints NFTs using the Service keeps all intellectual property rights to such content.
-                </Typography>
+                </Typography>{" "}
                 We do not own any intellectual property of tokens, user-generated content or the Zora Protocol.
               </>
             }
@@ -79,9 +79,11 @@ export default function Terms(props: Props) {
           <SectionParagraph
             text={
               <>
-                When you use the Service we do not collect any personal information from you. We may, however, use
-                third-party services including (but not limited to) Twitch, Tawk or Google Analytics, which may receive
-                your publicly available personal information.
+                When you use the Service, the only personal information we collect from you, if you authorize the
+                Service access to obtain your data from Twitch, is your email address. We use the email address to
+                contact you. We retain the data only for as long as is necessary for the purpose set out in this
+                section. We may also use third-party services including (but not limited to) Twitch or Tawk, which may
+                receive your publicly available personal information.
               </>
             }
           />
@@ -100,7 +102,7 @@ export default function Terms(props: Props) {
                 service, products or third-party sites and products, or for any damages related to loss of revenue, loss
                 of profits, loss of business or anticipated savings, loss of use, loss of goodwill, or loss of data, and
                 whether caused by strict liability or tort (including negligence), breach of contract, or otherwise,
-                even if foreseeable and even if ClipIt or its service providers have been advised of the possibility of
+                even if foreseeable and even if Clipit or its service providers have been advised of the possibility of
                 such damages; or (b) for any other claim, demand, or damages whatsoever resulting from or arising out of
                 or in connection with these terms of the delivery, use, or performance of the service. Access to, and
                 use of, the service, products or third-party sites, and products are at your own discretion and risk,
@@ -114,9 +116,9 @@ export default function Terms(props: Props) {
             text={
               <>
                 Notwithstanding anything to the contrary contained herein, in no event shall the maximum aggregate
-                liability of ClipIt arising out of or in any way related to these terms, the access to and use of the
-                service, content, NFTs, or any ClipIt products or services exceed the greater of (a) $100 or (b) the
-                amount received by ClipIt for its service directly relating to the items that are the subject of the
+                liability of Clipit arising out of or in any way related to these terms, the access to and use of the
+                service, content, NFTs, or any Clipit products or services exceed the greater of (a) $100 or (b) the
+                amount received by Clipit for its service directly relating to the items that are the subject of the
                 claim. The foregoing limitations will apply even if the above stated remedy fails of its essential
                 purpose.
               </>
