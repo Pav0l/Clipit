@@ -143,14 +143,24 @@ const useStyles = makeAppStyles((theme) => ({
     margin: "0 4rem",
     flexDirection: "column",
     justifyContent: "center",
+    [theme.breakpoints.down("xs")]: {
+      margin: "0 2rem",
+    },
   },
   centeredContainer: {
     display: "flex",
     backgroundColor: theme.colors.background_ternary,
+    [theme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+    },
   },
   video: {
     width: "80%",
     alignSelf: "center",
+    [theme.breakpoints.down("xs")]: {
+      width: "100%",
+      minHeight: "40vh",
+    },
   },
   rightPanel: {
     display: "flex",
