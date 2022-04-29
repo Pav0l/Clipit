@@ -19,10 +19,13 @@ function SplitContainer({ children, className, dataTestId }: Props) {
 
 export default SplitContainer;
 
-const useStyles = makeAppStyles(() => ({
+const useStyles = makeAppStyles((theme) => ({
   container: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    [theme.breakpoints.down("xs")]: {
+      flexDirection: "column",
+    },
   },
 }));

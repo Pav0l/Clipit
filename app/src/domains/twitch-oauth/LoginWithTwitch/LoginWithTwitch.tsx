@@ -43,7 +43,7 @@ const useStyles = makeAppStyles((theme) => ({
     fontVariant: "small-caps",
     padding: "1em 2em",
     fontWeight: 900,
-    fontSize: "1.3vw",
+    fontSize: "clamp(1rem, 1.3vw, 3rem)",
     boxShadow: "0px 16px 48px #C3C8C9",
     "&:hover": {
       backgroundColor: theme.colors.twitch_bg_secondary,

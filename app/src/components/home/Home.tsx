@@ -55,60 +55,60 @@ function Home({ model, operations, telemetry, clipId }: Props) {
       <nav>
         <Logo onClick={operations.navigator.goToRoute} />
       </nav>
-      <SplitContainer dataTestId="home">
-        <section className={classes.splitContainerChild}>
-          <div className={classes.titleGroup}>
-            <div className={classes.titleItem}>
-              <Typography variant="body2" className={classes.numbers}>
-                01
-              </Typography>
-              <Typography variant="h2" className={classes.title}>
-                MINT
-              </Typography>
+      <div>
+        <SplitContainer dataTestId="home">
+          <section className={classes.splitContainerChild}>
+            <div className={classes.titleGroup}>
+              <div className={classes.titleItem}>
+                <Typography variant="body2" className={classes.numbers}>
+                  01
+                </Typography>
+                <Typography variant="h2" className={classes.title}>
+                  MINT
+                </Typography>
+              </div>
+              <div className={classes.titleItem}>
+                <Typography variant="body2" className={classes.numbers}>
+                  02
+                </Typography>
+                <Typography variant="h2" className={classes.title}>
+                  TRADE
+                </Typography>
+              </div>
+              <div className={classes.titleItem}>
+                <Typography variant="body2" className={classes.numbers}>
+                  03
+                </Typography>
+                <Typography variant="h2" className={classes.title}>
+                  COLLECT
+                </Typography>
+              </div>
             </div>
-            <div className={classes.titleItem}>
-              <Typography variant="body2" className={classes.numbers}>
-                02
-              </Typography>
-              <Typography variant="h2" className={classes.title}>
-                TRADE
-              </Typography>
-            </div>
-            <div className={classes.titleItem}>
-              <Typography variant="body2" className={classes.numbers}>
-                03
-              </Typography>
-              <Typography variant="h2" className={classes.title}>
-                COLLECT
-              </Typography>
-            </div>
-          </div>
-          <div className={classes.descriptionWithBtn}>
-            <Typography variant="h4" className={classes.description}>
+            <Typography variant="h4" className={`${classes.withLeftMargin} ${classes.description}`}>
               The Greatest Streaming Moments
             </Typography>
-            <div className={classes.buttonWrapper}>
-              <LoginWithTwitch
-                model={{ auth: model.auth }}
-                loggedInClick={() => operations.navigator.goToDemoClip(clipId)}
-                loggedOutClick={() =>
-                  operations.auth.initOauthFlowIfNotAuthorized(operations.navigator.generateDemoLoginRedirect(clipId))
-                }
-                loggedOutText="Login with Twitch"
-                loggedInText="Show NFT demo"
-              />
-            </div>
+          </section>
+          <div className={classes.splitContainerChild}>
+            <RouteLink
+              setActive={goToDemo}
+              to={`/demo/${clipId}`}
+              underline="none"
+              child={<Thumbnail src={data.thumbnailUrl} title={data.title} className={classes.video} />}
+            />
           </div>
-        </section>
-        <div className={classes.splitContainerChild}>
-          <RouteLink
-            setActive={goToDemo}
-            to={`/demo/${clipId}`}
-            underline="none"
-            child={<Thumbnail src={data.thumbnailUrl} title={data.title} className={classes.video} />}
+        </SplitContainer>
+        <div className={`${classes.withLeftMargin} ${classes.buttonWrapper}`}>
+          <LoginWithTwitch
+            model={{ auth: model.auth }}
+            loggedInClick={() => operations.navigator.goToDemoClip(clipId)}
+            loggedOutClick={() =>
+              operations.auth.initOauthFlowIfNotAuthorized(operations.navigator.generateDemoLoginRedirect(clipId))
+            }
+            loggedOutText="Login with Twitch"
+            loggedInText="Show NFT demo"
           />
         </div>
-      </SplitContainer>
+      </div>
       <Footer operations={{ navigator: operations.navigator }} />
     </Box>
   );
@@ -123,12 +123,15 @@ const useStyles = makeAppStyles((theme) => ({
     flexDirection: "column",
     justifyContent: "space-between",
     margin: "0 4rem",
+    [theme.breakpoints.down("xs")]: {
+      margin: "0 2rem",
+    },
   },
   numbers: {
     color: theme.colors.text_secondary,
     fontStyle: "italic",
     fontWeight: 500,
-    fontSize: "1.5vw",
+    fontSize: "clamp(1rem, 1.5vw, 2rem)",
     marginRight: "1.5rem",
   },
   title: {
@@ -136,16 +139,20 @@ const useStyles = makeAppStyles((theme) => ({
     textAlign: "center",
     fontStyle: "normal",
     fontWeight: 900,
-    fontSize: "7vw",
+    fontSize: "clamp(3rem, 7vw, 8rem)",
     lineHeight: "0.86",
   },
   description: {
     color: theme.colors.text_secondary,
     fontStyle: "italic",
     fontWeight: 500,
-    fontSize: "2.6vw",
+    fontSize: "clamp(1rem, 2.6vw, 3rem)",
     margin: "1rem 0",
     paddingRight: "5rem",
+    [theme.breakpoints.down("xs")]: {
+      margin: "2rem 0",
+      padding: "0",
+    },
   },
   titleGroup: {
     display: "flex",
@@ -160,19 +167,28 @@ const useStyles = makeAppStyles((theme) => ({
     alignItems: "baseline",
   },
   buttonWrapper: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    width: "inherit",
     marginTop: "4rem",
+    [theme.breakpoints.down("lg")]: {
+      marginTop: "3rem",
+    },
+    [theme.breakpoints.down("xs")]: {
+      display: "flex",
+      justifyContent: "center",
+    },
   },
   video: {
     maxHeight: "70vh",
   },
-  descriptionWithBtn: {
+  withLeftMargin: {
     marginLeft: "3.5rem",
+    [theme.breakpoints.down("xs")]: {
+      marginLeft: "0",
+    },
   },
   splitContainerChild: {
     width: "50%",
+    [theme.breakpoints.down("xs")]: {
+      width: "100%",
+    },
   },
 }));
