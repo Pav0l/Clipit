@@ -8,6 +8,7 @@ import { NavigationModel } from "./navigation.model";
 
 enum NavQuery {
   HI = "hi",
+  MODE = "mode",
 }
 
 export class NavigatorController {
@@ -65,6 +66,11 @@ export class NavigatorController {
       return true;
     }
     return false;
+  }
+
+  getQueryMode() {
+    const url = new URL(window.location.href).searchParams;
+    return url.get(NavQuery.MODE);
   }
 
   generateDemoLoginRedirect(slug: string) {

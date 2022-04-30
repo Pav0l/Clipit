@@ -11,9 +11,11 @@ import { OAuthController } from "../../../../domains/twitch-oauth/oauth.controll
 import { NavigatorController } from "../../../../domains/navigation/navigation.controller";
 import { TwitchEmbed } from "../../../../components/media/TwitchEmbed";
 import { ClipModel } from "../../../../domains/twitch-clips/clip.model";
+import { Thumbnail } from "../../../../components/media/Thumbnail";
 
 interface Props {
   clipId: string;
+  withThumbnail: boolean;
   model: {
     auth: OAuthModel;
     clip: ClipModel;
@@ -45,7 +47,16 @@ export const DemoPage = observer(function Demo(props: Props) {
   return (
     <Box className={classes.homeWrapper}>
       <Box className={classes.centeredContainer}>
-        <TwitchEmbed src={data.embedUrl} title={`${data.broadcasterName}: ${data.title}`} className={classes.video} />
+        {props.withThumbnail ? (
+          <Thumbnail
+            src={data.thumbnailUrl}
+            title={`${data.broadcasterName}: ${data.title}`}
+            className={classes.video}
+          />
+        ) : (
+          <TwitchEmbed src={data.embedUrl} title={`${data.broadcasterName}: ${data.title}`} className={classes.video} />
+        )}
+
         <Box className={classes.rightPanel}>
           <Box>
             <Box className={`${classes.boxMargin} ${classes.collectorBox}`}>

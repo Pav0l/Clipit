@@ -6,8 +6,11 @@ import { NavigationModel } from "../../../domains/navigation/navigation.model";
 import { ThemeModel } from "../../../domains/theme/theme.model";
 import { ClipModel } from "../../../domains/twitch-clips/clip.model";
 
+export type Mode = "video" | "thumbnail";
+
 export interface IDemoModel {
   meta: MetaModel;
+  mode: Mode;
   user: UserModel;
   clip: ClipModel;
 
@@ -19,6 +22,8 @@ export interface IDemoModel {
 
 export class DemoModel implements IDemoModel {
   meta: MetaModel;
+
+  mode: Mode = "video";
 
   user: UserModel;
   clip: ClipModel;
@@ -38,5 +43,9 @@ export class DemoModel implements IDemoModel {
     this.theme = new ThemeModel();
     this.navigation = new NavigationModel();
     this.snackbar = new SnackbarModel();
+  }
+
+  setMode(mode: Mode) {
+    this.mode = mode;
   }
 }

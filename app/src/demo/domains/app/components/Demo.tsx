@@ -100,6 +100,7 @@ const RouterX = observer(function RouterX({ model, operations, telemetry }: Prop
         app = (
           <DemoPage
             clipId={matched.clipId}
+            withThumbnail={model.mode === "thumbnail"}
             operations={{ auth: operations.auth, navigator: operations.navigator }}
             model={model}
           />

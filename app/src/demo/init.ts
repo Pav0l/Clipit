@@ -1,5 +1,5 @@
 import { AppRoute, twitchApiUri, twitchOAuthUri, demoClip } from "../lib/constants";
-import { DemoModel } from "./domains/app/demo.model";
+import { DemoModel, Mode } from "./domains/app/demo.model";
 import { HttpClient } from "../lib/http-client/http-client";
 import { TwitchApi, TwitchApiClient } from "../lib/twitch-api/twitch-api.client";
 import { ILocalStorage, LocalStorageClient } from "../lib/local-storage/local-storage.client";
@@ -159,5 +159,14 @@ export async function initDemoAsync({
       }
       telemetry?.login(clipId);
     }
+
+    const mode = navigator.getQueryMode();
+    if (isValidMode(mode)) {
+      model.setMode(mode);
+    }
   }
+}
+
+function isValidMode(mode: unknown): mode is Mode {
+  return mode != undefined && (mode === "video" || mode === "thumbnail");
 }
