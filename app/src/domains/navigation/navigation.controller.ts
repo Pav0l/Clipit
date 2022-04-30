@@ -1,5 +1,4 @@
 import Route from "route-parser";
-import { TelemetryService } from "../../demo/domains/telemetry/telemetry.service";
 
 import { AppRoute } from "../../lib/constants";
 import { SnackbarClient } from "../snackbar/snackbar.controller";
@@ -12,12 +11,7 @@ enum NavQuery {
 }
 
 export class NavigatorController {
-  constructor(
-    private model: NavigationModel,
-    private client: INavigationClient,
-    private snackbar: SnackbarClient,
-    private telemetry?: TelemetryService
-  ) {
+  constructor(private model: NavigationModel, private client: INavigationClient, private snackbar: SnackbarClient) {
     this.client.onPopState(this.goToRoute);
   }
 

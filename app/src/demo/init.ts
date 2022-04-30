@@ -69,7 +69,7 @@ export function initDemoSynchronous(config: IConfig, clients: DemoClientsInit): 
   const user = new UserController(model.user, twitchApi, sentry);
   const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
 
-  const navigator = new NavigatorController(model.navigation, navigationClient, snackbar, telemetry);
+  const navigator = new NavigatorController(model.navigation, navigationClient, snackbar);
 
   return {
     model,
