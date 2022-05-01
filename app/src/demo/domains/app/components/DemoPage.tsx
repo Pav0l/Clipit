@@ -54,7 +54,13 @@ export const DemoPage = observer(function Demo(props: Props) {
             className={classes.video}
           />
         ) : (
-          <TwitchEmbed src={data.embedUrl} title={`${data.broadcasterName}: ${data.title}`} className={classes.video} />
+          <Box className={classes.videoWrapper}>
+            <TwitchEmbed
+              src={data.embedUrl}
+              title={`${data.broadcasterName}: ${data.title}`}
+              className={classes.video}
+            />
+          </Box>
         )}
 
         <Box className={classes.rightPanel}>
@@ -149,13 +155,14 @@ const MainBoxText = (props: { text: string }) => {
 const bottomHeight = "6vh";
 const useStyles = makeAppStyles((theme) => ({
   homeWrapper: {
-    height: "100vh",
+    minHeight: "100vh",
     display: "flex",
     margin: "0 4rem",
     flexDirection: "column",
     justifyContent: "center",
     [theme.breakpoints.down("xs")]: {
       margin: "0 2rem",
+      padding: "2rem 0",
     },
   },
   centeredContainer: {
@@ -165,13 +172,19 @@ const useStyles = makeAppStyles((theme) => ({
       flexDirection: "column",
     },
   },
-  video: {
-    width: "80%",
-    alignSelf: "center",
+  videoWrapper: {
+    width: "75%",
+    paddingBottom: "calc(75% * 0.5625)", // 16:9 aspect ratio
+    position: "relative",
     [theme.breakpoints.down("xs")]: {
       width: "100%",
-      minHeight: "40vh",
+      paddingBottom: "calc(100% * 0.5625)",
     },
+  },
+  video: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
   },
   rightPanel: {
     display: "flex",

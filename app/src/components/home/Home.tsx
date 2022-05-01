@@ -55,7 +55,7 @@ function Home({ model, operations, telemetry, clipId }: Props) {
       <nav>
         <Logo onClick={operations.navigator.goToRoute} />
       </nav>
-      <div>
+      <div className={classes.main}>
         <SplitContainer dataTestId="home">
           <section className={classes.splitContainerChild}>
             <div className={classes.titleGroup}>
@@ -118,13 +118,18 @@ export default observer(Home);
 
 const useStyles = makeAppStyles((theme) => ({
   homeWrapper: {
-    height: "100vh",
+    minHeight: "100vh",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
     margin: "0 4rem",
     [theme.breakpoints.down("xs")]: {
       margin: "0 2rem",
+    },
+  },
+  main: {
+    [theme.breakpoints.down("xs")]: {
+      marginTop: "1rem",
     },
   },
   numbers: {

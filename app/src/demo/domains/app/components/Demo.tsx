@@ -62,7 +62,6 @@ const StyledApp = observer(function App({ model, operations, sentry, telemetry }
 const useStyles = makeAppStyles((theme) => ({
   app: {
     backgroundColor: theme.colors.background_primary,
-    // TODO this should be 100vh, so that we never have content that does not fix the screen? (ToS, Errors, Loaders,...)
   },
   error: {
     height: "100vh",
