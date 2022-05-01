@@ -83,7 +83,7 @@ export const DemoPage = observer(function Demo(props: Props) {
                     setActive={openRinkebyEtherscan}
                     underline="none"
                     to=""
-                    className={classes.baselinePrimaryFlexRow}
+                    className={classes.centerPrimaryFlexRow}
                   />
                 </Box>
               </Tooltip>
@@ -113,7 +113,7 @@ export const DemoPage = observer(function Demo(props: Props) {
                 setActive={() => window.open(`https://www.twitch.tv/${data.broadcasterName}`, "_blank", "noreferrer")}
                 underline="none"
                 to=""
-                className={classes.baselinePrimaryFlexRow}
+                className={classes.centerPrimaryFlexRow}
               />
             </Box>
 
@@ -123,7 +123,7 @@ export const DemoPage = observer(function Demo(props: Props) {
             </Box>
             <Box className={classes.withMargin}>
               <MainBoxTitle title="MINTED" />
-              <Box className={classes.baselinePrimaryFlexRow}>
+              <Box className={classes.centerPrimaryFlexRow}>
                 <MainBoxText text={transformDate()} />
                 <RouteLink child={<ExternalLinkIcon />} setActive={openRinkebyEtherscan} underline="none" to="" />
               </Box>
@@ -132,7 +132,7 @@ export const DemoPage = observer(function Demo(props: Props) {
           <Box className={`${classes.withGradient} ${classes.bottomBox}`}>
             <Logo
               textClass={`${classes.boxMargin} ${classes.navLogo}`}
-              linkClass={classes.baselinePrimaryFlexRow}
+              linkClass={classes.centerPrimaryFlexRow}
               onClick={props.operations.navigator.goToRoute}
             />
           </Box>
@@ -276,10 +276,10 @@ const useStyles = makeAppStyles((theme) => ({
   boxMargin: {
     marginLeft: "3rem",
   },
-  baselinePrimaryFlexRow: {
+  centerPrimaryFlexRow: {
     display: "flex",
     flexDirection: "row",
-    alignItems: "baseline",
+    alignItems: "center",
     color: theme.colors.text_primary,
   },
   navLogo: {
