@@ -94,9 +94,11 @@ export const DemoPage = observer(function Demo(props: Props) {
           <Box className={`${classes.boxMargin} ${classes.mainBox}`}>
             <Box className={classes.withMargin}>
               <MainBoxTitle title="TITLE" />
-              <Typography variant="h3" className={`${classes.mainTitleValue} ${classes.openSansFamily}`}>
-                {data.title}
-              </Typography>
+              <Tooltip title={data.title}>
+                <Typography variant="h3" className={`${classes.mainTitleValue} ${classes.openSansFamily}`}>
+                  {data.title}
+                </Typography>
+              </Tooltip>
             </Box>
 
             <Box className={classes.withMargin}>
@@ -191,6 +193,10 @@ const useStyles = makeAppStyles((theme) => ({
     flexDirection: "column",
     flexGrow: 1,
     justifyContent: "space-between",
+    maxWidth: "25%",
+    [theme.breakpoints.down("xs")]: {
+      maxWidth: "100%",
+    },
   },
   withGradient: {
     background: "linear-gradient(97.18deg, #E6C7C0, #BCC7E1, #BAE4CF, #EBEBB4, #E8C2C5, #C1BFE8, #BFE3C3), #C4C4C4",
@@ -240,6 +246,9 @@ const useStyles = makeAppStyles((theme) => ({
     letterSpacing: "0",
     lineHeight: "2.5rem",
     marginRight: "3rem",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
     [theme.breakpoints.down("lg")]: {
       lineHeight: "normal",
     },
