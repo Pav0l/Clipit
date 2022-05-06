@@ -29,7 +29,11 @@ export function initDemoClients(config: IConfig): DemoClientsInit {
   const navigationClient = new NavigationClient(window);
 
   const twitchOAuthApi = new TwitchOAuthApiClient(new HttpClient(twitchOAuthUri), config.twitch.clientId);
-  const twitchApi = new TwitchApi(new HttpClient(twitchApiUri), storage, config.twitch);
+  const twitchApi = new TwitchApi(new HttpClient(twitchApiUri), storage, {
+    ...config.twitch,
+    authScheme: "Bearer",
+    withDefaultToken: true,
+  });
 
   const database = new DatabaseClient(config.firebase);
 

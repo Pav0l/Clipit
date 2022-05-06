@@ -37,7 +37,7 @@ interface Props {
   };
 }
 
-function ClipDetailContainer({ model, operations, clipId }: Props) {
+export const ClipContainer = observer(function ClipDetailContainer({ model, operations, clipId }: Props) {
   const clip = model.clip.getClip(clipId);
 
   const [titleInput, setTitleInput, clearTitleInput] = useInputData();
@@ -146,14 +146,12 @@ function ClipDetailContainer({ model, operations, clipId }: Props) {
       />
     </Card>
   );
-}
-
-export default observer(ClipDetailContainer);
+});
 
 const useStyles = makeAppStyles((theme) => ({
   container: {
     margin: "2rem",
-    backgroundColor: theme.colors.background_secondary,
+    backgroundColor: theme.colors.background_primary,
   },
   iframe: {
     height: "45vw",

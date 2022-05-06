@@ -7,7 +7,7 @@ import { AppInit } from "../src/init";
 export function renderAppForTests(init: AppInit) {
   const component = (
     <ThemeProvider model={init.model.theme}>
-      <App model={init.model} operations={init.operations} sentry={init.clients.sentry} />
+      <App model={init.model} operations={init.operations} />
     </ThemeProvider>
   );
 

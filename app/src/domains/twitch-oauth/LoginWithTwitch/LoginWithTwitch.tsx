@@ -21,10 +21,18 @@ function LoginWithTwitch({ model, loggedInClick, loggedOutClick, loggedInText, l
   const classes = useStyles();
   const isLoggedIn = model.auth.isLoggedIn;
 
+  const handleClick = () => {
+    if (isLoggedIn) {
+      loggedInClick();
+    } else {
+      loggedOutClick();
+    }
+  };
+
   return (
     <Button
       className={`${classes.button}`} // ${isLoggedIn ? classes.logOut : ""}
-      onClick={isLoggedIn ? loggedInClick : loggedOutClick}
+      onClick={handleClick}
       startIcon={<TwitchGlitchPurpleIcon />}
     >
       {isLoggedIn ? loggedInText : loggedOutText}

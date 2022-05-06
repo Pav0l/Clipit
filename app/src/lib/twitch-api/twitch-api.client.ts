@@ -16,13 +16,13 @@ export interface TwitchApiClient {
   isTwitchError: <T>(body: T | TwitchError) => body is TwitchError;
 }
 
+interface TwitchApiConfig extends TwitchConfig {
+  authScheme: "Extension" | "Bearer";
+  withDefaultToken?: boolean;
+}
+
 export class TwitchApi implements TwitchApiClient {
-  constructor(
-    private httpClient: HttpClient,
-    private storage: ILocalStorage,
-    private config: TwitchConfig,
-    private authScheme: "Extension" | "Bearer" = "Bearer"
-  ) {
+  constructor(private httpClient: HttpClient, private storage: ILocalStorage, private config: TwitchApiConfig) {
     this.httpClient.setCustomHeader("Client-Id", this.config.clientId);
   }
 
@@ -69,15 +69,25 @@ export class TwitchApi implements TwitchApiClient {
   };
 
   private makeAuthorizedRequest<T>(params: { method: "get" | "post" | "put" | "delete"; url: string; qs?: unknown }) {
-    const key = this.authScheme === "Extension" ? extensionHelixTokenKey : twitchApiAccessTokenKey;
-    // use twitch app access token if scheme is Bearer and there is no twitch oauth token in LS
-    const tokenFromLs = this.storage.getItem(key);
-    const token = tokenFromLs ? tokenFromLs : this.authScheme === "Bearer" ? this.config.appAccessToken : null;
-
-    const authorizationHeaderValue = `${this.authScheme} ${token}`;
+    const authorizationHeaderValue = `${this.config.authScheme} ${this.getToken()}`;
     const requestParams = { ...params, headers: { Authorization: authorizationHeaderValue } };
 
     return this.httpClient.authorizedRequest<T>(requestParams);
+  }
+
+  private getToken(): string | null {
+    const key = this.config.authScheme === "Extension" ? extensionHelixTokenKey : twitchApiAccessTokenKey;
+    // use twitch app access token if scheme is Bearer and there is no twitch oauth token in LS
+    let token = this.storage.getItem(key);
+    if (token) {
+      return token;
+    }
+
+    if (this.config.authScheme === "Bearer") {
+      token = this.config.withDefaultToken ? this.config.appAccessToken : null;
+    }
+
+    return token;
   }
 }
 

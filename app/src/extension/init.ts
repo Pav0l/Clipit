@@ -57,7 +57,11 @@ export function initExtSynchronous(options: TwitchExtensionQueryParams) {
   const model = new ExtensionModel(mode);
   const snackbar = new SnackbarController(model.snackbar);
   const broadcasterAuth = new BroadcasterAuthService();
-  const twitchApi = new TwitchApi(new HttpClient(twitchApiUri), storage, CONFIG.twitch, "Extension");
+  const twitchApi = new TwitchApi(new HttpClient(twitchApiUri), storage, {
+    ...CONFIG.twitch,
+    authScheme: "Extension",
+    withDefaultToken: false,
+  });
 
   const clip = new ClipController(model.clip, snackbar, twitchApi, sentry);
   const game = new GameController(model.game, twitchApi, sentry);

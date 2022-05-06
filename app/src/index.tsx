@@ -20,7 +20,7 @@ import { AppError } from "./lib/errors/errors";
 
   ReactDOM.render(
     <React.StrictMode>
-      <App model={model} operations={operations} sentry={clients.sentry} />
+      <App model={model} operations={operations} />
     </React.StrictMode>,
     document.getElementById("root")
   );
@@ -28,9 +28,7 @@ import { AppError } from "./lib/errors/errors";
   try {
     await initAsync({
       model,
-      user: operations.user,
-      navigator: operations.navigator,
-      oauth: operations.auth,
+      operations,
     });
   } catch (error) {
     clients.sentry.captureException(error);

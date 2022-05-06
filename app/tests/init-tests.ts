@@ -128,9 +128,7 @@ export async function fullAppInitForTests(options: { runAfterSyncInit?: (init: A
 
   await initAsync({
     model: init.model,
-    navigator: init.operations.navigator,
-    user: init.operations.user,
-    oauth: init.operations.auth,
+    operations: init.operations,
   });
 
   return init;

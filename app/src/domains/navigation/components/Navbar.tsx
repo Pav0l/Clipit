@@ -80,7 +80,7 @@ export default observer(function Navbar({ model, operations, isDevelopment }: Pr
         </div>
 
         <div>
-          {/* TODO clipCid */}
+          {/* TODO buttons */}
           {/* <LoginWithTwitch model={{ auth: model.auth }} operations={operations.auth} clipCid="" />
           <ConnectMetamaskButton
             model={model}

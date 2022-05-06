@@ -1,6 +1,6 @@
 import { GraphQLClient } from "graphql-request";
 
-import { pinataGatewayUri, twitchApiUri, twitchOAuthUri } from "./lib/constants";
+import { AppRoute, pinataGatewayUri, twitchApiUri, twitchOAuthUri } from "./lib/constants";
 import { AppModel } from "./app/app.model";
 import { Web3Controller } from "./domains/web3/web3.controller";
 import { HttpClient } from "./lib/http-client/http-client";
@@ -43,12 +43,30 @@ export interface ClientsInit {
   ethereumClientCreator: (provider: EthereumProvider) => IEthClient;
 }
 
+export interface AppOperations {
+  ui: UiController;
+  web3: Web3Controller;
+  clip: ClipController;
+  user: UserController;
+  game: GameController;
+  auth: OAuthController;
+  nft: NftController;
+  mint: MintController;
+  auction: AuctionController;
+  snackbar: SnackbarController;
+  navigator: NavigatorController;
+}
+
 export function initClients(config: IConfig): ClientsInit {
   const storage = new LocalStorageClient();
   const navigationClient = new NavigationClient(window);
 
   const twitchOAuthApi = new TwitchOAuthApiClient(new HttpClient(twitchOAuthUri), config.twitch.clientId);
-  const twitchApi = new TwitchApi(new HttpClient(twitchApiUri), storage, config.twitch);
+  const twitchApi = new TwitchApi(new HttpClient(twitchApiUri), storage, {
+    ...config.twitch,
+    authScheme: "Bearer",
+    withDefaultToken: false,
+  });
 
   const clipit = new ClipItApiClient(new HttpClient(config.clipItApiUrl), storage);
   const ipfs = new IpfsClient(new HttpClient(pinataGatewayUri));
@@ -76,19 +94,7 @@ export function initClients(config: IConfig): ClientsInit {
 
 export interface AppInit {
   model: AppModel;
-  operations: {
-    ui: UiController;
-    web3: Web3Controller;
-    clip: ClipController;
-    user: UserController;
-    game: GameController;
-    auth: OAuthController;
-    nft: NftController;
-    mint: MintController;
-    auction: AuctionController;
-    snackbar: SnackbarController;
-    navigator: NavigatorController;
-  };
+  operations: AppOperations;
   clients: {
     sentry: SentryClient;
     storage: ILocalStorage;
@@ -159,28 +165,40 @@ export function initSynchronous(config: IConfig, clients: ClientsInit): AppInit 
   };
 }
 
-export async function initAsync({
-  model,
-  user,
-  navigator,
-  oauth,
-}: {
-  model: AppModel;
-  user: UserController;
-  navigator: NavigatorController;
-  oauth: OAuthController;
-}) {
+export async function initAsync({ model, operations }: { model: AppModel; operations: AppOperations }) {
+  const { auth, navigator, user, clip } = operations;
   // first we check if user is logged into twitch
-  oauth.checkTokenInStorage();
+  auth.checkTokenInStorage();
   // then we check which route we want to open
   navigator.validatePathForAppInit(window.location.pathname, window.location.href);
 
   ////////////////////////////
   // authorization
   ////////////////////////////
-  // if (navigator.isOnOAuthProtectedRoute) {
-  //   oauth.initOauthFlowIfNotAuthorized();
-  // }
+  if (navigator.isOnOAuthProtectedRoute) {
+    auth.initOauthFlowIfNotAuthorized();
+  }
+
+  ////////////////////////////
+  // route based init
+  ////////////////////////////
+
+  // oauth redirect first, so we init the referrer route later as well
+  if (model.navigation.appRoute.route === AppRoute.OAUTH_REDIRECT) {
+    auth.handleOAuth2Redirect(new URL(window.location.href));
+    let referrer = model.auth.referrer;
+
+    if (!referrer) {
+      referrer = AppRoute.HOME;
+    }
+    navigator.validatePathForAppInit(referrer, referrer);
+  }
+
+  if (model.navigation.appRoute.route === AppRoute.CLIP) {
+    const clipId = model.navigation.appRoute.params!.clipId;
+
+    await clip.getClip(clipId);
+  }
 
   ////////////////////////////
   // twitch data init
