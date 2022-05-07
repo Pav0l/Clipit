@@ -33,7 +33,8 @@ function openRinkebyEtherscan() {
 function transformDate(date?: string): string {
   const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
   if (!date) {
-    return new Date().toLocaleDateString("en-US", options);
+    // add 30 days
+    return new Date(Date.now() + 2592000000).toLocaleDateString("en-US", options);
   }
 
   return new Date(date).toLocaleDateString("en-US", options);
