@@ -15,6 +15,7 @@ import { RouteLink } from "../../domains/navigation/components/RouteLink";
 import { ClipModel } from "../../domains/twitch-clips/clip.model";
 import { demoClip } from "../../lib/constants";
 import { TelemetryService } from "../../demo/domains/telemetry/telemetry.service";
+import { SnackbarController } from "../../domains/snackbar/snackbar.controller";
 
 interface Props {
   clipId: string;
@@ -25,19 +26,26 @@ interface Props {
   operations: {
     auth: OAuthController;
     navigator: NavigatorController;
+    telemetry: TelemetryService;
+    snackbar: SnackbarController;
   };
-  telemetry: TelemetryService;
 }
 
-function Home({ model, operations, telemetry, clipId }: Props) {
+function Home({ model, operations, clipId }: Props) {
   const classes = useStyles();
   const widget = useSupportWidget();
 
   const data = model.clip.getClip(clipId) ?? demoClip;
 
   const goToDemo = (to: string) => {
-    telemetry.thumbnail(clipId);
+    operations.telemetry.thumbnail(clipId);
     operations.navigator.goToRoute(to);
+  };
+
+  const handleLoggedOutClick = () => {
+    operations.telemetry.waitlist(clipId);
+    operations.navigator.goToDemoClip(clipId);
+    operations.snackbar.sendInfo("Thank you for joining Clipit Private Beta! We'll get in touch...", 15_000);
   };
 
   useEffect(() => {
@@ -101,10 +109,8 @@ function Home({ model, operations, telemetry, clipId }: Props) {
           <LoginWithTwitch
             model={{ auth: model.auth }}
             loggedInClick={() => operations.navigator.goToDemoClip(clipId)}
-            loggedOutClick={() =>
-              operations.auth.initOauthFlowIfNotAuthorized(operations.navigator.generateDemoLoginRedirect(clipId))
-            }
-            loggedOutText="Login with Twitch"
+            loggedOutClick={handleLoggedOutClick}
+            loggedOutText="Join private beta to find out more"
             loggedInText="Show NFT demo"
           />
         </div>

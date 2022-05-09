@@ -75,8 +75,12 @@ const RouterX = observer(function RouterX({ model, operations, telemetry }: Prop
     <Home
       clipId={model.clip.lastClip?.id ?? demoClip.id}
       model={model}
-      telemetry={telemetry}
-      operations={{ auth: operations.auth, navigator: operations.navigator }}
+      operations={{
+        auth: operations.auth,
+        navigator: operations.navigator,
+        telemetry: telemetry,
+        snackbar: operations.snackbar,
+      }}
     />
   );
 
@@ -100,7 +104,7 @@ const RouterX = observer(function RouterX({ model, operations, telemetry }: Prop
           <DemoPage
             clipId={matched.clipId}
             withThumbnail={model.mode === "thumbnail"}
-            operations={{ auth: operations.auth, navigator: operations.navigator }}
+            operations={{ auth: operations.auth, navigator: operations.navigator, snackbar: operations.snackbar }}
             model={model}
           />
         );

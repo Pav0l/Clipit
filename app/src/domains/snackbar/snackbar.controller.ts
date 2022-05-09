@@ -10,7 +10,7 @@ export interface SnackbarClient {
 export class SnackbarController implements SnackbarClient {
   constructor(private model: SnackbarModel) {}
 
-  handleSnackClose = (_: SyntheticEvent | MouseEvent, reason?: string) => {
+  handleSnackClose = (_?: SyntheticEvent | MouseEvent, reason?: string) => {
     if (reason === "clickaway") {
       return;
     }

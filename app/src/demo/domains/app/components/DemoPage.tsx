@@ -12,6 +12,7 @@ import { NavigatorController } from "../../../../domains/navigation/navigation.c
 import { TwitchEmbed } from "../../../../components/media/TwitchEmbed";
 import { ClipModel } from "../../../../domains/twitch-clips/clip.model";
 import { Thumbnail } from "../../../../components/media/Thumbnail";
+import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
 
 interface Props {
   clipId: string;
@@ -23,6 +24,7 @@ interface Props {
   operations: {
     auth: OAuthController;
     navigator: NavigatorController;
+    snackbar: SnackbarController;
   };
 }
 
@@ -44,6 +46,11 @@ export const DemoPage = observer(function Demo(props: Props) {
   const classes = useStyles();
   const clipId = props.clipId;
   const data = props.model.clip.getClip(clipId) ?? demoClip;
+
+  const handleLogoClick = (to: string) => {
+    props.operations.navigator.goToRoute(to);
+    props.operations.snackbar.handleSnackClose();
+  };
 
   return (
     <Box className={classes.homeWrapper}>
@@ -136,7 +143,7 @@ export const DemoPage = observer(function Demo(props: Props) {
             <Logo
               textClass={`${classes.boxMargin} ${classes.navLogo}`}
               linkClass={classes.centerPrimaryFlexRow}
-              onClick={props.operations.navigator.goToRoute}
+              onClick={handleLogoClick}
             />
           </Box>
         </Box>

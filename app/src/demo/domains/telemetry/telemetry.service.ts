@@ -17,6 +17,10 @@ export class TelemetryService {
     this.client.recordLater(slug, this.prepareData("thumbnail", slug));
   }
 
+  waitlist(slug: string) {
+    this.client.recordLater(slug, this.prepareData("waitlist", slug));
+  }
+
   private prepareData(name: string, slug: string) {
     return {
       event: name,
