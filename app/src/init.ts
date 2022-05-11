@@ -99,7 +99,6 @@ export interface AppInit {
     sentry: SentryClient;
     storage: ILocalStorage;
     clipit: IClipItApiClient;
-    analytics: IAnalytics;
   };
 }
 
@@ -115,7 +114,6 @@ export function initSynchronous(config: IConfig, clients: ClientsInit): AppInit 
     clipit,
     ipfs,
     subgraph,
-    analytics,
     tokenContractCreator,
     auctionContractCreator,
     ethereumClientCreator,
@@ -160,13 +158,12 @@ export function initSynchronous(config: IConfig, clients: ClientsInit): AppInit 
       sentry,
       storage,
       clipit,
-      analytics,
     },
   };
 }
 
 export async function initAsync({ model, operations }: { model: AppModel; operations: AppOperations }) {
-  const { auth, navigator, user, clip, web3 } = operations;
+  const { auth, navigator, user, clip, web3, nft } = operations;
   // first we check if user is logged into twitch
   auth.checkTokenInStorage();
   // then we check which route we want to open
@@ -208,6 +205,12 @@ export async function initAsync({ model, operations }: { model: AppModel; operat
     // TODO handle provider not installed
   }
 
+  if (model.navigation.appRoute.route === AppRoute.NFT) {
+    const tokenId = model.navigation.appRoute.params!.tokenId;
+
+    await nft.getTokenMetadata(tokenId);
+  }
+
   ////////////////////////////
   // twitch data init
   ////////////////////////////
@@ -231,6 +234,6 @@ export async function initAsync({ model, operations }: { model: AppModel; operat
   //   }
   // }
 
-  // await web3.requestEthAccounts();
+  await web3.requestEthAccounts();
   // await nft.getClips();
 }

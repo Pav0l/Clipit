@@ -20,7 +20,7 @@ import { AppError } from "./lib/errors/errors";
 
   ReactDOM.render(
     <React.StrictMode>
-      <App model={model} operations={operations} />
+      <App model={model} operations={operations} sentry={clients.sentry} />
     </React.StrictMode>,
     document.getElementById("root")
   );

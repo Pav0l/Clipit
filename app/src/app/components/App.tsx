@@ -10,10 +10,12 @@ import { makeAppStyles } from "../../domains/theme/theme.constants";
 import Snackbar from "../../domains/snackbar/Snackbar";
 import { AppRouter } from "./AppRouter";
 import { AppOperations } from "../../init";
+import { SentryClient } from "../../lib/sentry/sentry.client";
 
 interface Props {
   model: AppModel;
   operations: AppOperations;
+  sentry: SentryClient;
 }
 
 export const App = observer(function App(props: Props) {
@@ -26,7 +28,7 @@ export const App = observer(function App(props: Props) {
   );
 });
 
-const StyledApp = observer(function App({ model, operations }: Props) {
+const StyledApp = observer(function App({ model, operations, sentry }: Props) {
   const classes = useStyles();
   const appMetaData = model.meta;
 
@@ -39,7 +41,7 @@ const StyledApp = observer(function App({ model, operations }: Props) {
       ) : appMetaData.error ? (
         <ErrorWithRetry text={appMetaData.error.message} withRetry={true} classNames={classes.error} />
       ) : (
-        <AppRouter model={model} operations={operations} />
+        <AppRouter model={model} operations={operations} sentry={sentry} />
       )}
     </Box>
   );

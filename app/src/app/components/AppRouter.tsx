@@ -13,13 +13,16 @@ import { ClipContainer } from "../../domains/twitch-clips/components/ClipDetailC
 import ClipsContainer from "../../domains/twitch-clips/components/ClipsContainer";
 import Marketplace from "../../components/marketplace/Marketplace";
 import { NftsContainer } from "../../domains/nfts/components/NftsContainer";
+import NftContainer from "../../domains/nfts/components/NftContainer";
+import { SentryClient } from "../../lib/sentry/sentry.client";
 
 interface Props {
   model: AppModel;
   operations: AppOperations;
+  sentry: SentryClient;
 }
 
-export const AppRouter = observer(function RouterX({ model, operations }: Props) {
+export const AppRouter = observer(function RouterX({ model, operations, sentry }: Props) {
   const classes = useStyles();
   let withNavbar = true;
 
@@ -116,6 +119,30 @@ export const AppRouter = observer(function RouterX({ model, operations }: Props)
               user: operations.user,
               game: operations.game,
             }}
+          />
+        );
+      }
+    }
+
+    if (model.navigation.activeRoute?.startsWith(AppRoute.NFTS)) {
+      const route = new Route<{ tokenId: string }>(AppRoute.NFT);
+      const matched = route.match(model.navigation.activeRoute);
+
+      if (matched !== false) {
+        content = (
+          <NftContainer
+            tokenId={matched.tokenId}
+            model={{
+              auction: model.auction,
+              nft: model.nft,
+              web3: model.web3,
+            }}
+            operations={{
+              nft: operations.nft,
+              ui: operations.ui,
+              web3: operations.web3,
+            }}
+            sentry={sentry}
           />
         );
       }
