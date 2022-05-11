@@ -28,6 +28,7 @@ export class NavigatorController {
     this.goToRoute(`${AppRoute.DEMO}/${clipId}`);
   };
 
+  // TODO ideally this is private and we expose proper interface for every supported route
   goToRoute = (route: string, href?: string) => {
     this.model.setActiveRoute(route);
     this.client.push(href ?? route);

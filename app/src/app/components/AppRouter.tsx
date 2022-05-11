@@ -12,6 +12,7 @@ import { AppHome } from "../../components/home/AppHome";
 import { ClipContainer } from "../../domains/twitch-clips/components/ClipDetailContainer";
 import ClipsContainer from "../../domains/twitch-clips/components/ClipsContainer";
 import Marketplace from "../../components/marketplace/Marketplace";
+import { NftsContainer } from "../../domains/nfts/components/NftsContainer";
 
 interface Props {
   model: AppModel;
@@ -55,6 +56,22 @@ export const AppRouter = observer(function RouterX({ model, operations }: Props)
 
             game: operations.game,
             navigator: operations.navigator,
+          }}
+        />
+      );
+      break;
+
+    case AppRoute.NFTS:
+      content = (
+        <NftsContainer
+          model={{
+            nft: model.nft,
+            web3: model.web3,
+          }}
+          operations={{
+            navigator: operations.navigator,
+            nft: operations.nft,
+            web3: operations.web3,
           }}
         />
       );

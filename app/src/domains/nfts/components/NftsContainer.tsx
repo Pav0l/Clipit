@@ -26,7 +26,7 @@ interface Props {
   };
 }
 
-function NftsContainer({ model, operations }: Props) {
+export const NftsContainer = observer(function NftsContainer({ model, operations }: Props) {
   const classes = useStyles();
   const [value, setValue] = useState(0);
 
@@ -41,12 +41,14 @@ function NftsContainer({ model, operations }: Props) {
     setValue(newValue);
   };
 
+  // TODO into init & ui-controller
   useEffect(() => {
     if (signer) {
       operations.nft.getCurrentSignerTokensMetadata(signer);
     }
   }, []);
 
+  // TODO changes to web3.accounts should trigger some callback that will call getCurrentSigner...
   useEffect(() => {
     if (signer) {
       operations.nft.getCurrentSignerTokensMetadata(signer);
@@ -90,9 +92,7 @@ function NftsContainer({ model, operations }: Props) {
       ) : null}
     </>
   );
-}
-
-export default observer(NftsContainer);
+});
 
 const useStyles = makeAppStyles(() => ({
   container: {

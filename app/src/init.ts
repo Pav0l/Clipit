@@ -166,7 +166,7 @@ export function initSynchronous(config: IConfig, clients: ClientsInit): AppInit 
 }
 
 export async function initAsync({ model, operations }: { model: AppModel; operations: AppOperations }) {
-  const { auth, navigator, user, clip } = operations;
+  const { auth, navigator, user, clip, web3 } = operations;
   // first we check if user is logged into twitch
   auth.checkTokenInStorage();
   // then we check which route we want to open
@@ -198,6 +198,14 @@ export async function initAsync({ model, operations }: { model: AppModel; operat
     const clipId = model.navigation.appRoute.params!.clipId;
 
     await clip.getClip(clipId);
+  }
+
+  if (model.navigation.appRoute.route === AppRoute.NFTS) {
+    if (model.web3.isMetaMaskInstalled() && !model.web3.isProviderConnected()) {
+      await web3.requestConnect();
+    }
+
+    // TODO handle provider not installed
   }
 
   ////////////////////////////
