@@ -49,5 +49,5 @@ export const demoClip: Pick<
   broadcasterName: "h0ppxi",
   createdAt: "March 12, 2022",
   thumbnailUrl: "https://clips-media-assets2.twitch.tv/44944309404-offset-56-preview-480x272.jpg",
-  embedUrl: "https://clips.twitch.tv/embed?clip=HungryTemperedMeerkatDoggo-UdQIrs87iEiQolN-",
+  embedUrl: `https://clips.twitch.tv/embed?clip=HungryTemperedMeerkatDoggo-UdQIrs87iEiQolN-&parent=${window.location.hostname}&autoplay=true`,
 };
