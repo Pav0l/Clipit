@@ -76,7 +76,8 @@ export class TwitchClip {
 
     const url = new URL(embedUrl);
     url.searchParams.append("parent", window.location.hostname);
-
+    // TODO this will probably have to be moved to specific usage of clip embed with autoplay
+    url.searchParams.append("autoplay", "true");
     return url.href;
   }
 }

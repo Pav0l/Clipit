@@ -15,6 +15,7 @@ import { ClipController } from "../domains/twitch-clips/clip.controller";
 import { DatabaseClient, IDatabase } from "../lib/firebase/realtime-db/database.client";
 import { TelemetryClient } from "../lib/telemetry/telemetry.client";
 import { TelemetryService } from "./domains/telemetry/telemetry.service";
+import { isValidEmail } from "../lib/strings/email";
 
 export interface DemoClientsInit {
   storage: ILocalStorage;
@@ -121,15 +122,24 @@ export async function initDemoAsync({
   ////////////////////////////
   // demo init
   ////////////////////////////
+  // TODO persist slug/email in cookie/ls and load them if they exist and they're not in URL params
   const params = new URL(window.location.href).searchParams;
-  const slug = params.get("slug");
 
+  const email = params.get("e");
+  if (email !== null && isValidEmail(email)) {
+    model.user.setUser({ email });
+  }
+
+  const slug = params.get("s");
   // slug is not fallback clip
   if (slug !== null && slug !== demoClip.id) {
     telemetry.loaded(slug);
 
     await clip.getClip(slug);
   }
+
+  // cleanup query params
+  navigator.goToRoute(window.location.pathname);
 
   ////////////////////////////
   // route based init

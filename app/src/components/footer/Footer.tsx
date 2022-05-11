@@ -33,7 +33,7 @@ export default function Footer({ operations }: Props) {
 const useStyles = makeAppStyles((theme) => ({
   footer: {
     display: "flex",
-    justifyContent: "end",
+    justifyContent: "center",
     padding: "5px 0",
   },
   link: {

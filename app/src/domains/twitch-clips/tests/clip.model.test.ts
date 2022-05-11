@@ -13,7 +13,7 @@ describe("clip model", () => {
     });
     expect(clip.id).toEqual("id");
     // embedUrl appends parent query string parameter
-    expect(clip.embedUrl).toEqual("http://localhost/?parent=localhost");
+    expect(clip.embedUrl).toEqual("http://localhost/?parent=localhost&autoplay=true");
     expect(clip.broadcasterId).toEqual("broadcaster_id");
     expect(clip.broadcasterName).toEqual("broadcaster_name");
     expect(clip.gameId).toEqual("game_id");
