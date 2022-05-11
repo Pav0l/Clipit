@@ -12,11 +12,13 @@ import { SnackbarController } from "../../domains/snackbar/snackbar.controller";
 import { TwitchEmbed } from "../media/TwitchEmbed";
 import { useInputData } from "../../lib/hooks/useInputData";
 import { isValidEmail } from "../../lib/strings/email";
+import { UserModel } from "../../domains/twitch-user/user.model";
 
 interface Props {
   clipId: string;
   model: {
     clip: ClipModel;
+    user: UserModel;
   };
   operations: {
     navigator: NavigatorController;
@@ -31,13 +33,15 @@ function Home({ model, operations, clipId }: Props) {
   const data = model.clip.getClip(clipId) ?? demoClip;
 
   const handleClick = () => {
-    if (!isValidEmail) {
+    if (!isValidEmail(inputValue)) {
       clearInput();
       return;
     }
 
+    model.user.setUser({ email: inputValue });
     operations.telemetry.waitlist(clipId);
     operations.snackbar.sendInfo("Thank you for joining! We'll get in touch...", 15_000);
+    clearInput();
   };
 
   const handleInputChange = (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
