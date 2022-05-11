@@ -11,6 +11,7 @@ import Navbar from "../../domains/navigation/components/Navbar";
 import { AppHome } from "../../components/home/AppHome";
 import { ClipContainer } from "../../domains/twitch-clips/components/ClipDetailContainer";
 import ClipsContainer from "../../domains/twitch-clips/components/ClipsContainer";
+import Marketplace from "../../components/marketplace/Marketplace";
 
 interface Props {
   model: AppModel;
@@ -54,6 +55,21 @@ export const AppRouter = observer(function RouterX({ model, operations }: Props)
 
             game: operations.game,
             navigator: operations.navigator,
+          }}
+        />
+      );
+      break;
+
+    case AppRoute.MARKETPLACE:
+      content = (
+        <Marketplace
+          model={{
+            nft: model.nft,
+            web3: model.web3,
+          }}
+          operations={{
+            navigator: operations.navigator,
+            nft: operations.nft,
           }}
         />
       );
