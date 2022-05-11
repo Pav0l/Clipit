@@ -31,6 +31,8 @@ export class TelemetryService {
       display_name: this.model.user.display_name ?? null,
       clip_id: slug,
       host: window.location.host,
+      ua: window.navigator.userAgent,
+      ref: document.referrer,
     };
   }
 }
