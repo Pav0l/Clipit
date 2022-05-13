@@ -179,7 +179,7 @@ const useStyles = makeAppStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    marginTop: "8rem",
+    marginTop: "5rem",
     [theme.breakpoints.down("xs")]: {
       flexDirection: "column",
       marginTop: "0",
