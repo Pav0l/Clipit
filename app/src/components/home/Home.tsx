@@ -29,7 +29,7 @@ interface Props {
 
 function Home({ model, operations, clipId }: Props) {
   const classes = useStyles();
-  const [inputValue, setInputValue, clearInput] = useInputData("");
+  const [inputValue, setInputValue, clearInput] = useInputData(model.user.email);
   const data = model.clip.getClip(clipId) ?? demoClip;
 
   const handleClick = () => {
