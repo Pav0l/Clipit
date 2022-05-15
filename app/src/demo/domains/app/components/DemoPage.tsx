@@ -83,7 +83,7 @@ export const DemoPage = observer(function Demo(props: Props) {
                     child={
                       <>
                         <Typography className={`${classes.collectorAddress} ${classes.openSansFamily}`}>
-                          {"demo-collector.eth"}
+                          {data.broadcasterName ? `${data.broadcasterName.toLowerCase()}fan.eth` : "collector.eth"}
                         </Typography>
                         <ExternalLinkIcon />
                       </>
