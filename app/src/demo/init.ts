@@ -138,6 +138,11 @@ export async function initDemoAsync({
     await clip.getClip(slug);
   }
 
+  const opener = params.get("r");
+  if (opener !== null) {
+    model.telemetry.setOpener(opener);
+  }
+
   // cleanup query params
   navigator.goToRoute(window.location.pathname);
 

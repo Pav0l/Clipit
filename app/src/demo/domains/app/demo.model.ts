@@ -5,6 +5,7 @@ import { OAuthModel } from "../../../domains/twitch-oauth/oauth.model";
 import { NavigationModel } from "../../../domains/navigation/navigation.model";
 import { ThemeModel } from "../../../domains/theme/theme.model";
 import { ClipModel } from "../../../domains/twitch-clips/clip.model";
+import { TelemetryModel } from "../telemetry/telemetry.model";
 
 export type Mode = "video" | "thumbnail";
 
@@ -13,7 +14,7 @@ export interface IDemoModel {
   mode: Mode;
   user: UserModel;
   clip: ClipModel;
-
+  telemetry: TelemetryModel;
   theme: ThemeModel;
   auth: OAuthModel;
   snackbar: SnackbarModel;
@@ -27,7 +28,7 @@ export class DemoModel implements IDemoModel {
 
   user: UserModel;
   clip: ClipModel;
-
+  telemetry: TelemetryModel;
   snackbar: SnackbarModel;
   auth: OAuthModel;
   navigation: NavigationModel;
@@ -43,6 +44,7 @@ export class DemoModel implements IDemoModel {
     this.theme = new ThemeModel();
     this.navigation = new NavigationModel();
     this.snackbar = new SnackbarModel();
+    this.telemetry = new TelemetryModel();
   }
 
   setMode(mode: Mode) {

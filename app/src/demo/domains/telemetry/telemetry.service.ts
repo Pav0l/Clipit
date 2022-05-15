@@ -33,6 +33,7 @@ export class TelemetryService {
       host: window.location.host,
       ua: window.navigator.userAgent,
       ref: document.referrer,
+      opener: this.model.telemetry.opener,
     };
   }
 }
