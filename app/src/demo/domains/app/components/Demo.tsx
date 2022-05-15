@@ -15,12 +15,15 @@ import { NavigatorController } from "../../../../domains/navigation/navigation.c
 import Snackbar from "../../../../domains/snackbar/Snackbar";
 import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
 import { TelemetryService } from "../../telemetry/telemetry.service";
+import { DemoPage } from "./DemoPage";
+import { OAuthController } from "../../../../domains/twitch-oauth/oauth.controller";
 
 interface Props {
   model: IDemoModel;
   operations: {
     navigator: NavigatorController;
     snackbar: SnackbarController;
+    auth: OAuthController;
   };
   sentry: SentryClient;
   telemetry: TelemetryService;
@@ -65,22 +68,44 @@ const useStyles = makeAppStyles((theme) => ({
 }));
 
 const DemoRouter = observer(function DemoRouter({ model, operations, telemetry }: Props) {
-  let app: JSX.Element = (
-    <Home
-      clipId={model.clip.lastClip?.id ?? demoClip.id}
-      model={model}
-      operations={{
-        navigator: operations.navigator,
-        telemetry: telemetry,
-        snackbar: operations.snackbar,
-      }}
-    />
-  );
+  let app: JSX.Element | null = null;
 
   switch (model.navigation.activeRoute) {
     case AppRoute.TERMS:
       app = <Terms logoOnClick={operations.navigator.goToRoute} />;
       break;
+  }
+
+  if (model.navigation.activeRoute?.startsWith(AppRoute.DEMO)) {
+    app = (
+      <DemoPage
+        clipId={model.navigation.appRoute.params!.clipId}
+        model={{
+          auth: model.auth,
+          clip: model.clip,
+        }}
+        operations={{
+          auth: operations.auth,
+          navigator: operations.navigator,
+          snackbar: operations.snackbar,
+        }}
+        withThumbnail={false}
+      />
+    );
+  }
+
+  if (app === null) {
+    app = (
+      <Home
+        clipId={model.clip.lastClip?.id ?? demoClip.id}
+        model={model}
+        operations={{
+          navigator: operations.navigator,
+          telemetry: telemetry,
+          snackbar: operations.snackbar,
+        }}
+      />
+    );
   }
 
   return app;
