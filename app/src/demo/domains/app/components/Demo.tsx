@@ -3,7 +3,6 @@ import { Box } from "@material-ui/core";
 
 import { IDemoModel } from "../demo.model";
 import { AppRoute, demoClip } from "../../../../lib/constants";
-import Home from "../../../../components/home/Home";
 import ThemeProvider from "../../../../domains/theme/components/ThemeProvider";
 import ErrorWithRetry from "../../../../components/error/Error";
 import Terms from "../../../../components/terms/Terms";
@@ -15,8 +14,8 @@ import { NavigatorController } from "../../../../domains/navigation/navigation.c
 import Snackbar from "../../../../domains/snackbar/Snackbar";
 import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
 import { TelemetryService } from "../../telemetry/telemetry.service";
-import { DemoPage } from "./DemoPage";
 import { OAuthController } from "../../../../domains/twitch-oauth/oauth.controller";
+import { HomeV2 } from "../../../../components/home/HomeV2";
 
 interface Props {
   model: IDemoModel;
@@ -76,31 +75,30 @@ const DemoRouter = observer(function DemoRouter({ model, operations, telemetry }
       break;
   }
 
-  if (model.navigation.activeRoute?.startsWith(AppRoute.DEMO)) {
-    app = (
-      <DemoPage
-        clipId={model.navigation.appRoute.params!.clipId}
-        model={{
-          auth: model.auth,
-          clip: model.clip,
-        }}
-        operations={{
-          auth: operations.auth,
-          navigator: operations.navigator,
-          snackbar: operations.snackbar,
-        }}
-        withThumbnail={false}
-      />
-    );
-  }
+  // if (model.navigation.activeRoute?.startsWith(AppRoute.DEMO)) {
+  //   app = (
+  //     <DemoPage
+  //       clipId={model.navigation.appRoute.params!.clipId}
+  //       model={{
+  //         auth: model.auth,
+  //         clip: model.clip,
+  //       }}
+  //       operations={{
+  //         auth: operations.auth,
+  //         navigator: operations.navigator,
+  //         snackbar: operations.snackbar,
+  //       }}
+  //       withThumbnail={false}
+  //     />
+  //   );
+  // }
 
   if (app === null) {
     app = (
-      <Home
+      <HomeV2
         clipId={model.clip.lastClip?.id ?? demoClip.id}
         model={model}
         operations={{
-          navigator: operations.navigator,
           telemetry: telemetry,
           snackbar: operations.snackbar,
         }}
