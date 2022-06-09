@@ -26,7 +26,7 @@ const twitch_purple = "#9147ff";
 const twitch_purple_hover = "#772ce8";
 
 const blue_primary = "#2176FF";
-const gray_90 = "#E5E5E5";
+const gray_90 = "#F0F4F5";
 
 const white = "#fff";
 const white_15 = "rgba(255, 255, 255, 0.15)";

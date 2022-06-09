@@ -127,7 +127,7 @@ const useStyles = makeAppStyles((theme) => ({
     fontSize: "clamp(16px, 1.6vw, 2.5rem)",
     margin: "3rem 0",
     [theme.breakpoints.down("xs")]: {
-      margin: "1rem 0",
+      margin: "2rem 0",
     },
   },
   inputWrapper: {
@@ -162,7 +162,7 @@ const useStyles = makeAppStyles((theme) => ({
     backgroundColor: theme.colors.background_ternary,
     [theme.breakpoints.down("xs")]: {
       width: "100%",
-      margin: "1rem",
+      margin: "1rem 1rem 2rem",
     },
   },
   leftContainerChild: {
@@ -172,7 +172,7 @@ const useStyles = makeAppStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       width: "100%",
     },
-    backgroundColor: theme.colors.background_secondary,
+    backgroundColor: theme.colors.twitch_bg_secondary,
   },
   rightContainerChild: {
     width: "70%",
@@ -182,6 +182,7 @@ const useStyles = makeAppStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       width: "100%",
       margin: "0",
+      textAlign: "center",
     },
   },
   centeredFlex: {
@@ -196,7 +197,7 @@ const useStyles = makeAppStyles((theme) => ({
     letterSpacing: "0",
     lineHeight: "2.5rem",
     [theme.breakpoints.down("xs")]: {
-      fontSize: "1.5rem",
+      fontSize: "1.8rem",
     },
 
     // TODO check this
