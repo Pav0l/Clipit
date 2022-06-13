@@ -92,7 +92,7 @@ export const HomeV2 = observer(function HomeV2({ model, operations, clipId }: Pr
               <Link
                 className={classes.blackColor}
                 component="a"
-                href="https://twitter.com/ClipItNFT"
+                href="https://twitter.com/ClipItCollect"
                 target="_top"
                 rel="noopener noreferrer"
               >
