@@ -33,6 +33,7 @@ import { Demo } from "./domains/app/components/Demo";
       navigator: operations.navigator,
       oauth: operations.auth,
       telemetry: clients.telemetry,
+      ipApi: clients.ipApi,
     });
   } catch (error) {
     clients.sentry.captureException(error);

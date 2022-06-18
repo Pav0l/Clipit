@@ -34,6 +34,7 @@ export class TelemetryService {
       ua: window.navigator.userAgent,
       ref: document.referrer,
       opener: this.model.telemetry.opener,
+      ip: this.model.telemetry.ip ?? null,
     };
   }
 }

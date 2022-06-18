@@ -5,6 +5,7 @@ import { makeAutoObservable } from "mobx";
  */
 export class TelemetryModel {
   opener = "";
+  ip: any = null;
 
   constructor() {
     makeAutoObservable(this);
@@ -12,5 +13,9 @@ export class TelemetryModel {
 
   setOpener(value: string) {
     this.opener = value;
+  }
+
+  setIp(value: any) {
+    this.ip = value;
   }
 }

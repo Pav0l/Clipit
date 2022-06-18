@@ -18,6 +18,9 @@ export const twitchOAuthStateSecretKey = "twitch_oauth_state_secret";
 // EXTENSION
 export const extensionHelixTokenKey = "ext_helix_token_key";
 
+// IP
+export const ipApiUri = "https://ipapi.co";
+
 // SUBGRAPH
 export const CLIPS_PAGINATION_SKIP_VALUE = 20;
 export const DEFAULT_SKIP_COUNT_VALUE = 0;

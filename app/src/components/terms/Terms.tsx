@@ -19,7 +19,7 @@ export default function Terms(props: Props) {
           Terms & conditions
         </Typography>
 
-        <SectionParagraph text={<>Last updated: April 14, 2022</>} marginTop />
+        <SectionParagraph text={<>Last updated: June 16, 2022</>} marginTop />
 
         {/* Introduction */}
         <Section>
@@ -79,11 +79,11 @@ export default function Terms(props: Props) {
           <SectionParagraph
             text={
               <>
-                When you use the Service, the only personal information we collect from you, if you authorize the
-                Service access to obtain your data from Twitch, is your email address. We use the email address to
-                contact you. We retain the data only for as long as is necessary for the purpose set out in this
-                section. We may also use third-party services including (but not limited to) Twitch or Tawk, which may
-                receive your publicly available personal information.
+                When you use the Service, the only personal information we collect from you is your IP address and if
+                you authorize the Service access to obtain your data from Twitch, is your email address. We use the
+                email address to contact you. We retain the data only for as long as is necessary for the purpose set
+                out in this section. We may also use third-party services including (but not limited to) Twitch or Tawk,
+                which may receive your publicly available personal information.
               </>
             }
           />

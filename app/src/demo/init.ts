@@ -1,4 +1,4 @@
-import { AppRoute, twitchApiUri, twitchOAuthUri, demoClip } from "../lib/constants";
+import { AppRoute, twitchApiUri, twitchOAuthUri, demoClip, ipApiUri } from "../lib/constants";
 import { DemoModel, Mode } from "./domains/app/demo.model";
 import { HttpClient } from "../lib/http-client/http-client";
 import { TwitchApi, TwitchApiClient } from "../lib/twitch-api/twitch-api.client";
@@ -16,6 +16,7 @@ import { DatabaseClient, IDatabase } from "../lib/firebase/realtime-db/database.
 import { TelemetryClient } from "../lib/telemetry/telemetry.client";
 import { TelemetryService } from "./domains/telemetry/telemetry.service";
 import { isValidEmail } from "../lib/strings/email";
+import { IpApi, IpApiClient } from "../lib/ip/ip.client";
 
 export interface DemoClientsInit {
   storage: ILocalStorage;
@@ -23,6 +24,7 @@ export interface DemoClientsInit {
   twitchOAuthApi: IOauthApiClient;
   twitchApi: TwitchApiClient;
   database: IDatabase;
+  ipApi: IpApiClient;
 }
 
 export function initDemoClients(config: IConfig): DemoClientsInit {
@@ -35,6 +37,7 @@ export function initDemoClients(config: IConfig): DemoClientsInit {
     authScheme: "Bearer",
     withDefaultToken: true,
   });
+  const ipApi = new IpApi(new HttpClient(ipApiUri));
 
   const database = new DatabaseClient(config.firebase);
 
@@ -44,6 +47,7 @@ export function initDemoClients(config: IConfig): DemoClientsInit {
     twitchOAuthApi,
     twitchApi,
     database,
+    ipApi,
   };
 }
 
@@ -59,6 +63,7 @@ export interface DemoInit {
   clients: {
     sentry: SentryClient;
     telemetry: TelemetryService;
+    ipApi: IpApiClient;
   };
 }
 
@@ -88,6 +93,7 @@ export function initDemoSynchronous(config: IConfig, clients: DemoClientsInit): 
     clients: {
       sentry,
       telemetry,
+      ipApi: clients.ipApi,
     },
   };
 }
@@ -99,6 +105,7 @@ export async function initDemoAsync({
   navigator,
   oauth,
   telemetry,
+  ipApi,
 }: {
   model: DemoModel;
   user: UserController;
@@ -106,6 +113,7 @@ export async function initDemoAsync({
   navigator: NavigatorController;
   oauth: OAuthController;
   telemetry: TelemetryService;
+  ipApi: IpApiClient;
 }) {
   // first we check if user is logged into twitch
   oauth.checkTokenInStorage();
@@ -117,6 +125,11 @@ export async function initDemoAsync({
   ////////////////////////////
   if (model.auth.isLoggedIn) {
     await user.getUser();
+  }
+
+  const ip = await ipApi.query();
+  if (ip.statusOk) {
+    model.telemetry.setIp(ip.body);
   }
 
   ////////////////////////////
@@ -136,6 +149,8 @@ export async function initDemoAsync({
     telemetry.loaded(slug);
 
     await clip.getClip(slug);
+  } else {
+    telemetry.loaded(email ?? "openedNoEmail");
   }
 
   const opener = params.get("r");
