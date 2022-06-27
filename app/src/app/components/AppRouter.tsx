@@ -8,7 +8,7 @@ import { AppOperations } from "../../init";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { Box } from "@material-ui/core";
 import Navbar from "../../domains/navigation/components/Navbar";
-import { AppHome } from "../../components/home/AppHome";
+import { AppHome } from "./AppHome";
 import { ClipContainer } from "../../domains/twitch-clips/components/ClipDetailContainer";
 import ClipsContainer from "../../domains/twitch-clips/components/ClipsContainer";
 import Marketplace from "../../components/marketplace/Marketplace";

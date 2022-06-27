@@ -1,14 +1,14 @@
 import { Typography, Box } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
-import SplitContainer from "../container/SplitContainer";
+import SplitContainer from "../../components/container/SplitContainer";
 import LoginWithTwitch from "../../domains/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
 import { OAuthModel } from "../../domains/twitch-oauth/oauth.model";
 import { OAuthController } from "../../domains/twitch-oauth/oauth.controller";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { NavigatorController } from "../../domains/navigation/navigation.controller";
-import Footer from "../footer/Footer";
-import { Logo } from "../logo/Logo";
-import { Thumbnail } from "../media/Thumbnail";
+import Footer from "../../components/footer/Footer";
+import { Logo } from "../../components/logo/Logo";
+import { Thumbnail } from "../../components/media/Thumbnail";
 import { RouteLink } from "../../domains/navigation/components/RouteLink";
 import { ClipModel } from "../../domains/twitch-clips/clip.model";
 import { AppRoute, demoClip } from "../../lib/constants";
