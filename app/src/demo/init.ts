@@ -135,7 +135,6 @@ export async function initDemoAsync({
   ////////////////////////////
   // demo init
   ////////////////////////////
-  // TODO persist slug/email in cookie/ls and load them if they exist and they're not in URL params
   const params = new URL(window.location.href).searchParams;
 
   const email = params.get("e");

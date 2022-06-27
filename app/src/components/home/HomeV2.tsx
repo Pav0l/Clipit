@@ -198,8 +198,6 @@ const useStyles = makeAppStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       fontSize: "1.8rem",
     },
-
-    // TODO check this
     [theme.breakpoints.down("lg")]: {
       lineHeight: "normal",
     },

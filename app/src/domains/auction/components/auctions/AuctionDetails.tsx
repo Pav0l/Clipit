@@ -23,7 +23,6 @@ interface Props {
   };
 }
 
-// TODO this into auction domain
 export const AuctionDetails = observer(function AuctionDetails({
   auction,
   tokenId,

@@ -6,7 +6,6 @@ export class SentryClient {
     Sentry.init({
       dsn: dsn,
       enabled: isDevelopment ? false : true,
-      // TODO setup `release` and `environment` options
     });
 
     Sentry.setTag("COMMIT_HASH", COMMIT_HASH);

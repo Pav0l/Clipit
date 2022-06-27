@@ -82,7 +82,6 @@ export const AppHome = observer(function AppHome({ model, operations }: Props) {
             loggedInClick={() => operations.navigator.goToClip(data.id)}
             loggedOutClick={operations.auth.initOauthFlowIfNotAuthorized}
             loggedOutText="Login with Twitch"
-            // TODO text
             loggedInText="Show Clip"
           />
         </div>

@@ -37,7 +37,6 @@ const calcMinBid = (metadata: Metadata) => {
   return auction.displayReservePrice ? auction.displayReservePrice : "0";
 };
 
-// TODO move to auction domain
 export const BidForm = observer(function BidForm({ metadata, operations, model }: Props) {
   const [isDisabled, setDisabled] = useState(false);
   const [isInputErr, setInputErr] = useState(false);

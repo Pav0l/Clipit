@@ -55,7 +55,6 @@ export class NavigatorController {
     const url = new URL(window.location.href).searchParams;
     const ok = url.get(NavQuery.HI);
     if (ok) {
-      // TODO improve copy, style?
       this.snackbar.sendInfo("Thanks for your trust! We'll get in touch...", null); // keep visible forever
       this.client.push(window.location.pathname);
       return true;
