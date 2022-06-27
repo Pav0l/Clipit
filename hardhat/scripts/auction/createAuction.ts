@@ -20,7 +20,6 @@ async function main() {
   // approve auction to transfer this token
   await token.approve(auction.address, tokenId);
 
-  // @USER This needs to be set by the user
   const auctionDuration = 60 * 60 * 24; // seconds the auction should last since first bid
   const reservePrice = parseUnits("2", "ether");
   const curatorAddress = ethers.constants.AddressZero;

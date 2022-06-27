@@ -10,7 +10,6 @@ async function main() {
   const creator = wallets[1];
   const auction = new ethers.Contract(auctionAddress, AuctionContract.abi, creator) as AuctionHouse;
 
-  // @USER This needs to be set by the user
   const auctionId = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
   await auction.cancelAuction(auctionId);

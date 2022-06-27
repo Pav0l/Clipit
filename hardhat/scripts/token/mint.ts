@@ -34,7 +34,6 @@ const mintData: ClipData = {
   metadataHash: metadataHashBytes,
 };
 
-// @USER This needs to be set by the user
 const bidShares: BidShares = {
   creator: Decimal.from(5),
   owner: Decimal.from(95),

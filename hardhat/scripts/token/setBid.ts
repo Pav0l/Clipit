@@ -21,7 +21,6 @@ async function main() {
   const market = new ethers.Contract(marketAddress, MarketContract.abi, bidder) as Market;
   const currency = new ethers.Contract(wethAddress, WETHContract.abi, bidder) as WETH;
 
-  // @USER This needs to be set by the user
   const bidAmount = parseUnits("2", "ether");
 
   await currency.approve(market.address, ethers.constants.MaxUint256);
@@ -36,7 +35,6 @@ async function main() {
   const ownerOf = await token.ownerOf(tokenId);
   console.log(`ownerof:${ownerOf}; bidder:${bidder.address}`);
 
-  // @USER This needs to be set by the user
   const bid = {
     amount: bidAmount,
     currency: wethAddress,
