@@ -15,7 +15,7 @@ import Snackbar from "../../../../domains/snackbar/Snackbar";
 import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
 import { TelemetryService } from "../../telemetry/telemetry.service";
 import { OAuthController } from "../../../../domains/twitch-oauth/oauth.controller";
-import { HomeV2 } from "../../../../components/home/HomeV2";
+import { DemoHome } from "./DemoHome";
 
 interface Props {
   model: IDemoModel;
@@ -95,7 +95,7 @@ const DemoRouter = observer(function DemoRouter({ model, operations, telemetry }
 
   if (app === null) {
     app = (
-      <HomeV2
+      <DemoHome
         clipId={model.clip.lastClip?.id ?? demoClip.id}
         model={model}
         operations={{

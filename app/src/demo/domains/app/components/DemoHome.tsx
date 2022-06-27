@@ -1,13 +1,13 @@
 import { Typography, Box, Button, TextField, Link } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
-import SplitContainer from "../container/SplitContainer";
-import { makeAppStyles } from "../../domains/theme/theme.constants";
-import { TelemetryService } from "../../demo/domains/telemetry/telemetry.service";
-import { SnackbarController } from "../../domains/snackbar/snackbar.controller";
-import { useInputData } from "../../lib/hooks/useInputData";
-import { isValidEmail } from "../../lib/strings/email";
-import { UserModel } from "../../domains/twitch-user/user.model";
-import Logo from "../../assets/logo.svg";
+import SplitContainer from "../../../../components/container/SplitContainer";
+import { makeAppStyles } from "../../../../domains/theme/theme.constants";
+import { TelemetryService } from "../../telemetry/telemetry.service";
+import { SnackbarController } from "../../../../domains/snackbar/snackbar.controller";
+import { useInputData } from "../../../../lib/hooks/useInputData";
+import { isValidEmail } from "../../../../lib/strings/email";
+import { UserModel } from "../../../../domains/twitch-user/user.model";
+import Logo from "../../../../assets/logo.svg";
 
 interface Props {
   clipId: string;
@@ -20,7 +20,7 @@ interface Props {
   };
 }
 
-export const HomeV2 = observer(function HomeV2({ model, operations, clipId }: Props) {
+export const DemoHome = observer(function DemoHome({ model, operations, clipId }: Props) {
   const classes = useStyles();
   const [inputValue, setInputValue, clearInput] = useInputData(model.user.email);
 
