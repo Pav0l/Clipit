@@ -48,7 +48,6 @@ const useStyles = makeAppStyles((theme) => ({
     display: "block",
     padding: "0.5rem 1rem",
     color: theme.colors.text_secondary,
-    borderBottom: `1px solid ${theme.colors.border_secondary}`,
     "&:hover": {
       borderBottom: `1px solid ${theme.colors.border_primary}`,
     },
