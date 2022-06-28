@@ -87,7 +87,7 @@ const demoConfig = {
     publicPath: "/", // react-router default path
   },
   devServer: {
-    port: 3000,
+    port: 3001,
     watchContentBase: true,
     historyApiFallback: true,
   },
@@ -145,7 +145,7 @@ const extensionConfig = {
     publicPath: "/", // react-router default path
   },
   devServer: {
-    port: 3001,
+    port: 3002,
     watchContentBase: true,
     historyApiFallback: true,
     https: {
