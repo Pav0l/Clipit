@@ -15,6 +15,7 @@ import Marketplace from "../../components/marketplace/Marketplace";
 import { NftsContainer } from "../../domains/nfts/components/NftsContainer";
 import NftContainer from "../../domains/nfts/components/NftContainer";
 import { SentryClient } from "../../lib/sentry/sentry.client";
+import Footer from "../../components/footer/Footer";
 
 interface Props {
   model: AppModel;
@@ -37,7 +38,6 @@ export const AppRouter = observer(function RouterX({ model, operations, sentry }
     case AppRoute.HOME:
       content = (
         <AppHome
-          model={{ auth: model.auth, clip: model.clip }}
           operations={{
             auth: operations.auth,
             navigator: operations.navigator,
@@ -153,7 +153,6 @@ export const AppRouter = observer(function RouterX({ model, operations, sentry }
   if (content === null) {
     content = (
       <AppHome
-        model={{ auth: model.auth, clip: model.clip }}
         operations={{
           auth: operations.auth,
           navigator: operations.navigator,
@@ -181,6 +180,8 @@ export const AppRouter = observer(function RouterX({ model, operations, sentry }
         />
       )}
       {content}
+
+      <Footer operations={{ navigator: operations.navigator }} />
     </Box>
   );
 });
@@ -188,5 +189,8 @@ export const AppRouter = observer(function RouterX({ model, operations, sentry }
 const useStyles = makeAppStyles(() => ({
   wrapper: {
     minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
 }));

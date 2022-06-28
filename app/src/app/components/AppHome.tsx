@@ -1,39 +1,27 @@
 import { Typography, Box } from "@material-ui/core";
 import { observer } from "mobx-react-lite";
 import SplitContainer from "../../components/container/SplitContainer";
-import LoginWithTwitch from "../../domains/twitch-oauth/LoginWithTwitch/LoginWithTwitch";
-import { OAuthModel } from "../../domains/twitch-oauth/oauth.model";
 import { OAuthController } from "../../domains/twitch-oauth/oauth.controller";
 import { makeAppStyles } from "../../domains/theme/theme.constants";
 import { NavigatorController } from "../../domains/navigation/navigation.controller";
-import Footer from "../../components/footer/Footer";
-import { Logo } from "../../components/logo/Logo";
 import { Thumbnail } from "../../components/media/Thumbnail";
 import { RouteLink } from "../../domains/navigation/components/RouteLink";
-import { ClipModel } from "../../domains/twitch-clips/clip.model";
 import { AppRoute, demoClip } from "../../lib/constants";
 
 interface Props {
-  model: {
-    auth: OAuthModel;
-    clip: ClipModel;
-  };
   operations: {
     auth: OAuthController;
     navigator: NavigatorController;
   };
 }
 
-export const AppHome = observer(function AppHome({ model, operations }: Props) {
+export const AppHome = observer(function AppHome({ operations }: Props) {
   const classes = useStyles();
   // TODO replace demoClip with some proper data (used to have the random/featured clip here)
   const data = demoClip;
 
   return (
     <Box className={classes.homeWrapper}>
-      <nav>
-        <Logo onClick={operations.navigator.goToRoute} />
-      </nav>
       <div className={classes.main}>
         <SplitContainer dataTestId="home">
           <section className={classes.splitContainerChild}>
@@ -76,24 +64,13 @@ export const AppHome = observer(function AppHome({ model, operations }: Props) {
             />
           </div>
         </SplitContainer>
-        <div className={`${classes.withLeftMargin} ${classes.buttonWrapper}`}>
-          <LoginWithTwitch
-            model={{ auth: model.auth }}
-            loggedInClick={() => operations.navigator.goToClip(data.id)}
-            loggedOutClick={operations.auth.initOauthFlowIfNotAuthorized}
-            loggedOutText="Login with Twitch"
-            loggedInText="Show Clip"
-          />
-        </div>
       </div>
-      <Footer operations={{ navigator: operations.navigator }} />
     </Box>
   );
 });
 
 const useStyles = makeAppStyles((theme) => ({
   homeWrapper: {
-    minHeight: "100vh",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
