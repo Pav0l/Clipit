@@ -80,7 +80,7 @@ func run() error {
 		},
 		CORS: corsCfg{
 			Origin: loadEnvOrDefault("CORS_ORIGIN", "http://localhost:3000"),
-			AllowedOrigins: loadEnvOrDefault("ALLOWED_ORIGINS", "http://localhost:3000 https://localhost:3001"),
+			AllowedOrigins: loadEnvOrDefault("ALLOWED_ORIGINS", "http://localhost:3000 https://localhost:3001 https://localhost:3002"),
 		},
 		Pinata: pinataCfg{
 			Jwt: loadEnvOrExit("PINATA_JWT"),
