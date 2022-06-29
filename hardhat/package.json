@@ -1,7 +1,7 @@
 {
-  "name": "clip-it.hardhat",
+  "name": "clipit.hardhat",
   "version": "1.0.0",
-  "description": "ClipIt contracts",
+  "description": "Clipit contracts",
   "scripts": {
     "deploy:localhost": "npx hardhat run ./scripts/dev.deploy.ts --network localhost",
     "deploy:ropsten": "npx hardhat run ./scripts/deploy.ts --network ropsten",
@@ -10,8 +10,6 @@
     "test": "npx hardhat test",
     "format": "prettier -w ."
   },
-  "author": "h0ppx",
-  "license": "ISC",
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-etherscan": "^2.1.4",

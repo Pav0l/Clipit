@@ -1,7 +1,9 @@
 {
-  "name": "clip-it",
+  "name": "clipit",
   "version": "1.0.0",
-  "description": "ClipIt project repo",
+  "description": "Clipit project repo",
+  "author": "Pav0l",
+  "license": "GPL-3.0",
   "scripts": {
     "app:clipitabi:update": "cp hardhat/artifacts/contracts/ClipIt.sol/ClipIt.json app/src/lib/contracts/ClipIt/ && cp hardhat/typechain/ClipIt.d.ts app/src/lib/contracts/ClipIt/ && cp hardhat/typechain/commons.ts app/src/lib/contracts/ClipIt/",
     "app:auctionabi:update": "cp hardhat/artifacts/contracts/AuctionHouse.sol/AuctionHouse.json app/src/lib/contracts/AuctionHouse && cp hardhat/typechain/AuctionHouse.d.ts app/src/lib/contracts/AuctionHouse/&& cp hardhat/typechain/commons.ts app/src/lib/contracts/AuctionHouse/",
@@ -9,7 +11,5 @@
     "subgraph:auction:abi:update": "cp hardhat/artifacts/contracts/AuctionHouse.sol/AuctionHouse.json subgraph/abis",
     "subgraph:market:abi:update": "cp hardhat/artifacts/contracts/Market.sol/Market.json subgraph/abis",
     "subgraph:abis:update": "yarn run subgraph:clipit:abi:update && yarn run subgraph:market:abi:update && yarn run subgraph:auction:abi:update"
-  },
-  "author": "h0ppx",
-  "license": "GPL-3.0"
+  }
 }

@@ -1,6 +1,6 @@
 {
-  "name": "clip-it.subgraph",
-  "license": "MIT",
+  "name": "clipit.subgraph",
+  "version": "1.0.0",
   "scripts": {
     "format": "prettier -w .",
     "codegen": "graph codegen",
