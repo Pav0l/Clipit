@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Clipit contracts",
   "scripts": {
-    "deploy:localhost": "npx hardhat run ./scripts/dev.deploy.ts --network localhost",
-    "deploy:ropsten": "npx hardhat run ./scripts/deploy.ts --network ropsten",
+    "deploy:localhost": "npx hardhat run ./scripts/deploy.ts --network localhost",
     "deploy:rinkeby": "npx hardhat run ./scripts/deploy.ts --network rinkeby",
     "etherscan:verify:rinkeby": "npx hardhat verify --constructor-args etherscan-args.js --network rinkeby 0x8fF5d1D8A2983a476baAA36C3edcf7Ee13ACB481",
     "test": "npx hardhat test",
