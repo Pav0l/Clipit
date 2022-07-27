@@ -1,16 +1,18 @@
-## Google Artifact Registry
+# Clipit backend API
 
-https://cloud.google.com/artifact-registry?hl=en-GB
+## Development
 
-Setting up access permissions
-https://cloud.google.com/artifact-registry/docs/access-control?hl=en-GB
+The server can be run either directly by from the Golang compiled binary or via Docker. Check `Makefile` for scripts regarding Docker.
 
-## Google Cloud Build
+- `cp .env.sample .env` and fill out necessary environment variables
+- `make run-dev`
 
-https://cloud.google.com/build/docs/quickstart-build
+## Deployment
 
-gcloud builds reference: https://cloud.google.com/sdk/gcloud/reference/builds
+To deploy the server, either run:
 
-## Google Cloud Run
+- `SERVICE_NAME=<your-gcp-service-name> make gcp-deploy-stage-no-traffic`
 
-https://cloud.google.com/run/docs/setup
+or
+
+- `SERVICE_NAME=<your-gcp-service-name> make gcp-deploy-prod-no-traffic`
