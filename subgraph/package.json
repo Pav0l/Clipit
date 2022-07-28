@@ -5,7 +5,7 @@
     "format": "prettier -w .",
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ h0ppx/three",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ pav0l/clipit",
     "prepare:mainnet": "mustache config/mainnet.json subgraph.template.yaml > subgraph.yaml",
     "prepare:rinkeby": "mustache config/rinkeby.json subgraph.template.yaml > subgraph.yaml"
   },
