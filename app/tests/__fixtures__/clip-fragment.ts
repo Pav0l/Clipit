@@ -36,6 +36,5 @@ export const clipPartialFragment = {
     id: signerAddress,
   },
   ownerBidShare: "95000000000000000000",
-  prevOwnerBidShare: "0",
   transactionHash: "0xb51c9eac95b3f4cb287dc59e046719e564ef07951bc4664a8fd2f8d866ca272b",
 };

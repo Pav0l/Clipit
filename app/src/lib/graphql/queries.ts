@@ -43,7 +43,6 @@ const CLIP_PARTIALS = gql`
     }
     creatorBidShare
     ownerBidShare
-    prevOwnerBidShare
     owner {
       id
     }

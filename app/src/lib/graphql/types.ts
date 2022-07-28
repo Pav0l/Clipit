@@ -36,6 +36,8 @@ export type Ask = {
 };
 
 export type Ask_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
   amount?: InputMaybe<Scalars["BigInt"]>;
   amount_gt?: InputMaybe<Scalars["BigInt"]>;
   amount_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -45,8 +47,11 @@ export type Ask_Filter = {
   amount_not?: InputMaybe<Scalars["BigInt"]>;
   amount_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   clip?: InputMaybe<Scalars["String"]>;
+  clip_?: InputMaybe<Clip_Filter>;
   clip_contains?: InputMaybe<Scalars["String"]>;
+  clip_contains_nocase?: InputMaybe<Scalars["String"]>;
   clip_ends_with?: InputMaybe<Scalars["String"]>;
+  clip_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_gt?: InputMaybe<Scalars["String"]>;
   clip_gte?: InputMaybe<Scalars["String"]>;
   clip_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -54,10 +59,14 @@ export type Ask_Filter = {
   clip_lte?: InputMaybe<Scalars["String"]>;
   clip_not?: InputMaybe<Scalars["String"]>;
   clip_not_contains?: InputMaybe<Scalars["String"]>;
+  clip_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   clip_not_ends_with?: InputMaybe<Scalars["String"]>;
+  clip_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_not_in?: InputMaybe<Array<Scalars["String"]>>;
   clip_not_starts_with?: InputMaybe<Scalars["String"]>;
+  clip_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_starts_with?: InputMaybe<Scalars["String"]>;
+  clip_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   createdAtBlockNumber?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gt?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -75,8 +84,11 @@ export type Ask_Filter = {
   createdAtTimestamp_not?: InputMaybe<Scalars["BigInt"]>;
   createdAtTimestamp_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   currency?: InputMaybe<Scalars["String"]>;
+  currency_?: InputMaybe<Currency_Filter>;
   currency_contains?: InputMaybe<Scalars["String"]>;
+  currency_contains_nocase?: InputMaybe<Scalars["String"]>;
   currency_ends_with?: InputMaybe<Scalars["String"]>;
+  currency_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   currency_gt?: InputMaybe<Scalars["String"]>;
   currency_gte?: InputMaybe<Scalars["String"]>;
   currency_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -84,10 +96,14 @@ export type Ask_Filter = {
   currency_lte?: InputMaybe<Scalars["String"]>;
   currency_not?: InputMaybe<Scalars["String"]>;
   currency_not_contains?: InputMaybe<Scalars["String"]>;
+  currency_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   currency_not_ends_with?: InputMaybe<Scalars["String"]>;
+  currency_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   currency_not_in?: InputMaybe<Array<Scalars["String"]>>;
   currency_not_starts_with?: InputMaybe<Scalars["String"]>;
+  currency_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   currency_starts_with?: InputMaybe<Scalars["String"]>;
+  currency_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   id?: InputMaybe<Scalars["ID"]>;
   id_gt?: InputMaybe<Scalars["ID"]>;
   id_gte?: InputMaybe<Scalars["ID"]>;
@@ -97,8 +113,11 @@ export type Ask_Filter = {
   id_not?: InputMaybe<Scalars["ID"]>;
   id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
   owner?: InputMaybe<Scalars["String"]>;
+  owner_?: InputMaybe<User_Filter>;
   owner_contains?: InputMaybe<Scalars["String"]>;
+  owner_contains_nocase?: InputMaybe<Scalars["String"]>;
   owner_ends_with?: InputMaybe<Scalars["String"]>;
+  owner_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   owner_gt?: InputMaybe<Scalars["String"]>;
   owner_gte?: InputMaybe<Scalars["String"]>;
   owner_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -106,13 +125,19 @@ export type Ask_Filter = {
   owner_lte?: InputMaybe<Scalars["String"]>;
   owner_not?: InputMaybe<Scalars["String"]>;
   owner_not_contains?: InputMaybe<Scalars["String"]>;
+  owner_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   owner_not_ends_with?: InputMaybe<Scalars["String"]>;
+  owner_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   owner_not_in?: InputMaybe<Array<Scalars["String"]>>;
   owner_not_starts_with?: InputMaybe<Scalars["String"]>;
+  owner_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   owner_starts_with?: InputMaybe<Scalars["String"]>;
+  owner_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash?: InputMaybe<Scalars["String"]>;
   transactionHash_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_gt?: InputMaybe<Scalars["String"]>;
   transactionHash_gte?: InputMaybe<Scalars["String"]>;
   transactionHash_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -120,10 +145,14 @@ export type Ask_Filter = {
   transactionHash_lte?: InputMaybe<Scalars["String"]>;
   transactionHash_not?: InputMaybe<Scalars["String"]>;
   transactionHash_not_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_in?: InputMaybe<Array<Scalars["String"]>>;
   transactionHash_not_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 };
 
 export enum Ask_OrderBy {
@@ -155,13 +184,13 @@ export type Bid = {
   id: Scalars["ID"];
   /** The recipient of Clip if the Bid is accepted */
   recipient: User;
-  /** The sellOnShare of the Bid */
-  sellOnShare: Scalars["BigInt"];
   /** Transaction hash the bid was created at */
   transactionHash: Scalars["String"];
 };
 
 export type Bid_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
   amount?: InputMaybe<Scalars["BigInt"]>;
   amount_gt?: InputMaybe<Scalars["BigInt"]>;
   amount_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -171,8 +200,11 @@ export type Bid_Filter = {
   amount_not?: InputMaybe<Scalars["BigInt"]>;
   amount_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   bidder?: InputMaybe<Scalars["String"]>;
+  bidder_?: InputMaybe<User_Filter>;
   bidder_contains?: InputMaybe<Scalars["String"]>;
+  bidder_contains_nocase?: InputMaybe<Scalars["String"]>;
   bidder_ends_with?: InputMaybe<Scalars["String"]>;
+  bidder_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   bidder_gt?: InputMaybe<Scalars["String"]>;
   bidder_gte?: InputMaybe<Scalars["String"]>;
   bidder_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -180,13 +212,20 @@ export type Bid_Filter = {
   bidder_lte?: InputMaybe<Scalars["String"]>;
   bidder_not?: InputMaybe<Scalars["String"]>;
   bidder_not_contains?: InputMaybe<Scalars["String"]>;
+  bidder_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   bidder_not_ends_with?: InputMaybe<Scalars["String"]>;
+  bidder_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   bidder_not_in?: InputMaybe<Array<Scalars["String"]>>;
   bidder_not_starts_with?: InputMaybe<Scalars["String"]>;
+  bidder_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   bidder_starts_with?: InputMaybe<Scalars["String"]>;
+  bidder_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   clip?: InputMaybe<Scalars["String"]>;
+  clip_?: InputMaybe<Clip_Filter>;
   clip_contains?: InputMaybe<Scalars["String"]>;
+  clip_contains_nocase?: InputMaybe<Scalars["String"]>;
   clip_ends_with?: InputMaybe<Scalars["String"]>;
+  clip_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_gt?: InputMaybe<Scalars["String"]>;
   clip_gte?: InputMaybe<Scalars["String"]>;
   clip_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -194,10 +233,14 @@ export type Bid_Filter = {
   clip_lte?: InputMaybe<Scalars["String"]>;
   clip_not?: InputMaybe<Scalars["String"]>;
   clip_not_contains?: InputMaybe<Scalars["String"]>;
+  clip_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   clip_not_ends_with?: InputMaybe<Scalars["String"]>;
+  clip_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_not_in?: InputMaybe<Array<Scalars["String"]>>;
   clip_not_starts_with?: InputMaybe<Scalars["String"]>;
+  clip_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_starts_with?: InputMaybe<Scalars["String"]>;
+  clip_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   createdAtBlockNumber?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gt?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -215,8 +258,11 @@ export type Bid_Filter = {
   createdAtTimestamp_not?: InputMaybe<Scalars["BigInt"]>;
   createdAtTimestamp_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   currency?: InputMaybe<Scalars["String"]>;
+  currency_?: InputMaybe<Currency_Filter>;
   currency_contains?: InputMaybe<Scalars["String"]>;
+  currency_contains_nocase?: InputMaybe<Scalars["String"]>;
   currency_ends_with?: InputMaybe<Scalars["String"]>;
+  currency_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   currency_gt?: InputMaybe<Scalars["String"]>;
   currency_gte?: InputMaybe<Scalars["String"]>;
   currency_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -224,10 +270,14 @@ export type Bid_Filter = {
   currency_lte?: InputMaybe<Scalars["String"]>;
   currency_not?: InputMaybe<Scalars["String"]>;
   currency_not_contains?: InputMaybe<Scalars["String"]>;
+  currency_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   currency_not_ends_with?: InputMaybe<Scalars["String"]>;
+  currency_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   currency_not_in?: InputMaybe<Array<Scalars["String"]>>;
   currency_not_starts_with?: InputMaybe<Scalars["String"]>;
+  currency_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   currency_starts_with?: InputMaybe<Scalars["String"]>;
+  currency_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   id?: InputMaybe<Scalars["ID"]>;
   id_gt?: InputMaybe<Scalars["ID"]>;
   id_gte?: InputMaybe<Scalars["ID"]>;
@@ -237,8 +287,11 @@ export type Bid_Filter = {
   id_not?: InputMaybe<Scalars["ID"]>;
   id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
   recipient?: InputMaybe<Scalars["String"]>;
+  recipient_?: InputMaybe<User_Filter>;
   recipient_contains?: InputMaybe<Scalars["String"]>;
+  recipient_contains_nocase?: InputMaybe<Scalars["String"]>;
   recipient_ends_with?: InputMaybe<Scalars["String"]>;
+  recipient_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   recipient_gt?: InputMaybe<Scalars["String"]>;
   recipient_gte?: InputMaybe<Scalars["String"]>;
   recipient_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -246,21 +299,19 @@ export type Bid_Filter = {
   recipient_lte?: InputMaybe<Scalars["String"]>;
   recipient_not?: InputMaybe<Scalars["String"]>;
   recipient_not_contains?: InputMaybe<Scalars["String"]>;
+  recipient_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   recipient_not_ends_with?: InputMaybe<Scalars["String"]>;
+  recipient_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   recipient_not_in?: InputMaybe<Array<Scalars["String"]>>;
   recipient_not_starts_with?: InputMaybe<Scalars["String"]>;
+  recipient_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   recipient_starts_with?: InputMaybe<Scalars["String"]>;
-  sellOnShare?: InputMaybe<Scalars["BigInt"]>;
-  sellOnShare_gt?: InputMaybe<Scalars["BigInt"]>;
-  sellOnShare_gte?: InputMaybe<Scalars["BigInt"]>;
-  sellOnShare_in?: InputMaybe<Array<Scalars["BigInt"]>>;
-  sellOnShare_lt?: InputMaybe<Scalars["BigInt"]>;
-  sellOnShare_lte?: InputMaybe<Scalars["BigInt"]>;
-  sellOnShare_not?: InputMaybe<Scalars["BigInt"]>;
-  sellOnShare_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
+  recipient_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash?: InputMaybe<Scalars["String"]>;
   transactionHash_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_gt?: InputMaybe<Scalars["String"]>;
   transactionHash_gte?: InputMaybe<Scalars["String"]>;
   transactionHash_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -268,10 +319,14 @@ export type Bid_Filter = {
   transactionHash_lte?: InputMaybe<Scalars["String"]>;
   transactionHash_not?: InputMaybe<Scalars["String"]>;
   transactionHash_not_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_in?: InputMaybe<Array<Scalars["String"]>>;
   transactionHash_not_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 };
 
 export enum Bid_OrderBy {
@@ -283,9 +338,12 @@ export enum Bid_OrderBy {
   Currency = "currency",
   Id = "id",
   Recipient = "recipient",
-  SellOnShare = "sellOnShare",
   TransactionHash = "transactionHash",
 }
+
+export type BlockChangedFilter = {
+  number_gte: Scalars["Int"];
+};
 
 export type Block_Height = {
   hash?: InputMaybe<Scalars["Bytes"]>;
@@ -309,7 +367,7 @@ export type Clip = {
   createdAtBlockNumber: Scalars["BigInt"];
   /** The timestamp of the block the Clip was minted in */
   createdAtTimestamp: Scalars["BigInt"];
-  /** The creator of the Clip */
+  /** The creator of the Clip content */
   creator: User;
   /** The bid share for the creator of the Clip */
   creatorBidShare: Scalars["BigInt"];
@@ -327,14 +385,14 @@ export type Clip = {
   metadataHash: Scalars["Bytes"];
   /** The uri of the metadata */
   metadataURI: Scalars["String"];
+  /** The minter of the Clip */
+  minter: User;
   /** The current owner of the Clip */
   owner: User;
   /** The bid share for the current owner of the Clip */
   ownerBidShare: Scalars["BigInt"];
   /** The previous owner of the ClipIt's Market */
   prevOwner: User;
-  /** The bid share for the previous owner of the Clip's market */
-  prevOwnerBidShare: Scalars["BigInt"];
   /** The ReserveAuctions of the Clip */
   reserveAuctions?: Maybe<Array<ReserveAuction>>;
   /** The transaction hash the clip was created at */
@@ -384,9 +442,14 @@ export type ClipTransfersArgs = {
 };
 
 export type Clip_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
   approved?: InputMaybe<Scalars["String"]>;
+  approved_?: InputMaybe<User_Filter>;
   approved_contains?: InputMaybe<Scalars["String"]>;
+  approved_contains_nocase?: InputMaybe<Scalars["String"]>;
   approved_ends_with?: InputMaybe<Scalars["String"]>;
+  approved_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   approved_gt?: InputMaybe<Scalars["String"]>;
   approved_gte?: InputMaybe<Scalars["String"]>;
   approved_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -394,10 +457,14 @@ export type Clip_Filter = {
   approved_lte?: InputMaybe<Scalars["String"]>;
   approved_not?: InputMaybe<Scalars["String"]>;
   approved_not_contains?: InputMaybe<Scalars["String"]>;
+  approved_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   approved_not_ends_with?: InputMaybe<Scalars["String"]>;
+  approved_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   approved_not_in?: InputMaybe<Array<Scalars["String"]>>;
   approved_not_starts_with?: InputMaybe<Scalars["String"]>;
+  approved_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   approved_starts_with?: InputMaybe<Scalars["String"]>;
+  approved_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   burnedAtBlockNumber?: InputMaybe<Scalars["BigInt"]>;
   burnedAtBlockNumber_gt?: InputMaybe<Scalars["BigInt"]>;
   burnedAtBlockNumber_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -422,7 +489,9 @@ export type Clip_Filter = {
   contentHash_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
   contentURI?: InputMaybe<Scalars["String"]>;
   contentURI_contains?: InputMaybe<Scalars["String"]>;
+  contentURI_contains_nocase?: InputMaybe<Scalars["String"]>;
   contentURI_ends_with?: InputMaybe<Scalars["String"]>;
+  contentURI_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   contentURI_gt?: InputMaybe<Scalars["String"]>;
   contentURI_gte?: InputMaybe<Scalars["String"]>;
   contentURI_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -430,10 +499,14 @@ export type Clip_Filter = {
   contentURI_lte?: InputMaybe<Scalars["String"]>;
   contentURI_not?: InputMaybe<Scalars["String"]>;
   contentURI_not_contains?: InputMaybe<Scalars["String"]>;
+  contentURI_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   contentURI_not_ends_with?: InputMaybe<Scalars["String"]>;
+  contentURI_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   contentURI_not_in?: InputMaybe<Array<Scalars["String"]>>;
   contentURI_not_starts_with?: InputMaybe<Scalars["String"]>;
+  contentURI_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   contentURI_starts_with?: InputMaybe<Scalars["String"]>;
+  contentURI_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   createdAtBlockNumber?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gt?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -459,8 +532,11 @@ export type Clip_Filter = {
   creatorBidShare_lte?: InputMaybe<Scalars["BigInt"]>;
   creatorBidShare_not?: InputMaybe<Scalars["BigInt"]>;
   creatorBidShare_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
+  creator_?: InputMaybe<User_Filter>;
   creator_contains?: InputMaybe<Scalars["String"]>;
+  creator_contains_nocase?: InputMaybe<Scalars["String"]>;
   creator_ends_with?: InputMaybe<Scalars["String"]>;
+  creator_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   creator_gt?: InputMaybe<Scalars["String"]>;
   creator_gte?: InputMaybe<Scalars["String"]>;
   creator_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -468,10 +544,16 @@ export type Clip_Filter = {
   creator_lte?: InputMaybe<Scalars["String"]>;
   creator_not?: InputMaybe<Scalars["String"]>;
   creator_not_contains?: InputMaybe<Scalars["String"]>;
+  creator_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   creator_not_ends_with?: InputMaybe<Scalars["String"]>;
+  creator_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   creator_not_in?: InputMaybe<Array<Scalars["String"]>>;
   creator_not_starts_with?: InputMaybe<Scalars["String"]>;
+  creator_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   creator_starts_with?: InputMaybe<Scalars["String"]>;
+  creator_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  currentAsk_?: InputMaybe<Ask_Filter>;
+  currentBids_?: InputMaybe<Bid_Filter>;
   id?: InputMaybe<Scalars["ID"]>;
   id_gt?: InputMaybe<Scalars["ID"]>;
   id_gte?: InputMaybe<Scalars["ID"]>;
@@ -480,6 +562,8 @@ export type Clip_Filter = {
   id_lte?: InputMaybe<Scalars["ID"]>;
   id_not?: InputMaybe<Scalars["ID"]>;
   id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  inactiveAsks_?: InputMaybe<InactiveAsk_Filter>;
+  inactiveBids_?: InputMaybe<InactiveBid_Filter>;
   metadataHash?: InputMaybe<Scalars["Bytes"]>;
   metadataHash_contains?: InputMaybe<Scalars["Bytes"]>;
   metadataHash_in?: InputMaybe<Array<Scalars["Bytes"]>>;
@@ -488,7 +572,9 @@ export type Clip_Filter = {
   metadataHash_not_in?: InputMaybe<Array<Scalars["Bytes"]>>;
   metadataURI?: InputMaybe<Scalars["String"]>;
   metadataURI_contains?: InputMaybe<Scalars["String"]>;
+  metadataURI_contains_nocase?: InputMaybe<Scalars["String"]>;
   metadataURI_ends_with?: InputMaybe<Scalars["String"]>;
+  metadataURI_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   metadataURI_gt?: InputMaybe<Scalars["String"]>;
   metadataURI_gte?: InputMaybe<Scalars["String"]>;
   metadataURI_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -496,10 +582,35 @@ export type Clip_Filter = {
   metadataURI_lte?: InputMaybe<Scalars["String"]>;
   metadataURI_not?: InputMaybe<Scalars["String"]>;
   metadataURI_not_contains?: InputMaybe<Scalars["String"]>;
+  metadataURI_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   metadataURI_not_ends_with?: InputMaybe<Scalars["String"]>;
+  metadataURI_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   metadataURI_not_in?: InputMaybe<Array<Scalars["String"]>>;
   metadataURI_not_starts_with?: InputMaybe<Scalars["String"]>;
+  metadataURI_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   metadataURI_starts_with?: InputMaybe<Scalars["String"]>;
+  metadataURI_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  minter?: InputMaybe<Scalars["String"]>;
+  minter_?: InputMaybe<User_Filter>;
+  minter_contains?: InputMaybe<Scalars["String"]>;
+  minter_contains_nocase?: InputMaybe<Scalars["String"]>;
+  minter_ends_with?: InputMaybe<Scalars["String"]>;
+  minter_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  minter_gt?: InputMaybe<Scalars["String"]>;
+  minter_gte?: InputMaybe<Scalars["String"]>;
+  minter_in?: InputMaybe<Array<Scalars["String"]>>;
+  minter_lt?: InputMaybe<Scalars["String"]>;
+  minter_lte?: InputMaybe<Scalars["String"]>;
+  minter_not?: InputMaybe<Scalars["String"]>;
+  minter_not_contains?: InputMaybe<Scalars["String"]>;
+  minter_not_contains_nocase?: InputMaybe<Scalars["String"]>;
+  minter_not_ends_with?: InputMaybe<Scalars["String"]>;
+  minter_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
+  minter_not_in?: InputMaybe<Array<Scalars["String"]>>;
+  minter_not_starts_with?: InputMaybe<Scalars["String"]>;
+  minter_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  minter_starts_with?: InputMaybe<Scalars["String"]>;
+  minter_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   owner?: InputMaybe<Scalars["String"]>;
   ownerBidShare?: InputMaybe<Scalars["BigInt"]>;
   ownerBidShare_gt?: InputMaybe<Scalars["BigInt"]>;
@@ -509,8 +620,11 @@ export type Clip_Filter = {
   ownerBidShare_lte?: InputMaybe<Scalars["BigInt"]>;
   ownerBidShare_not?: InputMaybe<Scalars["BigInt"]>;
   ownerBidShare_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
+  owner_?: InputMaybe<User_Filter>;
   owner_contains?: InputMaybe<Scalars["String"]>;
+  owner_contains_nocase?: InputMaybe<Scalars["String"]>;
   owner_ends_with?: InputMaybe<Scalars["String"]>;
+  owner_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   owner_gt?: InputMaybe<Scalars["String"]>;
   owner_gte?: InputMaybe<Scalars["String"]>;
   owner_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -518,21 +632,20 @@ export type Clip_Filter = {
   owner_lte?: InputMaybe<Scalars["String"]>;
   owner_not?: InputMaybe<Scalars["String"]>;
   owner_not_contains?: InputMaybe<Scalars["String"]>;
+  owner_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   owner_not_ends_with?: InputMaybe<Scalars["String"]>;
+  owner_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   owner_not_in?: InputMaybe<Array<Scalars["String"]>>;
   owner_not_starts_with?: InputMaybe<Scalars["String"]>;
+  owner_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   owner_starts_with?: InputMaybe<Scalars["String"]>;
+  owner_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   prevOwner?: InputMaybe<Scalars["String"]>;
-  prevOwnerBidShare?: InputMaybe<Scalars["BigInt"]>;
-  prevOwnerBidShare_gt?: InputMaybe<Scalars["BigInt"]>;
-  prevOwnerBidShare_gte?: InputMaybe<Scalars["BigInt"]>;
-  prevOwnerBidShare_in?: InputMaybe<Array<Scalars["BigInt"]>>;
-  prevOwnerBidShare_lt?: InputMaybe<Scalars["BigInt"]>;
-  prevOwnerBidShare_lte?: InputMaybe<Scalars["BigInt"]>;
-  prevOwnerBidShare_not?: InputMaybe<Scalars["BigInt"]>;
-  prevOwnerBidShare_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
+  prevOwner_?: InputMaybe<User_Filter>;
   prevOwner_contains?: InputMaybe<Scalars["String"]>;
+  prevOwner_contains_nocase?: InputMaybe<Scalars["String"]>;
   prevOwner_ends_with?: InputMaybe<Scalars["String"]>;
+  prevOwner_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   prevOwner_gt?: InputMaybe<Scalars["String"]>;
   prevOwner_gte?: InputMaybe<Scalars["String"]>;
   prevOwner_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -540,13 +653,20 @@ export type Clip_Filter = {
   prevOwner_lte?: InputMaybe<Scalars["String"]>;
   prevOwner_not?: InputMaybe<Scalars["String"]>;
   prevOwner_not_contains?: InputMaybe<Scalars["String"]>;
+  prevOwner_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   prevOwner_not_ends_with?: InputMaybe<Scalars["String"]>;
+  prevOwner_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   prevOwner_not_in?: InputMaybe<Array<Scalars["String"]>>;
   prevOwner_not_starts_with?: InputMaybe<Scalars["String"]>;
+  prevOwner_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   prevOwner_starts_with?: InputMaybe<Scalars["String"]>;
+  prevOwner_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  reserveAuctions_?: InputMaybe<ReserveAuction_Filter>;
   transactionHash?: InputMaybe<Scalars["String"]>;
   transactionHash_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_gt?: InputMaybe<Scalars["String"]>;
   transactionHash_gte?: InputMaybe<Scalars["String"]>;
   transactionHash_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -554,10 +674,15 @@ export type Clip_Filter = {
   transactionHash_lte?: InputMaybe<Scalars["String"]>;
   transactionHash_not?: InputMaybe<Scalars["String"]>;
   transactionHash_not_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_in?: InputMaybe<Array<Scalars["String"]>>;
   transactionHash_not_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_starts_with_nocase?: InputMaybe<Scalars["String"]>;
+  transfers_?: InputMaybe<Transfer_Filter>;
 };
 
 export enum Clip_OrderBy {
@@ -577,10 +702,10 @@ export enum Clip_OrderBy {
   InactiveBids = "inactiveBids",
   MetadataHash = "metadataHash",
   MetadataUri = "metadataURI",
+  Minter = "minter",
   Owner = "owner",
   OwnerBidShare = "ownerBidShare",
   PrevOwner = "prevOwner",
-  PrevOwnerBidShare = "prevOwnerBidShare",
   ReserveAuctions = "reserveAuctions",
   TransactionHash = "transactionHash",
   Transfers = "transfers",
@@ -641,6 +766,10 @@ export type CurrencyInactiveBidsArgs = {
 };
 
 export type Currency_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
+  activeAsks_?: InputMaybe<Ask_Filter>;
+  activeBids_?: InputMaybe<Bid_Filter>;
   decimals?: InputMaybe<Scalars["Int"]>;
   decimals_gt?: InputMaybe<Scalars["Int"]>;
   decimals_gte?: InputMaybe<Scalars["Int"]>;
@@ -657,6 +786,8 @@ export type Currency_Filter = {
   id_lte?: InputMaybe<Scalars["ID"]>;
   id_not?: InputMaybe<Scalars["ID"]>;
   id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  inactiveAsks_?: InputMaybe<InactiveAsk_Filter>;
+  inactiveBids_?: InputMaybe<InactiveBid_Filter>;
   liquidity?: InputMaybe<Scalars["BigInt"]>;
   liquidity_gt?: InputMaybe<Scalars["BigInt"]>;
   liquidity_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -667,7 +798,9 @@ export type Currency_Filter = {
   liquidity_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   name?: InputMaybe<Scalars["String"]>;
   name_contains?: InputMaybe<Scalars["String"]>;
+  name_contains_nocase?: InputMaybe<Scalars["String"]>;
   name_ends_with?: InputMaybe<Scalars["String"]>;
+  name_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   name_gt?: InputMaybe<Scalars["String"]>;
   name_gte?: InputMaybe<Scalars["String"]>;
   name_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -675,13 +808,19 @@ export type Currency_Filter = {
   name_lte?: InputMaybe<Scalars["String"]>;
   name_not?: InputMaybe<Scalars["String"]>;
   name_not_contains?: InputMaybe<Scalars["String"]>;
+  name_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   name_not_ends_with?: InputMaybe<Scalars["String"]>;
+  name_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   name_not_in?: InputMaybe<Array<Scalars["String"]>>;
   name_not_starts_with?: InputMaybe<Scalars["String"]>;
+  name_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   name_starts_with?: InputMaybe<Scalars["String"]>;
+  name_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   symbol?: InputMaybe<Scalars["String"]>;
   symbol_contains?: InputMaybe<Scalars["String"]>;
+  symbol_contains_nocase?: InputMaybe<Scalars["String"]>;
   symbol_ends_with?: InputMaybe<Scalars["String"]>;
+  symbol_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   symbol_gt?: InputMaybe<Scalars["String"]>;
   symbol_gte?: InputMaybe<Scalars["String"]>;
   symbol_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -689,10 +828,14 @@ export type Currency_Filter = {
   symbol_lte?: InputMaybe<Scalars["String"]>;
   symbol_not?: InputMaybe<Scalars["String"]>;
   symbol_not_contains?: InputMaybe<Scalars["String"]>;
+  symbol_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   symbol_not_ends_with?: InputMaybe<Scalars["String"]>;
+  symbol_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   symbol_not_in?: InputMaybe<Array<Scalars["String"]>>;
   symbol_not_starts_with?: InputMaybe<Scalars["String"]>;
+  symbol_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   symbol_starts_with?: InputMaybe<Scalars["String"]>;
+  symbol_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 };
 
 export enum Currency_OrderBy {
@@ -734,6 +877,8 @@ export type InactiveAsk = {
 };
 
 export type InactiveAsk_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
   amount?: InputMaybe<Scalars["BigInt"]>;
   amount_gt?: InputMaybe<Scalars["BigInt"]>;
   amount_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -743,8 +888,11 @@ export type InactiveAsk_Filter = {
   amount_not?: InputMaybe<Scalars["BigInt"]>;
   amount_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   clip?: InputMaybe<Scalars["String"]>;
+  clip_?: InputMaybe<Clip_Filter>;
   clip_contains?: InputMaybe<Scalars["String"]>;
+  clip_contains_nocase?: InputMaybe<Scalars["String"]>;
   clip_ends_with?: InputMaybe<Scalars["String"]>;
+  clip_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_gt?: InputMaybe<Scalars["String"]>;
   clip_gte?: InputMaybe<Scalars["String"]>;
   clip_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -752,10 +900,14 @@ export type InactiveAsk_Filter = {
   clip_lte?: InputMaybe<Scalars["String"]>;
   clip_not?: InputMaybe<Scalars["String"]>;
   clip_not_contains?: InputMaybe<Scalars["String"]>;
+  clip_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   clip_not_ends_with?: InputMaybe<Scalars["String"]>;
+  clip_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_not_in?: InputMaybe<Array<Scalars["String"]>>;
   clip_not_starts_with?: InputMaybe<Scalars["String"]>;
+  clip_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_starts_with?: InputMaybe<Scalars["String"]>;
+  clip_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   createdAtBlockNumber?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gt?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -773,8 +925,11 @@ export type InactiveAsk_Filter = {
   createdAtTimestamp_not?: InputMaybe<Scalars["BigInt"]>;
   createdAtTimestamp_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   currency?: InputMaybe<Scalars["String"]>;
+  currency_?: InputMaybe<Currency_Filter>;
   currency_contains?: InputMaybe<Scalars["String"]>;
+  currency_contains_nocase?: InputMaybe<Scalars["String"]>;
   currency_ends_with?: InputMaybe<Scalars["String"]>;
+  currency_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   currency_gt?: InputMaybe<Scalars["String"]>;
   currency_gte?: InputMaybe<Scalars["String"]>;
   currency_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -782,10 +937,14 @@ export type InactiveAsk_Filter = {
   currency_lte?: InputMaybe<Scalars["String"]>;
   currency_not?: InputMaybe<Scalars["String"]>;
   currency_not_contains?: InputMaybe<Scalars["String"]>;
+  currency_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   currency_not_ends_with?: InputMaybe<Scalars["String"]>;
+  currency_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   currency_not_in?: InputMaybe<Array<Scalars["String"]>>;
   currency_not_starts_with?: InputMaybe<Scalars["String"]>;
+  currency_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   currency_starts_with?: InputMaybe<Scalars["String"]>;
+  currency_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   id?: InputMaybe<Scalars["ID"]>;
   id_gt?: InputMaybe<Scalars["ID"]>;
   id_gte?: InputMaybe<Scalars["ID"]>;
@@ -811,8 +970,11 @@ export type InactiveAsk_Filter = {
   inactivatedAtTimestamp_not?: InputMaybe<Scalars["BigInt"]>;
   inactivatedAtTimestamp_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   owner?: InputMaybe<Scalars["String"]>;
+  owner_?: InputMaybe<User_Filter>;
   owner_contains?: InputMaybe<Scalars["String"]>;
+  owner_contains_nocase?: InputMaybe<Scalars["String"]>;
   owner_ends_with?: InputMaybe<Scalars["String"]>;
+  owner_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   owner_gt?: InputMaybe<Scalars["String"]>;
   owner_gte?: InputMaybe<Scalars["String"]>;
   owner_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -820,13 +982,19 @@ export type InactiveAsk_Filter = {
   owner_lte?: InputMaybe<Scalars["String"]>;
   owner_not?: InputMaybe<Scalars["String"]>;
   owner_not_contains?: InputMaybe<Scalars["String"]>;
+  owner_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   owner_not_ends_with?: InputMaybe<Scalars["String"]>;
+  owner_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   owner_not_in?: InputMaybe<Array<Scalars["String"]>>;
   owner_not_starts_with?: InputMaybe<Scalars["String"]>;
+  owner_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   owner_starts_with?: InputMaybe<Scalars["String"]>;
+  owner_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash?: InputMaybe<Scalars["String"]>;
   transactionHash_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_gt?: InputMaybe<Scalars["String"]>;
   transactionHash_gte?: InputMaybe<Scalars["String"]>;
   transactionHash_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -834,10 +1002,14 @@ export type InactiveAsk_Filter = {
   transactionHash_lte?: InputMaybe<Scalars["String"]>;
   transactionHash_not?: InputMaybe<Scalars["String"]>;
   transactionHash_not_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_in?: InputMaybe<Array<Scalars["String"]>>;
   transactionHash_not_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   type?: InputMaybe<MarketEventType>;
   type_in?: InputMaybe<Array<MarketEventType>>;
   type_not?: InputMaybe<MarketEventType>;
@@ -880,8 +1052,6 @@ export type InactiveBid = {
   inactivatedAtTimestamp: Scalars["BigInt"];
   /** The recipient of the InactiveBid */
   recipient: User;
-  /** The sellOnShare of the InactiveBid */
-  sellOnShare: Scalars["BigInt"];
   /** Transaction hash the bid was created at */
   transactionHash: Scalars["String"];
   /** The reason why this Bid is Inactive */
@@ -889,6 +1059,8 @@ export type InactiveBid = {
 };
 
 export type InactiveBid_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
   amount?: InputMaybe<Scalars["BigInt"]>;
   amount_gt?: InputMaybe<Scalars["BigInt"]>;
   amount_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -898,8 +1070,11 @@ export type InactiveBid_Filter = {
   amount_not?: InputMaybe<Scalars["BigInt"]>;
   amount_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   bidder?: InputMaybe<Scalars["String"]>;
+  bidder_?: InputMaybe<User_Filter>;
   bidder_contains?: InputMaybe<Scalars["String"]>;
+  bidder_contains_nocase?: InputMaybe<Scalars["String"]>;
   bidder_ends_with?: InputMaybe<Scalars["String"]>;
+  bidder_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   bidder_gt?: InputMaybe<Scalars["String"]>;
   bidder_gte?: InputMaybe<Scalars["String"]>;
   bidder_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -907,13 +1082,20 @@ export type InactiveBid_Filter = {
   bidder_lte?: InputMaybe<Scalars["String"]>;
   bidder_not?: InputMaybe<Scalars["String"]>;
   bidder_not_contains?: InputMaybe<Scalars["String"]>;
+  bidder_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   bidder_not_ends_with?: InputMaybe<Scalars["String"]>;
+  bidder_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   bidder_not_in?: InputMaybe<Array<Scalars["String"]>>;
   bidder_not_starts_with?: InputMaybe<Scalars["String"]>;
+  bidder_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   bidder_starts_with?: InputMaybe<Scalars["String"]>;
+  bidder_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   clip?: InputMaybe<Scalars["String"]>;
+  clip_?: InputMaybe<Clip_Filter>;
   clip_contains?: InputMaybe<Scalars["String"]>;
+  clip_contains_nocase?: InputMaybe<Scalars["String"]>;
   clip_ends_with?: InputMaybe<Scalars["String"]>;
+  clip_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_gt?: InputMaybe<Scalars["String"]>;
   clip_gte?: InputMaybe<Scalars["String"]>;
   clip_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -921,10 +1103,14 @@ export type InactiveBid_Filter = {
   clip_lte?: InputMaybe<Scalars["String"]>;
   clip_not?: InputMaybe<Scalars["String"]>;
   clip_not_contains?: InputMaybe<Scalars["String"]>;
+  clip_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   clip_not_ends_with?: InputMaybe<Scalars["String"]>;
+  clip_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_not_in?: InputMaybe<Array<Scalars["String"]>>;
   clip_not_starts_with?: InputMaybe<Scalars["String"]>;
+  clip_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_starts_with?: InputMaybe<Scalars["String"]>;
+  clip_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   createdAtBlockNumber?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gt?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -942,8 +1128,11 @@ export type InactiveBid_Filter = {
   createdAtTimestamp_not?: InputMaybe<Scalars["BigInt"]>;
   createdAtTimestamp_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   currency?: InputMaybe<Scalars["String"]>;
+  currency_?: InputMaybe<Currency_Filter>;
   currency_contains?: InputMaybe<Scalars["String"]>;
+  currency_contains_nocase?: InputMaybe<Scalars["String"]>;
   currency_ends_with?: InputMaybe<Scalars["String"]>;
+  currency_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   currency_gt?: InputMaybe<Scalars["String"]>;
   currency_gte?: InputMaybe<Scalars["String"]>;
   currency_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -951,10 +1140,14 @@ export type InactiveBid_Filter = {
   currency_lte?: InputMaybe<Scalars["String"]>;
   currency_not?: InputMaybe<Scalars["String"]>;
   currency_not_contains?: InputMaybe<Scalars["String"]>;
+  currency_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   currency_not_ends_with?: InputMaybe<Scalars["String"]>;
+  currency_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   currency_not_in?: InputMaybe<Array<Scalars["String"]>>;
   currency_not_starts_with?: InputMaybe<Scalars["String"]>;
+  currency_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   currency_starts_with?: InputMaybe<Scalars["String"]>;
+  currency_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   id?: InputMaybe<Scalars["ID"]>;
   id_gt?: InputMaybe<Scalars["ID"]>;
   id_gte?: InputMaybe<Scalars["ID"]>;
@@ -980,8 +1173,11 @@ export type InactiveBid_Filter = {
   inactivatedAtTimestamp_not?: InputMaybe<Scalars["BigInt"]>;
   inactivatedAtTimestamp_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   recipient?: InputMaybe<Scalars["String"]>;
+  recipient_?: InputMaybe<User_Filter>;
   recipient_contains?: InputMaybe<Scalars["String"]>;
+  recipient_contains_nocase?: InputMaybe<Scalars["String"]>;
   recipient_ends_with?: InputMaybe<Scalars["String"]>;
+  recipient_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   recipient_gt?: InputMaybe<Scalars["String"]>;
   recipient_gte?: InputMaybe<Scalars["String"]>;
   recipient_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -989,21 +1185,19 @@ export type InactiveBid_Filter = {
   recipient_lte?: InputMaybe<Scalars["String"]>;
   recipient_not?: InputMaybe<Scalars["String"]>;
   recipient_not_contains?: InputMaybe<Scalars["String"]>;
+  recipient_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   recipient_not_ends_with?: InputMaybe<Scalars["String"]>;
+  recipient_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   recipient_not_in?: InputMaybe<Array<Scalars["String"]>>;
   recipient_not_starts_with?: InputMaybe<Scalars["String"]>;
+  recipient_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   recipient_starts_with?: InputMaybe<Scalars["String"]>;
-  sellOnShare?: InputMaybe<Scalars["BigInt"]>;
-  sellOnShare_gt?: InputMaybe<Scalars["BigInt"]>;
-  sellOnShare_gte?: InputMaybe<Scalars["BigInt"]>;
-  sellOnShare_in?: InputMaybe<Array<Scalars["BigInt"]>>;
-  sellOnShare_lt?: InputMaybe<Scalars["BigInt"]>;
-  sellOnShare_lte?: InputMaybe<Scalars["BigInt"]>;
-  sellOnShare_not?: InputMaybe<Scalars["BigInt"]>;
-  sellOnShare_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
+  recipient_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash?: InputMaybe<Scalars["String"]>;
   transactionHash_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_gt?: InputMaybe<Scalars["String"]>;
   transactionHash_gte?: InputMaybe<Scalars["String"]>;
   transactionHash_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1011,10 +1205,14 @@ export type InactiveBid_Filter = {
   transactionHash_lte?: InputMaybe<Scalars["String"]>;
   transactionHash_not?: InputMaybe<Scalars["String"]>;
   transactionHash_not_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_in?: InputMaybe<Array<Scalars["String"]>>;
   transactionHash_not_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   type?: InputMaybe<MarketEventType>;
   type_in?: InputMaybe<Array<MarketEventType>>;
   type_not?: InputMaybe<MarketEventType>;
@@ -1032,7 +1230,6 @@ export enum InactiveBid_OrderBy {
   InactivatedAtBlockNumber = "inactivatedAtBlockNumber",
   InactivatedAtTimestamp = "inactivatedAtTimestamp",
   Recipient = "recipient",
-  SellOnShare = "sellOnShare",
   TransactionHash = "transactionHash",
   Type = "type",
 }
@@ -1062,6 +1259,8 @@ export type InactiveReserveAuctionBid = {
 };
 
 export type InactiveReserveAuctionBid_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
   amount?: InputMaybe<Scalars["BigInt"]>;
   amount_gt?: InputMaybe<Scalars["BigInt"]>;
   amount_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -1091,8 +1290,11 @@ export type InactiveReserveAuctionBid_Filter = {
   bidType_not?: InputMaybe<ReserveAuctionBidType>;
   bidType_not_in?: InputMaybe<Array<ReserveAuctionBidType>>;
   bidder?: InputMaybe<Scalars["String"]>;
+  bidder_?: InputMaybe<User_Filter>;
   bidder_contains?: InputMaybe<Scalars["String"]>;
+  bidder_contains_nocase?: InputMaybe<Scalars["String"]>;
   bidder_ends_with?: InputMaybe<Scalars["String"]>;
+  bidder_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   bidder_gt?: InputMaybe<Scalars["String"]>;
   bidder_gte?: InputMaybe<Scalars["String"]>;
   bidder_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1100,10 +1302,14 @@ export type InactiveReserveAuctionBid_Filter = {
   bidder_lte?: InputMaybe<Scalars["String"]>;
   bidder_not?: InputMaybe<Scalars["String"]>;
   bidder_not_contains?: InputMaybe<Scalars["String"]>;
+  bidder_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   bidder_not_ends_with?: InputMaybe<Scalars["String"]>;
+  bidder_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   bidder_not_in?: InputMaybe<Array<Scalars["String"]>>;
   bidder_not_starts_with?: InputMaybe<Scalars["String"]>;
+  bidder_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   bidder_starts_with?: InputMaybe<Scalars["String"]>;
+  bidder_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   createdAtBlockNumber?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gt?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -1129,8 +1335,11 @@ export type InactiveReserveAuctionBid_Filter = {
   id_not?: InputMaybe<Scalars["ID"]>;
   id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
   reserveAuction?: InputMaybe<Scalars["String"]>;
+  reserveAuction_?: InputMaybe<ReserveAuction_Filter>;
   reserveAuction_contains?: InputMaybe<Scalars["String"]>;
+  reserveAuction_contains_nocase?: InputMaybe<Scalars["String"]>;
   reserveAuction_ends_with?: InputMaybe<Scalars["String"]>;
+  reserveAuction_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   reserveAuction_gt?: InputMaybe<Scalars["String"]>;
   reserveAuction_gte?: InputMaybe<Scalars["String"]>;
   reserveAuction_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1138,13 +1347,19 @@ export type InactiveReserveAuctionBid_Filter = {
   reserveAuction_lte?: InputMaybe<Scalars["String"]>;
   reserveAuction_not?: InputMaybe<Scalars["String"]>;
   reserveAuction_not_contains?: InputMaybe<Scalars["String"]>;
+  reserveAuction_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   reserveAuction_not_ends_with?: InputMaybe<Scalars["String"]>;
+  reserveAuction_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   reserveAuction_not_in?: InputMaybe<Array<Scalars["String"]>>;
   reserveAuction_not_starts_with?: InputMaybe<Scalars["String"]>;
+  reserveAuction_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   reserveAuction_starts_with?: InputMaybe<Scalars["String"]>;
+  reserveAuction_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash?: InputMaybe<Scalars["String"]>;
   transactionHash_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_gt?: InputMaybe<Scalars["String"]>;
   transactionHash_gte?: InputMaybe<Scalars["String"]>;
   transactionHash_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1152,10 +1367,14 @@ export type InactiveReserveAuctionBid_Filter = {
   transactionHash_lte?: InputMaybe<Scalars["String"]>;
   transactionHash_not?: InputMaybe<Scalars["String"]>;
   transactionHash_not_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_in?: InputMaybe<Array<Scalars["String"]>>;
   transactionHash_not_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 };
 
 export enum InactiveReserveAuctionBid_OrderBy {
@@ -1177,6 +1396,7 @@ export enum MarketEventType {
   Removed = "Removed",
 }
 
+/** Defines the order direction, either ascending or descending */
 export enum OrderDirection {
   Asc = "asc",
   Desc = "desc",
@@ -1497,6 +1717,8 @@ export enum ReserveAuctionBidType {
 }
 
 export type ReserveAuctionBid_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
   amount?: InputMaybe<Scalars["BigInt"]>;
   amount_gt?: InputMaybe<Scalars["BigInt"]>;
   amount_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -1510,8 +1732,11 @@ export type ReserveAuctionBid_Filter = {
   bidType_not?: InputMaybe<ReserveAuctionBidType>;
   bidType_not_in?: InputMaybe<Array<ReserveAuctionBidType>>;
   bidder?: InputMaybe<Scalars["String"]>;
+  bidder_?: InputMaybe<User_Filter>;
   bidder_contains?: InputMaybe<Scalars["String"]>;
+  bidder_contains_nocase?: InputMaybe<Scalars["String"]>;
   bidder_ends_with?: InputMaybe<Scalars["String"]>;
+  bidder_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   bidder_gt?: InputMaybe<Scalars["String"]>;
   bidder_gte?: InputMaybe<Scalars["String"]>;
   bidder_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1519,10 +1744,14 @@ export type ReserveAuctionBid_Filter = {
   bidder_lte?: InputMaybe<Scalars["String"]>;
   bidder_not?: InputMaybe<Scalars["String"]>;
   bidder_not_contains?: InputMaybe<Scalars["String"]>;
+  bidder_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   bidder_not_ends_with?: InputMaybe<Scalars["String"]>;
+  bidder_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   bidder_not_in?: InputMaybe<Array<Scalars["String"]>>;
   bidder_not_starts_with?: InputMaybe<Scalars["String"]>;
+  bidder_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   bidder_starts_with?: InputMaybe<Scalars["String"]>;
+  bidder_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   createdAtBlockNumber?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gt?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -1548,8 +1777,11 @@ export type ReserveAuctionBid_Filter = {
   id_not?: InputMaybe<Scalars["ID"]>;
   id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
   reserveAuction?: InputMaybe<Scalars["String"]>;
+  reserveAuction_?: InputMaybe<ReserveAuction_Filter>;
   reserveAuction_contains?: InputMaybe<Scalars["String"]>;
+  reserveAuction_contains_nocase?: InputMaybe<Scalars["String"]>;
   reserveAuction_ends_with?: InputMaybe<Scalars["String"]>;
+  reserveAuction_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   reserveAuction_gt?: InputMaybe<Scalars["String"]>;
   reserveAuction_gte?: InputMaybe<Scalars["String"]>;
   reserveAuction_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1557,13 +1789,19 @@ export type ReserveAuctionBid_Filter = {
   reserveAuction_lte?: InputMaybe<Scalars["String"]>;
   reserveAuction_not?: InputMaybe<Scalars["String"]>;
   reserveAuction_not_contains?: InputMaybe<Scalars["String"]>;
+  reserveAuction_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   reserveAuction_not_ends_with?: InputMaybe<Scalars["String"]>;
+  reserveAuction_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   reserveAuction_not_in?: InputMaybe<Array<Scalars["String"]>>;
   reserveAuction_not_starts_with?: InputMaybe<Scalars["String"]>;
+  reserveAuction_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   reserveAuction_starts_with?: InputMaybe<Scalars["String"]>;
+  reserveAuction_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash?: InputMaybe<Scalars["String"]>;
   transactionHash_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_gt?: InputMaybe<Scalars["String"]>;
   transactionHash_gte?: InputMaybe<Scalars["String"]>;
   transactionHash_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1571,10 +1809,14 @@ export type ReserveAuctionBid_Filter = {
   transactionHash_lte?: InputMaybe<Scalars["String"]>;
   transactionHash_not?: InputMaybe<Scalars["String"]>;
   transactionHash_not_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_in?: InputMaybe<Array<Scalars["String"]>>;
   transactionHash_not_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 };
 
 export enum ReserveAuctionBid_OrderBy {
@@ -1596,6 +1838,8 @@ export enum ReserveAuctionStatus {
 }
 
 export type ReserveAuction_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
   approved?: InputMaybe<Scalars["Boolean"]>;
   approvedBlockNumber?: InputMaybe<Scalars["BigInt"]>;
   approvedBlockNumber_gt?: InputMaybe<Scalars["BigInt"]>;
@@ -1617,8 +1861,11 @@ export type ReserveAuction_Filter = {
   approved_not?: InputMaybe<Scalars["Boolean"]>;
   approved_not_in?: InputMaybe<Array<Scalars["Boolean"]>>;
   auctionCurrency?: InputMaybe<Scalars["String"]>;
+  auctionCurrency_?: InputMaybe<Currency_Filter>;
   auctionCurrency_contains?: InputMaybe<Scalars["String"]>;
+  auctionCurrency_contains_nocase?: InputMaybe<Scalars["String"]>;
   auctionCurrency_ends_with?: InputMaybe<Scalars["String"]>;
+  auctionCurrency_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   auctionCurrency_gt?: InputMaybe<Scalars["String"]>;
   auctionCurrency_gte?: InputMaybe<Scalars["String"]>;
   auctionCurrency_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1626,13 +1873,20 @@ export type ReserveAuction_Filter = {
   auctionCurrency_lte?: InputMaybe<Scalars["String"]>;
   auctionCurrency_not?: InputMaybe<Scalars["String"]>;
   auctionCurrency_not_contains?: InputMaybe<Scalars["String"]>;
+  auctionCurrency_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   auctionCurrency_not_ends_with?: InputMaybe<Scalars["String"]>;
+  auctionCurrency_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   auctionCurrency_not_in?: InputMaybe<Array<Scalars["String"]>>;
   auctionCurrency_not_starts_with?: InputMaybe<Scalars["String"]>;
+  auctionCurrency_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   auctionCurrency_starts_with?: InputMaybe<Scalars["String"]>;
+  auctionCurrency_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   clip?: InputMaybe<Scalars["String"]>;
+  clip_?: InputMaybe<Clip_Filter>;
   clip_contains?: InputMaybe<Scalars["String"]>;
+  clip_contains_nocase?: InputMaybe<Scalars["String"]>;
   clip_ends_with?: InputMaybe<Scalars["String"]>;
+  clip_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_gt?: InputMaybe<Scalars["String"]>;
   clip_gte?: InputMaybe<Scalars["String"]>;
   clip_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1640,10 +1894,14 @@ export type ReserveAuction_Filter = {
   clip_lte?: InputMaybe<Scalars["String"]>;
   clip_not?: InputMaybe<Scalars["String"]>;
   clip_not_contains?: InputMaybe<Scalars["String"]>;
+  clip_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   clip_not_ends_with?: InputMaybe<Scalars["String"]>;
+  clip_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_not_in?: InputMaybe<Array<Scalars["String"]>>;
   clip_not_starts_with?: InputMaybe<Scalars["String"]>;
+  clip_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_starts_with?: InputMaybe<Scalars["String"]>;
+  clip_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   createdAtBlockNumber?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gt?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -1669,8 +1927,11 @@ export type ReserveAuction_Filter = {
   curatorFeePercentage_lte?: InputMaybe<Scalars["Int"]>;
   curatorFeePercentage_not?: InputMaybe<Scalars["Int"]>;
   curatorFeePercentage_not_in?: InputMaybe<Array<Scalars["Int"]>>;
+  curator_?: InputMaybe<User_Filter>;
   curator_contains?: InputMaybe<Scalars["String"]>;
+  curator_contains_nocase?: InputMaybe<Scalars["String"]>;
   curator_ends_with?: InputMaybe<Scalars["String"]>;
+  curator_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   curator_gt?: InputMaybe<Scalars["String"]>;
   curator_gte?: InputMaybe<Scalars["String"]>;
   curator_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1678,13 +1939,20 @@ export type ReserveAuction_Filter = {
   curator_lte?: InputMaybe<Scalars["String"]>;
   curator_not?: InputMaybe<Scalars["String"]>;
   curator_not_contains?: InputMaybe<Scalars["String"]>;
+  curator_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   curator_not_ends_with?: InputMaybe<Scalars["String"]>;
+  curator_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   curator_not_in?: InputMaybe<Array<Scalars["String"]>>;
   curator_not_starts_with?: InputMaybe<Scalars["String"]>;
+  curator_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   curator_starts_with?: InputMaybe<Scalars["String"]>;
+  curator_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   currentBid?: InputMaybe<Scalars["String"]>;
+  currentBid_?: InputMaybe<ReserveAuctionBid_Filter>;
   currentBid_contains?: InputMaybe<Scalars["String"]>;
+  currentBid_contains_nocase?: InputMaybe<Scalars["String"]>;
   currentBid_ends_with?: InputMaybe<Scalars["String"]>;
+  currentBid_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   currentBid_gt?: InputMaybe<Scalars["String"]>;
   currentBid_gte?: InputMaybe<Scalars["String"]>;
   currentBid_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1692,10 +1960,14 @@ export type ReserveAuction_Filter = {
   currentBid_lte?: InputMaybe<Scalars["String"]>;
   currentBid_not?: InputMaybe<Scalars["String"]>;
   currentBid_not_contains?: InputMaybe<Scalars["String"]>;
+  currentBid_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   currentBid_not_ends_with?: InputMaybe<Scalars["String"]>;
+  currentBid_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   currentBid_not_in?: InputMaybe<Array<Scalars["String"]>>;
   currentBid_not_starts_with?: InputMaybe<Scalars["String"]>;
+  currentBid_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   currentBid_starts_with?: InputMaybe<Scalars["String"]>;
+  currentBid_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   duration?: InputMaybe<Scalars["BigInt"]>;
   duration_gt?: InputMaybe<Scalars["BigInt"]>;
   duration_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -1744,6 +2016,7 @@ export type ReserveAuction_Filter = {
   id_lte?: InputMaybe<Scalars["ID"]>;
   id_not?: InputMaybe<Scalars["ID"]>;
   id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
+  previousBids_?: InputMaybe<InactiveReserveAuctionBid_Filter>;
   reservePrice?: InputMaybe<Scalars["BigInt"]>;
   reservePrice_gt?: InputMaybe<Scalars["BigInt"]>;
   reservePrice_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -1759,7 +2032,9 @@ export type ReserveAuction_Filter = {
   token?: InputMaybe<Scalars["String"]>;
   tokenContract?: InputMaybe<Scalars["String"]>;
   tokenContract_contains?: InputMaybe<Scalars["String"]>;
+  tokenContract_contains_nocase?: InputMaybe<Scalars["String"]>;
   tokenContract_ends_with?: InputMaybe<Scalars["String"]>;
+  tokenContract_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   tokenContract_gt?: InputMaybe<Scalars["String"]>;
   tokenContract_gte?: InputMaybe<Scalars["String"]>;
   tokenContract_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1767,10 +2042,14 @@ export type ReserveAuction_Filter = {
   tokenContract_lte?: InputMaybe<Scalars["String"]>;
   tokenContract_not?: InputMaybe<Scalars["String"]>;
   tokenContract_not_contains?: InputMaybe<Scalars["String"]>;
+  tokenContract_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   tokenContract_not_ends_with?: InputMaybe<Scalars["String"]>;
+  tokenContract_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   tokenContract_not_in?: InputMaybe<Array<Scalars["String"]>>;
   tokenContract_not_starts_with?: InputMaybe<Scalars["String"]>;
+  tokenContract_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   tokenContract_starts_with?: InputMaybe<Scalars["String"]>;
+  tokenContract_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   tokenId?: InputMaybe<Scalars["BigInt"]>;
   tokenId_gt?: InputMaybe<Scalars["BigInt"]>;
   tokenId_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -1780,8 +2059,11 @@ export type ReserveAuction_Filter = {
   tokenId_not?: InputMaybe<Scalars["BigInt"]>;
   tokenId_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   tokenOwner?: InputMaybe<Scalars["String"]>;
+  tokenOwner_?: InputMaybe<User_Filter>;
   tokenOwner_contains?: InputMaybe<Scalars["String"]>;
+  tokenOwner_contains_nocase?: InputMaybe<Scalars["String"]>;
   tokenOwner_ends_with?: InputMaybe<Scalars["String"]>;
+  tokenOwner_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   tokenOwner_gt?: InputMaybe<Scalars["String"]>;
   tokenOwner_gte?: InputMaybe<Scalars["String"]>;
   tokenOwner_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1789,12 +2071,18 @@ export type ReserveAuction_Filter = {
   tokenOwner_lte?: InputMaybe<Scalars["String"]>;
   tokenOwner_not?: InputMaybe<Scalars["String"]>;
   tokenOwner_not_contains?: InputMaybe<Scalars["String"]>;
+  tokenOwner_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   tokenOwner_not_ends_with?: InputMaybe<Scalars["String"]>;
+  tokenOwner_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   tokenOwner_not_in?: InputMaybe<Array<Scalars["String"]>>;
   tokenOwner_not_starts_with?: InputMaybe<Scalars["String"]>;
+  tokenOwner_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   tokenOwner_starts_with?: InputMaybe<Scalars["String"]>;
+  tokenOwner_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   token_contains?: InputMaybe<Scalars["String"]>;
+  token_contains_nocase?: InputMaybe<Scalars["String"]>;
   token_ends_with?: InputMaybe<Scalars["String"]>;
+  token_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   token_gt?: InputMaybe<Scalars["String"]>;
   token_gte?: InputMaybe<Scalars["String"]>;
   token_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1802,13 +2090,19 @@ export type ReserveAuction_Filter = {
   token_lte?: InputMaybe<Scalars["String"]>;
   token_not?: InputMaybe<Scalars["String"]>;
   token_not_contains?: InputMaybe<Scalars["String"]>;
+  token_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   token_not_ends_with?: InputMaybe<Scalars["String"]>;
+  token_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   token_not_in?: InputMaybe<Array<Scalars["String"]>>;
   token_not_starts_with?: InputMaybe<Scalars["String"]>;
+  token_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   token_starts_with?: InputMaybe<Scalars["String"]>;
+  token_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash?: InputMaybe<Scalars["String"]>;
   transactionHash_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_gt?: InputMaybe<Scalars["String"]>;
   transactionHash_gte?: InputMaybe<Scalars["String"]>;
   transactionHash_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -1816,10 +2110,14 @@ export type ReserveAuction_Filter = {
   transactionHash_lte?: InputMaybe<Scalars["String"]>;
   transactionHash_not?: InputMaybe<Scalars["String"]>;
   transactionHash_not_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_in?: InputMaybe<Array<Scalars["String"]>>;
   transactionHash_not_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 };
 
 export enum ReserveAuction_OrderBy {
@@ -2094,9 +2392,14 @@ export type Transfer = {
 };
 
 export type Transfer_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
   clip?: InputMaybe<Scalars["String"]>;
+  clip_?: InputMaybe<Clip_Filter>;
   clip_contains?: InputMaybe<Scalars["String"]>;
+  clip_contains_nocase?: InputMaybe<Scalars["String"]>;
   clip_ends_with?: InputMaybe<Scalars["String"]>;
+  clip_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_gt?: InputMaybe<Scalars["String"]>;
   clip_gte?: InputMaybe<Scalars["String"]>;
   clip_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -2104,10 +2407,14 @@ export type Transfer_Filter = {
   clip_lte?: InputMaybe<Scalars["String"]>;
   clip_not?: InputMaybe<Scalars["String"]>;
   clip_not_contains?: InputMaybe<Scalars["String"]>;
+  clip_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   clip_not_ends_with?: InputMaybe<Scalars["String"]>;
+  clip_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_not_in?: InputMaybe<Array<Scalars["String"]>>;
   clip_not_starts_with?: InputMaybe<Scalars["String"]>;
+  clip_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_starts_with?: InputMaybe<Scalars["String"]>;
+  clip_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   createdAtBlockNumber?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gt?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -2125,8 +2432,11 @@ export type Transfer_Filter = {
   createdAtTimestamp_not?: InputMaybe<Scalars["BigInt"]>;
   createdAtTimestamp_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   from?: InputMaybe<Scalars["String"]>;
+  from_?: InputMaybe<User_Filter>;
   from_contains?: InputMaybe<Scalars["String"]>;
+  from_contains_nocase?: InputMaybe<Scalars["String"]>;
   from_ends_with?: InputMaybe<Scalars["String"]>;
+  from_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   from_gt?: InputMaybe<Scalars["String"]>;
   from_gte?: InputMaybe<Scalars["String"]>;
   from_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -2134,10 +2444,14 @@ export type Transfer_Filter = {
   from_lte?: InputMaybe<Scalars["String"]>;
   from_not?: InputMaybe<Scalars["String"]>;
   from_not_contains?: InputMaybe<Scalars["String"]>;
+  from_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   from_not_ends_with?: InputMaybe<Scalars["String"]>;
+  from_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   from_not_in?: InputMaybe<Array<Scalars["String"]>>;
   from_not_starts_with?: InputMaybe<Scalars["String"]>;
+  from_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   from_starts_with?: InputMaybe<Scalars["String"]>;
+  from_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   id?: InputMaybe<Scalars["ID"]>;
   id_gt?: InputMaybe<Scalars["ID"]>;
   id_gte?: InputMaybe<Scalars["ID"]>;
@@ -2147,8 +2461,11 @@ export type Transfer_Filter = {
   id_not?: InputMaybe<Scalars["ID"]>;
   id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
   to?: InputMaybe<Scalars["String"]>;
+  to_?: InputMaybe<User_Filter>;
   to_contains?: InputMaybe<Scalars["String"]>;
+  to_contains_nocase?: InputMaybe<Scalars["String"]>;
   to_ends_with?: InputMaybe<Scalars["String"]>;
+  to_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   to_gt?: InputMaybe<Scalars["String"]>;
   to_gte?: InputMaybe<Scalars["String"]>;
   to_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -2156,13 +2473,19 @@ export type Transfer_Filter = {
   to_lte?: InputMaybe<Scalars["String"]>;
   to_not?: InputMaybe<Scalars["String"]>;
   to_not_contains?: InputMaybe<Scalars["String"]>;
+  to_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   to_not_ends_with?: InputMaybe<Scalars["String"]>;
+  to_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   to_not_in?: InputMaybe<Array<Scalars["String"]>>;
   to_not_starts_with?: InputMaybe<Scalars["String"]>;
+  to_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   to_starts_with?: InputMaybe<Scalars["String"]>;
+  to_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash?: InputMaybe<Scalars["String"]>;
   transactionHash_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_gt?: InputMaybe<Scalars["String"]>;
   transactionHash_gte?: InputMaybe<Scalars["String"]>;
   transactionHash_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -2170,10 +2493,14 @@ export type Transfer_Filter = {
   transactionHash_lte?: InputMaybe<Scalars["String"]>;
   transactionHash_not?: InputMaybe<Scalars["String"]>;
   transactionHash_not_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_in?: InputMaybe<Array<Scalars["String"]>>;
   transactionHash_not_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 };
 
 export enum Transfer_OrderBy {
@@ -2217,9 +2544,14 @@ export enum UriUpdateType {
 }
 
 export type UriUpdate_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
   clip?: InputMaybe<Scalars["String"]>;
+  clip_?: InputMaybe<Clip_Filter>;
   clip_contains?: InputMaybe<Scalars["String"]>;
+  clip_contains_nocase?: InputMaybe<Scalars["String"]>;
   clip_ends_with?: InputMaybe<Scalars["String"]>;
+  clip_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_gt?: InputMaybe<Scalars["String"]>;
   clip_gte?: InputMaybe<Scalars["String"]>;
   clip_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -2227,10 +2559,14 @@ export type UriUpdate_Filter = {
   clip_lte?: InputMaybe<Scalars["String"]>;
   clip_not?: InputMaybe<Scalars["String"]>;
   clip_not_contains?: InputMaybe<Scalars["String"]>;
+  clip_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   clip_not_ends_with?: InputMaybe<Scalars["String"]>;
+  clip_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_not_in?: InputMaybe<Array<Scalars["String"]>>;
   clip_not_starts_with?: InputMaybe<Scalars["String"]>;
+  clip_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   clip_starts_with?: InputMaybe<Scalars["String"]>;
+  clip_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   createdAtBlockNumber?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gt?: InputMaybe<Scalars["BigInt"]>;
   createdAtBlockNumber_gte?: InputMaybe<Scalars["BigInt"]>;
@@ -2249,7 +2585,9 @@ export type UriUpdate_Filter = {
   createdAtTimestamp_not_in?: InputMaybe<Array<Scalars["BigInt"]>>;
   from?: InputMaybe<Scalars["String"]>;
   from_contains?: InputMaybe<Scalars["String"]>;
+  from_contains_nocase?: InputMaybe<Scalars["String"]>;
   from_ends_with?: InputMaybe<Scalars["String"]>;
+  from_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   from_gt?: InputMaybe<Scalars["String"]>;
   from_gte?: InputMaybe<Scalars["String"]>;
   from_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -2257,10 +2595,14 @@ export type UriUpdate_Filter = {
   from_lte?: InputMaybe<Scalars["String"]>;
   from_not?: InputMaybe<Scalars["String"]>;
   from_not_contains?: InputMaybe<Scalars["String"]>;
+  from_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   from_not_ends_with?: InputMaybe<Scalars["String"]>;
+  from_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   from_not_in?: InputMaybe<Array<Scalars["String"]>>;
   from_not_starts_with?: InputMaybe<Scalars["String"]>;
+  from_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   from_starts_with?: InputMaybe<Scalars["String"]>;
+  from_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   id?: InputMaybe<Scalars["ID"]>;
   id_gt?: InputMaybe<Scalars["ID"]>;
   id_gte?: InputMaybe<Scalars["ID"]>;
@@ -2270,8 +2612,11 @@ export type UriUpdate_Filter = {
   id_not?: InputMaybe<Scalars["ID"]>;
   id_not_in?: InputMaybe<Array<Scalars["ID"]>>;
   owner?: InputMaybe<Scalars["String"]>;
+  owner_?: InputMaybe<User_Filter>;
   owner_contains?: InputMaybe<Scalars["String"]>;
+  owner_contains_nocase?: InputMaybe<Scalars["String"]>;
   owner_ends_with?: InputMaybe<Scalars["String"]>;
+  owner_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   owner_gt?: InputMaybe<Scalars["String"]>;
   owner_gte?: InputMaybe<Scalars["String"]>;
   owner_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -2279,13 +2624,19 @@ export type UriUpdate_Filter = {
   owner_lte?: InputMaybe<Scalars["String"]>;
   owner_not?: InputMaybe<Scalars["String"]>;
   owner_not_contains?: InputMaybe<Scalars["String"]>;
+  owner_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   owner_not_ends_with?: InputMaybe<Scalars["String"]>;
+  owner_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   owner_not_in?: InputMaybe<Array<Scalars["String"]>>;
   owner_not_starts_with?: InputMaybe<Scalars["String"]>;
+  owner_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   owner_starts_with?: InputMaybe<Scalars["String"]>;
+  owner_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   to?: InputMaybe<Scalars["String"]>;
   to_contains?: InputMaybe<Scalars["String"]>;
+  to_contains_nocase?: InputMaybe<Scalars["String"]>;
   to_ends_with?: InputMaybe<Scalars["String"]>;
+  to_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   to_gt?: InputMaybe<Scalars["String"]>;
   to_gte?: InputMaybe<Scalars["String"]>;
   to_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -2293,13 +2644,19 @@ export type UriUpdate_Filter = {
   to_lte?: InputMaybe<Scalars["String"]>;
   to_not?: InputMaybe<Scalars["String"]>;
   to_not_contains?: InputMaybe<Scalars["String"]>;
+  to_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   to_not_ends_with?: InputMaybe<Scalars["String"]>;
+  to_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   to_not_in?: InputMaybe<Array<Scalars["String"]>>;
   to_not_starts_with?: InputMaybe<Scalars["String"]>;
+  to_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   to_starts_with?: InputMaybe<Scalars["String"]>;
+  to_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash?: InputMaybe<Scalars["String"]>;
   transactionHash_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_gt?: InputMaybe<Scalars["String"]>;
   transactionHash_gte?: InputMaybe<Scalars["String"]>;
   transactionHash_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -2307,17 +2664,24 @@ export type UriUpdate_Filter = {
   transactionHash_lte?: InputMaybe<Scalars["String"]>;
   transactionHash_not?: InputMaybe<Scalars["String"]>;
   transactionHash_not_contains?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_ends_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_not_in?: InputMaybe<Array<Scalars["String"]>>;
   transactionHash_not_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   transactionHash_starts_with?: InputMaybe<Scalars["String"]>;
+  transactionHash_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   type?: InputMaybe<UriUpdateType>;
   type_in?: InputMaybe<Array<UriUpdateType>>;
   type_not?: InputMaybe<UriUpdateType>;
   type_not_in?: InputMaybe<Array<UriUpdateType>>;
   updater?: InputMaybe<Scalars["String"]>;
+  updater_?: InputMaybe<User_Filter>;
   updater_contains?: InputMaybe<Scalars["String"]>;
+  updater_contains_nocase?: InputMaybe<Scalars["String"]>;
   updater_ends_with?: InputMaybe<Scalars["String"]>;
+  updater_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   updater_gt?: InputMaybe<Scalars["String"]>;
   updater_gte?: InputMaybe<Scalars["String"]>;
   updater_in?: InputMaybe<Array<Scalars["String"]>>;
@@ -2325,10 +2689,14 @@ export type UriUpdate_Filter = {
   updater_lte?: InputMaybe<Scalars["String"]>;
   updater_not?: InputMaybe<Scalars["String"]>;
   updater_not_contains?: InputMaybe<Scalars["String"]>;
+  updater_not_contains_nocase?: InputMaybe<Scalars["String"]>;
   updater_not_ends_with?: InputMaybe<Scalars["String"]>;
+  updater_not_ends_with_nocase?: InputMaybe<Scalars["String"]>;
   updater_not_in?: InputMaybe<Array<Scalars["String"]>>;
   updater_not_starts_with?: InputMaybe<Scalars["String"]>;
+  updater_not_starts_with_nocase?: InputMaybe<Scalars["String"]>;
   updater_starts_with?: InputMaybe<Scalars["String"]>;
+  updater_starts_with_nocase?: InputMaybe<Scalars["String"]>;
 };
 
 export enum UriUpdate_OrderBy {
@@ -2391,10 +2759,18 @@ export type UserCurrentBidsArgs = {
 };
 
 export type User_Filter = {
+  /** Filter for the block changed event. */
+  _change_block?: InputMaybe<BlockChangedFilter>;
   authorizedUsers?: InputMaybe<Array<Scalars["String"]>>;
+  authorizedUsers_?: InputMaybe<User_Filter>;
   authorizedUsers_contains?: InputMaybe<Array<Scalars["String"]>>;
+  authorizedUsers_contains_nocase?: InputMaybe<Array<Scalars["String"]>>;
   authorizedUsers_not?: InputMaybe<Array<Scalars["String"]>>;
   authorizedUsers_not_contains?: InputMaybe<Array<Scalars["String"]>>;
+  authorizedUsers_not_contains_nocase?: InputMaybe<Array<Scalars["String"]>>;
+  collection_?: InputMaybe<Clip_Filter>;
+  creations_?: InputMaybe<Clip_Filter>;
+  currentBids_?: InputMaybe<Bid_Filter>;
   id?: InputMaybe<Scalars["ID"]>;
   id_gt?: InputMaybe<Scalars["ID"]>;
   id_gte?: InputMaybe<Scalars["ID"]>;
@@ -2470,7 +2846,6 @@ export type ClipPartialFragment = {
   transactionHash: string;
   creatorBidShare: any;
   ownerBidShare: any;
-  prevOwnerBidShare: any;
   createdAtTimestamp: any;
   currentAsk?:
     | {
@@ -2649,7 +3024,6 @@ export type GetUserDataQuery = {
       transactionHash: string;
       creatorBidShare: any;
       ownerBidShare: any;
-      prevOwnerBidShare: any;
       createdAtTimestamp: any;
       currentAsk?:
         | {
@@ -2766,7 +3140,6 @@ export type GetUserDataQuery = {
           transactionHash: string;
           creatorBidShare: any;
           ownerBidShare: any;
-          prevOwnerBidShare: any;
           createdAtTimestamp: any;
           currentAsk?:
             | {
@@ -2869,7 +3242,6 @@ export type GetUserDataQuery = {
             transactionHash: string;
             creatorBidShare: any;
             ownerBidShare: any;
-            prevOwnerBidShare: any;
             createdAtTimestamp: any;
             currentAsk?:
               | {
@@ -2976,7 +3348,6 @@ export type GetClipDataQuery = {
     transactionHash: string;
     creatorBidShare: any;
     ownerBidShare: any;
-    prevOwnerBidShare: any;
     createdAtTimestamp: any;
     currentAsk?:
       | {
@@ -3089,7 +3460,6 @@ export type GetClipsQuery = {
     transactionHash: string;
     creatorBidShare: any;
     ownerBidShare: any;
-    prevOwnerBidShare: any;
     createdAtTimestamp: any;
     currentAsk?:
       | {
@@ -3192,7 +3562,6 @@ export type GetClipsByContentHashQuery = {
     transactionHash: string;
     creatorBidShare: any;
     ownerBidShare: any;
-    prevOwnerBidShare: any;
     createdAtTimestamp: any;
     currentAsk?:
       | {

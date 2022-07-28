@@ -17,7 +17,7 @@
     "demo:emulate:prod": "firebase emulators:start --only hosting:app",
     "zip:ext": "cd ext-dist/ && zip build index.html index.js config.html panel.html streamer.html",
     "cleanup:ext": "cd ext-dist/ && rm *.html *.js *.txt *.zip",
-    "gql:schema": "get-graphql-schema https://api.thegraph.com/subgraphs/name/h0ppx/two > src/lib/graphql/clipit.graphql",
+    "gql:schema": "get-graphql-schema https://api.thegraph.com/subgraphs/name/pav0l/clipit > src/lib/graphql/clipit.graphql",
     "gql:types": "graphql-codegen",
     "test": "jest",
     "lint": "eslint .",
