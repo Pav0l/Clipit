@@ -106,21 +106,9 @@ Twitch Extension was build to allow one click generation of Clips into NFTs via 
 
 Clients [documentation](./app/README.md).
 
-<p align="center">
-    <video 
-        style="display: block; 
-            margin-left: auto;
-            margin-right: auto;
-            width: 80%;"
-        src="./assets/clipit_extension.mp4" 
-        alt="Clipit Twitch Extension demo"
-        controls
-        disablepictureinpicture
-        disableremoteplayback
-        controlslist="nodownload"
-        >
-    </video>
-</p>
+
+https://user-images.githubusercontent.com/38439473/181825459-676a50e3-a3e0-474d-85f4-ee34951491bb.mp4
+
 
 </br>
 
