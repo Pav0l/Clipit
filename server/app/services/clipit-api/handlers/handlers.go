@@ -5,22 +5,22 @@ import (
 	"net/http/pprof"
 	"os"
 
-	"github.com/clip-it/server/app/services/clipit-api/handlers/debuggrp"
-	"github.com/clip-it/server/app/services/clipit-api/handlers/v2/clipgrp"
-	cloudrun_debuggrp "github.com/clip-it/server/app/services/clipit-api/handlers/v2/cloudrun-debuggrp"
+	"github.com/Pav0l/Clipit/tree/master/server/app/services/clipit-api/handlers/debuggrp"
+	"github.com/Pav0l/Clipit/tree/master/server/app/services/clipit-api/handlers/v2/clipgrp"
+	cloudrun_debuggrp "github.com/Pav0l/Clipit/tree/master/server/app/services/clipit-api/handlers/v2/cloudrun-debuggrp"
 
-	cStore "github.com/clip-it/server/business/data/store/clip"
+	cStore "github.com/Pav0l/Clipit/tree/master/server/business/data/store/clip"
 
-	"github.com/clip-it/server/business/core/clip"
-	"github.com/clip-it/server/business/core/game"
-	"github.com/clip-it/server/business/core/metadata"
-	"github.com/clip-it/server/business/sys/auth"
-	mw "github.com/clip-it/server/business/web/middleware"
-	"github.com/clip-it/server/foundation/pinata"
-	"github.com/clip-it/server/foundation/signer"
-	"github.com/clip-it/server/foundation/twitchapi"
-	"github.com/clip-it/server/foundation/twitchgql"
-	"github.com/clip-it/server/foundation/web"
+	"github.com/Pav0l/Clipit/tree/master/server/business/core/clip"
+	"github.com/Pav0l/Clipit/tree/master/server/business/core/game"
+	"github.com/Pav0l/Clipit/tree/master/server/business/core/metadata"
+	"github.com/Pav0l/Clipit/tree/master/server/business/sys/auth"
+	mw "github.com/Pav0l/Clipit/tree/master/server/business/web/middleware"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/pinata"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/signer"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/twitchapi"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/twitchgql"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/web"
 )
 
 type APIMuxConfig struct {

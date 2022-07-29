@@ -3,7 +3,7 @@ package game
 import (
 	"fmt"
 
-	"github.com/clip-it/server/foundation/twitchapi"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/twitchapi"
 )
 
 type Core struct {

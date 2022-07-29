@@ -1,8 +1,8 @@
-module github.com/clip-it/server
+module github.com/Pav0l/Clipit/tree/master/server
 
 go 1.16
 
-replace github.com/xClipIt/server => ./../../..
+replace github.com/Pav0l/Clipit/tree/master/server => ./../../..
 
 require (
 	github.com/btcsuite/btcd v0.22.0-beta // indirect

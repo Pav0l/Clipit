@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/clip-it/server/business/sys/metrics"
-	"github.com/clip-it/server/foundation/web"
+	"github.com/Pav0l/Clipit/tree/master/server/business/sys/metrics"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/web"
 )
 
 // Metrics updates program counters.

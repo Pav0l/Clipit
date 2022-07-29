@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/clip-it/server/foundation/web"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/web"
 )
 
 // Cors sets the response headers needed for Cross-Origin Resource Sharing

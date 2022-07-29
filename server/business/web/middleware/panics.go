@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/clip-it/server/business/sys/metrics"
-	"github.com/clip-it/server/foundation/web"
+	"github.com/Pav0l/Clipit/tree/master/server/business/sys/metrics"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/web"
 )
 
 // Panics recovers from panics and converts the panic to an error so it is

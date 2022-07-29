@@ -3,8 +3,8 @@ package clip
 import (
 	"fmt"
 
-	"github.com/clip-it/server/foundation/pinata"
-	"github.com/clip-it/server/foundation/twitchapi"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/pinata"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/twitchapi"
 )
 
 type Store struct {

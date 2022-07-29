@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/clip-it/server/business/data/store/clip"
-	"github.com/clip-it/server/foundation/twitchapi"
-	"github.com/clip-it/server/foundation/twitchgql"
+	"github.com/Pav0l/Clipit/tree/master/server/business/data/store/clip"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/twitchapi"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/twitchgql"
 )
 
 type Core struct {

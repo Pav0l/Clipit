@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/clip-it/server/business/data/store/clip"
+	"github.com/Pav0l/Clipit/tree/master/server/business/data/store/clip"
 )
 
 type Core struct {

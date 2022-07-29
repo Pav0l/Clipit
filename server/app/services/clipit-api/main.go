@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/clip-it/server/app/services/clipit-api/handlers"
+	"github.com/Pav0l/Clipit/tree/master/server/app/services/clipit-api/handlers"
 )
 
 // Build variable is overwritten to git commit when running the go build commadn with -ldflags (check Dockerfile)

@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/clip-it/server/foundation/twitchoauth"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/twitchoauth"
 	"github.com/golang-jwt/jwt/v4"
 )
 

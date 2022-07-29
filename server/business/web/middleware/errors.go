@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/clip-it/server/business/sys/validate"
-	"github.com/clip-it/server/foundation/web"
+	"github.com/Pav0l/Clipit/tree/master/server/business/sys/validate"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/web"
 )
 
 // Errors transforms errors from handlers to error responses

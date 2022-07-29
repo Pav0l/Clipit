@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/clip-it/server/business/sys/auth"
-	"github.com/clip-it/server/business/sys/validate"
-	"github.com/clip-it/server/foundation/twitchapi"
-	"github.com/clip-it/server/foundation/web"
+	"github.com/Pav0l/Clipit/tree/master/server/business/sys/auth"
+	"github.com/Pav0l/Clipit/tree/master/server/business/sys/validate"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/twitchapi"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/web"
 )
 
 // Authenticate parses the authorization token from request header and validates twitch OAuth API

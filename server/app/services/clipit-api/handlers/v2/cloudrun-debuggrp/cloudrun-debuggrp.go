@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/clip-it/server/foundation/web"
+	"github.com/Pav0l/Clipit/tree/master/server/foundation/web"
 )
 
 type Handlers struct {
