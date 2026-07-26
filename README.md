@@ -4,7 +4,9 @@
             margin-left: auto;
             margin-right: auto;
             width: 30%;"
-        src="./assets/logo.png" 
+        src="./assets/logo.webp"
+        width="600"
+        height="600"
         alt="Clipit logo">
     </img>
 </p>
@@ -23,7 +25,9 @@ Clipit started off as a project for me to play around and get some experience wi
             margin-left: auto;
             margin-right: auto;
             width: 80%;"
-        src="./assets/clipit_architecture.svg" 
+        src="./assets/clipit_architecture.svg"
+        width="941"
+        height="501"
         alt="Clipit high level architecture">
     </img>
 </p>
@@ -81,7 +85,9 @@ Interaction with Ethereum is done via integration with Metamask Wallet. The App 
             margin-right: auto;
             padding: 20px 0;
             width: 80%;"
-        src="./assets/app_marketplace.png" 
+        src="./assets/app_marketplace.webp"
+        width="1600"
+        height="790"
         alt="App Marketplace">
     </img>
 </p>
@@ -96,7 +102,9 @@ Demo Page is a basic "landing page" style client to collect interest about the p
             margin-right: auto;
             padding: 20px 0;
             width: 80%;"
-        src="./assets/demo.png" 
+        src="./assets/demo.webp"
+        width="1600"
+        height="783"
         alt="Demo page">
     </img>
 </p>
